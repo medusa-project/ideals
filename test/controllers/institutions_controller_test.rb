@@ -1282,9 +1282,9 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
             institution: {
-              name:                       "New Institution",
-              fqdn:                       "new.org",
-              openathens_organization_id: "new"
+              name:                    "New Institution",
+              fqdn:                    "new.org",
+              openathens_sp_entity_id: "new"
             }
           }
     assert_response :ok

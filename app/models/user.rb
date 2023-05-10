@@ -19,9 +19,8 @@
 # * For Shibboleth authentication, the user's "org DN" provided by the IdP is
 #   matched against an institution's {Institution#shibboleth_org_dn} property
 #   at login.
-# * For OpenAthens authentication, the user's "organization ID" provided by the
-#   OpenAthens IdP is matched against an institution's
-#   {Institution#openathens_organization_id} property at login.
+# * For OpenAthens authentication, the user is made a member of the institution
+#   matching the request host at login.
 #
 # # Attributes
 #
@@ -48,7 +47,7 @@ class User < ApplicationRecord
   include Breadcrumb
 
   class AuthMethod
-    # Credentials are stored in the users table.
+    # Credentials are stored in the `local_identities` table.
     LOCAL      = 0
     # Used only by UIUC.
     SHIBBOLETH = 1
@@ -149,7 +148,8 @@ class User < ApplicationRecord
 
   ##
   # @param auth [OmniAuth::AuthHash]
-  # @return [User]
+  # @return [User] Instance corresponding to the given auth hash, or nil if not
+  #                found.
   #
   def self.fetch_from_omniauth_local(auth)
     auth  = auth.deep_symbolize_keys
@@ -159,7 +159,8 @@ class User < ApplicationRecord
 
   ##
   # @param auth [OmniAuth::AuthHash]
-  # @return [User]
+  # @return [User] Instance corresponding to the given auth hash, or nil if not
+  #                found.
   #
   def self.fetch_from_omniauth_openathens(auth)
     auth  = auth.deep_symbolize_keys
@@ -170,7 +171,8 @@ class User < ApplicationRecord
 
   ##
   # @param auth [OmniAuth::AuthHash]
-  # @return [User]
+  # @return [User] Instance corresponding to the given auth hash, or nil if not
+  #                found.
   #
   def self.fetch_from_omniauth_shibboleth(auth)
     auth  = auth.deep_symbolize_keys
@@ -194,17 +196,21 @@ class User < ApplicationRecord
   end
 
   ##
-  # Obtains (by retrieval or creation) a user matching the given auth hash.
-  #
   # @param auth [OmniAuth::AuthHash, Hash]
-  # @return [User] One of the concrete implementations.
+  # @param institution [Institution] The returned user will be assigned to this
+  #        institution. (Only applies to OpenAthens users. Shibboleth users
+  #        will instead be assigned to the institution matching the "org DN"
+  #        attribute in the auth hash, and local identity users will be
+  #        assigned to the institution of the corresponding {Invitee}.)
+  # @return [User] Instance corresponding to the given auth hash. If one was
+  #                not found, it is created.
   #
-  def self.from_omniauth(auth)
+  def self.from_omniauth(auth, institution:)
     case auth[:provider]
     when "developer", "shibboleth"
       User.from_omniauth_shibboleth(auth)
     when "saml"
-      User.from_omniauth_openathens(auth)
+      User.from_omniauth_openathens(auth, institution: institution)
     when "identity"
       User.from_omniauth_local(auth)
     else
@@ -235,10 +241,10 @@ class User < ApplicationRecord
   ##
   # @private
   #
-  def self.from_omniauth_openathens(auth)
+  def self.from_omniauth_openathens(auth, institution:)
     user = User.fetch_from_omniauth_openathens(auth) ||
       User.new(auth_method: AuthMethod::OPENATHENS)
-    user.send(:update_from_openathens, auth)
+    user.send(:update_from_openathens, auth, institution)
     user
   end
 
@@ -526,7 +532,7 @@ class User < ApplicationRecord
   ##
   # @param auth [OmniAuth::AuthHash]
   #
-  def update_from_openathens(auth)
+  def update_from_openathens(auth, institution)
     auth  = auth.deep_symbolize_keys
     attrs = auth[:extra][:raw_info].attributes.deep_stringify_keys
 
@@ -540,9 +546,8 @@ class User < ApplicationRecord
     self.name        = [attrs[institution.openathens_first_name_attribute]&.first,
                         attrs[institution.openathens_last_name_attribute]&.first].join(" ").strip
     self.name        = self.email if self.name.blank?
-    org_id           = attrs[:"http://eduserv.org.uk/federation/attributes/1.0/organisationid"]&.first
-    self.institution = Institution.find_by_openathens_organization_id(org_id) if org_id
-    self.phone       = attrs[:phoneNumber]&.first
+    self.institution = institution
+    self.phone       = attrs['phoneNumber']&.first # TODO: fix this or stop collecting phone numbers
     begin
       self.save!
     rescue => e

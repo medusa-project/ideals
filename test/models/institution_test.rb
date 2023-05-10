@@ -594,12 +594,12 @@ class InstitutionTest < ActiveSupport::TestCase
     assert @instance.destroyed?
   end
 
-  # openathens_organization_id
+  # openathens_sp_entity_id
 
-  test "openathens_organization_id and shibboleth_org_dn cannot both be filled
+  test "openathens_sp_entity_id and shibboleth_org_dn cannot both be filled
   in" do
-    @instance.openathens_organization_id = "cats"
-    @instance.shibboleth_org_dn          = "dogs"
+    @instance.openathens_sp_entity_id = "cats"
+    @instance.shibboleth_org_dn       = "dogs"
     assert !@instance.valid?
   end
 
@@ -701,10 +701,10 @@ class InstitutionTest < ActiveSupport::TestCase
 
   # shibboleth_org_dn
 
-  test "shibboleth_org_dn and openathens_organization_id cannot both be filled
+  test "shibboleth_org_dn and openathens_sp_entity_id cannot both be filled
   in" do
-    @instance.shibboleth_org_dn          = "dogs"
-    @instance.openathens_organization_id = "cats"
+    @instance.shibboleth_org_dn       = "dogs"
+    @instance.openathens_sp_entity_id = "cats"
     assert !@instance.valid?
   end
 

@@ -3,7 +3,7 @@ OmniAuth.config.logger = Rails.logger
 SAML_SETUP_PROC = lambda do |env|
   request     = Rack::Request.new(env)
   institution = Institution.find_by_fqdn(request.host_with_port)
-  if institution.openathens_organization_id.blank?
+  if institution.openathens_sp_entity_id.blank?
     raise "This institution does not support SAML authentication."
   end
   s = env['omniauth.strategy']

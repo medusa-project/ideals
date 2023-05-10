@@ -607,7 +607,6 @@ class InstitutionsController < ApplicationController
                                         :openathens_idp_cert,
                                         :openathens_idp_slo_service_url,
                                         :openathens_idp_sso_service_url,
-                                        :openathens_organization_id,
                                         :openathens_sp_entity_id,
                                         :shibboleth_org_dn,
                                         :title_element_id,

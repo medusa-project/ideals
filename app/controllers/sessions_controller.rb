@@ -19,24 +19,29 @@ class SessionsController < ApplicationController
 
   ##
   # Handles callbacks from the auth provider (OmniAuth). Responsible for
-  # translating an authentication hash into a {User} and setting its ID in the
-  # session.
+  # translating an authentication hash into a {User}, assigning the user to
+  # an {Institution}, and setting the user's ID in the session.
+  #
+  # Only {User#enabled enabled users} whose {User#institution owning
+  # institution} matches the request institution are allowed to log in. (The
+  # only exception is sysadmins who are using the local-identity provider.
+  # This is a feature needed by CARLI sysadmins for e.g. walking users through
+  # how to do things. But there is no use case for non-sysadmins to be able to
+  # do this, and no way to support it for OpenAthens users, because the IdP
+  # response doesn't reliably contain their institution.)
   #
   # This method will only have been called upon successful authentication--
-  # never upon failure. However, only {User#enabled enabled users} whose
-  # {User#institution owning institution} matches the request institution
-  # (sysadmins exempted) are allowed to log in.
+  # never upon failure.
   #
   # Responds to `GET/POST /auth/:provider/callback`.
   #
   def create
     auth = request.env["omniauth.auth"]
-    user = User.from_omniauth(auth)
+    user = User.from_omniauth(auth, institution: current_institution)
 
-    # Sysadmins can log in via any institution's host. This is a feature needed
-    # by CARLI sysadmins for e.g. walking users through how to do things. But
-    # there is no use case for non-sysadmins to be able to do this.
+    # Is the user allowed to log in?
     if user&.enabled && (user.institution == current_institution || user.sysadmin?)
+      # Yes!
       begin
         hostname = Resolv.getname(request.remote_ip)
       rescue Resolv::ResolvError

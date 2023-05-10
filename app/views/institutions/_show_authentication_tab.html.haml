@@ -19,12 +19,6 @@
       - else
         Not Set
   - else
-    %dt OpenAthens Organization ID
-    %dd
-      - if @institution.openathens_organization_id.present?
-        %code= @institution.openathens_organization_id
-      - else
-        Not Set
     %dt OpenAthens SP Entity ID
     %dd
       - if @institution.openathens_sp_entity_id.present?
@@ -69,7 +63,7 @@
         Not Set
     %dt SAML Metadata URL
     %dd
-      - if @institution.openathens_organization_id.present?
+      - if @institution.openathens_sp_entity_id.present?
         = link_to("#{@institution.scope_url}/auth/saml/metadata",
                   "#{@institution.scope_url}/auth/saml/metadata")
       - else

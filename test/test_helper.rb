@@ -54,13 +54,8 @@ class ActiveSupport::TestCase
           },
           extra: {
             raw_info: OneLogin::RubySaml::Attributes.new(
-              emailAddress: [
-                user.email
-              ],
-              "http://eduserv.org.uk/federation/attributes/1.0/organisationid": [
-                user.institution.openathens_organization_id
-              ]
-            ),
+              emailAddress: [user.email]
+            )
           }
         }
       }

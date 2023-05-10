@@ -87,11 +87,6 @@
 #                                     OpenAthens for authentication.
 # * `openathens_idp_sso_service_url`  Required only by institutions that use
 #                                     OpenAthens for authentication.
-# * `openathens_organization_id`      Value of the
-#                                     `http://eduserv.org.uk/federation/attributes/1.0/organisationid`
-#                                     attribute supplied by the OpenAthens IdP.
-#                                     Required only by institutions that use
-#                                     OpenAthens for authentication. # TODO: get rid of this
 # * `openathens_sp_entity_id`         Required only by institutions that use
 #                                     OpenAthens for authentication.
 # * `primary_color`                   Theme primary color.
@@ -970,13 +965,13 @@ class Institution < ApplicationRecord
   end
 
   ##
-  # Ensures that {shibboleth_org_dn} and {openathens_organization_id} are not
-  # both filled in.
+  # Ensures that {shibboleth_org_dn} and {openathens_sp_entity_id} are not both
+  # filled in.
   #
   def validate_authentication_method
     if self.shibboleth_org_dn.present? &&
-      self.openathens_organization_id.present?
-      errors.add(:base, "Organization DN and OpenAthens organization ID "\
+      self.openathens_sp_entity_id.present?
+      errors.add(:base, "Organization DN and OpenAthens SP entity ID "\
                         "cannot both be present")
     end
   end

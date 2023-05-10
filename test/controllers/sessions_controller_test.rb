@@ -94,6 +94,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_not_nil login.hostname
     assert_not_nil login.ip_address
     assert_not_nil login.auth_hash
+    assert_not_nil login.auth_method
   end
 
   # destroy()
