@@ -83,8 +83,6 @@
 #                                     OpenAthens for authentication.
 # * `openathens_idp_cert`             Required only by institutions that use
 #                                     OpenAthens for authentication.
-# * `openathens_idp_slo_service_url`  Required only by institutions that use
-#                                     OpenAthens for authentication.
 # * `openathens_idp_sso_service_url`  Required only by institutions that use
 #                                     OpenAthens for authentication.
 # * `openathens_sp_entity_id`         Required only by institutions that use

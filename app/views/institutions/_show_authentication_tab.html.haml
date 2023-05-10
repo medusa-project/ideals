@@ -31,12 +31,6 @@
         %code= @institution.openathens_idp_sso_service_url
       - else
         Not Set
-    %dt OpenAthens SLO Service URL
-    %dd
-      - if @institution.openathens_idp_slo_service_url.present?
-        %code= @institution.openathens_idp_slo_service_url
-      - else
-        Not Set
     %dt OpenAthens IdP Certificate
     %dd
       - if @institution.openathens_idp_cert.present?

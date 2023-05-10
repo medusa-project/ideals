@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_10_012909) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_10_030828) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -340,7 +340,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_10_012909) do
     t.integer "banner_image_height", default: 200, null: false
     t.string "openathens_sp_entity_id"
     t.string "openathens_idp_sso_service_url"
-    t.string "openathens_idp_slo_service_url"
     t.text "openathens_idp_cert"
     t.string "openathens_email_attribute"
     t.string "openathens_first_name_attribute"
