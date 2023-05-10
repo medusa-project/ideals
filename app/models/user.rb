@@ -528,7 +528,7 @@ class User < ApplicationRecord
   #
   def update_from_openathens(auth)
     auth  = auth.deep_symbolize_keys
-    attrs = auth[:extra][:raw_info].attributes.deep_symbolize_keys
+    attrs = auth[:extra][:raw_info].attributes.deep_stringify_keys
 
     # By design, logging in overwrites certain existing user properties with
     # current information from the IdP. By supplying this custom attribute,
@@ -536,8 +536,9 @@ class User < ApplicationRecord
     return if attrs[:overwriteUserAttrs] == "false"
 
     self.auth_method = AuthMethod::OPENATHENS
-    self.email       = attrs[:emailAddress]&.first
-    self.name        = [attrs[:firstName]&.first, attrs[:lastName]&.first].join(" ").strip
+    self.email       = attrs[institution.openathens_email_attribute]&.first
+    self.name        = [attrs[institution.openathens_first_name_attribute]&.first,
+                        attrs[institution.openathens_last_name_attribute]&.first].join(" ").strip
     self.name        = self.email if self.name.blank?
     org_id           = attrs[:"http://eduserv.org.uk/federation/attributes/1.0/organisationid"]&.first
     self.institution = Institution.find_by_openathens_organization_id(org_id) if org_id

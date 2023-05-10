@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_06_030550) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_09_211418) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -343,6 +343,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_06_030550) do
     t.string "openathens_idp_sso_service_url"
     t.string "openathens_idp_slo_service_url"
     t.text "openathens_idp_cert"
+    t.string "openathens_email_attribute"
+    t.string "openathens_first_name_attribute"
+    t.string "openathens_last_name_attribute"
     t.index ["fqdn"], name: "index_institutions_on_fqdn", unique: true
     t.index ["incoming_message_queue"], name: "index_institutions_on_incoming_message_queue", unique: true
     t.index ["key"], name: "index_institutions_on_key", unique: true

@@ -49,6 +49,24 @@
         Present
       - else
         Not Set
+    %dt OpenAthens Email Attribute
+    %dd
+      - if @institution.openathens_email_attribute.present?
+        %code= @institution.openathens_email_attribute
+      - else
+        Not Set
+    %dt OpenAthens First Name Attribute
+    %dd
+      - if @institution.openathens_first_name_attribute.present?
+        %code= @institution.openathens_first_name_attribute
+      - else
+        Not Set
+    %dt OpenAthens Last Name Attribute
+    %dd
+      - if @institution.openathens_last_name_attribute.present?
+        %code= @institution.openathens_last_name_attribute
+      - else
+        Not Set
     %dt SAML Metadata URL
     %dd
       - if @institution.openathens_organization_id.present?
