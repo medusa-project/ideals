@@ -51,7 +51,7 @@ module Search
     # }
     permitted_params = params.permit!
 
-    if permitted_params[:q].present? # simple search
+    if permitted_params[:q].kind_of?(String) # simple search
       relation.query_searchable_fields(StringUtils.utf8(permitted_params[:q]))
     else # advanced search
       # (These fields generally come from ItemsHelper.advanced_search_form().)
