@@ -3,14 +3,14 @@ OmniAuth.config.logger = Rails.logger
 SAML_SETUP_PROC = lambda do |env|
   request     = Rack::Request.new(env)
   institution = Institution.find_by_fqdn(request.host_with_port)
-  if institution.openathens_sp_entity_id.blank?
+  if institution.saml_idp_entity_id.blank?
     raise "This institution does not support SAML authentication."
   end
   s = env['omniauth.strategy']
-  s.options[:sp_entity_id]                       = institution.openathens_sp_entity_id
-  s.options[:idp_sso_service_url]                = institution.openathens_idp_sso_service_url
+  s.options[:sp_entity_id]                       = institution.saml_sp_entity_id
+  s.options[:idp_sso_service_url]                = institution.saml_idp_sso_service_url
   s.options[:idp_sso_service_url_runtime_params] = { original_request_param: :mapped_idp_param }
-  s.options[:idp_cert]                           = institution.openathens_idp_cert
+  s.options[:idp_cert]                           = institution.saml_idp_cert
   s.options[:name_identifier_format]             = "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
 end
 

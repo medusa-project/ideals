@@ -473,7 +473,7 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     institution = user.institution
     patch institution_refresh_openathens_metadata_path(institution)
     institution.reload
-    assert_not_nil institution.openathens_idp_cert
+    assert_not_nil institution.saml_idp_cert
   end
 
   test "refresh_openathens_metadata() returns HTTP 302" do
@@ -1326,9 +1326,9 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
             institution: {
-              name:                    "New Institution",
-              fqdn:                    "new.org",
-              openathens_sp_entity_id: "new"
+              name:              "New Institution",
+              fqdn:              "new.org",
+              saml_sp_entity_id: "new"
             }
           }
     assert_response :ok

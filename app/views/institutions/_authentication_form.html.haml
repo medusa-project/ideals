@@ -4,33 +4,54 @@
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
-  .mb-3
-    - if f.object.key == "uiuc"
+  - if f.object.key == "uiuc"
+    .mb-3
       = f.label :shibboleth_org_dn, "Shibboleth Organization DN"
       = f.text_field :shibboleth_org_dn, class: "form-control"
       %p.form-text
         = icon_for(:info)
         When filled in, Shibboleth authentication will be enabled for this
         institution.
-    - else
-      = f.label :openathens_sp_entity_id, "OpenAthens SP Entity ID"
-      = f.text_field :openathens_sp_entity_id, class: "form-control"
+  - else
+
+    %h5 SSO Federation
+    .mb-3
+      .form-check
+        = f.radio_button(:sso_federation, Institution::SSOFederation::OPENATHENS, id: "oaf", class: "form-check-input")
+        %label.form-check-label{for: "oaf"}
+          = Institution::SSOFederation.label_for(Institution::SSOFederation::OPENATHENS)
+      .form-check
+        = f.radio_button(:sso_federation, Institution::SSOFederation::NONE, id: "saml", class: "form-check-input")
+        %label.form-check-label{for: "saml"}
+          = Institution::SSOFederation.label_for(Institution::SSOFederation::NONE)
+
+    %hr
+
+    .mb-3
+      = f.label :saml_sp_entity_id, "SP Entity ID"
+      = f.text_field :saml_sp_entity_id, class: "form-control"
+    .mb-3
+      = f.label :saml_idp_entity_id, "IdP Entity ID"
+      = f.text_field :saml_idp_entity_id, class: "form-control"
       %p.form-text
         = icon_for(:info)
-        When filled in, OpenAthens authentication will be enabled for this
-        institution. After changing this value, you should also click the "Refresh
-        OpenAthens Metadata" button on the page underneath.
-
-  - if f.object.key != "uiuc"
+        After changing this value, you should refresh the OpenAthens
+        metadata from the page underneath.
     .mb-3
-      = f.label :openathens_email_attribute, "OpenAthens Email Attribute"
-      = f.text_field :openathens_email_attribute, class: "form-control"
+      = f.label :saml_idp_sso_service_url, "IdP SSO Service URL"
+      = f.text_field :saml_idp_sso_service_url, class: "form-control"
     .mb-3
-      = f.label :openathens_first_name_attribute, "OpenAthens First Name Attribute"
-      = f.text_field :openathens_first_name_attribute, class: "form-control"
+      = f.label :saml_idp_cert, "IdP Certificate"
+      = f.text_area :saml_idp_cert, rows: 10, class: "form-control"
     .mb-3
-      = f.label :openathens_last_name_attribute, "OpenAthens Last Name Attribute"
-      = f.text_field :openathens_last_name_attribute, class: "form-control"
+      = f.label :saml_email_attribute, "Email Attribute"
+      = f.text_field :saml_email_attribute, class: "form-control"
+    .mb-3
+      = f.label :saml_first_name_attribute, "First Name Attribute"
+      = f.text_field :saml_first_name_attribute, class: "form-control"
+    .mb-3
+      = f.label :saml_last_name_attribute, "Last Name Attribute"
+      = f.text_field :saml_last_name_attribute, class: "form-control"
 
   .clearfix
     .float-end

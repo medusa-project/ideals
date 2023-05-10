@@ -53,7 +53,29 @@ const InstitutionView = function() {
             $("button.edit-authentication").on("click", function() {
                 const url = ROOT_URL + "/institutions/" + institutionKey + "/edit-authentication";
                 $.get(url, function(data) {
-                    $("#edit-authentication-modal .modal-body").html(data);
+                    const modalBody = $("#edit-authentication-modal .modal-body");
+                    modalBody.html(data);
+                    const ssoFederationRadio = modalBody.find("input[name='institution[sso_federation]']");
+
+                    const onProviderRadioChanged = function(checkedRadio) {
+                        switch(checkedRadio.val()) {
+                            case "0": // generic SAML
+                                $("[name='institution[saml_idp_cert]']").parent().show();
+                                $("[name='institution[saml_idp_sso_service_url]']").parent().show();
+                                $("[name='institution[saml_idp_entity_id]']").next("p").hide();
+                                break;
+                            case "1": // OAF
+                                $("[name='institution[saml_idp_cert]']").parent().hide();
+                                $("[name='institution[saml_idp_sso_service_url]']").parent().hide();
+                                $("[name='institution[saml_idp_entity_id]']").next("p").show();
+                                break;
+                        }
+                    };
+                    ssoFederationRadio.on("change", function() {
+                        const checkedRadio = $("input[name='" + $(this).attr("name") + "']:checked");
+                        onProviderRadioChanged(checkedRadio);
+                    });
+                    onProviderRadioChanged(ssoFederationRadio.filter(":checked"));
                 });
             });
         });

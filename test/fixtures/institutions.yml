@@ -4,86 +4,92 @@
 # config/environments/test.rb.
 #
 empty:
-  key:                             empty
-  fqdn:                            empty.edu
-  name:                            Institution With No Users Or Units
-  service_name:                    IDEALS
-  main_website_url:                https://empty.edu
-  feedback_email:                  feedback@empty.edu
-  outgoing_message_queue:          empty_to_nowhere
-  incoming_message_queue:          nowhere_to_empty
-  title_element:                   empty_dc_title
-  author_element:                  empty_dc_creator
-  description_element:             empty_dc_description
-  date_approved_element:           empty_ideals_date_approved
-  date_published_element:          empty_ideals_date_published
-  date_submitted_element:          empty_ideals_date_submitted
-  handle_uri_element:              empty_ideals_handle_uri
+  key:                       empty
+  fqdn:                      empty.edu
+  name:                      Institution With No Users Or Units
+  service_name:              IDEALS
+  main_website_url:          https://empty.edu
+  feedback_email:            feedback@empty.edu
+  outgoing_message_queue:    empty_to_nowhere
+  incoming_message_queue:    nowhere_to_empty
+  title_element:             empty_dc_title
+  author_element:            empty_dc_creator
+  description_element:       empty_dc_description
+  date_approved_element:     empty_ideals_date_approved
+  date_published_element:    empty_ideals_date_published
+  date_submitted_element:    empty_ideals_date_submitted
+  handle_uri_element:        empty_ideals_handle_uri
 
 example:
-  key:                             example
-  fqdn:                            example.edu
-  name:                            Example University
-  service_name:                    IDEALS
-  openathens_sp_entity_id:         https://example.edu
-  openathens_email_attribute:      emailAddress
-  openathens_first_name_attribute: firstName
-  openathens_last_name_attribute:  lastName
-  main_website_url:                https://example.edu
-  feedback_email:                  feedback@example.edu
-  outgoing_message_queue:          example_to_nowhere
-  incoming_message_queue:          nowhere_to_example
-  title_element:                   example_dc_title
-  author_element:                  example_dc_creator
-  description_element:             example_dc_description
-  date_approved_element:           example_ideals_date_approved
-  date_published_element:          example_ideals_date_published
-  date_submitted_element:          example_ideals_date_submitted
-  handle_uri_element:              example_ideals_handle_uri
+  key:                       example
+  fqdn:                      example.edu
+  name:                      Example University
+  service_name:              IDEALS
+  sso_federation:            <%= Institution::SamlFederation::OPENATHENS %>
+  saml_sp_entity_id:         example
+  saml_idp_entity_id:        https://example.edu
+  saml_email_attribute:      emailAddress
+  saml_first_name_attribute: firstName
+  saml_last_name_attribute:  lastName
+  main_website_url:          https://example.edu
+  feedback_email:            feedback@example.edu
+  outgoing_message_queue:    example_to_nowhere
+  incoming_message_queue:    nowhere_to_example
+  title_element:             example_dc_title
+  author_element:            example_dc_creator
+  description_element:       example_dc_description
+  date_approved_element:     example_ideals_date_approved
+  date_published_element:    example_ideals_date_published
+  date_submitted_element:    example_ideals_date_submitted
+  handle_uri_element:        example_ideals_handle_uri
 
 northeast:
-  key:                             northeast
-  fqdn:                            https://northeast.edu
-  name:                            Northeast University
-  service_name:                    IDEALS
-  openathens_sp_entity_id:         northeast.edu
-  openathens_email_attribute:      emailAddress
-  openathens_first_name_attribute: firstName
-  openathens_last_name_attribute:  lastName
-  main_website_url:                https://northeast.edu
-  feedback_email:                  feedback@northeast.edu
-  outgoing_message_queue:          northeast_to_nowhere
-  incoming_message_queue:          nowhere_to_northeast
-  title_element:                   northeast_dc_title
-  author_element:                  northeast_dc_creator
-  description_element:             northeast_dc_description
-  date_approved_element:           northeast_ideals_date_approved
-  date_published_element:          northeast_ideals_date_published
-  date_submitted_element:          northeast_ideals_date_submitted
-  handle_uri_element:              northeast_ideals_handle_uri
+  key:                       northeast
+  fqdn:                      https://northeast.edu
+  name:                      Northeast University
+  service_name:              IDEALS
+  sso_federation:            <%= Institution::SamlFederation::OPENATHENS %>
+  saml_sp_entity_id:         northeast
+  saml_idp_entity_id:        https://northeast.edu
+  saml_email_attribute:      emailAddress
+  saml_first_name_attribute: firstName
+  saml_last_name_attribute:  lastName
+  main_website_url:          https://northeast.edu
+  feedback_email:            feedback@northeast.edu
+  outgoing_message_queue:    northeast_to_nowhere
+  incoming_message_queue:    nowhere_to_northeast
+  title_element:             northeast_dc_title
+  author_element:            northeast_dc_creator
+  description_element:       northeast_dc_description
+  date_approved_element:     northeast_ideals_date_approved
+  date_published_element:    northeast_ideals_date_published
+  date_submitted_element:    northeast_ideals_date_submitted
+  handle_uri_element:        northeast_ideals_handle_uri
   administering_groups:
     - northeast_admins
 
 southwest:
-  key:                             southwest
-  fqdn:                            southwest.edu
-  name:                            Southwest University
-  service_name:                    IDEALS
-  openathens_sp_entity_id:         https://southwest.edu
-  openathens_email_attribute:      emailAddress
-  openathens_first_name_attribute: firstName
-  openathens_last_name_attribute:  lastName
-  main_website_url:                https://southwest.edu
-  feedback_email:                  feedback@southwest.edu
-  outgoing_message_queue:          southwest_to_nowhere
-  incoming_message_queue:          nowhere_to_southwest
-  title_element:                   southwest_dc_title
-  author_element:                  southwest_dc_creator
-  description_element:             southwest_dc_description
-  date_approved_element:           southwest_ideals_date_approved
-  date_published_element:          southwest_ideals_date_published
-  date_submitted_element:          southwest_ideals_date_submitted
-  handle_uri_element:              southwest_ideals_handle_uri
+  key:                       southwest
+  fqdn:                      southwest.edu
+  name:                      Southwest University
+  service_name:              IDEALS
+  sso_federation:            <%= Institution::SamlFederation::OPENATHENS %>
+  saml_sp_entity_id:         southwest
+  saml_idp_entity_id:        https://southwest.edu
+  saml_email_attribute:      emailAddress
+  saml_first_name_attribute: firstName
+  saml_last_name_attribute:  lastName
+  main_website_url:          https://southwest.edu
+  feedback_email:            feedback@southwest.edu
+  outgoing_message_queue:    southwest_to_nowhere
+  incoming_message_queue:    nowhere_to_southwest
+  title_element:             southwest_dc_title
+  author_element:            southwest_dc_creator
+  description_element:       southwest_dc_description
+  date_approved_element:     southwest_ideals_date_approved
+  date_published_element:    southwest_ideals_date_published
+  date_submitted_element:    southwest_ideals_date_submitted
+  handle_uri_element:        southwest_ideals_handle_uri
   administering_groups:
     - southwest_admins
 

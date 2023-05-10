@@ -4,7 +4,7 @@ namespace :openathens do
   task :update_metadata => :environment do
     xml_file = Institution.fetch_openathens_metadata
     begin
-      Institution.where.not(openathens_sp_entity_id: nil).each do |institution|
+      Institution.where.(sso_federation: Institution::SamlFederation::OPENATHENS).each do |institution|
         institution.update_from_openathens(xml_file)
       end
     ensure

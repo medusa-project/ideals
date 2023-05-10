@@ -2,11 +2,11 @@
                                "data-bs-touch":    "false",
                                "data-bs-interval": "9999999999"}
   .carousel-inner
-    - if current_institution&.openathens_sp_entity_id.present?
+    - if current_institution&.saml_idp_entity_id.present?
       .carousel-item.openathens.active
         = render partial: "sessions/openathens_login_form"
     - elsif current_institution&.shibboleth_org_dn.present?
       .carousel-item.shibboleth.active
         = render partial: "sessions/shibboleth_login_form"
-    .carousel-item.local-identity.p-1{class: (current_institution&.shibboleth_org_dn.present? || current_institution&.openathens_sp_entity_id.present?) ? "" : "active"}
+    .carousel-item.local-identity.p-1{class: (current_institution&.shibboleth_org_dn.present? || current_institution&.saml_idp_entity_id.present?) ? "" : "active"}
       = render partial: "sessions/local_login_form"

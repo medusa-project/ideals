@@ -542,9 +542,9 @@ class User < ApplicationRecord
     return if attrs[:overwriteUserAttrs] == "false"
 
     self.auth_method = AuthMethod::OPENATHENS
-    self.email       = attrs[institution.openathens_email_attribute]&.first
-    self.name        = [attrs[institution.openathens_first_name_attribute]&.first,
-                        attrs[institution.openathens_last_name_attribute]&.first].join(" ").strip
+    self.email       = attrs[institution.saml_email_attribute]&.first
+    self.name        = [attrs[institution.saml_first_name_attribute]&.first,
+                        attrs[institution.saml_last_name_attribute]&.first].join(" ").strip
     self.name        = self.email if self.name.blank?
     self.institution = institution
     self.phone       = attrs['phoneNumber']&.first # TODO: fix this or stop collecting phone numbers

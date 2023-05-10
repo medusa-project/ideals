@@ -22,7 +22,7 @@ module Openathens
           request = Net::HTTP::Get.new(uri)
           http.request(request) do |response|
             response.read_body do |chunk|
-              file.write chunk
+              file.write(chunk)
             end
             file.close
           end
@@ -42,18 +42,18 @@ module Openathens
     # @param metadata_xml_file [File]
     #
     def update_from_openathens(metadata_xml_file)
-      if self.openathens_sp_entity_id.blank?
-        raise "openathens_sp_entity_id is not set"
+      if self.saml_idp_entity_id.blank?
+        raise "saml_idp_entity_id is not set"
       end
       File.open(metadata_xml_file) do |file|
         doc = Nokogiri::XML(file)
-        results = doc.xpath("//md:EntityDescriptor[@entityID = '#{self.openathens_sp_entity_id}']",
+        results = doc.xpath("//md:EntityDescriptor[@entityID = '#{self.saml_idp_entity_id}']",
                             md: SAML_METADATA_NS)
         if results.any?
           ed = results.first
-          self.openathens_idp_sso_service_url = ed.xpath("//md:IDPSSODescriptor/md:SingleSignOnService[@Binding = 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect']/@Location",
-                                                         md: SAML_METADATA_NS).first&.text
-          self.openathens_idp_cert = "-----BEGIN CERTIFICATE-----\n" +
+          self.saml_idp_sso_service_url = ed.xpath("//md:IDPSSODescriptor/md:SingleSignOnService[@Binding = 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect']/@Location",
+                                                   md: SAML_METADATA_NS).first&.text
+          self.saml_idp_cert = "-----BEGIN CERTIFICATE-----\n" +
             ed.xpath("//ds:X509Certificate", ds: XML_DS_NS).first.text +
             "\n-----END CERTIFICATE-----"
           self.save!

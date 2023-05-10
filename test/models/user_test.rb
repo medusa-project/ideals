@@ -245,7 +245,7 @@ class UserTest < ActiveSupport::TestCase
   hash for which a database match exists" do
     institution = institutions(:southwest)
     email       = OPENATHENS_AUTH_HASH[:extra][:raw_info].
-      attributes[institution.openathens_email_attribute.to_sym].first
+      attributes[institution.saml_email_attribute.to_sym].first
     @user.update!(email: email)
 
     user = User.from_omniauth(OPENATHENS_AUTH_HASH, institution: institution)

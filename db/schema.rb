@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_10_030828) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_10_192833) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -338,21 +338,23 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_10_030828) do
     t.bigint "handle_uri_element_id"
     t.text "deposit_agreement"
     t.integer "banner_image_height", default: 200, null: false
-    t.string "openathens_sp_entity_id"
-    t.string "openathens_idp_sso_service_url"
-    t.text "openathens_idp_cert"
-    t.string "openathens_email_attribute"
-    t.string "openathens_first_name_attribute"
-    t.string "openathens_last_name_attribute"
+    t.string "saml_sp_entity_id"
+    t.string "saml_idp_sso_service_url"
+    t.text "saml_idp_cert"
+    t.string "saml_email_attribute"
+    t.string "saml_first_name_attribute"
+    t.string "saml_last_name_attribute"
+    t.string "saml_idp_entity_id"
+    t.integer "sso_federation"
     t.index ["fqdn"], name: "index_institutions_on_fqdn", unique: true
     t.index ["incoming_message_queue"], name: "index_institutions_on_incoming_message_queue", unique: true
     t.index ["key"], name: "index_institutions_on_key", unique: true
     t.index ["medusa_file_group_id"], name: "index_institutions_on_medusa_file_group_id", unique: true
     t.index ["name"], name: "index_institutions_on_name", unique: true
-    t.index ["openathens_idp_cert"], name: "index_institutions_on_openathens_idp_cert", unique: true
-    t.index ["openathens_idp_sso_service_url"], name: "index_institutions_on_openathens_idp_sso_service_url", unique: true
-    t.index ["openathens_sp_entity_id"], name: "index_institutions_on_openathens_sp_entity_id", unique: true
     t.index ["outgoing_message_queue"], name: "index_institutions_on_outgoing_message_queue", unique: true
+    t.index ["saml_idp_cert"], name: "index_institutions_on_saml_idp_cert", unique: true
+    t.index ["saml_idp_sso_service_url"], name: "index_institutions_on_saml_idp_sso_service_url", unique: true
+    t.index ["saml_sp_entity_id"], name: "index_institutions_on_saml_sp_entity_id", unique: true
     t.index ["shibboleth_org_dn"], name: "index_institutions_on_shibboleth_org_dn", unique: true
   end
 
