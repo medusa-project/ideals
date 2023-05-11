@@ -26,7 +26,7 @@ example:
   name:                      Example University
   service_name:              IDEALS
   sso_federation:            <%= Institution::SSOFederation::OPENATHENS %>
-  saml_idp_entity_id:        https://example.edu
+  saml_idp_entity_id:        https://idp.example.edu
   saml_email_attribute:      emailAddress
   saml_first_name_attribute: firstName
   saml_last_name_attribute:  lastName
@@ -48,7 +48,7 @@ northeast:
   name:                      Northeast University
   service_name:              IDEALS
   sso_federation:            <%= Institution::SSOFederation::OPENATHENS %>
-  saml_idp_entity_id:        https://northeast.edu
+  saml_idp_entity_id:        https://idp.northeast.edu
   saml_email_attribute:      emailAddress
   saml_first_name_attribute: firstName
   saml_last_name_attribute:  lastName
@@ -72,7 +72,7 @@ southwest:
   name:                      Southwest University
   service_name:              IDEALS
   sso_federation:            <%= Institution::SSOFederation::OPENATHENS %>
-  saml_idp_entity_id:        https://southwest.edu
+  saml_idp_entity_id:        https://idp.southwest.edu
   saml_email_attribute:      emailAddress
   saml_first_name_attribute: firstName
   saml_last_name_attribute:  lastName
