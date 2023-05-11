@@ -475,13 +475,8 @@ class User < ApplicationRecord
   #                   absolutely anything.
   #
   def sysadmin?
-    case auth_method
-    when AuthMethod::SHIBBOLETH
-      self.user_groups.include?(UserGroup.sysadmin) ||
-        UserGroup.sysadmin.ad_groups.find{ |g| self.belongs_to_ad_group?(g) }.present?
-    else
-      self.user_groups.include?(UserGroup.sysadmin)
-    end
+    self.user_groups.include?(UserGroup.sysadmin) ||
+      UserGroup.sysadmin.ad_groups.find{ |g| self.belongs_to_ad_group?(g) }.present?
   end
 
   ##
