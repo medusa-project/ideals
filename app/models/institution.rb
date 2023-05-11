@@ -91,7 +91,7 @@
 #                               Shibboleth IdP. This should be filled in by all
 #                               institutions that use Shibboleth for
 #                               authentication (currently only UIUC).
-# * `sso_federation`            Set to one of the {Institution::SamlFederation}
+# * `sso_federation`            Set to one of the {Institution::SSOFederation}
 #                               constant values.
 # * `title_element_id`          Foreign key to {RegisteredElement} designating
 #                               an element to treat as the title element.

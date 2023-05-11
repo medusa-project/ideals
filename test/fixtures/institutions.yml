@@ -25,7 +25,7 @@ example:
   fqdn:                      example.edu
   name:                      Example University
   service_name:              IDEALS
-  sso_federation:            <%= Institution::SamlFederation::OPENATHENS %>
+  sso_federation:            <%= Institution::SSOFederation::OPENATHENS %>
   saml_sp_entity_id:         https://example.edu
   saml_email_attribute:      emailAddress
   saml_first_name_attribute: firstName
@@ -47,7 +47,7 @@ northeast:
   fqdn:                      https://northeast.edu
   name:                      Northeast University
   service_name:              IDEALS
-  sso_federation:            <%= Institution::SamlFederation::OPENATHENS %>
+  sso_federation:            <%= Institution::SSOFederation::OPENATHENS %>
   saml_sp_entity_id:         https://northeast.edu
   saml_email_attribute:      emailAddress
   saml_first_name_attribute: firstName
@@ -71,7 +71,7 @@ southwest:
   fqdn:                      southwest.edu
   name:                      Southwest University
   service_name:              IDEALS
-  sso_federation:            <%= Institution::SamlFederation::OPENATHENS %>
+  sso_federation:            <%= Institution::SSOFederation::OPENATHENS %>
   saml_sp_entity_id:         https://southwest.edu
   saml_email_attribute:      emailAddress
   saml_first_name_attribute: firstName
