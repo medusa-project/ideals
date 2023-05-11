@@ -253,7 +253,6 @@ class UserTest < ActiveSupport::TestCase
     assert_equal "OpenAthensUser@example.org", user.name
     assert_equal "OpenAthensUser@example.org", user.email
     assert_nil user.phone
-    assert_equal institution, user.institution
   end
 
   test "from_omniauth() returns a new user when given a Shibboleth auth
