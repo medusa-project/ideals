@@ -71,12 +71,27 @@
     %dt SSO Service URL
     %dd
       - if @institution.saml_idp_sso_service_url.present?
-        %code= @institution.saml_idp_sso_service_url
+        = link_to(@institution.saml_idp_sso_service_url,
+                  @institution.saml_idp_sso_service_url)
       - else
         Not Set
     %dt IdP Certificate
     %dd
-      = boolean(@institution.saml_idp_cert.present?,
-                style:       :word,
-                true_value:  "PRESENT",
-                false_value: "NOT PRESENT")
+      - if @institution.saml_idp_cert.present?
+        - begin
+          - cert = OpenSSL::X509::Certificate.new(@institution.saml_idp_cert)
+          %dl
+            %dt Subject
+            %dd
+              %code= cert.subject
+            %dt Issuer
+            %dd
+              %code= cert.issuer
+            %dt Issued
+            %dd= cert.not_before
+            %dt Expires
+            %dd= cert.not_after
+        - rescue
+          = boolean(false, style: :word, false_value: "INVALID")
+      - else
+        = boolean(false, style: :word, false_value: "NOT SET")
