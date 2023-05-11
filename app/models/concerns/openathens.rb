@@ -47,11 +47,11 @@ module Openathens
       end
       File.open(metadata_xml_file) do |file|
         doc = Nokogiri::XML(file)
-        results = doc.xpath("//md:EntityDescriptor[@entityID = '#{self.saml_idp_entity_id}']",
+        results = doc.xpath("/md:EntitiesDescriptor/md:EntityDescriptor[@entityID = '#{self.saml_idp_entity_id}']",
                             md: SAML_METADATA_NS)
         if results.any?
           ed = results.first
-          self.saml_idp_sso_service_url = ed.xpath("//md:IDPSSODescriptor/md:SingleSignOnService[@Binding = 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect']/@Location",
+          self.saml_idp_sso_service_url = ed.xpath("./md:IDPSSODescriptor/md:SingleSignOnService[@Binding = 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect']/@Location",
                                                    md: SAML_METADATA_NS).first&.text
           self.saml_idp_cert = "-----BEGIN CERTIFICATE-----\n" +
             ed.xpath("//ds:X509Certificate", ds: XML_DS_NS).first.text +
