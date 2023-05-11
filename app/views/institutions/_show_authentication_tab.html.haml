@@ -31,15 +31,18 @@
         = Institution::SSOFederation.label_for(@institution.sso_federation)
       - else
         = boolean(false, style: :word, false_value: "NOT SET")
-    %dt SP Entity ID
+    %dt IdP Entity ID
     %dd
-      - if @institution.saml_sp_entity_id.present?
-        %code= @institution.saml_sp_entity_id
+      - if @institution.saml_idp_entity_id.present?
+        %code= @institution.saml_idp_entity_id
       - else
         = boolean(false, style: :word, false_value: "NOT SET")
+    %dt SP Entity ID
+    %dd
+      %code= @institution.saml_sp_entity_id
     %dt SP Metadata URL
     %dd
-      - if @institution.saml_sp_entity_id.present?
+      - if @institution.saml_idp_entity_id.present?
         = link_to("#{@institution.scope_url}/auth/saml/metadata",
                   "#{@institution.scope_url}/auth/saml/metadata")
       - else

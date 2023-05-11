@@ -1326,9 +1326,9 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
             institution: {
-              name:              "New Institution",
-              fqdn:              "new.org",
-              saml_sp_entity_id: "new"
+              name:               "New Institution",
+              fqdn:               "new.org",
+              saml_idp_entity_id: "new"
             }
           }
     assert_response :ok

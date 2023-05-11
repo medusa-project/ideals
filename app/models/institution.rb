@@ -78,9 +78,9 @@
 #                               authentication.
 # * `saml_idp_cert`             Required only by institutions that use SAML for
 #                               authentication.
-# * `saml_idp_sso_service_url`  Required only by institutions that use SAML for
+# * `saml_idp_entity_id`        Required only by institutions that use SAML for
 #                               authentication.
-# * `saml_sp_entity_id`         Required only by institutions that use SAML for
+# * `saml_idp_sso_service_url`  Required only by institutions that use SAML for
 #                               authentication.
 # * `primary_color`             Theme primary color.
 # * `primary_hover_color`       Theme hover-over primary color.
@@ -525,6 +525,13 @@ class Institution < ApplicationRecord
   #
   def required_elements
     [self.title_element, self.author_element, self.description_element]
+  end
+
+  ##
+  # @return [String]
+  #
+  def saml_sp_entity_id
+    "#{self.key}-ir"
   end
 
   ##
@@ -975,13 +982,13 @@ class Institution < ApplicationRecord
   end
 
   ##
-  # Ensures that {shibboleth_org_dn} and {saml_sp_entity_id} are not both filled
+  # Ensures that {shibboleth_org_dn} and {saml_idp_entity_id} are not both filled
   # in.
   #
   def validate_authentication_method
-    if self.shibboleth_org_dn.present? && self.saml_sp_entity_id.present?
-      errors.add(:base, "Organization DN and OpenAthens SP entity ID "\
-                        "cannot both be present")
+    if self.shibboleth_org_dn.present? && self.saml_idp_entity_id.present?
+      errors.add(:base, "Organization DN and SAML IdP entity ID cannot both "\
+                        "be present")
     end
   end
 
