@@ -531,6 +531,8 @@ class User < ApplicationRecord
 
   ##
   # @param auth [OmniAuth::AuthHash]
+  # @param institution [Institution] Only set if the instance does not already
+  #                                  have an institution set.
   #
   def update_from_openathens(auth, institution)
     auth  = auth.deep_symbolize_keys
@@ -541,13 +543,13 @@ class User < ApplicationRecord
     # we can preserve the user properties that are set up in test fixture data.
     return if attrs[:overwriteUserAttrs] == "false"
 
-    self.auth_method = AuthMethod::OPENATHENS
-    self.email       = attrs[institution.saml_email_attribute]&.first
-    self.name        = [attrs[institution.saml_first_name_attribute]&.first,
-                        attrs[institution.saml_last_name_attribute]&.first].join(" ").strip
-    self.name        = self.email if self.name.blank?
-    self.institution = institution
-    self.phone       = attrs['phoneNumber']&.first # TODO: fix this or stop collecting phone numbers
+    self.auth_method   = AuthMethod::OPENATHENS
+    self.email         = attrs[institution.saml_email_attribute]&.first
+    self.name          = [attrs[institution.saml_first_name_attribute]&.first,
+                          attrs[institution.saml_last_name_attribute]&.first].join(" ").strip
+    self.name          = self.email if self.name.blank?
+    self.institution ||= institution
+    self.phone         = attrs['phoneNumber']&.first # TODO: fix this or stop collecting phone numbers
     begin
       self.save!
     rescue => e
