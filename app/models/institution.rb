@@ -531,7 +531,8 @@ class Institution < ApplicationRecord
   # @return [String]
   #
   def saml_sp_entity_id
-    "#{self.key}-ir"
+    scheme = (Rails.env.development? || Rails.env.test?) ? "http" : "https"
+    "#{scheme}://idp.#{self.fqdn}/entity"
   end
 
   ##

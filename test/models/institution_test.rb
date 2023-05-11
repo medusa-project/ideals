@@ -697,7 +697,7 @@ class InstitutionTest < ActiveSupport::TestCase
   # saml_sp_entity_id()
 
   test "saml_sp_entity_id() returns a correct value" do
-    assert_equal "#{@instance.key}-ir", @instance.saml_sp_entity_id
+    assert_equal "http://idp.#{@instance.fqdn}/entity", @instance.saml_sp_entity_id
   end
 
   # scope_url()
