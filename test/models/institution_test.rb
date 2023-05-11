@@ -686,12 +686,12 @@ class InstitutionTest < ActiveSupport::TestCase
     assert_equal 3, @instance.required_elements.length
   end
 
-  # saml_idp_entity_id
+  # saml_sp_entity_id
 
-  test "saml_idp_entity_id and shibboleth_org_dn cannot both be filled
+  test "saml_sp_entity_id and shibboleth_org_dn cannot both be filled
   in" do
-    @instance.saml_idp_entity_id = "cats"
-    @instance.shibboleth_org_dn  = "dogs"
+    @instance.saml_sp_entity_id = "cats"
+    @instance.shibboleth_org_dn = "dogs"
     assert !@instance.valid?
   end
 
@@ -710,9 +710,9 @@ class InstitutionTest < ActiveSupport::TestCase
 
   # shibboleth_org_dn
 
-  test "shibboleth_org_dn and saml_idp_entity_id cannot both be filled in" do
-    @instance.shibboleth_org_dn  = "dogs"
-    @instance.saml_idp_entity_id = "cats"
+  test "shibboleth_org_dn and saml_sp_entity_id cannot both be filled in" do
+    @instance.shibboleth_org_dn = "dogs"
+    @instance.saml_sp_entity_id = "cats"
     assert !@instance.valid?
   end
 
@@ -720,7 +720,7 @@ class InstitutionTest < ActiveSupport::TestCase
 
   test "update_from_openathens() raises an error if the institution's entity ID
   is not set" do
-    @instance.saml_idp_entity_id = nil
+    @instance.saml_sp_entity_id = nil
     xml_file = file_fixture("oaf_metadata.xml")
 
     assert_raises do
@@ -730,7 +730,7 @@ class InstitutionTest < ActiveSupport::TestCase
 
   test "update_from_openathens() raises an error if there is no matching
   entityID in the XML file" do
-    @instance.saml_idp_entity_id = "bogus"
+    @instance.saml_sp_entity_id = "bogus"
     xml_file = file_fixture("oaf_metadata.xml")
 
     assert_raises do

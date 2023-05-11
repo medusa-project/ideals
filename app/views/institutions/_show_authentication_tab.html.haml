@@ -37,15 +37,9 @@
         %code= @institution.saml_sp_entity_id
       - else
         = boolean(false, style: :word, false_value: "NOT SET")
-    %dt IdP Entity ID
-    %dd
-      - if @institution.saml_idp_entity_id.present?
-        %code= @institution.saml_idp_entity_id
-      - else
-        = boolean(false, style: :word, false_value: "NOT SET")
     %dt SP Metadata URL
     %dd
-      - if @institution.saml_idp_entity_id.present?
+      - if @institution.saml_sp_entity_id.present?
         = link_to("#{@institution.scope_url}/auth/saml/metadata",
                   "#{@institution.scope_url}/auth/saml/metadata")
       - else

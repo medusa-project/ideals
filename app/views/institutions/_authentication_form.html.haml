@@ -30,13 +30,10 @@
     .mb-3
       = f.label :saml_sp_entity_id, "SP Entity ID"
       = f.text_field :saml_sp_entity_id, class: "form-control"
-    .mb-3
-      = f.label :saml_idp_entity_id, "IdP Entity ID"
-      = f.text_field :saml_idp_entity_id, class: "form-control"
       %p.form-text
         = icon_for(:info)
         After changing this value, you should refresh the OpenAthens
-        metadata from the page underneath.
+        metadata from the page beneath this panel.
     .mb-3
       = f.label :saml_idp_sso_service_url, "IdP SSO Service URL"
       = f.text_field :saml_idp_sso_service_url, class: "form-control"

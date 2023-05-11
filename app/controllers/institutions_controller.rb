@@ -620,7 +620,6 @@ class InstitutionsController < ApplicationController
                                         :saml_email_attribute,
                                         :saml_first_name_attribute,
                                         :saml_idp_cert,
-                                        :saml_idp_entity_id,
                                         :saml_idp_sso_service_url,
                                         :saml_last_name_attribute,
                                         :saml_sp_entity_id,

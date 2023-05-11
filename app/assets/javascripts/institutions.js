@@ -62,12 +62,12 @@ const InstitutionView = function() {
                             case "0": // generic SAML
                                 $("[name='institution[saml_idp_cert]']").parent().show();
                                 $("[name='institution[saml_idp_sso_service_url]']").parent().show();
-                                $("[name='institution[saml_idp_entity_id]']").next("p").hide();
+                                $("[name='institution[saml_sp_entity_id]']").next("p").hide();
                                 break;
                             case "1": // OAF
                                 $("[name='institution[saml_idp_cert]']").parent().hide();
                                 $("[name='institution[saml_idp_sso_service_url]']").parent().hide();
-                                $("[name='institution[saml_idp_entity_id]']").next("p").show();
+                                $("[name='institution[saml_sp_entity_id]']").next("p").show();
                                 break;
                         }
                     };
