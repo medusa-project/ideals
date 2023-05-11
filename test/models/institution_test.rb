@@ -749,7 +749,7 @@ class InstitutionTest < ActiveSupport::TestCase
     xml_file = file_fixture("oaf_metadata.xml")
 
     @instance.update_from_openathens(xml_file)
-    assert_equal "https://login.openathens.net/saml/2/sso/example.edu",
+    assert_equal "https://login.openathens.net/saml/2/sso/southwest.edu",
                  @instance.saml_idp_sso_service_url
     assert @instance.saml_idp_cert.starts_with?("-----BEGIN CERTIFICATE-----\n")
     assert @instance.saml_idp_cert.ends_with?("\n-----END CERTIFICATE-----")
