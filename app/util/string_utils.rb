@@ -37,7 +37,7 @@ class StringUtils
   # @return [String] UTF-8 string.
   #
   def self.utf8(string)
-    Iconv.conv('UTF-8//IGNORE', 'UTF-8', string)[0..-2]
+    Iconv.conv('UTF-8//IGNORE', 'UTF-8', string)
   end
 
   ##

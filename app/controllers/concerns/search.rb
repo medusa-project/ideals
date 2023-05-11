@@ -51,8 +51,8 @@ module Search
     # }
     permitted_params = params.permit!
 
-    if permitted_params[:q].present? # simple search
-      relation.query_searchable_fields(StringUtils.utf8(permitted_params[:q]))
+    if permitted_params[:q].kind_of?(String) # simple search
+      relation.query_searchable_fields(permitted_params[:q])
     else # advanced search
       # (These fields generally come from ItemsHelper.advanced_search_form().)
       if permitted_params[:elements]&.respond_to?(:each)
@@ -62,12 +62,12 @@ module Search
             term[:from_year].blank? && term[:to_year].blank?
           if term.present?
             field = all_elements.find{ |e| e.name == e_name}&.indexed_field
-            relation.multi_query(field, StringUtils.utf8(term)) if field
+            relation.multi_query(field, term) if field
           end
         end
         # Full text
         relation.multi_query(Item::IndexFields::FULL_TEXT,
-                             StringUtils.utf8(permitted_params[:full_text]))
+                             permitted_params[:full_text])
       end
     end
   end
