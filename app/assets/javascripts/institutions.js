@@ -56,6 +56,7 @@ const InstitutionView = function() {
                     const modalBody = $("#edit-authentication-modal .modal-body");
                     modalBody.html(data);
                     const ssoFederationRadio = modalBody.find("input[name='institution[sso_federation]']");
+                    const emailLocationMenu  = modalBody.find("select[name='institution[saml_email_location]']");
 
                     const onProviderRadioChanged = function(checkedRadio) {
                         switch(checkedRadio.val()) {
@@ -71,11 +72,25 @@ const InstitutionView = function() {
                                 break;
                         }
                     };
+                    const onEmailLocationChanged = function(select) {
+                        switch (select.val()) {
+                            case "0": // NameID
+                                $("[name='institution[saml_email_attribute]']").parent().hide();
+                                break;
+                            case "1": // Attribute
+                                $("[name='institution[saml_email_attribute]']").parent().show();
+                                break;
+                        }
+                    };
                     ssoFederationRadio.on("change", function() {
                         const checkedRadio = $("input[name='" + $(this).attr("name") + "']:checked");
                         onProviderRadioChanged(checkedRadio);
                     });
+                    emailLocationMenu.on("change", function() {
+                        onEmailLocationChanged($(this));
+                    });
                     onProviderRadioChanged(ssoFederationRadio.filter(":checked"));
+                    onEmailLocationChanged(emailLocationMenu);
                 });
             });
         });

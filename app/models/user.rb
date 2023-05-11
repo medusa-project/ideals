@@ -538,12 +538,17 @@ class User < ApplicationRecord
     # we can preserve the user properties that are set up in test fixture data.
     return if attrs[:overwriteUserAttrs] == "false"
 
+    self.institution ||= institution
     self.auth_method   = AuthMethod::OPENATHENS
-    self.email         = attrs[institution.saml_email_attribute]&.first
+    case institution.saml_email_location
+    when Institution::SAMLEmailLocation::ATTRIBUTE
+      self.email       = attrs[institution.saml_email_attribute]&.first
+    else
+      self.email       = auth[:uid]
+    end
     self.name          = [attrs[institution.saml_first_name_attribute]&.first,
                           attrs[institution.saml_last_name_attribute]&.first].join(" ").strip
     self.name          = self.email if self.name.blank?
-    self.institution ||= institution
     self.phone         = attrs['phoneNumber']&.first # TODO: fix this or stop collecting phone numbers
     begin
       self.save!

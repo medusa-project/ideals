@@ -618,6 +618,7 @@ class InstitutionsController < ApplicationController
                                         :description_element_id,
                                         :handle_uri_element_id,
                                         :saml_email_attribute,
+                                        :saml_email_location,
                                         :saml_first_name_attribute,
                                         :saml_idp_cert,
                                         :saml_idp_entity_id,

@@ -255,6 +255,26 @@ class UserTest < ActiveSupport::TestCase
     assert_nil user.phone
   end
 
+  test "from_omniauth() populates the correct email from a SAML NameID" do
+    institution = institutions(:southwest)
+    institution.saml_email_location = Institution::SAMLEmailLocation::NAMEID
+    auth        = OPENATHENS_AUTH_HASH.deep_dup
+    auth[:uid]  = "CatDogFox@example.org"
+
+    user = User.from_omniauth(auth, institution: institution)
+    assert_equal "CatDogFox@example.org", user.email
+  end
+
+  test "from_omniauth() populates the correct email from a SAML attribute" do
+    institution = institutions(:southwest)
+    institution.saml_email_location = Institution::SAMLEmailLocation::ATTRIBUTE
+    auth        = OPENATHENS_AUTH_HASH.deep_dup
+    auth[:uid]  = "something else"
+
+    user = User.from_omniauth(auth, institution: institution)
+    assert_equal "OpenAthensUser@example.org", user.email
+  end
+
   test "from_omniauth() returns a new user when given a Shibboleth auth
   hash for which no database match exists" do
     user = User.from_omniauth(SHIBBOLETH_AUTH_HASH,

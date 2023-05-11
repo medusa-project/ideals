@@ -686,6 +686,18 @@ class InstitutionTest < ActiveSupport::TestCase
     assert_equal 3, @instance.required_elements.length
   end
 
+  # saml_email_location
+
+  test "saml_email_location must be one of the SAMLEmailLocation constant
+  values" do
+    @instance.saml_email_location = Institution::SAMLEmailLocation::NAMEID
+    assert @instance.valid?
+    @instance.saml_email_location = Institution::SAMLEmailLocation::ATTRIBUTE
+    assert @instance.valid?
+    @instance.saml_email_location = 99
+    assert !@instance.valid?
+  end
+
   # saml_idp_entity_id
 
   test "saml_idp_entity_id and shibboleth_org_dn cannot both be filled in" do

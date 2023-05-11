@@ -47,12 +47,19 @@
                   "#{@institution.scope_url}/auth/saml/metadata")
       - else
         = boolean(false, style: :word, false_value: "NOT AVAILABLE")
-    %dt Email Attribute
+    %dt Email Location
     %dd
-      - if @institution.saml_email_attribute.present?
-        %code= @institution.saml_email_attribute
+      - if @institution.saml_email_location.present?
+        = Institution::SAMLEmailLocation.label_for(@institution.saml_email_location)
       - else
         = boolean(false, style: :word, false_value: "NOT SET")
+    - if @institution.saml_email_location == Institution::SAMLEmailLocation::ATTRIBUTE
+      %dt Email Attribute
+      %dd
+        - if @institution.saml_email_attribute.present?
+          %code= @institution.saml_email_attribute
+        - else
+          = boolean(false, style: :word, false_value: "NOT SET")
     %dt First Name Attribute
     %dd
       - if @institution.saml_first_name_attribute.present?

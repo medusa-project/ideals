@@ -68,14 +68,19 @@
 # * `medusa_file_group_id`      ID of the Medusa file group in which the
 #                               institution's content is stored.
 # * `name`                      Institution name.
-# * `saml_email_attribute`      Required only by institutions that use SAML for
-#                               authentication.
-# * `saml_first_name_attribute` Required only by institutions that use SAML for
-#                               authentication.
-# * `saml_last_name_attribute`  Required only by institutions that use SAML for
-#                               authentication.
-# * `saml_email_attribute`      Required only by institutions that use SAML for
-#                               authentication.
+# * `saml_email_attribute`      Name of the SAML attribute containing the email
+#                               address. Used only when `saml_email_location`
+#                               is set to
+#                               {#Institution::SAMLEmailLocation::ATTRIBUTE}.
+# * `saml_email_location`       One of the {Institution::SAMLEmailLocation}
+#                               constant values. Required by institutions that
+#                               use SAML for authentication.
+# * `saml_first_name_attribute` Name of the SAML attribute containing a user's
+#                               first name. Needed only by institutions that
+#                               use SAML for authentication.
+# * `saml_last_name_attribute`  Name of the SAML attribute containing a user's
+#                               last name. Needed only by institutions that use
+#                               SAML for authentication.
 # * `saml_idp_cert`             Required only by institutions that use SAML for
 #                               authentication.
 # * `saml_idp_entity_id`        Required only by institutions that use SAML for
@@ -102,6 +107,26 @@ class Institution < ApplicationRecord
 
   include Breadcrumb
   include Openathens
+
+  class SAMLEmailLocation
+    NAMEID    = 0
+    ATTRIBUTE = 1
+
+    def self.all
+      self.constants.map{ |c| self.const_get(c) }.sort
+    end
+
+    def self.label_for(value)
+      case value
+      when NAMEID
+        "NameID"
+      when ATTRIBUTE
+        "Attribute"
+      else
+        "Unknown"
+      end
+    end
+  end
 
   class SSOFederation
     NONE       = 0
@@ -180,6 +205,8 @@ class Institution < ApplicationRecord
   validates :name, presence: true
   validates :primary_color, presence: true
   validates :primary_hover_color, presence: true
+  validates :saml_email_location, inclusion: { in: SAMLEmailLocation.all },
+            allow_blank: true
   validates :service_name, presence: true
 
   validate :disallow_key_changes, :validate_css_colors,

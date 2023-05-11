@@ -41,6 +41,12 @@
       = f.label :saml_idp_cert, "IdP Certificate"
       = f.text_area :saml_idp_cert, rows: 10, class: "form-control"
     .mb-3
+      = f.label :saml_email_location, "Email Location"
+      = f.select :saml_email_location,
+                 options_for_select(Institution::SAMLEmailLocation.all.map{ |v| [Institution::SAMLEmailLocation.label_for(v), v] },
+                                    f.object.saml_email_location),
+                 {}, class: "form-select"
+    .mb-3
       = f.label :saml_email_attribute, "Email Attribute"
       = f.text_field :saml_email_attribute, class: "form-control"
     .mb-3
