@@ -14,7 +14,7 @@
 # * For Shibboleth authentication, the user's "org DN" provided by the IdP is
 #   matched against an institution's {Institution#shibboleth_org_dn} property
 #   at login.
-# * For OpenAthens authentication, the user is made a member of the institution
+# * For SAML authentication, the user is made a member of the institution
 #   matching the request host at login.
 #
 # # Attributes
@@ -152,7 +152,7 @@ class User < ApplicationRecord
   # @return [User] Instance corresponding to the given auth hash, or nil if not
   #                found.
   #
-  def self.fetch_from_omniauth_openathens(auth)
+  def self.fetch_from_omniauth_saml(auth)
     auth  = auth.deep_symbolize_keys
     attrs = auth[:extra][:raw_info].attributes.deep_symbolize_keys
     email = attrs[:emailAddress]&.first
@@ -188,8 +188,8 @@ class User < ApplicationRecord
   ##
   # @param auth [OmniAuth::AuthHash, Hash]
   # @param institution [Institution] The returned user will be assigned to this
-  #        institution. (Only applies to OpenAthens users. Shibboleth users
-  #        will instead be assigned to the institution matching the "org DN"
+  #        institution. (Only applies to SAML users. Shibboleth users will
+  #        instead be assigned to the institution matching the "org DN"
   #        attribute in the auth hash, and local identity users will be
   #        assigned to the institution of the corresponding {Invitee}.)
   # @return [User] Instance corresponding to the given auth hash. If one was
@@ -200,7 +200,7 @@ class User < ApplicationRecord
     when "developer", "shibboleth"
       User.from_omniauth_shibboleth(auth)
     when "saml"
-      User.from_omniauth_openathens(auth, institution: institution)
+      User.from_omniauth_saml(auth, institution: institution)
     when "identity"
       User.from_omniauth_local(auth)
     else
@@ -230,9 +230,9 @@ class User < ApplicationRecord
   ##
   # @private
   #
-  def self.from_omniauth_openathens(auth, institution:)
-    user = User.fetch_from_omniauth_openathens(auth) || User.new
-    user.send(:update_from_openathens, auth, institution)
+  def self.from_omniauth_saml(auth, institution:)
+    user = User.fetch_from_omniauth_saml(auth) || User.new
+    user.send(:update_from_saml, auth, institution)
     user
   end
 
@@ -493,7 +493,7 @@ class User < ApplicationRecord
   # @param institution [Institution] Only set if the instance does not already
   #                                  have an institution set.
   #
-  def update_from_openathens(auth, institution)
+  def update_from_saml(auth, institution)
     auth  = auth.deep_symbolize_keys
     attrs = auth[:extra][:raw_info].attributes.deep_stringify_keys
 
@@ -544,7 +544,7 @@ class User < ApplicationRecord
     self.name        = self.email if self.name.blank?
     org_dn           = auth.dig("extra", "raw_info", "org-dn")
     # UIS accounts will not have an org DN--eventually these users will be
-    # converted into OpenAthens users and moved into the UIS space, and we
+    # converted into OpenAthens/SAML users and moved into the UIS space, and we
     # will fall back to nil here instead of UIUC.
     self.institution = org_dn.present? ?
                          Institution.find_by_shibboleth_org_dn(org_dn) :

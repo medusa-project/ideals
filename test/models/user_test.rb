@@ -6,7 +6,7 @@ class UserTest < ActiveSupport::TestCase
     @user = users(:example)
   end
 
-  OPENATHENS_AUTH_HASH = {
+  SAML_AUTH_HASH = {
     provider: "saml",
     uid: "OpenAthensUser@example.org",
     info: {
@@ -128,9 +128,9 @@ class UserTest < ActiveSupport::TestCase
     assert_nil User.fetch_from_omniauth_local(auth)
   end
 
-  # fetch_from_omniauth_openathens()
+  # fetch_from_omniauth_saml()
 
-  test "fetch_from_omniauth_openathens() with a matching email returns the user" do
+  test "fetch_from_omniauth_saml() with a matching email returns the user" do
     user = users(:southwest)
     auth = {
       provider: "saml",
@@ -142,10 +142,10 @@ class UserTest < ActiveSupport::TestCase
         )
       }
     }
-    assert_equal user, User.fetch_from_omniauth_openathens(auth)
+    assert_equal user, User.fetch_from_omniauth_saml(auth)
   end
 
-  test "fetch_from_omniauth_openathens() with a non-matching email returns nil" do
+  test "fetch_from_omniauth_saml() with a non-matching email returns nil" do
     auth = {
       provider: "saml",
       extra: {
@@ -156,7 +156,7 @@ class UserTest < ActiveSupport::TestCase
         )
       }
     }
-    assert_nil User.fetch_from_omniauth_openathens(auth)
+    assert_nil User.fetch_from_omniauth_saml(auth)
   end
 
   # fetch_from_omniauth_shibboleth()
@@ -236,7 +236,7 @@ class UserTest < ActiveSupport::TestCase
   test "from_omniauth() returns a new user when given a SAML auth hash
   hash for which no database match exists" do
     institution = institutions(:southwest)
-    user        = User.from_omniauth(OPENATHENS_AUTH_HASH,
+    user        = User.from_omniauth(SAML_AUTH_HASH,
                                      institution: institution)
     assert_equal "First Last", user.name
     assert_equal "OpenAthensUser@example.org", user.email
@@ -244,14 +244,14 @@ class UserTest < ActiveSupport::TestCase
     assert_equal institution, user.institution
   end
 
-  test "from_omniauth() returns an existing user when given an OpenAthens auth
+  test "from_omniauth() returns an existing user when given a SAML auth
   hash for which a database match exists" do
     institution = institutions(:southwest)
-    email       = OPENATHENS_AUTH_HASH[:extra][:raw_info].
+    email       = SAML_AUTH_HASH[:extra][:raw_info].
       attributes[institution.saml_email_attribute.to_sym].first
     @user.update!(email: email)
 
-    user = User.from_omniauth(OPENATHENS_AUTH_HASH, institution: institution)
+    user = User.from_omniauth(SAML_AUTH_HASH, institution: institution)
     assert_equal "First Last", user.name
     assert_equal "OpenAthensUser@example.org", user.email
     assert_nil user.phone
@@ -260,7 +260,7 @@ class UserTest < ActiveSupport::TestCase
   test "from_omniauth() populates the correct email from a SAML NameID" do
     institution = institutions(:southwest)
     institution.saml_email_location = Institution::SAMLEmailLocation::NAMEID
-    auth        = OPENATHENS_AUTH_HASH.deep_dup
+    auth        = SAML_AUTH_HASH.deep_dup
     auth[:uid]  = "CatDogFox@example.org"
 
     user = User.from_omniauth(auth, institution: institution)
@@ -270,7 +270,7 @@ class UserTest < ActiveSupport::TestCase
   test "from_omniauth() populates the correct email from a SAML attribute" do
     institution = institutions(:southwest)
     institution.saml_email_location = Institution::SAMLEmailLocation::ATTRIBUTE
-    auth        = OPENATHENS_AUTH_HASH.deep_dup
+    auth        = SAML_AUTH_HASH.deep_dup
     auth[:uid]  = "something else"
 
     user = User.from_omniauth(auth, institution: institution)
