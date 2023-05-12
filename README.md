@@ -20,6 +20,7 @@ This is a getting-started guide and brief technical manual for developers.
     * [InstallationWithDocker](#InstallationWithDocker)
     * [InstallationWithoutDocker](#InstallationWithoutDocker)
 * [DesignConcepts](#DesignConcepts)
+    * [Authentication](#Authentication)
     * [Authorization](#Authorization) 
     * [ContentStorage](#ContentStorage)
     * [OpenSearch](#OpenSearch)
@@ -169,6 +170,39 @@ rails users:create_local_sysadmin[email,password,name,institution_key]
 ```
 
 # DesignConcepts
+
+## Authentication
+
+Authentication is handled by [OmniAuth](https://github.com/omniauth/omniauth).
+OmniAuth supports many different providers, but the ones used by this app
+include:
+
+* [Shibboleth](https://github.com/toyokazu/omniauth-shibboleth): handles SSO
+  authentication for UIUC only.
+* [SAML](https://github.com/omniauth/omniauth-saml): handles SSO authentication
+  for many CARLI member institutions.
+* [Local identity](https://github.com/omniauth/omniauth-identity):
+  credentials are stored in a `local_identities` database table associated with
+  `users`.
+
+The general idea with OmniAuth is that authentication requests (via e.g. a
+login button) are sent to `/auth/:provider`. From there the provider takes
+over, redirecting to an IdP or whatever. Upon successful login, the IdP (or
+provider) calls back to `/auth/:provider/callback` (handled by
+`SessionsController.create()`).
+
+OmniAuth and its providers are configured in `config/initializers/omniauth.rb`.
+Most of the providers can be configured globally, because they either work the
+same across all institutions (local identity), or work with only one
+institution (Shibboleth). But the SAML provider in particular needs to be
+customized per-institution, so that each institution can work with its own
+identity provider (IdP).
+
+Users who have an associated local identity can also log in via some other
+provider, if configured, but not vice versa.
+
+All users belong to a "home institution." Sysadmins can log in from an
+institutional domain other than their home domain, but non-sysadmins cannot.
 
 ## Authorization
 
