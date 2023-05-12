@@ -73,7 +73,8 @@ class SessionsController < ApplicationController
   # Responds to `GET /auth/failure`.
   #
   def auth_failed
-    message = "Login failed: incorrect username and/or password."
+    message = params.dig("message") || "incorrect username and/or password"
+    message = "Login failed: #{message}"
     if request.xhr?
       render plain: message, status: :unauthorized
     else
