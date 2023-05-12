@@ -43,8 +43,24 @@ class ActiveSupport::TestCase
     end
   end
 
-  def log_in_as(user)
-    if user.openathens?
+  ##
+  # @param user [User]
+  # @param provider [Symbol] `:saml`, `:shibboleth`, or `:local`. If omitted,
+  #                          and the user has an associated {LocalIdentity},
+  #                          local is assumed; otherwise :shibboleth.
+  #
+  def log_in_as(user, provider = nil)
+    unless provider
+      if user.identity
+        provider = :local
+      elsif user.institution.key == "uiuc"
+        provider = :shibboleth
+      else
+        provider = :saml
+      end
+    end
+    case provider
+    when :saml
       post "/auth/saml/callback", env: {
         "omniauth.auth": {
           provider:          "saml",
@@ -54,17 +70,18 @@ class ActiveSupport::TestCase
           },
           extra: {
             raw_info: OneLogin::RubySaml::Attributes.new(
+              overwriteUserAttrs: "false",
               emailAddress: [user.email]
             )
           }
         }
       }
-    elsif user.shibboleth?
+    when :shibboleth
       # N.B. 1: See "request_type option" section for info about using
       # omniauth-shibboleth in development:
       # https://github.com/toyokazu/omniauth-shibboleth
       #
-      # N.B. 2: the keys in the params hash must be present in
+      # N.B. 2: the keys in the auth hash must be present in
       # config/shibboleth.xml.
       post "/auth/shibboleth/callback", env: {
         "omniauth.auth": {

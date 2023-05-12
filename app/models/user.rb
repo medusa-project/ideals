@@ -3,15 +3,10 @@
 ##
 # Encapsulates a user account.
 #
-# # Authentication Methods
-#
-# Users can sign in via several {AuthMethod methods}. Their last (and current)
-# sign-in method is assigned to the {auth_method} attribute.
-#
 # # Institution Membership
 #
 # The process by which a user is made a member of an institution varies
-# depending on the {auth_method authentication method}:
+# depending on the authentication method:
 #
 # * For local authentication, the user either requests to join a particular
 #   institution, or is invited into a particular institution by a sysadmin at
@@ -24,9 +19,6 @@
 #
 # # Attributes
 #
-# * `auth_method`       One of the {User::AuthMethod} constant values
-#                       representing the authentication method used at the last
-#                       login.
 # * `created_at`        Managed by ActiveRecord.
 # * `email`             Email address.
 # * `enabled`           Whether the user is able to log in.
@@ -101,7 +93,6 @@ class User < ApplicationRecord
   # `belongs_to_user_group?()`
   has_and_belongs_to_many :user_groups
 
-  validates :auth_method, inclusion: { in: AuthMethod.all }
   validates :email, presence: true, length: {maximum: 255},
             format: {with: StringUtils::EMAIL_REGEX}
   validates_uniqueness_of :email, case_sensitive: false
@@ -141,8 +132,7 @@ class User < ApplicationRecord
       end
       identity.build_user(email:       email,
                           institution: institution,
-                          name:        name || email,
-                          auth_method: AuthMethod::LOCAL)
+                          name:        name || email)
     end
   end
 
@@ -233,7 +223,6 @@ class User < ApplicationRecord
                       name:        email,
                       institution: invitee.institution)
     end
-    user.auth_method = AuthMethod::LOCAL
     user.save!
     user
   end
@@ -242,8 +231,7 @@ class User < ApplicationRecord
   # @private
   #
   def self.from_omniauth_openathens(auth, institution:)
-    user = User.fetch_from_omniauth_openathens(auth) ||
-      User.new(auth_method: AuthMethod::SAML)
+    user = User.fetch_from_omniauth_openathens(auth) || User.new
     user.send(:update_from_openathens, auth, institution)
     user
   end
@@ -252,8 +240,7 @@ class User < ApplicationRecord
   # @private
   #
   def self.from_omniauth_shibboleth(auth)
-    user = User.fetch_from_omniauth_shibboleth(auth) ||
-      User.new(auth_method: AuthMethod::SHIBBOLETH)
+    user = User.fetch_from_omniauth_shibboleth(auth) || User.new
     user.send(:update_from_shibboleth, auth)
     user
   end
@@ -424,36 +411,15 @@ class User < ApplicationRecord
   end
 
   ##
-  # @return [Boolean]
-  #
-  def local?
-    self.auth_method == AuthMethod::LOCAL
-  end
-
-  ##
   # @return [String] The NetID (the user component of the email). This works
-  #                  regardless of {auth_method} authentication method, even
-  #                  though technically only Shibboleth users have NetIDs.
+  #                  regardless of authentication method, even though
+  #                  technically only UofI Shibboleth users have NetIDs.
   #
   def netid
     return nil unless self.email.respond_to?(:split)
     netid = self.email.split("@").first
     return nil if netid.blank?
     netid
-  end
-
-  ##
-  # @return [Boolean]
-  #
-  def openathens?
-    self.auth_method == AuthMethod::SAML
-  end
-
-  ##
-  # @return [Boolean]
-  #
-  def shibboleth?
-    self.auth_method == AuthMethod::SHIBBOLETH
   end
 
   ##
@@ -508,9 +474,7 @@ class User < ApplicationRecord
   private
 
   def destroy_identity
-    if auth_method == AuthMethod::LOCAL
-      LocalIdentity.destroy_by(email: self.email)
-    end
+    LocalIdentity.destroy_by(email: self.email)
   end
 
   ##
@@ -518,7 +482,7 @@ class User < ApplicationRecord
   # those of the instance.
   #
   def sync_identity_properties
-    if auth_method == AuthMethod::LOCAL && self.email_changed?
+    if self.email_changed?
       id = LocalIdentity.find_by_email(self.email_was)
       id&.update_attribute(:email, self.email)
     end
@@ -539,8 +503,7 @@ class User < ApplicationRecord
     return if attrs[:overwriteUserAttrs] == "false"
 
     self.institution ||= institution
-    self.auth_method   = AuthMethod::SAML
-    case institution.saml_email_location
+    case self.institution.saml_email_location
     when Institution::SAMLEmailLocation::ATTRIBUTE
       self.email       = attrs[institution.saml_email_attribute]&.first
     else
@@ -575,7 +538,6 @@ class User < ApplicationRecord
 
     # N.B.: we have to be careful accessing this hash because not all providers
     # will populate all properties.
-    self.auth_method = AuthMethod::SHIBBOLETH
     self.email       = auth["info"]["email"]
     self.name        = "#{auth.dig("extra", "raw_info", "givenName")} "\
                        "#{auth.dig("extra", "raw_info", "sn")}"

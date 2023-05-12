@@ -9,7 +9,6 @@
 ################################# example ###################################
 
 example:
-  auth_method: <%= User::AuthMethod::LOCAL %>
   institution: example
   identity:    example
   name:        I have no rights
@@ -18,7 +17,6 @@ example:
   enabled:     true
 
 example2:
-  auth_method: <%= User::AuthMethod::LOCAL %>
   institution: example
   identity:    example2
   name:        I have no rights
@@ -27,7 +25,6 @@ example2:
   enabled:     true
 
 example_approved:
-  auth_method: <%= User::AuthMethod::LOCAL %>
   institution: example
   identity:    approved
   name:        Not Approved
@@ -36,7 +33,6 @@ example_approved:
   enabled:     true
 
 example_sysadmin:
-  auth_method: <%= User::AuthMethod::LOCAL %>
   institution: example
   identity:    example_sysadmin
   name:        admin
@@ -49,7 +45,6 @@ example_sysadmin:
 ################################# northeast #################################
 
 northeast:
-  auth_method: <%= User::AuthMethod::LOCAL %>
   institution: northeast
   identity:    northeast
   name:        Northeast University Normal User
@@ -58,7 +53,6 @@ northeast:
   enabled:     true
 
 northeast_admin:
-  auth_method: <%= User::AuthMethod::LOCAL %>
   institution: northeast
   identity:    northeast
   name:        Northeast.edu Institution Administrator
@@ -71,7 +65,6 @@ northeast_admin:
 ################################# southwest #################################
 
 southwest:
-  auth_method: <%= User::AuthMethod::LOCAL %>
   institution: southwest
   identity:    southwest
   name:        Southwest University Normal User
@@ -80,7 +73,6 @@ southwest:
   enabled:     true
 
 southwest_admin:
-  auth_method: <%= User::AuthMethod::LOCAL %>
   institution: southwest
   identity:    southwest_admin
   name:        Southwest University Institution Administrator
@@ -91,7 +83,6 @@ southwest_admin:
     - southwest_admins
 
 southwest_sysadmin:
-  auth_method: <%= User::AuthMethod::LOCAL %>
   institution: southwest
   identity:    southwest_sysadmin
   name:        Southwest University System Administrator
@@ -102,7 +93,6 @@ southwest_sysadmin:
     - sysadmin
 
 southwest_saml:
-  auth_method: <%= User::AuthMethod::SAML %>
   institution: southwest
   name:        Southwest University SAML User
   email:       saml@southwest.edu
@@ -110,7 +100,6 @@ southwest_saml:
   enabled:     true
 
 southwest_shibboleth:
-  auth_method: <%= User::AuthMethod::SHIBBOLETH %>
   institution: southwest
   name:        Southwest University Shibboleth User
   email:       shib@southwest.edu
@@ -120,7 +109,6 @@ southwest_shibboleth:
 ################################### uiuc ###################################
 
 uiuc:
-  auth_method: <%= User::AuthMethod::SHIBBOLETH %>
   name:        Shib Boleth, Esq.
   email:       shib@illinois.edu
   phone:       (888) 555-1234
@@ -128,7 +116,6 @@ uiuc:
   institution: uiuc
 
 uiuc2:
-  auth_method: <%= User::AuthMethod::SHIBBOLETH %>
   institution: uiuc
   name:        UIUC Normal User 2
   email:       user2@illinois.edu
@@ -136,7 +123,6 @@ uiuc2:
   enabled:     true
 
 uiuc_admin:
-  auth_method: <%= User::AuthMethod::SHIBBOLETH %>
   institution: uiuc
   name:        UIUC Institution Admin
   email:       instadmin@illinois.edu
@@ -146,7 +132,6 @@ uiuc_admin:
     - uiuc_admins
 
 uiuc_sysadmin:
-  auth_method: <%= User::AuthMethod::SHIBBOLETH %>
   institution: uiuc
   name:        UIUC Sysadmin
   email:       sysadmin@illinois.edu
@@ -156,7 +141,6 @@ uiuc_sysadmin:
     - sysadmin
 
 uiuc_collection1_collection1_admin:
-  auth_method: <%= User::AuthMethod::LOCAL %>
   institution: uiuc
   name:        Collection1 Collection1 Administrator
   email:       uiuc_collection1_collection1_admin@illinois.edu
@@ -164,7 +148,6 @@ uiuc_collection1_collection1_admin:
   enabled:     true
 
 uiuc_collection1_collection1_submitter:
-  auth_method: <%= User::AuthMethod::LOCAL %>
   institution: uiuc
   name:        Collection1 Collection1 Submitter
   email:       phil@illinois.edu
@@ -172,7 +155,6 @@ uiuc_collection1_collection1_submitter:
   enabled:     true
 
 uiuc_unit1_admin:
-  auth_method: <%= User::AuthMethod::LOCAL %>
   institution: uiuc
   name:        Unit1 Admin
   email:       uiuc_unit1_admin@illinois.edu
@@ -180,7 +162,6 @@ uiuc_unit1_admin:
   enabled:     true
 
 uiuc_unit1_unit2_unit1_admin:
-  auth_method: <%= User::AuthMethod::LOCAL %>
   institution: uiuc
   name:        Unit1 Unit2 Unit1 Admin
   email:       uiuc_unit1_unit2_unit1_admin@illinois.edu

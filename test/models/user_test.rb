@@ -8,7 +8,7 @@ class UserTest < ActiveSupport::TestCase
 
   OPENATHENS_AUTH_HASH = {
     provider: "saml",
-    uid: "TheUID",
+    uid: "OpenAthensUser@example.org",
     info: {
       name: nil,
       email: nil,
@@ -23,6 +23,12 @@ class UserTest < ActiveSupport::TestCase
         ],
         emailAddress: [
           "OpenAthensUser@example.org"
+        ],
+        firstName: [
+          "First"
+        ],
+        lastName: [
+          "Last"
         ],
         "urn:mace:eduserv.org.uk:athens:attribute-def:federation:1.0:identifier": [
           "urn:mace:eduserv.org.uk:athens:federation:uk"
@@ -94,7 +100,6 @@ class UserTest < ActiveSupport::TestCase
     assert_equal name, user.name
     assert_nil user.phone
     assert_equal institution, user.institution
-    assert_equal User::AuthMethod::LOCAL, user.auth_method
     assert !user.sysadmin?
   end
 
@@ -225,17 +230,15 @@ class UserTest < ActiveSupport::TestCase
       },
       institution: institution
     )
-    assert user.local?
     assert_equal institution, user.institution
   end
 
-  test "from_omniauth() returns a new user when given an OpenAthens auth hash
+  test "from_omniauth() returns a new user when given a SAML auth hash
   hash for which no database match exists" do
     institution = institutions(:southwest)
     user        = User.from_omniauth(OPENATHENS_AUTH_HASH,
                                      institution: institution)
-    assert user.openathens?
-    assert_equal "OpenAthensUser@example.org", user.name
+    assert_equal "First Last", user.name
     assert_equal "OpenAthensUser@example.org", user.email
     assert_nil user.phone
     assert_equal institution, user.institution
@@ -249,8 +252,7 @@ class UserTest < ActiveSupport::TestCase
     @user.update!(email: email)
 
     user = User.from_omniauth(OPENATHENS_AUTH_HASH, institution: institution)
-    assert user.openathens?
-    assert_equal "OpenAthensUser@example.org", user.name
+    assert_equal "First Last", user.name
     assert_equal "OpenAthensUser@example.org", user.email
     assert_nil user.phone
   end
@@ -279,7 +281,6 @@ class UserTest < ActiveSupport::TestCase
   hash for which no database match exists" do
     user = User.from_omniauth(SHIBBOLETH_AUTH_HASH,
                               institution: institutions(:southwest))
-    assert user.shibboleth?
     assert_equal "Shib Boleth", user.name
     assert_equal "ShibbolethUser@example.org", user.email
     assert_equal "(888) 555-5555", user.phone
@@ -296,7 +297,6 @@ class UserTest < ActiveSupport::TestCase
     user = User.from_omniauth(SHIBBOLETH_AUTH_HASH,
                               institution: institutions(:uiuc))
     assert_equal @user, user
-    assert user.shibboleth?
     assert_equal "Shib Boleth", user.name
     assert_equal "ShibbolethUser@example.org", user.email
     assert_equal "(888) 555-5555", user.phone
@@ -308,7 +308,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "from_omniauth() returns an updated user when given a Shibboleth
   developer auth hash" do
-    user = User.from_omniauth(
+    assert_not_nil User.from_omniauth(
       {
         provider: "developer",
         info: {
@@ -316,22 +316,12 @@ class UserTest < ActiveSupport::TestCase
         }
       },
       institution: institutions(:uiuc))
-    assert user.shibboleth?
   end
 
   test "from_omniauth() with an unsupported provider raises an error" do
     assert_raises ArgumentError do
-      User.from_omniauth(provider: "bogus")
+      User.from_omniauth({provider: "bogus"}, institution: @user.institution)
     end
-  end
-
-  # auth_method
-
-  test "auth_method must be set to one of the AuthMethod constant values" do
-    @user.auth_method = User::AuthMethod::SAML
-    assert @user.valid?
-    @user.auth_method = 99
-    assert !@user.valid?
   end
 
   # belongs_to_user_group?()
@@ -593,9 +583,8 @@ class UserTest < ActiveSupport::TestCase
   test "email must be unique" do
     email = @user.email
     assert_raises ActiveRecord::RecordInvalid do
-      User.create!(email:       email,
-                   name:        email,
-                   auth_method: User::AuthMethod::LOCAL)
+      User.create!(email: email,
+                   name:  email)
     end
   end
 
@@ -618,18 +607,6 @@ class UserTest < ActiveSupport::TestCase
     assert !@user.institution_admin?(nil)
   end
 
-  # local?()
-
-  test "local?() returns false for non-local users" do
-    @user.auth_method = User::AuthMethod::SAML
-    assert !@user.local?
-  end
-
-  test "local?() returns true for local users" do
-    @user.auth_method = User::AuthMethod::LOCAL
-    assert @user.local?
-  end
-
   # name
 
   test "name is required" do
@@ -645,36 +622,12 @@ class UserTest < ActiveSupport::TestCase
     assert_equal @user.email.split("@").first, @user.netid
   end
 
-  # openathens?()
-
-  test "openathens?() returns false for non-OpenAthens users" do
-    @user.auth_method = User::AuthMethod::LOCAL
-    assert !@user.openathens?
-  end
-
-  test "openathens?() returns true for OpenAthens users" do
-    @user.auth_method = User::AuthMethod::SAML
-    assert @user.openathens?
-  end
-
   # save()
 
   test "save() updates the email of the associated LocalIdentity" do
     new_email = "new@example.edu"
     @user.update!(email: new_email)
     assert_equal new_email, @user.identity.email
-  end
-
-  # shibboleth?()
-
-  test "shibboleth?() returns false for non-Shibboleth users" do
-    @user.auth_method = User::AuthMethod::LOCAL
-    assert !@user.shibboleth?
-  end
-
-  test "shibboleth?() returns true for Shibboleth users" do
-    @user.auth_method = User::AuthMethod::SHIBBOLETH
-    assert @user.shibboleth?
   end
 
   # submitter?()
@@ -703,53 +656,21 @@ class UserTest < ActiveSupport::TestCase
 
   # sysadmin?()
 
-  test "sysadmin?() with the local auth method returns true when the user
-  is directly associated with the sysadmin user group" do
+  test "sysadmin?() returns true when the user is directly associated with the
+  sysadmin user group" do
     @user = users(:example_sysadmin)
     assert @user.sysadmin?
   end
 
-  test "sysadmin?() with the local auth method returns false when the user is
-  not directly associated with the sysadmin user group" do
-    assert !@user.sysadmin?
-  end
-
-  test "sysadmin?() with the OpenAthens auth method returns true when the user
-  is directly associated with the sysadmin user group" do
-    @user.auth_method = User::AuthMethod::SAML
-    user_groups(:sysadmin).users << @user
+  test "sysadmin?() returns true when the user is a member of an AD group
+  included in the sysadmin user group" do
+    @user = users(:uiuc_sysadmin)
+    @user.user_groups.destroy_all
     assert @user.sysadmin?
   end
 
-  test "sysadmin?() with the OpenAthens auth method returns false when the user
-  is not directly associated with the sysadmin user group" do
-    @user.auth_method = User::AuthMethod::SAML
-    assert !@user.sysadmin?
-  end
-
-  test "sysadmin?() with the Shibboleth auth method returns true when the user
-  is directly associated with the sysadmin user group" do
-    @user.auth_method = User::AuthMethod::SHIBBOLETH
-    user_groups(:sysadmin).users << @user
-    assert @user.sysadmin?
-  end
-
-  test "sysadmin?() with the Shibboleth auth method returns false when the user
-  is not directly associated with the sysadmin user group" do
-    @user.auth_method = User::AuthMethod::SHIBBOLETH
-    assert !@user.sysadmin?
-  end
-
-  test "sysadmin?() with the Shibboleth auth method returns true when the user
-  is a member of an LDAP group included in the sysadmin user group" do
-    @user = users(:example_sysadmin)
-    @user.auth_method = User::AuthMethod::SHIBBOLETH
-    assert @user.sysadmin?
-  end
-
-  test "sysadmin?() with the Shibboleth auth method returns false when the user
-  is not a member of the sysadmin LDAP group" do
-    @user.auth_method = User::AuthMethod::SHIBBOLETH
+  test "sysadmin?() returns false when the user is not a member of the sysadmin
+  user group in any way" do
     assert !@user.sysadmin?
   end
 

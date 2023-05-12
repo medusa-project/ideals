@@ -94,7 +94,7 @@ class UserGroup < ApplicationRecord
   #
   def all_users
     self.users +
-      User.where(auth_method: User::AuthMethod::SHIBBOLETH).
+      User.where(institution: self.institution).
         select{ |u| u.belongs_to_user_group?(self) }
   end
 
@@ -132,8 +132,7 @@ class UserGroup < ApplicationRecord
     self.affiliations.where(id: user.affiliation_id).count.positive? ||
     # belongs to an associated AD group
     # (this check comes last because it is the most expensive)
-    (user.shibboleth? &&
-      self.ad_groups.find{ |g| user.belongs_to_ad_group?(g) }.present?)
+    self.ad_groups.find{ |g| user.belongs_to_ad_group?(g) }.present?
   end
 
   ##

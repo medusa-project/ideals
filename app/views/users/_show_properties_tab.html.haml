@@ -7,7 +7,7 @@
                                           type:             "button"}
       %i.fas.fa-pencil-alt
       Edit Properties
-  - if @user.local? && @user.identity && policy(@user.identity).edit_password?
+  - if @user.identity && policy(@user.identity).edit_password?
     -# Change Password button
     %button.btn.btn-light.change-password{"data-identity-id": @user.identity.id,
                                           "data-bs-target":   "#change-password-modal",

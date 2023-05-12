@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_11_205331) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_12_181930) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -709,7 +709,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_11_205331) do
     t.bigint "affiliation_id"
     t.bigint "institution_id", null: false
     t.boolean "enabled", default: true, null: false
-    t.integer "auth_method", null: false
     t.index ["affiliation_id"], name: "index_users_on_affiliation_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["institution_id"], name: "index_users_on_institution_id"

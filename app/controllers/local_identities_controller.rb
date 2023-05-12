@@ -82,8 +82,7 @@ class LocalIdentitiesController < ApplicationController
       unless user
         user = @identity.build_user(email:          @identity.email,
                                     name:           @identity.email,
-                                    institution_id: @identity.invitee.institution_id,
-                                    auth_method:    User::AuthMethod::LOCAL)
+                                    institution_id: @identity.invitee.institution_id)
         user.save!
       end
       if @identity.invitee.institution_admin &&
@@ -165,7 +164,7 @@ class LocalIdentitiesController < ApplicationController
   end
 
   def setup_registration_view
-    @user = User.new(auth_method: User::AuthMethod::LOCAL)
+    @user = User.new
   end
 
   def validate_current_password

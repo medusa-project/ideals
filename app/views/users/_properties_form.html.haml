@@ -11,16 +11,19 @@
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
-  -# For Shibboleth users, all of these properties are provided by AD.
+  .alert.alert-info
+    = icon_for(:info)
+    These properties will be overwritten with information from the identity
+    provider when and if the user next logs in via single sign-on (SSO).
   .mb-3
     = f.label :name, class: "required"
-    = f.text_field :name, class: "form-control", disabled: !user.local?
+    = f.text_field :name, class: "form-control"
   .mb-3
     = f.label :email, class: "required"
-    = f.email_field :email, class: "form-control", disabled: !user.local?
+    = f.email_field :email, class: "form-control"
   .mb-3
     = f.label :phone
-    = f.phone_field :phone, class: "form-control", disabled: !user.local?
+    = f.phone_field :phone, class: "form-control"
 
   - if policy(user).change_institution?
     .mb-3
