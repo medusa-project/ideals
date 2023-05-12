@@ -39,26 +39,26 @@ class SessionsController < ApplicationController
     auth = request.env["omniauth.auth"]
     user = User.from_omniauth(auth, institution: current_institution)
 
-    # Is the user allowed to log in?
-    if user&.enabled && (user.institution == current_institution || user.sysadmin?)
-      # Yes!
-      begin
-        hostname = Resolv.getname(request.remote_ip)
-      rescue Resolv::ResolvError
-        hostname = nil
-      end
-      user.logins.build(ip_address: request.remote_ip,
-                        hostname:   hostname,
-                        auth_hash:  auth).save!
-      return_url_ = return_url
-      # Protect against session fixation:
-      # https://guides.rubyonrails.org/security.html#session-fixation-countermeasures
-      reset_session
-      session[:user_id] = user.id
-      redirect_to return_url_
-    else
-      unauthorized
+    if !user&.enabled
+      unauthorized("This user account is disabled.") and return
+    elsif user.institution != current_institution && !user.sysadmin?
+      unauthorized("You must log in via your home institution's domain.") and return
     end
+
+    begin
+      hostname = Resolv.getname(request.remote_ip)
+    rescue Resolv::ResolvError
+      hostname = nil
+    end
+    user.logins.build(ip_address: request.remote_ip,
+                      hostname:   hostname,
+                      auth_hash:  auth).save!
+    return_url_ = return_url
+    # Protect against session fixation:
+    # https://guides.rubyonrails.org/security.html#session-fixation-countermeasures
+    reset_session
+    session[:user_id] = user.id
+    redirect_to return_url_
   end
 
   def destroy
@@ -82,9 +82,9 @@ class SessionsController < ApplicationController
     end
   end
 
-  def unauthorized
-    message = "You are not authorized to log in. "\
-              "If this problem persists, please contact us."
+  def unauthorized(message = nil)
+    message ||= "You are not authorized to log in. "\
+                "If this problem persists, please contact us."
     if request.xhr?
       render plain: message, status: :forbidden
     else
