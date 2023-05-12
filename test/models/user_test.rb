@@ -328,7 +328,7 @@ class UserTest < ActiveSupport::TestCase
   # auth_method
 
   test "auth_method must be set to one of the AuthMethod constant values" do
-    @user.auth_method = User::AuthMethod::OPENATHENS
+    @user.auth_method = User::AuthMethod::SAML
     assert @user.valid?
     @user.auth_method = 99
     assert !@user.valid?
@@ -621,7 +621,7 @@ class UserTest < ActiveSupport::TestCase
   # local?()
 
   test "local?() returns false for non-local users" do
-    @user.auth_method = User::AuthMethod::OPENATHENS
+    @user.auth_method = User::AuthMethod::SAML
     assert !@user.local?
   end
 
@@ -653,7 +653,7 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test "openathens?() returns true for OpenAthens users" do
-    @user.auth_method = User::AuthMethod::OPENATHENS
+    @user.auth_method = User::AuthMethod::SAML
     assert @user.openathens?
   end
 
@@ -716,14 +716,14 @@ class UserTest < ActiveSupport::TestCase
 
   test "sysadmin?() with the OpenAthens auth method returns true when the user
   is directly associated with the sysadmin user group" do
-    @user.auth_method = User::AuthMethod::OPENATHENS
+    @user.auth_method = User::AuthMethod::SAML
     user_groups(:sysadmin).users << @user
     assert @user.sysadmin?
   end
 
   test "sysadmin?() with the OpenAthens auth method returns false when the user
   is not directly associated with the sysadmin user group" do
-    @user.auth_method = User::AuthMethod::OPENATHENS
+    @user.auth_method = User::AuthMethod::SAML
     assert !@user.sysadmin?
   end
 

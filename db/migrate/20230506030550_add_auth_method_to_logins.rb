@@ -6,11 +6,11 @@ class AddAuthMethodToLogins < ActiveRecord::Migration[7.0]
       provider = row['auth_hash'][0..50].scan(/"provider":"(\w+)",/).first&.first
       case provider
       when "saml"
-        method = User::AuthMethod::OPENATHENS
+        method = 2 # SAML
       when "shibboleth", "developer"
-        method = User::AuthMethod::SHIBBOLETH
+        method = 1 # Shibboleth
       when "identity"
-        method = User::AuthMethod::LOCAL
+        method = 0 # local
       else
         raise "Unknown provider: #{provider}\n\n#{row['auth_hash']}"
       end

@@ -52,7 +52,7 @@ class User < ApplicationRecord
     # Used only by UIUC.
     SHIBBOLETH = 1
     # Used by many CARLI member institutions.
-    OPENATHENS = 2
+    SAML       = 2
 
     def self.all
       self.constants.map{ |c| self.const_get(c) }.sort
@@ -62,8 +62,8 @@ class User < ApplicationRecord
       case value
       when LOCAL
         "Local"
-      when OPENATHENS
-        "OpenAthens"
+      when SAML
+        "SAML"
       when SHIBBOLETH
         "Shibboleth"
       else
@@ -243,7 +243,7 @@ class User < ApplicationRecord
   #
   def self.from_omniauth_openathens(auth, institution:)
     user = User.fetch_from_omniauth_openathens(auth) ||
-      User.new(auth_method: AuthMethod::OPENATHENS)
+      User.new(auth_method: AuthMethod::SAML)
     user.send(:update_from_openathens, auth, institution)
     user
   end
@@ -446,7 +446,7 @@ class User < ApplicationRecord
   # @return [Boolean]
   #
   def openathens?
-    self.auth_method == AuthMethod::OPENATHENS
+    self.auth_method == AuthMethod::SAML
   end
 
   ##
@@ -539,7 +539,7 @@ class User < ApplicationRecord
     return if attrs[:overwriteUserAttrs] == "false"
 
     self.institution ||= institution
-    self.auth_method   = AuthMethod::OPENATHENS
+    self.auth_method   = AuthMethod::SAML
     case institution.saml_email_location
     when Institution::SAMLEmailLocation::ATTRIBUTE
       self.email       = attrs[institution.saml_email_attribute]&.first

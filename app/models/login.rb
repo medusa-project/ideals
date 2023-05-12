@@ -36,7 +36,7 @@ class Login < ApplicationRecord
     when "shibboleth", "developer"
       self.auth_method = User::AuthMethod::SHIBBOLETH
     when "saml"
-      self.auth_method = User::AuthMethod::OPENATHENS
+      self.auth_method = User::AuthMethod::SAML
     when "identity"
       self.auth_method = User::AuthMethod::LOCAL
     end

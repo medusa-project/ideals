@@ -102,7 +102,7 @@ southwest_sysadmin:
     - sysadmin
 
 southwest_saml:
-  auth_method: <%= User::AuthMethod::OPENATHENS %>
+  auth_method: <%= User::AuthMethod::SAML %>
   institution: southwest
   name:        Southwest University SAML User
   email:       saml@southwest.edu

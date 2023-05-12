@@ -10,7 +10,7 @@ class LoginTest < ActiveSupport::TestCase
 
   test "auth_hash=() sets the auth method" do
     @instance.auth_hash = { provider: "saml" }
-    assert_equal User::AuthMethod::OPENATHENS, @instance.auth_method
+    assert_equal User::AuthMethod::SAML, @instance.auth_method
 
     @instance.auth_hash = { provider: "shibboleth" }
     assert_equal User::AuthMethod::SHIBBOLETH, @instance.auth_method
