@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ZipBitstreamsJob < ApplicationJob
 
   queue_as :public
@@ -5,23 +7,25 @@ class ZipBitstreamsJob < ApplicationJob
   ##
   # Creates a zip file containing the given bitstreams and uploads it to the
   # application bucket. The bitstreams are placed in the root directory of the
-  # zip file, so should all be from one item to avoid naming conflicts. To
+  # zip file, so they should all be from one item to avoid naming conflicts. To
   # include bitstreams from multiple items, use {ZipItemsJob} instead.
   #
   # Upon completion, the given {Download} instance's {Download#filename}
   # attribute is updated to reflect the filename of the zip within the
   # application bucket.
   #
-  # @param args [Array] Array containing an array of [Bitstream]s at position
-  #                     0, a [Download] instance at position 1, and, optionally,
-  #                     an [Item] ID integer at position 2.
-  # @raises [ArgumentError]
+  # @param args [Array<Hash>] One-element array containing a Hash. The hash has
+  #                           a `:bitstreams` key containing an array of
+  #                           {Bitstream}s; a `:download` key pointing to a
+  #                           {Download} instance; an `:item_id` key; and a
+  #                           `:user` key.
   # @see ZipItemsJob
   #
   def perform(*args)
-    bitstreams  = args[0]
-    download    = args[1]
-    item_id     = args[2]
+    bitstreams  = args[0][:bitstreams]
+    download    = args[0][:download]
+    item_id     = args[0][:item_id]
+    user        = args[0][:user]
     institution = nil
     if item_id
       filename    = "item-#{item_id}.zip"
@@ -32,6 +36,7 @@ class ZipBitstreamsJob < ApplicationJob
     task       = Task.create!(name:          self.class.name,
                               download:      download,
                               institution:   institution,
+                              user:          user,
                               indeterminate: false,
                               started_at:    Time.now,
                               status_text:   "Creating zip file")

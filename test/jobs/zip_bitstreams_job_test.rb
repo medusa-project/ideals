@@ -6,12 +6,33 @@ class ZipBitstreamsJobTest < ActiveSupport::TestCase
     setup_s3
   end
 
+  test "perform() creates a correct Task" do
+    bitstreams  = [bitstreams(:uiuc_approved_in_permanent),
+                   bitstreams(:uiuc_item1_license_bundle)]
+    download    = Download.create(institution: institutions(:uiuc))
+    institution = institutions(:southwest)
+    user        = users(:southwest)
+
+    ZipBitstreamsJob.new.perform(bitstreams:  bitstreams,
+                                 download:    download,
+                                 institution: institution,
+                                 user:        user)
+
+    task = Task.all.order(created_at: :desc).limit(1).first
+    assert_equal "ZipBitstreamsJob", task.name
+    assert_equal user, task.user
+    assert !task.indeterminate
+    assert_not_nil task.started_at
+    assert task.status_text.start_with?("Generating")
+  end
+
   test "perform() creates a zip of bitstreams" do
     bitstreams = [bitstreams(:uiuc_approved_in_permanent),
                   bitstreams(:uiuc_item1_license_bundle)]
     download = Download.create(institution: institutions(:uiuc))
 
-    ZipBitstreamsJob.new.perform(bitstreams, download)
+    ZipBitstreamsJob.new.perform(bitstreams: bitstreams,
+                                 download:   download)
 
     download.reload
     bucket = ::Configuration.instance.storage[:bucket]
@@ -25,10 +46,12 @@ class ZipBitstreamsJobTest < ActiveSupport::TestCase
     bitstreams  = [bitstreams(:uiuc_approved_in_permanent),
                    bitstreams(:uiuc_item1_license_bundle)]
     download    = Download.create(institution: institution)
-    ZipBitstreamsJob.new.perform(bitstreams, download)
+    ZipBitstreamsJob.new.perform(bitstreams: bitstreams,
+                                 download:   download)
 
     download = Download.create(institution: institution)
-    ZipBitstreamsJob.new.perform(bitstreams, download)
+    ZipBitstreamsJob.new.perform(bitstreams: bitstreams,
+                                 download:   download)
 
     download.reload
     bucket = ::Configuration.instance.storage[:bucket]
@@ -45,7 +68,9 @@ class ZipBitstreamsJobTest < ActiveSupport::TestCase
     download   = Download.create(institution: institutions(:uiuc),
                                  filename: filename)
 
-    ZipBitstreamsJob.new.perform(bitstreams, download, item_id)
+    ZipBitstreamsJob.new.perform(bitstreams: bitstreams,
+                                 download:   download,
+                                 item_id:    item_id)
 
     download.reload
     assert_equal filename, download.filename
@@ -57,7 +82,8 @@ class ZipBitstreamsJobTest < ActiveSupport::TestCase
                   bitstreams(:uiuc_item1_license_bundle)]
     download = Download.create(institution: institutions(:uiuc))
 
-    ZipBitstreamsJob.new.perform(bitstreams, download)
+    ZipBitstreamsJob.new.perform(bitstreams: bitstreams,
+                                 download:   download)
 
     download.reload
     assert download.filename.match?(/\A[a-z\d]{16}.zip\z/)

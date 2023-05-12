@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RefreshOpenathensMetadataJob < ApplicationJob
 
   queue_as :admin
@@ -6,16 +8,19 @@ class RefreshOpenathensMetadataJob < ApplicationJob
   # N.B.: in development & test, instead of fetching the real OAF metadata,
   # the `oaf_metadata.xml` file fixture is used.
   #
-  # @param args [Array] One-element array with {Institution} at position 0.
+  # @param args [Array<Hash>] One-element array containing a Hash with
+  #                           `:institution` and `:user` keys.
   #
   def perform(*args)
-    institution = args[0]
-    task = Task.create!(name:          self.class.name,
-                        indeterminate: true,
-                        institution:   institution,
-                        started_at:    Time.now,
-                        status_text:   "Updating OpenAthens Federation "\
-                                       "metadata for #{institution.name}")
+    institution = args[0][:institution]
+    user        = args[0][:user]
+    task        = Task.create!(name:          self.class.name,
+                               indeterminate: true,
+                               institution:   institution,
+                               user:          user,
+                               started_at:    Time.now,
+                               status_text:   "Updating OpenAthens Federation "\
+                                              "metadata for #{institution.name}")
     is_temp_file = false
     begin
       if Rails.env.development? || Rails.env.test?

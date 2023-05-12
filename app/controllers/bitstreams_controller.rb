@@ -190,7 +190,10 @@ class BitstreamsController < ApplicationController
           end
           download = Download.create!(ip_address:  request.remote_ip,
                                       institution: current_institution)
-          ZipBitstreamsJob.perform_later(bitstreams.to_a, download, @item.id)
+          ZipBitstreamsJob.perform_later(bitstreams: bitstreams.to_a,
+                                         download:   download,
+                                         item_id:    @item.id,
+                                         user:       current_user)
           redirect_to download_url(download)
         else
           head :no_content

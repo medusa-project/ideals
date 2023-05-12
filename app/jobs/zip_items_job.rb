@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ZipItemsJob < ApplicationJob
 
   queue_as :public
@@ -13,18 +15,19 @@ class ZipItemsJob < ApplicationJob
   # Upon completion, the given {Download} instance's {Download#filename}
   # attribute is updated to reflect its filename within the application bucket.
   #
-  # @param args [Array] Array containing an array of integer item IDs at
-  #                     position 0 and a {Download} instance at position 1.
-  # @raises [ArgumentError]
+  # @param args [Array<Hash>] One-element array containing a Hash with
+  #                           `:item_ids`, `:download`, and `:user` keys.
   # @see ZipBitstreamsJob
   #
   def perform(*args)
-    item_ids = args[0]
-    download = args[1]
+    item_ids = args[0][:item_ids]
+    download = args[0][:download]
+    user     = args[0][:user]
     filename = "items-#{SecureRandom.hex[0..15]}.zip"
     task     = Task.create!(name:          self.class.name,
                             download:      download,
                             institution:   download.institution,
+                            user:          user,
                             indeterminate: false,
                             started_at:    Time.now,
                             status_text:   "Preparing a #{item_ids.count}-item zip file")

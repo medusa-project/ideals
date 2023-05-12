@@ -1,17 +1,22 @@
+# frozen_string_literal: true
+
 class UploadFaviconsJob < ApplicationJob
 
   queue_as :admin
 
   ##
-  # @param args [Array] Full path of the "master" favicon at position 0, and an
-  #                     {Institution} instance at position 1.
+  # @param args [Array<Hash>] One-element array containing a hash. The hash
+  #                           has `:master_favicon_path`, `:institution`, and
+  #                           `:user` keys.
   # @raises [ArgumentError]
   #
   def perform(*args)
-    tempfile    = args[0]
-    institution = args[1]
+    tempfile    = args[0][:master_favicon_path]
+    institution = args[0][:institution]
+    user        = args[0][:user]
     task        = Task.create!(name:          self.class.name,
                                institution:   institution,
+                               user:          user,
                                indeterminate: false,
                                started_at:    Time.now,
                                status_text:   "Processing favicons")

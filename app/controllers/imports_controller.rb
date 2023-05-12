@@ -86,7 +86,7 @@ class ImportsController < ApplicationController
   # Responds to `PUT/PATCH /imports/:id`
   #
   def update # TODO: rename to complete or something
-    ImportJob.perform_later(@import, current_user)
+    ImportJob.perform_later(import: @import, user: current_user)
     toast!(title:   "Files uploaded",
            message: "The files have been uploaded. The import will commence "\
                     "momentarily.")

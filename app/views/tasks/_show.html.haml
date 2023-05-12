@@ -9,6 +9,12 @@
   %dt Progress
   %dd
     = (@task.indeterminate and @task.percent_complete < 1) ? 'Indeterminate' : (@task.percent_complete * 100).round(1).to_s + '%'
+  %dt User
+  %dd
+    - if @task.user
+      = link_to(@task.user&.name, @task.user)
+    - else
+      Anonymous or Automated
   %dt Started
   %dd
     = @task.started_at ? local_time(@task.started_at) : ''

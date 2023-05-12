@@ -193,7 +193,8 @@ class InstitutionsController < ApplicationController
   # Responds to `PATCH /institutions/:id/refresh-openathens-metadata`
   #
   def refresh_openathens_metadata
-    RefreshOpenathensMetadataJob.perform_later(@institution)
+    RefreshOpenathensMetadataJob.perform_later(institution: @institution,
+                                               user:        current_user)
   rescue => e
     flash['error'] = "#{e}"
   else
@@ -650,7 +651,9 @@ class InstitutionsController < ApplicationController
       File.open(tempfile, "wb") do |file|
         file.write(p[:favicon].read)
       end
-      UploadFaviconsJob.perform_later(tempfile.path, @institution)
+      UploadFaviconsJob.perform_later(master_favicon_path: tempfile.path,
+                                      institution:         @institution,
+                                      user:                current_user)
     end
     if p[:banner_image]
       @institution.upload_banner_image(io:        p[:banner_image],
