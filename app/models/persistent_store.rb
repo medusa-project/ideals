@@ -22,7 +22,7 @@ class PersistentStore
   #
   def copy_object(source_key:, target_key:, public: false)
     client = S3Client.instance
-    client.copy_object(copy_source: "/#{BUCKET}/#{source_key}", # source bucket+key
+    client.copy_object(copy_source: "/#{BUCKET}/#{CGI.escape(source_key)}", # source bucket+key
                        bucket:      BUCKET,                     # destination bucket
                        key:         target_key)                 # destination key
     attach_public_acl(target_key) if public
