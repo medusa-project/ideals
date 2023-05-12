@@ -31,11 +31,12 @@ class UnitPolicy < ApplicationPolicy
       return WRONG_SCOPE_RESULT
     elsif new_parent_id == @unit.parent_id
       return AUTHORIZED_RESULT
-    elsif effective_unit_admin?
+    elsif effective_unit_admin? && effective_unit_admin?(Unit.find(new_parent_id))
       return AUTHORIZED_RESULT
     end
     { authorized: false,
-      reason:     "You must be an administrator of the desired parent unit." }
+      reason:     "You must be an administrator of both the source unit and "\
+                  "destination parent unit." }
   end
 
   def children
@@ -164,14 +165,15 @@ class UnitPolicy < ApplicationPolicy
     effective_unit_admin
   end
 
-  def effective_unit_admin
+  def effective_unit_admin(unit = nil)
+    unit ||= @unit
     if !@user
       return LOGGED_OUT_RESULT
     elsif effective_sysadmin?(@user, @role_limit)
       return AUTHORIZED_RESULT
-    elsif @unit.kind_of?(Unit) && @ctx_institution != @unit.institution
+    elsif unit.kind_of?(Unit) && @ctx_institution != unit.institution
       return WRONG_SCOPE_RESULT
-    elsif @role_limit >= Role::UNIT_ADMINISTRATOR && @user.effective_unit_admin?(@unit)
+    elsif @role_limit >= Role::UNIT_ADMINISTRATOR && @user.effective_unit_admin?(unit)
       return AUTHORIZED_RESULT
     end
     { authorized: false, reason: "You must be an administrator of the unit." }

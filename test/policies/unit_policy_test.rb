@@ -25,6 +25,45 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert !policy.change_parent?(unit2.id)
   end
 
+  test "change_parent?() does not authorize users who are admins of the source
+  parent but not the destination parent" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    @unit.primary_administrator = user
+    new_parent = units(:southwest_unit2)
+    new_parent.primary_administrator = nil
+
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.change_parent?(new_parent.id)
+  end
+
+  test "change_parent?() does not authorize users who are admins of the
+  destination parent but not the source parent" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    @unit.primary_administrator = nil
+    new_parent = units(:southwest_unit2)
+    new_parent.primary_administrator = user
+
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.change_parent?(new_parent.id)
+  end
+
+  test "change_parent?() authorizes users who are admins of both the source and
+  destination parents" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    @unit.primary_administrator = user
+    new_parent = units(:southwest_unit2)
+    new_parent.primary_administrator = user
+
+    policy  = UnitPolicy.new(context, @unit)
+    assert policy.change_parent?(new_parent.id)
+  end
+
   test "change_parent?() authorizes sysadmins" do
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,

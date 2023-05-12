@@ -761,7 +761,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   which the current user is not an effective administrator" do
     log_in_as(users(:uiuc_unit1_admin))
     unit = units(:uiuc_unit1)
-    unit.update!(primary_administrator: nil) # child units cannot have a primary admin
+    unit.update!(primary_administrator: nil)
     patch unit_path(unit),
           xhr: true,
           params: {
