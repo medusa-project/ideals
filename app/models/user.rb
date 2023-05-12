@@ -26,9 +26,9 @@
 #                       institution of which the instance is a member. All non-
 #                       sysadmin users can only log into and browse around
 #                       their home institution's space in the IR.
-# * `local_identity_id` Foreign key to {LocalIdentity}. Used only with
-#                       {User::AuthMethod::LOCAL local authentication}; set
-#                       during processing of the registration form.
+# * `local_identity_id` Foreign key to {LocalIdentity}. Used only with local
+#                       identity authentication; set during processing of the
+#                       registration form.
 # * `name`              The user's name in whatever format they choose to
 #                       provide it.
 # * `phone`             The user's phone number.
@@ -37,32 +37,6 @@
 class User < ApplicationRecord
 
   include Breadcrumb
-
-  class AuthMethod
-    # Credentials are stored in the `local_identities` table.
-    LOCAL      = 0
-    # Used only by UIUC.
-    SHIBBOLETH = 1
-    # Used by many CARLI member institutions.
-    SAML       = 2
-
-    def self.all
-      self.constants.map{ |c| self.const_get(c) }.sort
-    end
-
-    def self.label_for(value)
-      case value
-      when LOCAL
-        "Local"
-      when SAML
-        "SAML"
-      when SHIBBOLETH
-        "Shibboleth"
-      else
-        "Unknown"
-      end
-    end
-  end
 
   # Only Shibboleth users will have one of these.
   belongs_to :affiliation, optional: true

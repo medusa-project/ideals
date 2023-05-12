@@ -9,14 +9,40 @@
 # # Attributes
 #
 # * `auth_hash`   Serialized OmniAuth hash.
-# * `auth_method` One of the {User::AuthMethod} constant values, extracted from
-#                 {auth_hash}.
+# * `auth_method` One of the {Login::Provider} constant values, extracted from
+#                 {auth_hash}. TODO: rename to provider
 # * `created_at`  Represents the login time. Managed by ActiveRecord.
 # * `hostname`    Client hostname.
 # * `ip_address`  Client IP address.
 # * `updated_at`  Managed by ActiveRecord.
 #
 class Login < ApplicationRecord
+
+  class Provider
+    # Credentials are stored in the `local_identities` table.
+    LOCAL      = 0
+    # Used only by UIUC.
+    SHIBBOLETH = 1
+    # Used by many CARLI member institutions.
+    SAML       = 2
+
+    def self.all
+      self.constants.map{ |c| self.const_get(c) }.sort
+    end
+
+    def self.label_for(value)
+      case value
+      when LOCAL
+        "Local"
+      when SAML
+        "SAML"
+      when SHIBBOLETH
+        "Shibboleth"
+      else
+        "Unknown"
+      end
+    end
+  end
 
   belongs_to :user
 
@@ -34,11 +60,11 @@ class Login < ApplicationRecord
 
     case auth[:provider]
     when "shibboleth", "developer"
-      self.auth_method = User::AuthMethod::SHIBBOLETH
+      self.auth_method = Provider::SHIBBOLETH
     when "saml"
-      self.auth_method = User::AuthMethod::SAML
+      self.auth_method = Provider::SAML
     when "identity"
-      self.auth_method = User::AuthMethod::LOCAL
+      self.auth_method = Provider::LOCAL
     end
 
     super(auth)
