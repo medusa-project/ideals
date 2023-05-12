@@ -7,4 +7,5 @@ RUN sed -i -e 's/rootLogger.level = info/rootLogger.level = error/g' config/log4
     && echo "plugins.index_state_management.enabled: false" >> config/opensearch.yml \
     && rm -rf plugins/opensearch-security
 
-RUN bin/opensearch-plugin install --batch analysis-icu
+RUN bin/opensearch-plugin remove opensearch-performance-analyzer \
+    && bin/opensearch-plugin install --batch analysis-icu
