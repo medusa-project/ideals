@@ -8,13 +8,13 @@
 #
 # # Attributes
 #
-# * `auth_hash`   Serialized OmniAuth hash.
-# * `auth_method` One of the {Login::Provider} constant values, extracted from
-#                 {auth_hash}. TODO: rename to provider
-# * `created_at`  Represents the login time. Managed by ActiveRecord.
-# * `hostname`    Client hostname.
-# * `ip_address`  Client IP address.
-# * `updated_at`  Managed by ActiveRecord.
+# * `auth_hash`  Serialized OmniAuth hash.
+# * `created_at` Represents the login time. Managed by ActiveRecord.
+# * `hostname`   Client hostname.
+# * `ip_address` Client IP address.
+# * `provider`   One of the {Login::Provider} constant values, extracted from
+#                {auth_hash}.
+# * `updated_at` Managed by ActiveRecord.
 #
 class Login < ApplicationRecord
 
@@ -48,6 +48,11 @@ class Login < ApplicationRecord
 
   serialize :auth_hash, JSON
 
+  validates :provider, inclusion: { in: Provider.all }
+
+  ##
+  # Override to ensure that the argument is serializable.
+  #
   def auth_hash=(auth)
     # By default, omniauth-saml's auth hash is not serializable--it will raise
     # a StackLevelTooDeep error which is probably a bug. So we will discard the
@@ -60,11 +65,11 @@ class Login < ApplicationRecord
 
     case auth[:provider]
     when "shibboleth", "developer"
-      self.auth_method = Provider::SHIBBOLETH
+      self.provider = Provider::SHIBBOLETH
     when "saml"
-      self.auth_method = Provider::SAML
+      self.provider = Provider::SAML
     when "identity"
-      self.auth_method = Provider::LOCAL
+      self.provider = Provider::LOCAL
     end
 
     super(auth)

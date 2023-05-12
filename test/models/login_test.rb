@@ -8,18 +8,18 @@ class LoginTest < ActiveSupport::TestCase
 
   # auth_hash=()
 
-  test "auth_hash=() sets the auth method" do
+  test "auth_hash=() sets the provider" do
     @instance.auth_hash = { provider: "saml" }
-    assert_equal Login::Provider::SAML, @instance.auth_method
+    assert_equal Login::Provider::SAML, @instance.provider
 
     @instance.auth_hash = { provider: "shibboleth" }
-    assert_equal Login::Provider::SHIBBOLETH, @instance.auth_method
+    assert_equal Login::Provider::SHIBBOLETH, @instance.provider
 
     @instance.auth_hash = { provider: "developer" }
-    assert_equal Login::Provider::SHIBBOLETH, @instance.auth_method
+    assert_equal Login::Provider::SHIBBOLETH, @instance.provider
 
     @instance.auth_hash = { provider: "identity" }
-    assert_equal Login::Provider::LOCAL, @instance.auth_method
+    assert_equal Login::Provider::LOCAL, @instance.provider
   end
 
 end
