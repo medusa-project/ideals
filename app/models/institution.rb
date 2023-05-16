@@ -165,6 +165,7 @@ class Institution < ApplicationRecord
   has_many :administrator_groups, class_name: "InstitutionAdministratorGroup"
   has_many :administering_groups, through: :administrator_groups,
            class_name: "UserGroup", source: :user_group
+  has_many :deposit_agreement_questions
   has_many :downloads
   has_many :imports
   has_many :index_pages
@@ -213,7 +214,8 @@ class Institution < ApplicationRecord
            :validate_authentication_method
 
   # N.B.: order is important!
-  after_create :add_default_vocabularies, :add_default_elements,
+  after_create :add_default_deposit_agreement_questions,
+               :add_default_vocabularies, :add_default_elements,
                :add_default_element_mappings, :add_default_metadata_profile,
                :add_default_submission_profile, :add_default_index_pages,
                :add_default_user_groups
@@ -691,6 +693,16 @@ class Institution < ApplicationRecord
 
 
   private
+
+  def add_default_deposit_agreement_questions
+    q = self.deposit_agreement_questions.build(text: "Do you agree to the "\
+                                                     "deposit agreement in "\
+                                                     "its entirety?",
+                                               position: 0)
+    q.responses.build(text: "Yes", position: 0, success: true)
+    q.responses.build(text: "No", position: 1, success: false)
+    q.save!
+  end
 
   def add_default_elements
     # These elements are used by default metadata mappings (see

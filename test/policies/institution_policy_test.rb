@@ -235,6 +235,112 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.edit_authentication?
   end
 
+  # edit_deposit_agreement?()
+
+  test "edit_deposit_agreement?() returns false with a nil user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @institution)
+    policy = InstitutionPolicy.new(context, @institution)
+    assert !policy.edit_deposit_agreement?
+  end
+
+  test "edit_deposit_agreement?() is restrictive by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.edit_deposit_agreement?
+  end
+
+  test "edit_deposit_agreement?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.edit_deposit_agreement?
+  end
+
+  test "edit_deposit_agreement?() authorizes administrators of the same
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, user.institution)
+    assert policy.edit_deposit_agreement?
+  end
+
+  test "edit_deposit_agreement?() does not authorize administrators of different
+  institutions" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.edit_deposit_agreement?
+  end
+
+  test "edit_deposit_agreement?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.edit_deposit_agreement?
+  end
+
+  # edit_deposit_questions?()
+
+  test "edit_deposit_questions?() returns false with a nil user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @institution)
+    policy = InstitutionPolicy.new(context, @institution)
+    assert !policy.edit_deposit_questions?
+  end
+
+  test "edit_deposit_questions?() is restrictive by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.edit_deposit_questions?
+  end
+
+  test "edit_deposit_questions?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.edit_deposit_questions?
+  end
+
+  test "edit_deposit_questions?() authorizes administrators of the same
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, user.institution)
+    assert policy.edit_deposit_questions?
+  end
+
+  test "edit_deposit_questions?() does not authorize administrators of different
+  institutions" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.edit_deposit_questions?
+  end
+
+  test "edit_deposit_questions?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.edit_deposit_questions?
+  end
+
   # edit_element_mappings?()
 
   test "edit_element_mappings?() returns false with a nil user" do
@@ -976,6 +1082,58 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.show_authentication?
   end
 
+  # show_depositing?()
+
+  test "show_depositing?() returns false with a nil request context" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @institution)
+    policy = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_depositing?
+  end
+
+  test "show_depositing?() does not authorize non-sysadmins" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_depositing?
+  end
+
+  test "show_depositing?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.show_depositing?
+  end
+
+  test "show_depositing?() authorizes administrators of the same institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.show_depositing?
+  end
+
+  test "show_depositing?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, institutions(:northeast))
+    assert !policy.show_depositing?
+  end
+
+  test "show_depositing?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_depositing?
+  end
+
   # show_element_mappings?()
 
   test "show_element_mappings?() returns false with a nil request context" do
@@ -1619,6 +1777,52 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
                                  role_limit:  Role::LOGGED_IN)
     policy  = InstitutionPolicy.new(context, @institution)
     assert !policy.statistics_by_range?
+  end
+
+  # update_deposit_agreement_questions?()
+
+  test "update_deposit_agreement_questions?() returns false with a nil request
+  context" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @institution)
+    policy = InstitutionPolicy.new(context, @institution)
+    assert !policy.update_deposit_agreement_questions?
+  end
+
+  test "update_deposit_agreement_questions?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.update_deposit_agreement_questions?
+  end
+
+  test "update_deposit_agreement_questions?() authorizes administrators of the
+  same institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.update_deposit_agreement_questions?
+  end
+
+  test "update_deposit_agreement_questions?() does not authorize administrators
+  of a different institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, institutions(:northeast))
+    assert !policy.update_deposit_agreement_questions?
+  end
+
+  test "update_deposit_agreement_questions?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.update_deposit_agreement_questions?
   end
 
   # update_preservation?()

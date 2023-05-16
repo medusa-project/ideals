@@ -1,0 +1,25 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+southwest_q1_one:
+  deposit_agreement_question: southwest_one
+  text:                       That guy
+  position:                   0
+  success:                    true
+
+southwest_q1_two:
+  deposit_agreement_question: southwest_one
+  text:                       That other guy
+  position:                   1
+  success:                    false
+
+southwest_q2_one:
+  deposit_agreement_question: southwest_two
+  text:                       This
+  position:                   0
+  success:                    true
+
+southwest_q2_two:
+  deposit_agreement_question: southwest_two
+  text:                       That
+  position:                   1
+  success:                    false

@@ -54,83 +54,25 @@
 -# N.B.: these questions are outside of the form because they are only read
 -# by JavaScript and don't need to be submitted
 #questions
-
-  %p
-    %strong Are you a creator of this work or have you been granted permission by the creator to deposit it?
-
-  .row
-    .col-sm-3.question
-      .form-check
-        %input#q1-1.response.form-check-input{type: "radio", name: "q1", value: "Yes"}
-        %label.form-check-label{for: "q1-1"} Yes
-      .form-check
-        %input#q1-2.response.form-check-input{type: "radio", name: "q1", value: "No"}
-        %label.form-check-label{for: "q1-2"} No
-    .col-sm-9
-      %p.mt-2.text-secondary
-        %i.fa.fa-info-circle
-        Deposit into
-        = current_institution.service_name
-        requires that the depositor be the creator of the dataset or have
-        permission to deposit it.
-
-  %hr
-
-  %p
-    %strong Have you removed any private, confidential, export controlled, or other legally protected information from the submission?
-
-  .row
-    .col-sm-3.question
-      .form-check
-        %input#q2-1.response.form-check-input{type: "radio", name: "q2", value: "Yes"}
-        %label.form-check-label{for: "q2-1"} Yes
-      .form-check
-        %input#q2-2.response.form-check-input{type: "radio", name: "q2", value: "No"}
-        %label.form-check-label{for: "q2-2"} No
-      .form-check
-        %input#q2-3.response.form-check-input{type: "radio", name: "q2", value: "Not applicable"}
-        %label.form-check-label{for: "q2-3"} Not Applicable
-    .col-sm-9
-      %p.mt-2.text-secondary
-        %i.fa.fa-info-circle
-        Deposit into
-        = current_institution.service_name
-        requires removal of any private, confidential,
-        export-controlled, or other legally protected information from the
-        work. A selection of "Not Applicable" indicates that the work never
-        included such information, while a selection of ‘Yes’ indicates that
-        such information has been removed.
-
-  %div{style: "display: #{current_institution.deposit_agreement.present? ? "block" : "none"}"}
-
-    %hr
-
+  - current_institution.deposit_agreement_questions.each do |question|
     %p
-      %strong
-        Do you agree to the
-        = current_institution.service_name
-        Deposit Agreement in its entirety?
-
+      %strong= question.text
     .row
-      .col-sm-3.question.mb-3
-        .form-check
-          %input#q3-1.response.form-check-input{type:    "radio",
-                                                name:    "q3",
-                                                value:   "Yes",
-                                                checked: current_institution.deposit_agreement.blank?}
-          %label.form-check-label{for: "q3-1"} Yes
-        .form-check
-          %input#q3-2.response.form-check-input{type: "radio", name: "q3", value: "No"}
-          %label.form-check-label{for: "q3-2"} No
-      .col-sm-9
-        %p.mt-2.text-secondary
-          %i.fa.fa-info-circle
-          Deposit into
-          = current_institution.service_name
-          requires agreement to the Deposit Agreement. Click
-          on the Deposit Agreement heading above to view the full agreement.
-
-  %hr
+      .col-sm-4.question
+        - question.responses.each do |response|
+          .form-check
+            %input.response.form-check-input{type:           "radio",
+                                             id:             "response-#{response.id}",
+                                             name:           "question-#{question.id}",
+                                             value:          "Yes",
+                                             "data-success": response.success ? "true" : "false"}
+            %label.form-check-label{for: "response-#{response.id}"}= response.text
+      .col-sm-8
+        - if question.help_text.present?
+          %p.mt-2.text-secondary
+            %i.fa.fa-info-circle
+            = question.help_text
+    %hr
 
   = form_tag(submissions_path, method: :post) do
     = hidden_field_tag(:primary_collection_id, @collection&.id)
@@ -141,5 +83,4 @@
         #feedback.text-danger.ms-2
           = icon_for(:warning)
           The selections you have made indicate that you are not ready to deposit your dataset.
-          = current_institution.service_name
-          curators are available to discuss your dataset with you. Please contact us!
+          Our curators are available to discuss your dataset with you. Please contact us!

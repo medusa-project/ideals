@@ -216,6 +216,56 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # edit_deposit_agreement()
+
+  test "edit_deposit_agreement() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_edit_deposit_agreement_path(@institution), xhr: true
+    assert_response :not_found
+  end
+
+  test "edit_deposit_agreement() returns HTTP 403 for logged-out users" do
+    get institution_edit_deposit_agreement_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_deposit_agreement() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    get institution_edit_deposit_agreement_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_deposit_agreement() returns HTTP 200" do
+    log_in_as(users(:southwest_admin))
+    get institution_edit_deposit_agreement_path(@institution), xhr: true
+    assert_response :ok
+  end
+
+  # edit_deposit_questions()
+
+  test "edit_deposit_questions() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_edit_deposit_questions_path(@institution), xhr: true
+    assert_response :not_found
+  end
+
+  test "edit_deposit_questions() returns HTTP 403 for logged-out users" do
+    get institution_edit_deposit_questions_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_deposit_questions() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    get institution_edit_deposit_questions_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_deposit_questions() returns HTTP 200" do
+    log_in_as(users(:southwest_admin))
+    get institution_edit_deposit_questions_path(@institution), xhr: true
+    assert_response :ok
+  end
+
   # edit_element_mappings()
 
   test "edit_element_mappings() returns HTTP 404 for unscoped requests" do
@@ -758,6 +808,31 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # show_depositing()
+
+  test "show_depositing() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_depositing_path(@institution), xhr: true
+    assert_response :not_found
+  end
+
+  test "show_depositing() returns HTTP 403 for logged-out users" do
+    get institution_depositing_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_depositing() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    get institution_depositing_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_depositing() returns HTTP 200 for authorized users" do
+    log_in_as(users(:southwest_admin))
+    get institution_depositing_path(@institution), xhr: true
+    assert_response :ok
+  end
+
   # show_element_mappings()
 
   test "show_element_mappings() returns HTTP 404 for unscoped requests" do
@@ -1148,6 +1223,104 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
       to_month:   1
     }
     assert_response :bad_request
+  end
+
+  # update_deposit_agreement_questions()
+
+  test "update_deposit_agreement_questions() returns HTTP 404 for unscoped
+  requests" do
+    host! ::Configuration.instance.main_host
+    patch institution_deposit_agreement_questions_path(@institution)
+    assert_response :not_found
+  end
+
+  test "update_deposit_agreement_questions() redirects to root page for
+  logged-out users" do
+    patch institution_deposit_agreement_questions_path(@institution)
+    assert_redirected_to @institution.scope_url
+  end
+
+  test "update_deposit_agreement_questions() returns HTTP 403 for unauthorized
+  users" do
+    log_in_as(users(:southwest))
+    patch institution_deposit_agreement_questions_path(@institution)
+    assert_response :forbidden
+  end
+
+  test "update_deposit_agreement_questions() updates an institution's deposit
+  agreement questions" do
+    user = users(:southwest_admin)
+    log_in_as(user)
+    institution = user.institution
+    patch institution_deposit_agreement_questions_path(institution),
+          xhr: true,
+          params: {
+            questions: {
+              "0": {
+                text: "When?",
+                help_text: "?",
+                responses: {
+                  "0": {
+                    text: "Then",
+                    success: "true"
+                  },
+                  "1": {
+                    text: "Now",
+                    success: "false"
+                  },
+                }
+              }
+            }
+          }
+    institution.reload
+    assert_equal 1, institution.deposit_agreement_questions.count
+    q = institution.deposit_agreement_questions.first
+    assert_equal 2, q.responses.count
+    r = q.responses.first
+    assert_equal "Then", r.text
+    assert r.success
+  end
+
+  test "update_deposit_agreement_questions() returns HTTP 200" do
+    user = users(:southwest_admin)
+    log_in_as(user)
+    institution = user.institution
+    patch institution_deposit_agreement_questions_path(institution),
+          xhr: true,
+          params: {
+            questions: {
+              "0": {
+                text: "When?",
+                help_text: "?",
+                responses: {
+                  "0": {
+                    text: "Then",
+                    success: "true"
+                  }
+                }
+              }
+            }
+          }
+    assert_response :ok
+  end
+
+  test "update_deposit_agreement_questions() returns HTTP 400 for illegal
+  arguments" do
+    log_in_as(users(:southwest_admin))
+    patch institution_deposit_agreement_questions_path(@institution),
+          xhr: true,
+          params: {
+            bogus: {
+            }
+          }
+    assert_response :bad_request
+  end
+
+  test "update_deposit_agreement_questions() returns HTTP 404 for nonexistent
+  institutions" do
+    log_in_as(users(:southwest_admin))
+    patch "/institutions/bogus/deposit-agreement-questions"
+    assert_response :not_found
   end
 
   # update_preservation()

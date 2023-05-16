@@ -1,0 +1,63 @@
+= form_for(institution, url: institution_deposit_agreement_questions_path(institution), remote: true) do |f|
+  .error-messages
+    -# populated via ajax by shared/_validation_messages.js.erb
+
+  = hidden_field_tag :institution_id, @institution.id
+
+  - questions = institution.deposit_agreement_questions
+  - if questions.empty?
+    - questions = [DepositAgreementQuestion.new]
+
+  - questions.each_with_index do |question, q_index|
+    .card.question.mb-3
+      .card-header
+        .float-end
+          %button.btn.btn-sm.btn-outline-danger.remove-question
+            %i.fa.fa-minus
+            Remove
+        %h5.card-title= "Question #{q_index + 1}"
+      .card-body
+        .row
+          .col-sm-6
+            = label_tag "questions[#{q_index}][text]", "Question Text"
+            = text_area_tag "questions[#{q_index}][text]",
+                             question.text, rows: 4, class: "form-control mb-3"
+          .col-sm-6
+            = label_tag "questions[#{q_index}][help_text]", "Help Text"
+            = text_area_tag "questions[#{q_index}][help_text]",
+                             question.help_text, rows: 4, class: "form-control mb-3"
+        - responses = question.responses
+        - if responses.empty?
+          - responses = [DepositAgreementQuestionResponse.new, DepositAgreementQuestionResponse.new]
+        - responses.each_with_index do |response, r_index|
+          .card.response.mb-3
+            .card-header
+              .float-end
+                %button.btn.btn-sm.btn-outline-danger.remove-response
+                  %i.fa.fa-minus
+                  Remove
+              %h6.card-title= "Response #{r_index + 1}"
+            .card-body
+              = text_field_tag "questions[#{q_index}][responses[#{r_index}][text]]",
+                               response.text, class: "form-control mb-2"
+              .form-check
+                %input.form-check-input{type:    "checkbox",
+                                        name:    "questions[#{q_index}][responses[#{r_index}][success]]",
+                                        id:      "questions[#{q_index}][responses[#{r_index}][success]]",
+                                        value:   "true",
+                                        checked: response.success}
+                %label.form-check-label{for: "questions[#{q_index}][responses[#{r_index}][success]]"}
+                  Success
+
+        %button.btn.btn-sm.btn-outline-success.add-response.mb-3
+          %i.fa.fa-plus
+          Add Response
+
+  %button.btn.btn-sm.btn-outline-success.add-question.mb-3
+    %i.fa.fa-plus
+    Add Question
+
+  .clearfix
+    .float-end
+      %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel
+      = f.submit("Save Changes", class: "btn btn-primary")

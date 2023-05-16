@@ -1,0 +1,15 @@
+= form_for(institution, url: institution_settings_path(institution), remote: true) do |f|
+  .error-messages
+    -# populated via ajax by shared/_validation_messages.js.erb
+
+  .mb-3
+    = f.text_area :deposit_agreement, class: "form-control", rows: 10
+    %p.form-text
+      %i.fa.fa-info-circle
+      The following HTML tags are allowed:
+      = allowed_html_tags
+
+  .clearfix
+    .float-end
+      %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel
+      = f.submit("Save Changes", class: "btn btn-primary")

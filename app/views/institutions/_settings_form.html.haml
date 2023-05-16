@@ -38,14 +38,6 @@
       If filled in, this will override the About HTML.
 
   .mb-3
-    = f.label :deposit_agreement, "Deposit Agreement"
-    = f.text_area :deposit_agreement, class: "form-control", rows: 10
-    %p.form-text
-      %i.fa.fa-info-circle
-      The following HTML tags are allowed:
-      = allowed_html_tags
-
-  .mb-3
     = f.label :copyright_notice, "Copyright Notice"
     = f.text_field :copyright_notice, class: "form-control"
 

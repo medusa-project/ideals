@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+southwest_one:
+  institution: southwest
+  text:        Who?
+  help_text:
+  position:    0
+
+southwest_two:
+  institution: southwest
+  text:        What?
+  help_text:
+  position:    1

@@ -89,6 +89,24 @@ class InstitutionTest < ActiveSupport::TestCase
 
   # create()
 
+  test "create() adds default deposit agreement questions" do
+    institution = Institution.create!(name:             "New Institution",
+                                      service_name:     "New",
+                                      key:              "new",
+                                      fqdn:             "example.net",
+                                      main_website_url: "https://example.net")
+    questions = institution.deposit_agreement_questions
+    assert_equal 1, questions.length
+    q = questions.first
+    assert_equal 2, q.responses.length
+    r1 = q.responses[0]
+    assert_equal "Yes", r1.text
+    assert r1.success
+    r2 = q.responses[1]
+    assert_equal "No", r2.text
+    assert !r2.success
+  end
+
   test "create() adds default elements" do
     institution = Institution.create!(name:             "New Institution",
                                       service_name:     "New",

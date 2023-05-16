@@ -75,6 +75,26 @@ class InstitutionsController < ApplicationController
   end
 
   ##
+  # Used for editing the deposit agreement.
+  #
+  # Responds to `GET /institutions/:key/edit-deposit-agreement` (XHR only)
+  #
+  def edit_deposit_agreement
+    render partial: "deposit_agreement_form",
+           locals: { institution: @institution }
+  end
+
+  ##
+  # Used for editing the deposit questions.
+  #
+  # Responds to `GET /institutions/:key/edit-deposit-questions` (XHR only)
+  #
+  def edit_deposit_questions
+    render partial: "deposit_questions_form",
+           locals: { institution: @institution }
+  end
+
+  ##
   # Used for editing element mappings.
   #
   # Responds to `GET /institutions/:key/element-mappings/edit` (XHR only)
@@ -287,6 +307,15 @@ class InstitutionsController < ApplicationController
   end
 
   ##
+  # Renders HTML for the depositing tab in show-institution view.
+  #
+  # Responds to `GET /institutions/:key/depositing` (XHR only)
+  #
+  def show_depositing
+    render partial: "show_depositing_tab"
+  end
+
+  ##
   # Renders HTML for the element mappings tab in show-institution view.
   #
   # Responds to `GET /institutions/:key/element-mappings` (XHR only)
@@ -489,6 +518,42 @@ class InstitutionsController < ApplicationController
                   disposition: "attachment",
                   filename: "#{@institution.key}_statistics.csv"
       end
+    end
+  end
+
+  ##
+  # Responds to `PATCH /institutions/:key/deposit-agreement-questions`
+  #
+  def update_deposit_agreement_questions
+    begin
+      ActiveRecord::Base.transaction do
+        @institution.deposit_agreement_questions.destroy_all
+        q_count = params[:questions].keys.length
+        q_count.times do |q_index|
+          pq = params[:questions][q_index.to_s]
+          q  = DepositAgreementQuestion.new(institution: @institution,
+                                            text:        pq[:text]&.strip,
+                                            help_text:   pq[:help_text]&.strip,
+                                            position:    q_index)
+          r_count = pq[:responses].keys.length
+          r_count.times do |r_index|
+            pr   = pq[:responses][r_index.to_s]
+            text = pr[:text]&.strip
+            q.responses.build(text:     text,
+                              success:  pr[:success] == "true",
+                              position: r_index)
+          end
+          q.save!
+        end
+      end
+    rescue => e
+      render partial: "shared/validation_messages",
+             locals: { object: @institution.errors.any? ? @institution : e },
+             status: :bad_request
+    else
+      toast!(title:   "Questions updated",
+             message: "The deposit agreement questions for \"#{@institution.name}\" have been updated.")
+      render "shared/reload"
     end
   end
 

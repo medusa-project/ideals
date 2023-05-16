@@ -39,7 +39,7 @@
                                       "aria-controls":  "settings-tab-content",
                                       "aria-selected":  "false"}
           %i.fa.fa-cog
-          Settings
+          General Settings
       - if policy(@institution).show_authentication?
         %button#authentication-tab.nav-link{"data-bs-target": "#authentication-tab-content",
                                             "data-bs-toggle": "pill",
@@ -70,6 +70,15 @@
                                    "data-institution-key": @institution.key}
           %i.fa.fa-palette
           Theme
+      - if policy(@institution).show_depositing?
+        %button#depositing-tab.nav-link{"data-bs-target": "#depositing-tab-content",
+                                      "data-bs-toggle":   "pill",
+                                      role:               "tab",
+                                      type:               "button",
+                                      "aria-controls":    "depositing-tab-content",
+                                      "aria-selected":    "false"}
+          %i.fa.fa-plus
+          Deposit Agreement
       - if policy(@institution).show_units?
         %button#units-tab.nav-link{"data-bs-target": "#units-tab-content",
                                    "data-bs-toggle": "pill",
@@ -233,6 +242,11 @@
                                        "aria-labelledby": "theme-tab"}
         = spinner
 
+    - if policy(@institution).show_depositing?
+      #depositing-tab-content.tab-pane.fade{role:              "tabpanel",
+                                            "aria-labelledby": "depositing-tab"}
+        = spinner
+
     - if policy(@institution).show_units?
       #units-tab-content.tab-pane.fade{role:              "tabpanel",
                                        "aria-labelledby": "units-tab"}
@@ -255,6 +269,10 @@
 
 = render partial: "shared/ajax_modal",
          locals: { id: "add-unit-modal", title: "Add Unit" }
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-deposit-agreement-modal", title: "Edit Deposit Agreement" }
+= render partial: "shared/ajax_modal",
+         locals: { id: "edit-deposit-questions-modal", title: "Edit Deposit Questions", size: :lg }
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-element-mappings-modal", title: "Edit Element Mappings" }
 = render partial: "shared/ajax_modal",

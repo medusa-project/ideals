@@ -96,6 +96,83 @@ const InstitutionView = function() {
         });
     });
 
+    $("#depositing-tab").on("show.bs.tab", function() {
+        const url = ROOT_URL + "/institutions/" + institutionKey + "/depositing";
+        $.get(url, function (data) {
+            $("#depositing-tab-content").html(data);
+            $("button.edit-deposit-agreement").on("click", function() {
+                const url = ROOT_URL + "/institutions/" + institutionKey + "/edit-deposit-agreement";
+                $.get(url, function(data) {
+                    $("#edit-deposit-agreement-modal .modal-body").html(data);
+                });
+            });
+            $("button.edit-deposit-questions").on("click", function() {
+                const url = ROOT_URL + "/institutions/" + institutionKey + "/edit-deposit-questions";
+                $.get(url, function(data) {
+                    const modalBody = $("#edit-deposit-questions-modal .modal-body");
+                    modalBody.html(data);
+
+                    const updateQuestionIndices = function() {
+                        modalBody.find(".question").each(function (qindex, question) {
+                            $(question).find(".card-header h5").each(function () {
+                                $(this).text("Question " + (qindex + 1));
+                            });
+                            const textarea = $(question).find("textarea");
+                            const newName  = textarea.attr("name")
+                                .replace(/questions\[[0-9]]/, "questions[" + qindex + "]");
+                            textarea.attr("name", newName);
+
+                            $(question).find(".response").each(function (rindex, response) {
+                                $(response).find(".card-header h6").each(function () {
+                                    $(this).text("Response " + (rindex + 1));
+                                });
+                                $(response).find("input").each(function () {
+                                    const input = $(this);
+                                    let newName = input.attr("name")
+                                        .replace(/questions\[[0-9]]/, "questions[" + qindex + "]")
+                                        .replace(/responses\[[0-9]]/, "responses[" + rindex + "]");
+                                    input.attr("name", newName);
+                                });
+                            });
+                        });
+                    };
+
+                    const updateEventListeners = function() {
+                        $("button.add-question, button.add-response").off("click").on("click", function(e) {
+                            e.preventDefault();
+                            const clone = $(this).prev().clone();
+                            clone.find("input[type=text], textarea").val("");
+                            clone.find("input[type=checkbox]").prop("checked", false);
+                            $(this).before(clone);
+                            updateQuestionIndices();
+                            updateEventListeners();
+                        });
+                        $("button.remove-question").off("click").on("click", function(e) {
+                            e.preventDefault();
+                            const containers    = modalBody.find(".question");
+                            const numContainers = containers.length;
+                            if (numContainers > 1) {
+                                $(this).parents(".question:first").remove();
+                            }
+                            updateQuestionIndices();
+                        });
+                        $("button.remove-response").off("click").on("click", function(e) {
+                            e.preventDefault();
+                            const parentQuestion = $(this).parents(".question:first")
+                            const otherResponses = parentQuestion.find(".response");
+                            if (otherResponses.length > 1) {
+                                const response = $(this).parents(".response:first");
+                                response.remove();
+                            }
+                            updateQuestionIndices();
+                        });
+                    };
+                    updateEventListeners();
+                });
+            });
+        });
+    }).trigger("show.bs.tab");
+
     $("#element-registry-tab").on("show.bs.tab", function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/elements";
         $.get(url, function (data) {

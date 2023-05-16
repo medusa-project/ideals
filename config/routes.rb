@@ -76,6 +76,8 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/authentication", to: "institutions#show_authentication", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/depositing", to: "institutions#show_depositing", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/edit-administering-groups", to: "institutions#edit_administering_groups", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-administering-users", to: "institutions#edit_administering_users", via: :get,
@@ -83,6 +85,10 @@ Rails.application.routes.draw do
     match "/element-mappings/edit", to: "institutions#edit_element_mappings", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-authentication", to: "institutions#edit_authentication", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/edit-deposit-agreement", to: "institutions#edit_deposit_agreement", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/edit-deposit-questions", to: "institutions#edit_deposit_questions", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-preservation", to: "institutions#edit_preservation", via: :get,
           constraints: lambda { |request| request.xhr? }
@@ -122,6 +128,7 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
 
     match "/banner-image", to: "institutions#remove_banner_image", via: :delete
+    match "/deposit-agreement-questions", to: "institutions#update_deposit_agreement_questions", via: [:patch, :post]
     match "/favicon", to: "institutions#remove_favicon", via: :delete
     match "/footer-image", to: "institutions#remove_footer_image", via: :delete
     match "/header-image", to: "institutions#remove_header_image", via: :delete

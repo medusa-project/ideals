@@ -31,6 +31,14 @@ class InstitutionPolicy < ApplicationPolicy
     edit_settings
   end
 
+  def edit_deposit_agreement
+    edit_settings
+  end
+
+  def edit_deposit_questions
+    edit_deposit_agreement
+  end
+
   def edit_element_mappings
     edit_settings
   end
@@ -113,6 +121,10 @@ class InstitutionPolicy < ApplicationPolicy
     show_settings
   end
 
+  def show_depositing
+    show
+  end
+
   def show_element_mappings
     show
   end
@@ -171,6 +183,10 @@ class InstitutionPolicy < ApplicationPolicy
 
   def statistics_by_range
     show_statistics
+  end
+
+  def update_deposit_agreement_questions
+    update_settings
   end
 
   def update_preservation

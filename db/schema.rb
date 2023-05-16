@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_12_205454) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_15_181338) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -150,6 +150,30 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_12_205454) do
     t.datetime "updated_at", null: false
     t.bigint "user_id"
     t.index ["user_group_id", "user_id"], name: "index_departments_on_user_group_id_and_user_id", unique: true
+  end
+
+  create_table "deposit_agreement_question_responses", force: :cascade do |t|
+    t.bigint "deposit_agreement_question_id", null: false
+    t.string "text", null: false
+    t.integer "position", default: 0, null: false
+    t.boolean "success", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["deposit_agreement_question_id", "position"], name: "index_daqr_on_saq_position"
+    t.index ["deposit_agreement_question_id", "text"], name: "index_daqr_on_saq_text"
+    t.index ["deposit_agreement_question_id"], name: "index_daqr_on_saq_id"
+  end
+
+  create_table "deposit_agreement_questions", force: :cascade do |t|
+    t.bigint "institution_id", null: false
+    t.string "text", null: false
+    t.string "help_text"
+    t.integer "position", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["institution_id", "position"], name: "index_daq_on_institution_id_and_position", unique: true
+    t.index ["institution_id", "text"], name: "index_deposit_agreement_questions_on_institution_id_and_text", unique: true
+    t.index ["institution_id"], name: "index_deposit_agreement_questions_on_institution_id"
   end
 
   create_table "downloads", force: :cascade do |t|
@@ -757,6 +781,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_12_205454) do
   add_foreign_key "collections", "submission_profiles", on_update: :cascade, on_delete: :nullify
   add_foreign_key "departments", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "departments", "users", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "deposit_agreement_question_responses", "deposit_agreement_questions", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "deposit_agreement_questions", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "downloads", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "downloads", "tasks", on_update: :cascade, on_delete: :nullify
   add_foreign_key "email_patterns", "user_groups", on_update: :cascade, on_delete: :cascade
