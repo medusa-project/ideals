@@ -125,8 +125,8 @@ class SafImporterTest < ActiveSupport::TestCase
     assert_equal "Michigan Institute of Technology", item.element("thesis:degree:grantor").string
   end
 
-  test "import_from_path() supports uppercase content file keys" do
-    package = File.join(PACKAGES_PATH, "uppercase_content_keys")
+  test "import_from_path() supports a content file named contents" do
+    package = File.join(PACKAGES_PATH, "valid_item_2")
     @instance.import_from_path(pathname:           package,
                                primary_collection: collections(:uiuc_collection1),
                                mapfile_path:       Tempfile.new("test"))
@@ -138,8 +138,8 @@ class SafImporterTest < ActiveSupport::TestCase
 
     # Test bitstream #1
     assert_equal 2, item.bitstreams.count
-    bs = item.bitstreams.where(filename: "hello.txt").first
-    assert_equal File.size(File.join(PACKAGES_PATH, "valid_item", "item_1", "hello.txt")),
+    bs = item.bitstreams.where(filename: "README.txt").first
+    assert_equal File.size(File.join(PACKAGES_PATH, "valid_item_2", "item_1", "README.txt")),
                  bs.length
     assert_equal Bitstream::Bundle::CONTENT, bs.bundle
     assert_equal Bitstream.permanent_key(institution_key: bs.institution.key,
@@ -151,7 +151,44 @@ class SafImporterTest < ActiveSupport::TestCase
 
     # Test bitstream #2
     bs = item.bitstreams.where(filename: "license.txt").first
-    assert_equal File.size(File.join(PACKAGES_PATH, "valid_item", "item_1", "license.txt")),
+    assert_equal File.size(File.join(PACKAGES_PATH, "valid_item_2", "item_1", "license.txt")),
+                 bs.length
+    assert_equal Bitstream::Bundle::LICENSE, bs.bundle
+    assert_equal Bitstream.permanent_key(institution_key: bs.institution.key,
+                                         item_id:         bs.item_id,
+                                         filename:        bs.filename),
+                 bs.permanent_key
+    assert_equal "License file", bs.description
+    assert !bs.primary
+  end
+
+  test "import_from_path() supports uppercase content file keys" do
+    package = File.join(PACKAGES_PATH, "valid_item_2")
+    @instance.import_from_path(pathname:           package,
+                               primary_collection: collections(:uiuc_collection1),
+                               mapfile_path:       Tempfile.new("test"))
+
+    # Test the created item's immediate properties
+    item = Item.order(created_at: :desc).limit(1).first
+    assert_not_nil item.handle
+    assert_equal Item::Stages::APPROVED, item.stage
+
+    # Test bitstream #1
+    assert_equal 2, item.bitstreams.count
+    bs = item.bitstreams.where(filename: "README.txt").first
+    assert_equal File.size(File.join(PACKAGES_PATH, "valid_item_2", "item_1", "README.txt")),
+                 bs.length
+    assert_equal Bitstream::Bundle::CONTENT, bs.bundle
+    assert_equal Bitstream.permanent_key(institution_key: bs.institution.key,
+                                         item_id:         bs.item_id,
+                                         filename:        bs.filename),
+                 bs.permanent_key
+    assert_equal "Hello world", bs.description
+    assert bs.primary
+
+    # Test bitstream #2
+    bs = item.bitstreams.where(filename: "license.txt").first
+    assert_equal File.size(File.join(PACKAGES_PATH, "valid_item_2", "item_1", "license.txt")),
                  bs.length
     assert_equal Bitstream::Bundle::LICENSE, bs.bundle
     assert_equal Bitstream.permanent_key(institution_key: bs.institution.key,

@@ -15,9 +15,10 @@
 #
 # ## `content` file format
 #
-# The `content` file is a plain text file containing a newline-separated list
-# of files associated with an item. A filename may optionally be followed by
-# any combination of the following (where \t is a tab character):
+# The `content` (or `contents`) file is a plain text file containing a
+# newline-separated list of files associated with an item. A filename may
+# optionally be followed by any combination of the following (where \t is a tab
+# character):
 #
 # * `\tbundle:BUNDLENAME`
 #     * The name of the bundle to which the bitstream should be added. Without
@@ -27,6 +28,8 @@
 #     * Text of the file's description.
 # * `\tprimary:true`
 #     * Specifies the primary bitstream.
+#
+# All keys above (`bundle:` etc.) may be lowercase or uppercase.
 #
 # ## Metadata file format
 #
@@ -120,7 +123,10 @@ class SafImporter
             item_dir_path     = File.join(pathname, item_dir)
             content_file_path = File.join(item_dir_path, "content")
             unless File.exist?(content_file_path)
-              raise IOError, "Missing content file for item #{item_dir}"
+              content_file_path = File.join(item_dir_path, "contents")
+              unless File.exist?(content_file_path)
+                raise IOError, "Missing content file for item #{item_dir}"
+              end
             end
             add_bitstreams_from_file(item:              item,
                                      content_file_path: content_file_path)
