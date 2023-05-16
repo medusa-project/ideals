@@ -254,13 +254,14 @@ class SafImporter
       primary   = false
       bundle    = Bitstream::Bundle::CONTENT
       line.split("\t").each do |part|
-        if part.start_with?("bundle:")
+        lc_part = part.downcase
+        if lc_part.start_with?("bundle:")
           bundle = Bitstream::Bundle.for_string(part.split(":").last.upcase)
-        elsif part.start_with?("description:")
+        elsif lc_part.start_with?("description:")
           description = part[12..]
-        elsif part.start_with?("primary:")
+        elsif lc_part.start_with?("primary:")
           primary = part[8..] == "true"
-        elsif part.start_with?("permission:")
+        elsif lc_part.start_with?("permission:")
           # we are ignoring this
         elsif part.match?(/.*[:].*/)
           raise IOError, "Unrecognized flag (#{part}) in content file: "\
