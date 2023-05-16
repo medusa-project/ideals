@@ -29,7 +29,9 @@
           Edit
     .clearfix.mb-3
     - if @institution.deposit_agreement.present?
-      = @institution.deposit_agreement
+      = sanitize(@institution.deposit_agreement,
+                 tags: ApplicationHelper::ALLOWED_HTML_TAGS,
+                 attributes: ApplicationHelper::ALLOWED_HTML_TAG_ATTRIBUTES)
     - else
       .badge.text-bg-danger
         Not Set
