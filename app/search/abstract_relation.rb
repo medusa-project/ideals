@@ -552,7 +552,10 @@ class AbstractRelation
                     # https://www.elastic.co/guide/en/elasticsearch/reference/7.17/query-dsl-match-query.html
                     j.match do
                       # This query doesn't support field weights
-                      j.set! query[:field], sanitize(query[:term])
+                      j.set! query[:field] do
+                        j.query sanitize(query[:term])
+                        j.operator "AND"
+                      end
                     end
                   else
                     j.range do
