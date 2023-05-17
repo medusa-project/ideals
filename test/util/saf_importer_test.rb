@@ -212,6 +212,19 @@ class SafImporterTest < ActiveSupport::TestCase
     end
   end
 
+  test "import_from_path() trims whitespace from metadata element values" do
+    package = File.join(PACKAGES_PATH, "valid_item_2")
+    @instance.import_from_path(pathname:           package,
+                               primary_collection: collections(:uiuc_collection1),
+                               mapfile_path:       Tempfile.new("test"))
+
+    item = Item.order(created_at: :desc).limit(1).first
+    assert_equal "Whitespace Test", item.element("dc:title").string
+    assert_equal "Subject", item.elements.select{ |e| e.name == "dc:subject"}[0].string
+    assert_equal 1, item.elements.select{ |e| e.name == "dc:subject"}[0].position
+    assert_equal "2021", item.element("dc:date:submitted").string
+  end
+
   test "import_from_path() adds correct mapfile lines upon success" do
     package       = File.join(PACKAGES_PATH, "valid_item")
     Tempfile.open("test") do |mapfile|

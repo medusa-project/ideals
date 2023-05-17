@@ -392,7 +392,7 @@ class SafImporter
                        "element (#{name}) that does not exist in the registry"
       end
       item.elements.build(registered_element: re,
-                          string:             node.text,
+                          string:             node.text.strip,
                           position:           position)
       position += 1
     end
