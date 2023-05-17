@@ -21,6 +21,8 @@ class BitstreamTest < ActiveSupport::TestCase
     end
 
     test "label() returns a correct label" do
+      assert_equal "Content",
+                   Bitstream::Bundle.label(Bitstream::Bundle::ORIGINAL)
       assert_equal "Branded Preview",
                    Bitstream::Bundle.label(Bitstream::Bundle::BRANDED_PREVIEW)
     end

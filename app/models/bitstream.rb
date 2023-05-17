@@ -173,6 +173,8 @@ class Bitstream < ApplicationRecord
   #
   class Bundle
     CONTENT         = 0
+    # Legacy name for the content bundle in DSpace, still used by Vireo
+    ORIGINAL        = 0
     TEXT            = 1
     LICENSE         = 2
     METADATA        = 3
