@@ -364,6 +364,23 @@ module ApplicationHelper
   end
 
   ##
+  # @return [String]
+  #
+  def google_analytics_tags
+    id = current_institution.google_analytics_measurement_id
+    if id.present?
+      return "<script async src=\"https://www.googletagmanager.com/gtag/js?id=#{id}\"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '#{id}');
+      </script>"
+    end
+    nil
+  end
+
+  ##
   # Renders a help button triggering pop-up help.
   #
   # N.B.: this uses a Bootstrap popover which must be initialized manually in

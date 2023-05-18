@@ -15,6 +15,10 @@
     = f.text_field :feedback_email, class: "form-control"
 
   .mb-3
+    = f.label :google_analytics_measurement_id, "Google Analytics v4 Measurement ID"
+    = f.text_field :google_analytics_measurement_id, class: "form-control"
+
+  .mb-3
     = f.label :welcome_html, "Welcome HTML"
     = f.text_area :welcome_html, class: "form-control", rows: 10
     %p.form-text

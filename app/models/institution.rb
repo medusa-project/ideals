@@ -37,6 +37,8 @@
 # * `footer_image_filename`     Filename of the footer image, which is expected
 #                               to exist in the application S3 bucket under
 #                               {image_key_prefix}.
+# * `google_analytics_measurement_id` Google Analytics v4 measurement ID
+#                               (a.k.a. key).
 # * `handle_uri_element_id`     Foreign key to {RegisteredElement} designating
 #                               an element to treat as the date-submitted
 #                               element.

@@ -18,11 +18,19 @@
     - if @institution.main_website_url.present?
       = link_to(@institution.main_website_url, @institution.main_website_url)
     - else
-      Not Set
+      .badge.text-bg-danger
+        Not Set
   %dt Feedback Email
   %dd
     - if @institution.feedback_email.present?
       = @institution.feedback_email
+    - else
+      .badge.text-bg-danger
+        Not Set
+  %dt Google Analytics v4 Measurement ID
+  %dd
+    - if @institution.google_analytics_measurement_id.present?
+      = @institution.google_analytics_measurement_id
     - else
       .badge.text-bg-danger
         Not Set
