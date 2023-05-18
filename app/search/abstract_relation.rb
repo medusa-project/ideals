@@ -188,7 +188,7 @@ class AbstractRelation
   # search form. Unlike {query}, this method can be called multiple times to
   # add multiple queries in different fields.
   #
-  # This uses a `match` query which does not support Field weights.
+  # This uses a `match` query which does not support field weights.
   #
   # @param field [String, Symbol] Field name, which may have a weight suffix,
   #                               e.g. `title^5`.
@@ -205,6 +205,17 @@ class AbstractRelation
     return self if term.blank?
     if term.respond_to?(:keys)
       term = term.to_h.deep_symbolize_keys
+      # Ensure that all of these values are in bounds to prevent OpenSearch
+      # from throwing a search_phase_execution_exception.
+      term[:year]       = OpenSearchIndex::MAX_YEAR if term[:year].to_i > OpenSearchIndex::MAX_YEAR
+      term[:month]      = 12 if term[:month].to_i > 12
+      term[:day]        = 31 if term[:day].to_i > 31
+      term[:from_year]  = OpenSearchIndex::MAX_YEAR if term[:from_year].to_i > OpenSearchIndex::MAX_YEAR
+      term[:to_year]    = OpenSearchIndex::MAX_YEAR if term[:to_year].to_i > OpenSearchIndex::MAX_YEAR
+      term[:from_month] = 12 if term[:from_month].to_i > 12
+      term[:to_month]   = 12 if term[:to_month].to_i > 12
+      term[:from_day]   = 31 if term[:from_day].to_i > 31
+      term[:to_day]     = 31 if term[:to_day].to_i > 31
     else
       term = term.to_s
     end
