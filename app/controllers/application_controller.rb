@@ -218,7 +218,7 @@ class ApplicationController < ActionController::Base
   # error level. This only bloats the logs, so we handle it differently.
   #
   def rescue_invalid_cross_origin_request
-    render plain: "Invalid cross-origin request.", status: :bad_request
+    # do nothing to avoid a DoubleRenderError
   end
 
   def rescue_not_found
