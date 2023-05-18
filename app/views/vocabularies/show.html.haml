@@ -10,6 +10,14 @@
                                    type:                 "button"}
       %i.fa.fa-plus
       Add Term
+    - # Import Terms button
+    %button.btn.btn-light.import-terms{"data-bs-target":     "#import-terms-modal",
+                                       "data-bs-toggle":     "modal",
+                                       "data-vocabulary-id": @vocabulary.id,
+                                       type:                 "button"}
+      %i.fa.fa-file-import
+      Import Terms&hellip;
+
     -# Edit button
     %button.btn.btn-light.edit-vocabulary{"data-bs-target":     "#edit-vocabulary-modal",
                                           "data-bs-toggle":     "modal",
@@ -28,35 +36,40 @@
 
 %h1= @vocabulary.name
 
-%table.table
-  %thead
-    %th
-    %th Displayed Term
-    %th Stored Term
-  %tbody
-    - @vocabulary.vocabulary_terms.order(:displayed_value).each do |term|
-      %tr
-        %td{style: "width: 1px; white-space: nowrap"}
-          .btn-group
-            %button.btn.btn-light.btn-sm.edit-term{type:                 "button",
-                                                   "data-bs-toggle":     "modal",
-                                                   "data-bs-target":     "#edit-term-modal",
-                                                   "data-vocabulary-id": @vocabulary.id,
-                                                   "data-term-id":       term.id}
-              %i.fa.fa-pencil-alt
-              Edit
-            = link_to(vocabulary_vocabulary_term_path(@vocabulary, term),
-                      class: 'btn btn-danger btn-sm',
-                      method: :delete,
-                      data: { confirm: 'Are you sure you want to delete this term?' }) do
-              %i.fa.fa-trash
-              Delete
-        %td= term.displayed_value
-        %td= term.stored_value
+- if @vocabulary.vocabulary_terms.count > 0
+  %table.table
+    %thead
+      %th
+      %th Displayed Term
+      %th Stored Term
+    %tbody
+      - @vocabulary.vocabulary_terms.order(:displayed_value).each do |term|
+        %tr
+          %td{style: "width: 1px; white-space: nowrap"}
+            .btn-group
+              %button.btn.btn-light.btn-sm.edit-term{type:                 "button",
+                                                     "data-bs-toggle":     "modal",
+                                                     "data-bs-target":     "#edit-term-modal",
+                                                     "data-vocabulary-id": @vocabulary.id,
+                                                     "data-term-id":       term.id}
+                %i.fa.fa-pencil-alt
+                Edit
+              = link_to(vocabulary_vocabulary_term_path(@vocabulary, term),
+                        class: 'btn btn-danger btn-sm',
+                        method: :delete,
+                        data: { confirm: 'Are you sure you want to delete this term?' }) do
+                %i.fa.fa-trash
+                Delete
+          %td= term.displayed_value
+          %td= term.stored_value
+- else
+  This vocabulary does not contain any terms.
 
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-vocabulary-modal", title: "Edit Vocabulary" }
 = render partial: "shared/ajax_modal",
          locals: { id: "add-term-modal", title: "Add Term" }
+= render partial: "shared/ajax_modal",
+         locals: { id: "import-terms-modal", title: "Import Terms" }
 = render partial: "shared/ajax_modal",
          locals: { id: "edit-term-modal", title: "Edit Term" }

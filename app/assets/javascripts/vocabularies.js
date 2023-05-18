@@ -54,6 +54,14 @@ const Vocabularies = {
                 $("#edit-term-modal .modal-body").html(data);
             });
         });
+        $("button.import-terms").on("click", function() {
+            const vocabulary_id = $(this).data("vocabulary-id");
+            const url           = ROOT_URL + "/vocabularies/" + vocabulary_id +
+                "/terms/import";
+            $.get(url, function(data) {
+                $("#import-terms-modal .modal-body").html(data);
+            });
+        });
     }
 
 };

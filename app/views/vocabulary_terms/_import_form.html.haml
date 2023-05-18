@@ -1,0 +1,18 @@
+-# @param vocabulary [Vocabulary]
+
+= form_tag(vocabulary_terms_import_path(vocabulary), multipart: true, remote: true) do
+  .error-messages
+    -# populated via ajax by shared/_validation_messages.js.erb
+
+  = file_field_tag("csv", class: "form-control mb-3")
+  %p.form-text
+    = icon_for(:info)
+    Only CSV files are supported. The file must have "displayed value" as the
+    first column and "stored value" as the second, and it must have a column
+    header row. Any terms with a stored or displayed value matching one already
+    in the vocabulary will be updated.
+
+  .clearfix
+    .float-end
+      %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel
+      = submit_tag("Import Terms", class: 'btn btn-primary')

@@ -170,6 +170,50 @@ class VocabularyTermPolicyTest < ActiveSupport::TestCase
     assert !policy.edit?
   end
 
+  # import?()
+
+  test "import?() returns false with a nil user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @term.vocabulary.institution)
+    policy = VocabularyTermPolicy.new(context, @term)
+    assert !policy.import?
+  end
+
+  test "import?() does not authorize non-privileged users" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @term.vocabulary.institution)
+    policy  = VocabularyTermPolicy.new(context, @term)
+    assert !policy.import?
+  end
+
+  test "import?() authorizes administrators of the same institution" do
+    user = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @term.vocabulary.institution)
+    policy  = VocabularyTermPolicy.new(context, @term)
+    assert policy.import?
+  end
+
+  test "import?() does not authorize administrators of a different
+  institution than in the request context" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = VocabularyTermPolicy.new(context, @term)
+    assert !policy.import?
+  end
+
+  test "import?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = VocabularyTermPolicy.new(context, @term)
+    assert !policy.import?
+  end
+
   # new()
 
   test "new?() returns false with a nil user" do

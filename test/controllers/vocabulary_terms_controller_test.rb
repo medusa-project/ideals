@@ -153,6 +153,84 @@ class VocabularyTermsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # import()
+
+  test "import() via GET returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get vocabulary_terms_import_path(@vocab)
+    assert_response :not_found
+  end
+
+  test "import() via GET redirects to root page for logged-out users" do
+    get vocabulary_terms_import_path(@vocab)
+    assert_redirected_to @vocab.institution.scope_url
+  end
+
+  test "import() via GET returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    get vocabulary_terms_import_path(@vocab)
+    assert_response :forbidden
+  end
+
+  test "import() via GET returns HTTP 200" do
+    log_in_as(users(:southwest_admin))
+    get vocabulary_terms_import_path(@vocab)
+    assert_response :ok
+  end
+
+  test "import() via POST returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    post vocabulary_terms_import_path(@vocab)
+    assert_response :not_found
+  end
+
+  test "import() via POST redirects to root page for logged-out users" do
+    post vocabulary_terms_import_path(@vocab)
+    assert_redirected_to @vocab.institution.scope_url
+  end
+
+  test "import() via POST returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    post vocabulary_terms_import_path(@vocab),
+         xhr: true,
+         params: {
+           csv: fixture_file_upload("vocabulary_terms.csv", "text/plain")
+         }
+    assert_response :forbidden
+  end
+
+  test "import() via POST returns HTTP 200" do
+    log_in_as(users(:southwest_admin))
+    post vocabulary_terms_import_path(@vocab),
+         xhr: true,
+         params: {
+           csv: fixture_file_upload("vocabulary_terms.csv", "text/plain")
+         }
+    assert_response :ok
+  end
+
+  test "import() via POST imports terms" do
+    log_in_as(users(:southwest_admin))
+    assert_difference "VocabularyTerm.count", 3 do
+      post vocabulary_terms_import_path(@vocab),
+           xhr: true,
+           params: {
+             csv: fixture_file_upload("vocabulary_terms.csv", "text/plain")
+           }
+      perform_enqueued_jobs
+    end
+  end
+
+  test "import() via POST returns HTTP 400 for illegal arguments" do
+    log_in_as(users(:southwest_admin))
+    post vocabulary_terms_import_path(@vocab),
+         xhr: true,
+         params: {
+           bogus: "3"
+         }
+    assert_response :bad_request
+  end
+
   # new()
 
   test "new() returns HTTP 404 for unscoped requests" do

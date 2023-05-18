@@ -28,6 +28,10 @@ class VocabularyTermPolicy < ApplicationPolicy
     update
   end
 
+  def import
+    create
+  end
+
   def new
     create
   end

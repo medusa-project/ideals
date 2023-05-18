@@ -3,7 +3,7 @@
 class VocabularyTermsController < ApplicationController
 
   before_action :ensure_institution_host, :ensure_logged_in
-  before_action :set_vocabulary, only: [:create, :new]
+  before_action :set_vocabulary, only: [:create, :import, :new]
   before_action :set_term, only: [:edit, :update, :destroy]
   before_action :authorize_term, only: [:edit, :update, :destroy]
 
@@ -31,17 +31,15 @@ class VocabularyTermsController < ApplicationController
   # Responds to `DELETE /vocabularies/:vocabulary_id/terms/:id`
   #
   def destroy
-    begin
-      @term.destroy!
-    rescue => e
-      flash['error'] = "#{e}"
-    else
-      toast!(title:   "Term deleted",
-             message: "The vocabulary term \"#{@term.displayed_value}\" has "\
-                      "been deleted.")
-    ensure
-      redirect_back fallback_location: @term.vocabulary
-    end
+    @term.destroy!
+  rescue => e
+    flash['error'] = "#{e}"
+  else
+    toast!(title:   "Term deleted",
+           message: "The vocabulary term \"#{@term.displayed_value}\" has "\
+                    "been deleted.")
+  ensure
+    redirect_back fallback_location: @term.vocabulary
   end
 
   ##
@@ -51,6 +49,40 @@ class VocabularyTermsController < ApplicationController
     render partial: "vocabulary_terms/form",
            locals: { vocabulary: @term.vocabulary,
                      term:       @term }
+  end
+
+  ##
+  # Responds to `GET/POST /vocabularies/:vocabulary_id/terms/import`
+  #
+  def import
+    authorize(@vocabulary)
+    if request.method == "POST"
+      tempfile = Tempfile.new("vocabulary_#{@vocabulary.id}_import.csv")
+      begin
+        # The finalizer would otherwise delete it as it gets GCed.
+        ObjectSpace.undefine_finalizer(tempfile)
+        csv = params[:csv].read.force_encoding("UTF-8")
+        tempfile.write(csv)
+        tempfile.close
+        ImportVocabularyTermsJob.perform_later(vocabulary: @vocabulary,
+                                               pathname:   tempfile.path,
+                                               user:       current_user)
+      rescue => e
+        tempfile.close
+        tempfile.unlink
+        render partial: "shared/validation_messages",
+               locals: { object: e },
+               status: :bad_request
+      else
+        toast!(title:   "Importing file",
+               message: "Vocabulary terms are importing in the background, "\
+                        "and should be available in a moment.")
+        render "shared/reload"
+      end
+    else
+      render partial: "vocabulary_terms/import_form",
+             locals: { vocabulary: @vocabulary }
+    end
   end
 
   ##
@@ -67,18 +99,16 @@ class VocabularyTermsController < ApplicationController
   # Responds to `PATCH /vocabularies/:vocabulary_id/terms/:id` (XHR only)
   #
   def update
-    begin
-      @term.update!(term_params)
-    rescue => e
-      render partial: "shared/validation_messages",
-             locals: { object: @term.errors.any? ? @term : e },
-             status: :bad_request
-    else
-      toast!(title:   "Term updated",
-             message: "The vocabulary term \"#{@term.displayed_value}\" has "\
-                      "been updated.")
-      render "shared/reload"
-    end
+    @term.update!(term_params)
+  rescue => e
+    render partial: "shared/validation_messages",
+           locals: { object: @term.errors.any? ? @term : e },
+           status: :bad_request
+  else
+    toast!(title:   "Term updated",
+           message: "The vocabulary term \"#{@term.displayed_value}\" has "\
+                    "been updated.")
+    render "shared/reload"
   end
 
 
