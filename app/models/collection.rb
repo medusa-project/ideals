@@ -311,20 +311,22 @@ class Collection < ApplicationRecord
   #                          administrators of the instance.
   #
   def effective_administering_groups
-    groups = Set.new
-    # Add the sysadmin group.
-    groups << UserGroup.sysadmin
-    # Add direct administrator groups.
-    groups += self.administering_groups
-    # Add administrator groups of parent collections.
-    all_parents.each do |parent|
-      groups += parent.administering_groups
+    unless @effective_administering_groups
+      @effective_administering_groups = Set.new
+      # Add the sysadmin group.
+      @effective_administering_groups << UserGroup.sysadmin
+      # Add direct administrator groups.
+      @effective_administering_groups += self.administering_groups
+      # Add administrator groups of parent collections.
+      all_parents.each do |parent|
+        @effective_administering_groups += parent.administering_groups
+      end
+      # Add unit administrator groups.
+      self.units.each do |unit|
+        @effective_administering_groups += unit.all_administering_groups
+      end
     end
-    # Add unit administrator groups.
-    self.units.each do |unit|
-      groups += unit.all_administering_groups
-    end
-    groups
+    @effective_administering_groups
   end
 
   ##
@@ -332,20 +334,22 @@ class Collection < ApplicationRecord
   #                     instance.
   #
   def effective_administering_users
-    users = Set.new
-    # Add sysadmins.
-    users += UserGroup.sysadmin.all_users
-    # Add direct administrators.
-    users += self.administering_users
-    # Add administrators of parent collections.
-    all_parents.each do |parent|
-      users += parent.administering_users
+    unless @effective_administering_users
+      @effective_administering_users = Set.new
+      # Add sysadmins.
+      @effective_administering_users += UserGroup.sysadmin.all_users
+      # Add direct administrators.
+      @effective_administering_users += self.administering_users
+      # Add administrators of parent collections.
+      all_parents.each do |parent|
+        @effective_administering_users += parent.administering_users
+      end
+      # Add unit administrators.
+      self.units.each do |unit|
+        @effective_administering_users += unit.all_administrators
+      end
     end
-    # Add unit administrators.
-    self.units.each do |unit|
-      users += unit.all_administrators
-    end
-    users
+    @effective_administering_users
   end
 
   ##
@@ -375,11 +379,12 @@ class Collection < ApplicationRecord
   def effective_submitting_groups
     set = Set.new
     set += effective_administering_groups
+    # Add direct submitting groups.
+    set += self.submitting_groups
     # Add submitter groups of parent collections.
     all_parents.each do |parent|
       set += parent.submitting_groups
     end
-    set += self.submitting_groups
     set
   end
 
@@ -416,8 +421,8 @@ class Collection < ApplicationRecord
   # @return [Integer] Total download count of all bitstreams attached to all
   #                   items in the collection.
   #
-  def submitted_item_count(start_time: nil,
-                           end_time: nil,
+  def submitted_item_count(start_time:       nil,
+                           end_time:         nil,
                            include_children: true)
     count = 0
     if include_children
