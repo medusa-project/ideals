@@ -234,24 +234,28 @@ class Unit < ApplicationRecord
   # @return [Enumerable<UserGroup>]
   #
   def effective_administering_groups
-    groups  = Set.new
-    groups += self.administering_groups
-    all_parents.each do |parent|
-      groups += parent.administering_groups
+    unless @effective_administering_groups
+      @effective_administering_groups = Set.new
+      @effective_administering_groups += self.administering_groups
+      all_parents.each do |parent|
+        @effective_administering_groups += parent.administering_groups
+      end
     end
-    groups
+    @effective_administering_groups
   end
 
   ##
   # @return [Enumerable<User>]
   #
   def effective_administering_users
-    users = Set.new
-    users += self.administering_users
-    all_parents.each do |parent|
-      users += parent.administering_users
+    unless @effective_administering_users
+      @effective_administering_users = Set.new
+      @effective_administering_users += self.administering_users
+      all_parents.each do |parent|
+        @effective_administering_users += parent.administering_users
+      end
     end
-    users
+    @effective_administering_users
   end
 
   ##
