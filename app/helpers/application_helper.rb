@@ -367,7 +367,7 @@ module ApplicationHelper
   # @return [String]
   #
   def google_analytics_tags
-    id = current_institution.google_analytics_measurement_id
+    id = current_institution&.google_analytics_measurement_id
     if id.present?
       return "<script async src=\"https://www.googletagmanager.com/gtag/js?id=#{id}\"></script>
       <script>
