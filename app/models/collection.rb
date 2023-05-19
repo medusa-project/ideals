@@ -195,18 +195,6 @@ class Collection < ApplicationRecord
   end
 
   ##
-  # @return [Enumerable<UserGroup>]
-  #
-  def all_submitting_groups
-    groups  = Set.new
-    groups += self.submitting_groups
-    all_parents.each do |parent|
-      groups += parent.submitting_groups
-    end
-    groups
-  end
-
-  ##
   # @return [Enumerable<Unit>] All owning units, including their parents.
   #
   def all_units

@@ -62,13 +62,6 @@ class CollectionTest < ActiveSupport::TestCase
     assert_equal collections(:uiuc_collection1), result[1]
   end
 
-  # all_submitting_groups()
-
-  test "all_submitting_groups() returns the correct groups" do
-    groups = collections(:uiuc_collection1_collection1_collection1).all_submitting_groups
-    assert_equal 0, groups.length
-  end
-
   # all_units()
 
   test "all_units() returns the correct units" do
