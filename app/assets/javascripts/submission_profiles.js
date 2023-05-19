@@ -7,7 +7,7 @@ const SubmissionProfiles = {
             "submission_profile%5Binstitution_id%5D=" + institutionID;
         $.get(url, function(data) {
             $("#add-submission-profile-modal .modal-body").html(data);
-            new IDEALS.CheckAllButton($('.check-all'),
+            new IDEALS.UIUtils.CheckAllButton($('.check-all'),
                 $("input[name='elements[]'][data-required=false]"));
         });
     },

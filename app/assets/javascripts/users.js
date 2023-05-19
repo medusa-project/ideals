@@ -25,7 +25,7 @@ const UsersView = function() {
         clearTimeout(timeout);
         timeout = setTimeout(function() {
             refreshUsers();
-        }, IDEALS.KEY_DELAY);
+        }, IDEALS.UIUtils.KEY_DELAY);
     });
 
     filterDiv.find("select").on("change", function() {
@@ -96,7 +96,7 @@ const UserView = function() {
 
             const refreshResults = function (url) {
                 const container = $("#items-xhr-content");
-                container.html(IDEALS.Spinner());
+                container.html(IDEALS.UIUtils.Spinner());
                 if (!url) {
                     url = ROOT_URL + "/users/" + userID + "/submitted-item-results";
                 }
@@ -120,7 +120,7 @@ const UserView = function() {
             let timeout = null;
             filterField.on("keyup", function() {
                 clearTimeout(timeout);
-                timeout = setTimeout(refreshResults, IDEALS.KEY_DELAY);
+                timeout = setTimeout(refreshResults, IDEALS.UIUtils.KEY_DELAY);
             });
 
             const showOrHideDirectionRadios = function() {

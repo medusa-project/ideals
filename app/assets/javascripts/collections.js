@@ -23,14 +23,14 @@ const CollectionView = function() {
                 const url = ROOT_URL + "/collections/" + collectionID + "/edit-unit-membership";
                 $.get(url, function(data) {
                     $("#edit-unit-membership-modal .modal-body").html(data);
-                    new IDEALS.MultiElementList(0);
+                    new IDEALS.UIUtils.MultiElementList(0);
                 });
             });
             $('.edit-collection-membership').on("click", function() {
                 const url = ROOT_URL + "/collections/" + collectionID + "/edit-collection-membership";
                 $.get(url, function(data) {
                     $("#edit-collection-membership-modal .modal-body").html(data);
-                    new IDEALS.MultiElementList(0);
+                    new IDEALS.UIUtils.MultiElementList(0);
                 });
             });
             $('.add-subcollection').on("click", function() {
@@ -66,7 +66,7 @@ const CollectionView = function() {
 
             const refreshResults = function(url) {
                 const container = $("#items-xhr-content");
-                container.html(IDEALS.Spinner());
+                container.html(IDEALS.UIUtils.Spinner());
                 if (!url) {
                     url = ROOT_URL + "/collections/" + collectionID + "/item-results";
                 }
@@ -91,7 +91,7 @@ const CollectionView = function() {
                 clearTimeout(timeout);
                 timeout = setTimeout(function() {
                     refreshResults();
-                }, IDEALS.KEY_DELAY);
+                }, IDEALS.UIUtils.KEY_DELAY);
             });
             searchControls.on("change", function() {
                 refreshResults();
@@ -135,7 +135,7 @@ const CollectionView = function() {
                 // download status page which will get inserted into the modal body.
                 const url = "/collections/" + collection_id + "/all-files.zip";
                 $.get(url, function(data) {
-                    new IDEALS.DownloadPanel(modal_body, data);
+                    new IDEALS.UIUtils.DownloadPanel(modal_body, data);
                 });
             });
 
@@ -150,7 +150,7 @@ const CollectionView = function() {
         $.get(url, function (data) {
             $("#review-submissions-tab-content").html(data);
 
-            new IDEALS.CheckAllButton($('.check-all'),
+            new IDEALS.UIUtils.CheckAllButton($('.check-all'),
                 $('#review-form input[type=checkbox]'));
 
             const form = $('form#review-form');
@@ -181,7 +181,7 @@ const CollectionView = function() {
 
             const refreshStatisticsByMonth = function() {
                 const innerTabContent = $("#statistics-by-month-tab-content");
-                innerTabContent.html(IDEALS.Spinner());
+                innerTabContent.html(IDEALS.UIUtils.Spinner());
                 const url = ROOT_URL + "/collections/" + collectionID + "/statistics-by-range?" +
                     statsTabContent.find("form").serialize();
                 $.ajax({
@@ -193,7 +193,7 @@ const CollectionView = function() {
                         const canvas    = $("#chart");
                         const chartData = $.parseJSON($("#chart-data").val());
                         const color     = $("[name=chart_color]").val();
-                        new IDEALS.Chart(canvas, chartData, color);
+                        new IDEALS.UIUtils.Chart(canvas, chartData, color);
                     },
                     error: function(data, status, xhr) {
                         $("#error-flash").text(data.responseText).show();
@@ -202,7 +202,7 @@ const CollectionView = function() {
             };
             const refreshDownloadsByItem = function() {
                 const innerTabContent = $("#downloads-by-item-tab-content");
-                innerTabContent.html(IDEALS.Spinner());
+                innerTabContent.html(IDEALS.UIUtils.Spinner());
                 const url = ROOT_URL + "/collections/" + collectionID + "/item-download-counts?" +
                     statsTabContent.find("form").serialize();
                 $.get(url, function (data) {
@@ -246,8 +246,8 @@ const CollectionView = function() {
                 const url = ROOT_URL + "/collections/" + collectionID + "/edit-administering-users";
                 $.get(url, function(data) {
                     $("#edit-administering-users-modal .modal-body").html(data);
-                    new IDEALS.LocalUserAutocompleter($("input[name='administrators[]']"));
-                    new IDEALS.MultiElementList();
+                    new IDEALS.UIUtils.UserAutocompleter($("input[name='administrators[]']"));
+                    new IDEALS.UIUtils.MultiElementList();
                 });
             });
             $(".edit-submitting-groups").on("click", function() {
@@ -260,8 +260,8 @@ const CollectionView = function() {
                 const url = ROOT_URL + "/collections/" + collectionID + "/edit-submitting-users";
                 $.get(url, function(data) {
                     $("#edit-submitting-users-modal .modal-body").html(data);
-                    new IDEALS.LocalUserAutocompleter($("input[name='submitters[]']"));
-                    new IDEALS.MultiElementList();
+                    new IDEALS.UIUtils.UserAutocompleter($("input[name='submitters[]']"));
+                    new IDEALS.UIUtils.MultiElementList();
                 });
             });
         });

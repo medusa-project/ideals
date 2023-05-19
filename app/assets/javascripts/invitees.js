@@ -17,7 +17,7 @@ const InviteesView = function() {
     };
 
     const refreshResults = function(url) {
-        container.html(IDEALS.Spinner());
+        container.html(IDEALS.UIUtils.Spinner());
         if (!url) {
             url = form.attr("action");
         }
@@ -43,7 +43,7 @@ const InviteesView = function() {
     let timeout = null;
     filterField.on("keyup", function() {
         clearTimeout(timeout);
-        timeout = setTimeout(refreshResults, IDEALS.KEY_DELAY);
+        timeout = setTimeout(refreshResults, IDEALS.UIUtils.KEY_DELAY);
     });
     $("[name=institution_id], [name=approval_state]").on("change", function() {
         refreshResults();

@@ -265,7 +265,7 @@ const InstitutionView = function() {
 
             const refreshStatisticsByMonth = function() {
                 const innerTabContent = $("#statistics-by-month-tab-content");
-                innerTabContent.html(IDEALS.Spinner());
+                innerTabContent.html(IDEALS.UIUtils.Spinner());
                 const url = ROOT_URL + "/institutions/" + institutionKey + "/statistics-by-range?" +
                     statsTabContent.find("form").serialize();
                 $.ajax({
@@ -282,7 +282,7 @@ const InstitutionView = function() {
             };
             const refreshDownloadsByItem = function() {
                 const innerTabContent = $("#downloads-by-item-tab-content");
-                innerTabContent.html(IDEALS.Spinner());
+                innerTabContent.html(IDEALS.UIUtils.Spinner());
                 const url = ROOT_URL + "/institutions/" + institutionKey + "/item-download-counts?" +
                     statsTabContent.find("form").serialize();
                 $.get(url, function (data) {
@@ -327,16 +327,16 @@ const InstitutionView = function() {
                 const url = ROOT_URL + "/institutions/" + institutionKey + "/edit-administering-groups";
                 $.get(url, function (data) {
                     $("#edit-administering-groups-modal .modal-body").html(data);
-                    new IDEALS.MultiElementList();
+                    new IDEALS.UIUtils.MultiElementList();
                 });
             });
             $('.edit-administering-users').on("click", function () {
                 const url = ROOT_URL + "/institutions/" + institutionKey + "/edit-administering-users";
                 $.get(url, function (data) {
                     $("#edit-administering-users-modal .modal-body").html(data);
-                    new IDEALS.LocalUserAutocompleter(
+                    new IDEALS.UIUtils.UserAutocompleter(
                         $("input[name=primary_administrator], input[name='administering_users[]']"));
-                    new IDEALS.MultiElementList();
+                    new IDEALS.UIUtils.MultiElementList();
                 });
             });
         });

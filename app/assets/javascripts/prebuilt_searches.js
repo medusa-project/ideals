@@ -16,7 +16,7 @@ const PrebuiltSearches = {
             $(this).data("id") + "/edit";
         $.get(url, function(data) {
             $("#edit-prebuilt-search-modal .modal-body").html(data);
-            new IDEALS.MultiElementList();
+            new IDEALS.UIUtils.MultiElementList();
         });
     },
 
@@ -33,7 +33,7 @@ const PrebuiltSearches = {
      */
     PrebuiltSearchView: function() {
         const copyButton = $(".copy-search-link");
-        new IDEALS.CopyButton(copyButton, $(".search-link-html"));
+        new IDEALS.UIUtils.CopyButton(copyButton, $(".search-link-html"));
         $('button.edit-prebuilt-search').on("click",
             PrebuiltSearches.EditPrebuiltSearchClickHandler);
     }

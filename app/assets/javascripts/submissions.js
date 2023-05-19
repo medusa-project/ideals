@@ -16,10 +16,10 @@ const AgreementView = function() {
 
     // Show the deposit agreement when the begin-submission button is clicked.
     $("button.begin-submission").on("click", function() {
-        $(this).fadeOut(IDEALS.FADE_TIME);
-        $("#submissions-in-progress").fadeOut(IDEALS.FADE_TIME, function() {
-            $("#deposit-agreement").fadeIn(IDEALS.FADE_TIME);
-            $("#questions").fadeIn(IDEALS.FADE_TIME);
+        $(this).fadeOut(IDEALS.UIUtils.FADE_TIME);
+        $("#submissions-in-progress").fadeOut(IDEALS.UIUtils.FADE_TIME, function() {
+            $("#deposit-agreement").fadeIn(IDEALS.UIUtils.FADE_TIME);
+            $("#questions").fadeIn(IDEALS.UIUtils.FADE_TIME);
         });
     });
 
@@ -361,7 +361,7 @@ const SubmissionForm = function() {
      */
     const wireDateTransformer = function() {
         $(".value-inputs").each(function() {
-            IDEALS.DatePicker($(this).find("[name=year]"),
+            IDEALS.UIUtils.DatePicker($(this).find("[name=year]"),
                 $(this).find("[name=month]"),
                 $(this).find("[name=day]"));
         });
@@ -479,7 +479,7 @@ const SubmissionForm = function() {
         }
         const hiddenDateOrPerson = clone.find("[data-input-type=date], [data-input-type=person]");
         if (hiddenDateOrPerson) {
-            const hiddenID = IDEALS.Util.randomString(16);
+            const hiddenID = IDEALS.StringUtils.randomString(16);
             hiddenDateOrPerson.attr("id", hiddenID);
             clone.find("input[type=text], select").each(function(i, input) {
                 $(input).attr("data-for", hiddenID);
@@ -498,7 +498,7 @@ const SubmissionForm = function() {
     /*************************** Files section *****************************/
 
     const filesForm            = form.filter("#files-form");
-    const uploader             = new IDEALS.ItemFileUploader();
+    const uploader             = new IDEALS.UIUtils.ItemFileUploader();
     const completionForm       = $("#completion-form");
     const formSubmitButton     = completionForm.find("input[type=submit]");
     const fileMessageContainer = filesForm.find("#files-messages");

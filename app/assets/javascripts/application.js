@@ -11,7 +11,7 @@
 // about supported directives.
 //
 
-// Application library & support files
+// Framework/library support files
 //= require rails-ujs
 //= require jquery3
 //= require js.cookie
@@ -21,8 +21,15 @@
 //= require local-time
 //= require cable
 
+// Application library files
+//= require lib/ideals
+//= require lib/string_utils.js
+//= require lib/ui_utils.js
+//= require lib/ideals_client.js
+
+//= require header
+
 // View-specific files
-//= require ideals
 //= require collections
 //= require imports
 //= require index_pages

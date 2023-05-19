@@ -86,7 +86,7 @@ const UserGroupView = function() {
         $.get(url, function(data) {
             $("#edit-users-modal .modal-body").html(data);
             UserGroupForm.attachEventListeners();
-            new IDEALS.LocalUserAutocompleter($("input[name='user_group[users][]']"));
+            new IDEALS.UIUtils.UserAutocompleter($("input[name='user_group[users][]']"));
         });
     });
     $("button.edit-hosts").on("click", function() {

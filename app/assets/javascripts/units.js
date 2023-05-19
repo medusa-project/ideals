@@ -12,10 +12,10 @@ const Units = {
      * Handles list-units view.
      */
     UnitsView: function() {
-        new IDEALS.ExpandableResourceList();
-        new IDEALS.LocalUserAutocompleter(
+        new IDEALS.UIUtils.ExpandableResourceList();
+        new IDEALS.UIUtils.UserAutocompleter(
             $("input[name=primary_administrator], input[name='administering_users[]']"));
-        new IDEALS.MultiElementList();
+        new IDEALS.UIUtils.MultiElementList();
 
         $(".add-unit").on("click", Units.AddUnitClickHandler);
     },
@@ -83,7 +83,7 @@ const Units = {
 
                 const refreshResults = function(url) {
                     const container = $("#items-xhr-content");
-                    container.html(IDEALS.Spinner());
+                    container.html(IDEALS.UIUtils.Spinner());
                     if (!url) {
                         url = ROOT_URL + "/units/" + unitID + "/item-results";
                     }
@@ -108,7 +108,7 @@ const Units = {
                     clearTimeout(timeout);
                     timeout = setTimeout(function() {
                         refreshResults();
-                    }, IDEALS.KEY_DELAY);
+                    }, IDEALS.UIUtils.KEY_DELAY);
                 });
                 searchControls.on("change", function() {
                     refreshResults();
@@ -157,7 +157,7 @@ const Units = {
 
                 const refreshStatisticsByMonth = function() {
                     const innerTabContent = $("#statistics-by-month-tab-content");
-                    innerTabContent.html(IDEALS.Spinner());
+                    innerTabContent.html(IDEALS.UIUtils.Spinner());
                     const url = ROOT_URL + "/units/" + unitID + "/statistics-by-range?" +
                         statsTabContent.find("form").serialize();
                     $.ajax({
@@ -169,7 +169,7 @@ const Units = {
                             const canvas    = $("#chart");
                             const chartData = $.parseJSON($("#chart-data").val());
                             const color     = $("[name=chart_color]").val();
-                            new IDEALS.Chart(canvas, chartData, color);
+                            new IDEALS.UIUtils.Chart(canvas, chartData, color);
                         },
                         error: function(data, status, xhr) {
                             $("#error-flash").text(data.responseText).show();
@@ -178,7 +178,7 @@ const Units = {
                 };
                 const refreshDownloadsByItem = function() {
                     const innerTabContent = $("#downloads-by-item-tab-content");
-                    innerTabContent.html(IDEALS.Spinner());
+                    innerTabContent.html(IDEALS.UIUtils.Spinner());
                     const url = ROOT_URL + "/units/" + unitID + "/item-download-counts?" +
                         statsTabContent.find("form").serialize();
                     $.get(url, function (data) {
@@ -222,9 +222,9 @@ const Units = {
                     const url = ROOT_URL + "/units/" + unitID + "/edit-administering-users";
                     $.get(url, function (data) {
                         $("#edit-administering-users-modal .modal-body").html(data);
-                        new IDEALS.LocalUserAutocompleter(
+                        new IDEALS.UIUtils.UserAutocompleter(
                             $("input[name=primary_administrator], input[name='administering_users[]']"));
-                        new IDEALS.MultiElementList();
+                        new IDEALS.UIUtils.MultiElementList();
                     });
                 });
             });

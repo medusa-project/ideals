@@ -44,7 +44,7 @@ const TasksView = function() {
         clearTimeout(timeout);
         timeout = setTimeout(function() {
             refreshResults();
-        }, IDEALS.KEY_DELAY);
+        }, IDEALS.UIUtils.KEY_DELAY);
     });
     filterDiv.find("[name=status]").on("change", function() {
         refreshResults();

@@ -4,7 +4,7 @@
  * @constructor
  */
 const ItemsView = function() {
-    new IDEALS.FacetSet().init();
+    new IDEALS.UIUtils.FacetSet().init();
 
     const params              = new URLSearchParams(window.location.search);
     const allItemsTab         = $("#all-items-tab");
@@ -45,7 +45,7 @@ const ItemsView = function() {
     });
 
     advSearchContent.find(".date-picker").each(function() {
-        IDEALS.DatePicker($(this).find("select:last"),
+        IDEALS.UIUtils.DatePicker($(this).find("select:last"),
             $(this).find("select:first"),
             $(this).find("select:nth(1)"));
     });
@@ -153,7 +153,7 @@ const FileNavigator = function() {
                 return;
             }
             currentBitstreamID = bitstream_id;
-            viewerColumn.html(IDEALS.Spinner());
+            viewerColumn.html(IDEALS.UIUtils.Spinner());
             thumb.siblings().removeClass("selected");
             thumb.addClass("selected");
             thumb.focus();
@@ -223,7 +223,7 @@ const FileNavigator = function() {
                         const canvas    = $("#download-chart");
                         const chartData = $.parseJSON($("#chart-data").val());
                         const color     = $("[name=chart_color]").val();
-                        new IDEALS.Chart(canvas, chartData, color);
+                        new IDEALS.UIUtils.Chart(canvas, chartData, color);
                     });
                 };
 
@@ -250,7 +250,7 @@ const FileNavigator = function() {
 const ItemView = function() {
     const ROOT_URL = $('input[name="root_url"]').val();
 
-    new IDEALS.CopyButton($(".copy"), $(".permalink"));
+    new IDEALS.UIUtils.CopyButton($(".copy"), $(".permalink"));
 
     new FileNavigator();
     const file_navigator = $("#file-navigator");
@@ -268,7 +268,7 @@ const ItemView = function() {
             // download status page which will get inserted into the modal body.
             const url = ROOT_URL + "/items/" + item_id + "/bitstreams.zip";
             $.get(url, function(data) {
-                new IDEALS.DownloadPanel(modal_body, data);
+                new IDEALS.UIUtils.DownloadPanel(modal_body, data);
             });
         });
     });
@@ -314,7 +314,7 @@ const ItemView = function() {
             modalBody.html(data);
 
             const wireDatePicker = function(embargo) {
-                IDEALS.DatePicker(embargo.find(".date-picker select:last"),
+                IDEALS.UIUtils.DatePicker(embargo.find(".date-picker select:last"),
                     embargo.find(".date-picker select:first"),
                     embargo.find(".date-picker select:nth(1)"));
             };
@@ -385,7 +385,7 @@ const ItemView = function() {
         const url = ROOT_URL + "/items/" + id + "/edit-membership";
         $.get(url, function(data) {
             $("#edit-item-membership-modal .modal-body").html(data);
-            new IDEALS.CollectionSelectMenus();
+            new IDEALS.UIUtils.CollectionSelectMenus();
         });
     });
     $(".edit-item-metadata").on("click", function() {
@@ -393,7 +393,7 @@ const ItemView = function() {
         const url = ROOT_URL + "/items/" + id + "/edit-metadata";
         $.get(url, function(data) {
             $("#edit-item-metadata-modal .modal-body").html(data);
-            new IDEALS.MetadataEditor();
+            new IDEALS.UIUtils.MetadataEditor();
         });
     });
     $(".edit-item-properties").on("click", function() {
@@ -413,7 +413,7 @@ const ItemView = function() {
             modal.on("hidden.bs.modal", function() {
                 window.location.reload();
             });
-            new IDEALS.ItemFileUploader();
+            new IDEALS.UIUtils.ItemFileUploader();
         });
     });
 };
@@ -424,8 +424,8 @@ const ItemView = function() {
  * @constructor
  */
 const ReviewItemsView = function() {
-    new IDEALS.CheckAllButton($('.check-all'),
-                              $('#items input[type=checkbox]'));
+    new IDEALS.UIUtils.CheckAllButton($('.check-all'),
+                                      $('#items input[type=checkbox]'));
     const form = $('form#review-form');
     const verb = form.find("[name=verb]");
     $('.approve-checked').on('click', function() {
@@ -444,7 +444,7 @@ const ReviewItemsView = function() {
  * @constructor
  */
 const ExportItemsView = function() {
-    new IDEALS.CheckAllButton(
+    new IDEALS.UIUtils.CheckAllButton(
         $("button#check-all"),
         $("input[name='elements[]']"));
 };

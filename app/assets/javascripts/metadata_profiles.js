@@ -7,7 +7,7 @@ const MetadataProfiles = {
             "metadata_profile%5Binstitution_id%5D=" + institutionID;
         $.get(url, function(data) {
             $("#add-metadata-profile-modal .modal-body").html(data);
-            new IDEALS.CheckAllButton($(".check-all"),
+            new IDEALS.UIUtils.CheckAllButton($(".check-all"),
                 $("input[name='elements[]']"));
         });
     },
