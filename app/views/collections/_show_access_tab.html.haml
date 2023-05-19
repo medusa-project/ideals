@@ -128,7 +128,7 @@
           .card-body
             %h5.card-title
               Effective User Submitters
-            - admins = @collection.effective_submitters
+            - admins = @collection.effective_submitting_users
             - if admins.any?
               %ul
                 - admins.each do |user|

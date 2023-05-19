@@ -392,22 +392,6 @@ class Collection < ApplicationRecord
   end
 
   ##
-  # @return [Set<User>] All users who are effectively able to submit into the
-  #                     instance.
-  #
-  def effective_submitters
-    set = Set.new
-    set += effective_administering_users
-    # Add direct submitters.
-    set += self.submitting_users
-    # Add submitters into parent collections.
-    all_parents.each do |parent|
-      set += parent.submitting_users
-    end
-    set
-  end
-
-  ##
   # @return [Set<UserGroup>] All user groups that are effectively
   #                          submitters into the instance.
   #
@@ -419,6 +403,22 @@ class Collection < ApplicationRecord
       set += parent.submitting_groups
     end
     set += self.submitting_groups
+    set
+  end
+
+  ##
+  # @return [Set<User>] All users who are effectively able to submit into the
+  #                     instance.
+  #
+  def effective_submitting_users
+    set = Set.new
+    set += effective_administering_users
+    # Add direct submitters.
+    set += self.submitting_users
+    # Add submitters into parent collections.
+    all_parents.each do |parent|
+      set += parent.submitting_users
+    end
     set
   end
 

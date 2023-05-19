@@ -375,36 +375,6 @@ class CollectionTest < ActiveSupport::TestCase
                  @instance.effective_submission_profile
   end
 
-  # effective_submitters()
-
-  test "effective_submitters() includes sysadmins" do
-    @instance.effective_submitters.include?(users(:example_sysadmin))
-  end
-
-  test "effective_submitters() includes unit admins" do
-    @instance.effective_submitters.include?(@instance.primary_unit.administering_users.first)
-  end
-
-  test "effective_submitters() includes administrators of parent collections" do
-    parent    = collections(:uiuc_collection1)
-    @instance = collections(:uiuc_collection1_collection1)
-    @instance.effective_submitters.include?(parent.administering_users.first)
-  end
-
-  test "effective_submitters() includes direct administrators" do
-    @instance.effective_submitters.include?(@instance.administering_users.first)
-  end
-
-  test "effective_submitters() includes submitters into parent collections" do
-    parent    = collections(:uiuc_collection1)
-    @instance = collections(:uiuc_collection1_collection1)
-    @instance.effective_submitters.include?(parent.submitting_users.first)
-  end
-
-  test "effective_submitters() includes direct submitters" do
-    @instance.effective_submitters.include?(@instance.submitting_users.first)
-  end
-
   # effective_submitting_groups()
 
   test "effective_submitting_groups() includes the sysadmin group" do
@@ -435,6 +405,36 @@ class CollectionTest < ActiveSupport::TestCase
 
   test "effective_submitting_groups() includes direct submitter groups" do
     @instance.effective_submitting_groups.include?(@instance.submitting_groups.first)
+  end
+
+  # effective_submitting_users()
+
+  test "effective_submitting_users() includes sysadmins" do
+    @instance.effective_submitting_users.include?(users(:example_sysadmin))
+  end
+
+  test "effective_submitting_users() includes unit admins" do
+    @instance.effective_submitting_users.include?(@instance.primary_unit.administering_users.first)
+  end
+
+  test "effective_submitting_users() includes administrators of parent collections" do
+    parent    = collections(:uiuc_collection1)
+    @instance = collections(:uiuc_collection1_collection1)
+    @instance.effective_submitting_users.include?(parent.administering_users.first)
+  end
+
+  test "effective_submitting_users() includes direct administrators" do
+    @instance.effective_submitting_users.include?(@instance.administering_users.first)
+  end
+
+  test "effective_submitting_users() includes submitters into parent collections" do
+    parent    = collections(:uiuc_collection1)
+    @instance = collections(:uiuc_collection1_collection1)
+    @instance.effective_submitting_users.include?(parent.submitting_users.first)
+  end
+
+  test "effective_submitting_users() includes direct submitters" do
+    @instance.effective_submitting_users.include?(@instance.submitting_users.first)
   end
 
   # exhume!()
