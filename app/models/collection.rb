@@ -351,39 +351,24 @@ class Collection < ApplicationRecord
   end
 
   ##
-  # @return [Enumerable<User>]
+  # @return [Set<User>] All users who are effectively administrators of the
+  #                     instance.
   #
   def effective_administering_users
-    users       = Set.new
-    users      += self.administering_users
+    users = Set.new
+    # Add sysadmins.
+    users += UserGroup.sysadmin.all_users
+    # Add direct administrators.
+    users += self.administering_users
+    # Add administrators of parent collections.
     all_parents.each do |parent|
       users += parent.administering_users
     end
+    # Add unit administrators.
     self.units.each do |unit|
       users += unit.all_administrators
     end
     users
-  end
-
-  ##
-  # @return [Set<User>] All users who are effectively administrators of the
-  #                     instance.
-  #
-  def effective_administrators
-    set = Set.new
-    # Add sysadmins.
-    set += UserGroup.sysadmin.all_users
-    # Add unit administrators.
-    self.units.each do |unit|
-      set += unit.all_administrators
-    end
-    # Add direct administrators.
-    set += self.administering_users
-    # Add administrators of parent collections.
-    all_parents.each do |parent|
-      set += parent.administering_users
-    end
-    set
   end
 
   ##
@@ -412,7 +397,7 @@ class Collection < ApplicationRecord
   #
   def effective_submitters
     set = Set.new
-    set += effective_administrators
+    set += effective_administering_users
     # Add direct submitters.
     set += self.submitting_users
     # Add submitters into parent collections.

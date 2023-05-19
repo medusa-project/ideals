@@ -317,30 +317,23 @@ class CollectionTest < ActiveSupport::TestCase
 
   # effective_administering_users()
 
-  test "effective_administering_users() returns the correct users" do
-    groups = collections(:uiuc_collection1_collection1_collection1).effective_administering_users
-    assert_equal 2, groups.length
+  test "effective_administering_users() includes sysadmins" do
+    @instance.effective_administering_users.include?(users(:example_sysadmin))
   end
 
-  # effective_administrators()
-
-  test "effective_administrators() includes sysadmins" do
-    @instance.effective_administrators.include?(users(:example_sysadmin))
+  test "effective_administering_users() includes unit admins" do
+    @instance.effective_administering_users.include?(@instance.primary_unit.administering_users.first)
   end
 
-  test "effective_administrators() includes unit admins" do
-    @instance.effective_administrators.include?(@instance.primary_unit.administering_users.first)
-  end
-
-  test "effective_administrators() includes administrators of parent
+  test "effective_administering_users() includes administrators of parent
   collections" do
     parent    = collections(:uiuc_collection1)
     @instance = collections(:uiuc_collection1_collection1)
-    @instance.effective_administrators.include?(parent.administering_users.first)
+    @instance.effective_administering_users.include?(parent.administering_users.first)
   end
 
-  test "effective_administrators() includes direct administrators" do
-    @instance.effective_administrators.include?(@instance.administering_users.first)
+  test "effective_administering_users() includes direct administrators" do
+    @instance.effective_administering_users.include?(@instance.administering_users.first)
   end
 
   # effective_metadata_profile()
