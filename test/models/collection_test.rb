@@ -69,11 +69,7 @@ class CollectionTest < ActiveSupport::TestCase
     assert_equal 0, groups.length
   end
 
-  # all_unit_administrators()
-
-  test "all_unit_administrators()" do
-    assert_equal 2, @instance.all_unit_administrators.length
-  end
+  # all_units()
 
   test "all_units() returns the correct units" do
     assert_equal 2, @instance.all_units.length

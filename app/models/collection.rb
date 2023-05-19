@@ -207,17 +207,6 @@ class Collection < ApplicationRecord
   end
 
   ##
-  # @return [Enumerable<User>]
-  #
-  def all_unit_administrators
-    bucket = Set.new
-    units.each do |unit|
-      bucket += unit.all_administrators
-    end
-    bucket
-  end
-
-  ##
   # @return [Enumerable<Unit>] All owning units, including their parents.
   #
   def all_units
