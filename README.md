@@ -343,10 +343,10 @@ $(document).ready(function() {
 The web application makes heavy use of modal windows, mainly for contextual
 forms. The content for most modals is loaded on-demand via XHR which enables
 the rest of the page to load faster. The basic idea is, from a template, to
-require `shared/ajax_modal`:
+require `shared/xhr_modal`:
 
 ```haml
-= render partial: "shared/ajax_modal",
+= render partial: "shared/xhr_modal",
          locals:  { id:    "add-child-unit-modal",
                     title: "Add Child Unit" }
 ```

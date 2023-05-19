@@ -134,15 +134,15 @@
                 - admins.each do |user|
                   %li= link_to(user.name, user.becomes(User))
 
-= render partial: "shared/ajax_modal",
+= render partial: "shared/xhr_modal",
          locals: { id: "edit-administering-groups-modal",
                    title: "Edit Group Administrators" }
-= render partial: "shared/ajax_modal",
+= render partial: "shared/xhr_modal",
          locals: { id: "edit-administering-users-modal",
                    title: "Edit User Administrators" }
-= render partial: "shared/ajax_modal",
+= render partial: "shared/xhr_modal",
          locals: { id: "edit-submitting-groups-modal",
                    title: "Edit Group Submitters" }
-= render partial: "shared/ajax_modal",
+= render partial: "shared/xhr_modal",
          locals: { id: "edit-submitting-users-modal",
                    title: "Edit User Submitters" }

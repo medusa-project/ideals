@@ -44,22 +44,22 @@
 = render partial: "show_events_section"
 = render partial: "show_indexing_section" if Rails.env.development?
 
-= render partial: "shared/ajax_modal",
+= render partial: "shared/xhr_modal",
          locals: { id:    "manage-item-files-modal",
                    title: "Manage Files",
                    size:   "lg" }
-= render partial: "shared/ajax_modal",
+= render partial: "shared/xhr_modal",
          locals: { id:    "edit-item-membership-modal",
                    title: "Edit Collection Membership",
                    size:  :xl }
-= render partial: "shared/ajax_modal",
+= render partial: "shared/xhr_modal",
          locals: { id:    "edit-item-metadata-modal",
                    title: "Edit Metadata",
                    size:  :xl }
-= render partial: "shared/ajax_modal",
+= render partial: "shared/xhr_modal",
          locals: { id:    "edit-item-properties-modal",
                    title: "Edit Properties" }
-= render partial: "shared/ajax_modal",
+= render partial: "shared/xhr_modal",
          locals: { id:    "edit-item-embargoes-modal",
                    title: "Embargoes",
                    size:  :lg }

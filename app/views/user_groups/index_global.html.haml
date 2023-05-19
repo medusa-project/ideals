@@ -15,8 +15,8 @@
   - @user_groups.each do |group|
     %li= link_to(group.name, group)
 
-= render partial: "shared/ajax_modal",
+= render partial: "shared/xhr_modal",
          locals: { id: "add-user-group-modal", title: "Add Global User Group" }
-= render partial: "shared/ajax_modal",
+= render partial: "shared/xhr_modal",
          locals: { id: "edit-user-group-modal", title: "Edit User Group" }
 

@@ -70,16 +70,16 @@
                                         role:              "tabpanel"}
         = spinner
 
-= render partial: "shared/ajax_modal",
+= render partial: "shared/xhr_modal",
          locals: { id:    "edit-unit-properties-modal",
                    title: "Edit Properties" }
-= render partial: "shared/ajax_modal",
+= render partial: "shared/xhr_modal",
          locals: { id:    "edit-unit-membership-modal",
                    title: "Change Unit Membership" }
-= render partial: "shared/ajax_modal",
+= render partial: "shared/xhr_modal",
          locals: { id:    "add-child-unit-modal",
                    title: "Add Child Unit" }
-= render partial: "shared/ajax_modal",
+= render partial: "shared/xhr_modal",
          locals: { id:           "add-collection-modal",
                    title:        "Add Collection",
                    primary_unit: @unit,

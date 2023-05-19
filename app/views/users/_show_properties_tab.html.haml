@@ -60,7 +60,7 @@
   %dt Account Created
   %dd= local_time(@user.created_at)
 
-= render partial: "shared/ajax_modal",
+= render partial: "shared/xhr_modal",
          locals: { id: "edit-properties-modal", title: "Edit Properties" }
-= render partial: "shared/ajax_modal",
+= render partial: "shared/xhr_modal",
          locals: { id: "change-password-modal", title: "Change Password" }

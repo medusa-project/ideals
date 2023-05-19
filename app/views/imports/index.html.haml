@@ -20,13 +20,13 @@
   = render partial: "imports"
 
 = render partial: "help_modal"
-= render partial: "shared/ajax_modal",
+= render partial: "shared/xhr_modal",
          locals: { id: "new-import-modal",
                    title: "New Import" }
-= render partial: "shared/ajax_modal",
+= render partial: "shared/xhr_modal",
          locals: { id: "edit-import-modal",
                    title: "Upload Package" }
-= render partial: "shared/ajax_modal",
+= render partial: "shared/xhr_modal",
          locals: { id: "show-import-modal",
                    title: "Import Details",
                    size: :lg }

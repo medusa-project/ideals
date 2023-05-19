@@ -62,13 +62,13 @@
   -# bitstreams/_viewer.html is inserted here via XHR
   = spinner
 
-= render partial: "shared/ajax_modal",
+= render partial: "shared/xhr_modal",
          locals: { id: "download-all-files-modal",
                    title: "Download Files" }
-= render partial: "shared/ajax_modal",
+= render partial: "shared/xhr_modal",
          locals: { id:    "download-counts-modal",
                    title: "Download Counts (All Files)",
                    size:  "lg" }
-= render partial: "shared/ajax_modal",
+= render partial: "shared/xhr_modal",
          locals: { id:    "edit-bitstream-modal",
                    title: "Edit File" }

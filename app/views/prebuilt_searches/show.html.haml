@@ -49,7 +49,7 @@
 %code.search-link-html
   = "<a href=\"#{url}\">#{@prebuilt_search.name}</a>"
 
-= render partial: "shared/ajax_modal",
+= render partial: "shared/xhr_modal",
          locals: { id: "edit-prebuilt-search-modal",
                    size: :lg,
                    title: "Edit Prebuilt Search" }

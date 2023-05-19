@@ -94,21 +94,21 @@
                                         "aria-labelledby": "access-tab"}
         = spinner
 
-= render partial: "shared/ajax_modal",
+= render partial: "shared/xhr_modal",
          locals: { id:           "add-collection-modal",
                    title:        "Add Child Collection",
                    primary_unit: @collection.primary_unit,
                    parent:       @collection }
-= render partial: "shared/ajax_modal",
+= render partial: "shared/xhr_modal",
          locals: { id:    "download-files-modal",
                    title: "Download All Files" }
-= render partial: "shared/ajax_modal",
+= render partial: "shared/xhr_modal",
          locals: { id:    "edit-collection-properties-modal",
                    title: "Edit Properties" }
-= render partial: "shared/ajax_modal",
+= render partial: "shared/xhr_modal",
          locals: { id:    "edit-collection-membership-modal",
                    title: "Change Collection Membership" }
-= render partial: "shared/ajax_modal",
+= render partial: "shared/xhr_modal",
          locals: { id:    "edit-unit-membership-modal",
                    title: "Change Unit Membership",
                    size:  :lg }
