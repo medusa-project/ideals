@@ -53,13 +53,6 @@ class CollectionTest < ActiveSupport::TestCase
     assert_equal collection, children.first.parent
   end
 
-  # all_administering_users()
-
-  test "all_administering_users() returns the correct users" do
-    groups = collections(:uiuc_collection1_collection1_collection1).all_administering_users
-    assert_equal 2, groups.length
-  end
-
   # all_parents()
 
   test "all_parents() returns the parents" do
@@ -320,6 +313,13 @@ class CollectionTest < ActiveSupport::TestCase
 
   test "effective_administering_groups() includes direct administrators" do
     @instance.effective_administering_groups.include?(@instance.administrator_groups.first)
+  end
+
+  # effective_administering_users()
+
+  test "effective_administering_users() returns the correct users" do
+    groups = collections(:uiuc_collection1_collection1_collection1).effective_administering_users
+    assert_equal 2, groups.length
   end
 
   # effective_administrators()
