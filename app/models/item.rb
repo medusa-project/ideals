@@ -337,7 +337,7 @@ class Item < ApplicationRecord
   def all_unit_administrators
     bucket = Set.new
     all_units.each do |unit|
-      bucket += unit.all_administrators
+      bucket += unit.effective_administering_users
     end
     bucket
   end

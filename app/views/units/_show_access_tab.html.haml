@@ -48,7 +48,7 @@
     .card
       .card-body
         %h5.card-title Effective User Administrators
-        - admins = @unit.all_administrators
+        - admins = @unit.effective_administering_users
         - if admins.any?
           %ul
             - admins.each do |user|

@@ -51,13 +51,6 @@ class UnitTest < ActiveSupport::TestCase
                  actual
   end
 
-  # all_administrators()
-
-  test "all_administrators() returns the correct users" do
-    admins = units(:uiuc_unit1_unit2_unit1).all_administrators
-    assert_equal 2, admins.length
-  end
-
   # all_administering_groups()
 
   test "all_administering_groups() returns the correct users" do
@@ -266,6 +259,13 @@ class UnitTest < ActiveSupport::TestCase
     assert_equal 3, actual.length
     assert_kind_of Time, actual[0]['month']
     assert_equal expected, actual[1]['dl_count']
+  end
+
+  # effective_administering_users()
+
+  test "effective_administering_users() returns the correct users" do
+    admins = units(:uiuc_unit1_unit2_unit1).effective_administering_users
+    assert_equal 2, admins.length
   end
 
   # effective_metadata_profile()

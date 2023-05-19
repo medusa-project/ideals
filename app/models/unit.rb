@@ -88,18 +88,6 @@ class Unit < ApplicationRecord
   before_destroy :validate_empty
 
   ##
-  # @return [Enumerable<User>]
-  #
-  def all_administrators
-    users = Set.new
-    users += self.administering_users
-    all_parents.each do |parent|
-      users += parent.administering_users
-    end
-    users
-  end
-
-  ##
   # @return [Enumerable<UserGroup>]
   #
   def all_administering_groups
@@ -252,6 +240,18 @@ class Unit < ApplicationRecord
     values = [Event::Type::DOWNLOAD, start_time, end_time]
     result = self.class.connection.exec_query(sql, "SQL", values).to_a
     result[0..(result.length - 2)]
+  end
+
+  ##
+  # @return [Enumerable<User>]
+  #
+  def effective_administering_users
+    users = Set.new
+    users += self.administering_users
+    all_parents.each do |parent|
+      users += parent.administering_users
+    end
+    users
   end
 
   ##

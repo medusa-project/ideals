@@ -346,7 +346,7 @@ class Collection < ApplicationRecord
       end
       # Add unit administrators.
       self.units.each do |unit|
-        @effective_administering_users += unit.all_administrators
+        @effective_administering_users += unit.effective_administering_users
       end
     end
     @effective_administering_users
