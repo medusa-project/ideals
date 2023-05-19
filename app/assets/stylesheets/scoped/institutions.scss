@@ -10,4 +10,13 @@ body#show_institution {
       max-width: 100%;
     }
   }
+  #users-tab-content {
+    ul {
+      margin-left: 0;
+      padding-left: 0;
+      li {
+        list-style: none;
+      }
+    }
+  }
 }
