@@ -148,7 +148,6 @@ class Collection < ApplicationRecord
   ##
   # @return [Enumerable<Integer>] IDs of all collections that are children of
   #                               the instance, at any level in the tree.
-  # @see walk_tree
   #
   def all_child_ids
     # This is much faster than walking down the tree via ActiveRecord.
@@ -179,23 +178,6 @@ class Collection < ApplicationRecord
   #
   def all_children
     Collection.where(id: all_child_ids)
-  end
-
-  ##
-  # @return [Enumerable<UserGroup>]
-  #
-  def all_administering_groups
-    groups      = Set.new
-    groups     += self.administering_groups
-    root_parent = self
-    all_parents.each do |parent|
-      groups     += parent.administering_groups
-      root_parent = parent
-    end
-    root_parent.units.each do |unit|
-      groups += unit.all_administering_groups
-    end
-    groups
   end
 
   ##
@@ -367,20 +349,20 @@ class Collection < ApplicationRecord
   #                          administrators of the instance.
   #
   def effective_administering_groups
-    set = Set.new
+    groups = Set.new
     # Add the sysadmin group.
-    set << UserGroup.sysadmin
-    # Add unit administrator groups.
-    self.units.each do |unit|
-      set += unit.all_administering_groups
-    end
+    groups << UserGroup.sysadmin
     # Add direct administrator groups.
-    set += self.administering_groups
+    groups += self.administering_groups
     # Add administrator groups of parent collections.
     all_parents.each do |parent|
-      set += parent.administering_groups
+      groups += parent.administering_groups
     end
-    set
+    # Add unit administrator groups.
+    self.units.each do |unit|
+      groups += unit.all_administering_groups
+    end
+    groups
   end
 
   ##

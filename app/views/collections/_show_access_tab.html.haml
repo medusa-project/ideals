@@ -37,8 +37,8 @@
               None
         .card
           .card-body
-            %h5.card-title Effective User Administrators
-            - groups = @collection.all_administering_groups
+            %h5.card-title Effective Group Administrators
+            - groups = @collection.effective_administering_groups
             - if groups.any?
               %ul
                 - groups.each do |group|
