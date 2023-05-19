@@ -336,8 +336,6 @@ class Collection < ApplicationRecord
   def effective_administering_users
     unless @effective_administering_users
       @effective_administering_users = Set.new
-      # Add sysadmins.
-      @effective_administering_users += UserGroup.sysadmin.all_users
       # Add direct administrators.
       @effective_administering_users += self.administering_users
       # Add administrators of parent collections.
