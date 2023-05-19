@@ -89,6 +89,9 @@ class UserGroup < ApplicationRecord
   end
 
   ##
+  # N.B.: this method gets more expensive as the number of users in the
+  # institution grows.
+  #
   # @return [Enumerable<User>] All users either directly associated with the
   #         instance or belonging to an AD group associated with the instance.
   #
