@@ -1,11 +1,12 @@
+- provide :body_id, "institutions"
 - provide :title, "All Institutions"
 
--if policy(Institution).new?
+- if policy(Institution).new?
   .btn-group.float-end{role: "group"}
     -# Add Institution button
-    %button.btn.btn-light{"data-bs-target": "#add-institution-modal",
-                          "data-bs-toggle": "modal",
-                          type:             "button"}
+    %button.btn.btn-light.add-institution{"data-bs-target": "#add-institution-modal",
+                                          "data-bs-toggle": "modal",
+                                          type:             "button"}
       %i.fa.fa-plus
       Add Institution
 
@@ -29,4 +30,5 @@
         %td
           %code= link_to(institution.scope_url, institution.scope_url)
 
-= render partial: "institutions/add_modal", locals: { institution: @new_institution }
+= render partial: "shared/ajax_modal",
+         locals: { id: "add-institution-modal", title: "Add Institution" }

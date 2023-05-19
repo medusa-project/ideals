@@ -1,4 +1,20 @@
 /**
+ * Handles list-institutions view (/institutions).
+ *
+ * @constructor
+ */
+const InstitutionsView = function() {
+    const ROOT_URL = $('input[name="root_url"]').val();
+
+    $("button.add-institution").on("click", function() {
+        const url = ROOT_URL + "/institutions/new";
+        $.get(url, function(data) {
+            $("#add-institution-modal .modal-body").html(data);
+        });
+    });
+};
+
+/**
  * Handles show-institution view (/institutions/:key).
  *
  * @constructor
@@ -358,7 +374,9 @@ const InstitutionView = function() {
 };
 
 $(document).ready(function() {
-    if ($('body#show_institution').length) {
+    if ($("body#institutions").length) {
+        new InstitutionsView();
+    } else if ($("body#show_institution").length) {
         new InstitutionView();
     }
 });
