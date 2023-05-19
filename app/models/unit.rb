@@ -236,7 +236,11 @@ class Unit < ApplicationRecord
   def effective_administering_groups
     unless @effective_administering_groups
       @effective_administering_groups = Set.new
+      # Add the sysadmin group.
+      @effective_administering_groups << UserGroup.sysadmin
+      # Add direct administrators of the instance.
       @effective_administering_groups += self.administering_groups
+      # Add administrators of parents.
       all_parents.each do |parent|
         @effective_administering_groups += parent.administering_groups
       end
@@ -252,7 +256,9 @@ class Unit < ApplicationRecord
   def effective_administering_users
     unless @effective_administering_users
       @effective_administering_users = Set.new
+      # Add direct administrators of the instance.
       @effective_administering_users += self.administering_users
+      # Add administrators of parents.
       all_parents.each do |parent|
         @effective_administering_users += parent.administering_users
       end

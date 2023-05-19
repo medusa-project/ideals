@@ -258,7 +258,7 @@ class UnitTest < ActiveSupport::TestCase
 
   test "effective_administering_groups() returns the correct users" do
     groups = units(:uiuc_unit1_unit2_unit1).effective_administering_groups
-    assert_equal 1, groups.length
+    assert_equal 2, groups.length
   end
 
   # effective_administering_users()
