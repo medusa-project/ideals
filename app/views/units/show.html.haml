@@ -1,6 +1,8 @@
 - provide :body_id, "show_unit"
 - provide :title, @unit.title
 
+= google_analytics_tags
+
 = hidden_field_tag :institution_id, @unit.institution.id
 = hidden_field_tag :unit_id, @unit.id
 

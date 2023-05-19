@@ -1,6 +1,8 @@
 - provide :body_id, "show_index_page"
 - provide :title, @index_page.name
 
+= google_analytics_tags
+
 - active_letter = nil
 - can_edit      = policy(@index_page).edit?
 

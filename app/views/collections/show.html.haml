@@ -1,6 +1,8 @@
 - provide :body_id, "show_collection"
 - provide :title, @collection.title
 
+= google_analytics_tags
+
 = hidden_field_tag :institution_id, @collection.institution.id
 = hidden_field_tag :primary_unit_id, @collection.primary_unit.id
 = hidden_field_tag :collection_id, @collection.id

@@ -1,6 +1,8 @@
 - provide :body_id, "show_item"
 - provide :title, @item.title
 
+= google_analytics_tags
+
 = hidden_field_tag(:item_id, @item.id)
 
 = render partial: "show_button_group"

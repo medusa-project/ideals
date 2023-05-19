@@ -1,6 +1,8 @@
 - provide :body_id, "list_units"
 - provide :title, "Academic Units"
 
+= google_analytics_tags
+
 = hidden_field_tag :institution_id, current_institution.id
 
 -if policy(Unit).new?
