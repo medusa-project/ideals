@@ -6,9 +6,14 @@
       = render partial: "layouts/contact_form"
 
   .info-area
-    - if current_institution&.footer_image_filename
-      = image_tag(current_institution.footer_image_url,
-                  alt: "Institution Logo")
+    - if current_institution&.footer_image_filename.present?
+      - if current_institution&.main_website_url.present?
+        = link_to(current_institution.main_website_url) do
+          = image_tag(current_institution.footer_image_url,
+                      alt: "Institution Logo")
+      - else
+        = image_tag(current_institution.footer_image_url,
+                      alt: "Institution Logo")
     - if current_institution&.copyright_notice
       .footer-copyright.text-center.mt-3
         = current_institution.copyright_notice
