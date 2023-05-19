@@ -88,18 +88,6 @@ class Unit < ApplicationRecord
   before_destroy :validate_empty
 
   ##
-  # @return [Enumerable<UserGroup>]
-  #
-  def all_administering_groups
-    groups  = Set.new
-    groups += self.administering_groups
-    all_parents.each do |parent|
-      groups += parent.administering_groups
-    end
-    groups
-  end
-
-  ##
   # @return [Enumerable<Integer>] IDs of all units that are children of the
   #                               instance, at any level in the tree.
   # @see walk_tree
@@ -240,6 +228,18 @@ class Unit < ApplicationRecord
     values = [Event::Type::DOWNLOAD, start_time, end_time]
     result = self.class.connection.exec_query(sql, "SQL", values).to_a
     result[0..(result.length - 2)]
+  end
+
+  ##
+  # @return [Enumerable<UserGroup>]
+  #
+  def effective_administering_groups
+    groups  = Set.new
+    groups += self.administering_groups
+    all_parents.each do |parent|
+      groups += parent.administering_groups
+    end
+    groups
   end
 
   ##

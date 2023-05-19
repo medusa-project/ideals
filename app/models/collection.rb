@@ -323,7 +323,7 @@ class Collection < ApplicationRecord
       end
       # Add unit administrator groups.
       self.units.each do |unit|
-        @effective_administering_groups += unit.all_administering_groups
+        @effective_administering_groups += unit.effective_administering_groups
       end
     end
     @effective_administering_groups

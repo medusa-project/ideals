@@ -19,7 +19,7 @@
     .card
       .card-body
         %h5.card-title Effective Group Administrators
-        - admins = @unit.all_administering_groups
+        - admins = @unit.effective_administering_groups
         - if admins.any?
           %ul
             - admins.each do |group|

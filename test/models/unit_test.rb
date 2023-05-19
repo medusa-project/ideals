@@ -51,13 +51,6 @@ class UnitTest < ActiveSupport::TestCase
                  actual
   end
 
-  # all_administering_groups()
-
-  test "all_administering_groups() returns the correct users" do
-    groups = units(:uiuc_unit1_unit2_unit1).all_administering_groups
-    assert_equal 1, groups.length
-  end
-
   # all_child_ids()
 
   test "all_child_ids() returns the correct units" do
@@ -259,6 +252,13 @@ class UnitTest < ActiveSupport::TestCase
     assert_equal 3, actual.length
     assert_kind_of Time, actual[0]['month']
     assert_equal expected, actual[1]['dl_count']
+  end
+
+  # effective_administering_groups()
+
+  test "effective_administering_groups() returns the correct users" do
+    groups = units(:uiuc_unit1_unit2_unit1).effective_administering_groups
+    assert_equal 1, groups.length
   end
 
   # effective_administering_users()
