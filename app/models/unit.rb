@@ -240,6 +240,8 @@ class Unit < ApplicationRecord
       all_parents.each do |parent|
         @effective_administering_groups += parent.administering_groups
       end
+      # Add administrators of the institution.
+      @effective_administering_groups += self.institution.administering_groups
     end
     @effective_administering_groups
   end
@@ -254,6 +256,8 @@ class Unit < ApplicationRecord
       all_parents.each do |parent|
         @effective_administering_users += parent.administering_users
       end
+      # Add administrators of the institution.
+      @effective_administering_users += self.institution.administering_users
     end
     @effective_administering_users
   end
