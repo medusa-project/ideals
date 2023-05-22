@@ -539,9 +539,11 @@ class InstitutionsController < ApplicationController
           r_count.times do |r_index|
             pr   = pq[:responses][r_index.to_s]
             text = pr[:text]&.strip
-            q.responses.build(text:     text,
-                              success:  pr[:success] == "true",
-                              position: r_index)
+            if text.present?
+              q.responses.build(text:     text,
+                                success:  pr[:success] == "true",
+                                position: r_index)
+            end
           end
           q.save!
         end
