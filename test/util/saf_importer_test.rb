@@ -380,6 +380,93 @@ class SafImporterTest < ActiveSupport::TestCase
     assert_equal "Michigan Institute of Technology", item.element("thesis:degree:grantor").string
   end
 
+  test "import_from_s3() supports a content file named contents" do
+    package = File.join(PACKAGES_PATH, "valid_item_2")
+    import  = imports(:uiuc_saf_new)
+    upload_to_s3(package, import)
+    @instance.import_from_s3(import)
+
+    # Test the created item's immediate properties
+    item = Item.order(created_at: :desc).limit(1).first
+    assert_not_nil item.handle
+    assert_equal Item::Stages::APPROVED, item.stage
+
+    # Test bitstream #1
+    assert_equal 2, item.bitstreams.count
+    bs = item.bitstreams.where(filename: "README.txt").first
+    assert_equal File.size(File.join(PACKAGES_PATH, "valid_item_2", "item_1", "README.txt")),
+                 bs.length
+    assert_equal Bitstream::Bundle::CONTENT, bs.bundle
+    assert_equal Bitstream.permanent_key(institution_key: bs.institution.key,
+                                         item_id:         bs.item_id,
+                                         filename:        bs.filename),
+                 bs.permanent_key
+    assert_equal "Hello world", bs.description
+    assert bs.primary
+
+    # Test bitstream #2
+    bs = item.bitstreams.where(filename: "license.txt").first
+    assert_equal File.size(File.join(PACKAGES_PATH, "valid_item_2", "item_1", "license.txt")),
+                 bs.length
+    assert_equal Bitstream::Bundle::LICENSE, bs.bundle
+    assert_equal Bitstream.permanent_key(institution_key: bs.institution.key,
+                                         item_id:         bs.item_id,
+                                         filename:        bs.filename),
+                 bs.permanent_key
+    assert_equal "License file", bs.description
+    assert !bs.primary
+  end
+
+  test "import_from_s3() trims whitespace from metadata element values" do
+    package = File.join(PACKAGES_PATH, "valid_item_2")
+    import  = imports(:uiuc_saf_new)
+    upload_to_s3(package, import)
+    @instance.import_from_s3(import)
+
+    item = Item.order(created_at: :desc).limit(1).first
+    assert_equal "Whitespace Test", item.element("dc:title").string
+    assert_equal "Subject", item.elements.select{ |e| e.name == "dc:subject"}[0].string
+    assert_equal 1, item.elements.select{ |e| e.name == "dc:subject"}[0].position
+    assert_equal "2021", item.element("dc:date:submitted").string
+  end
+
+  test "import_from_s3() supports uppercase content file keys" do
+    package = File.join(PACKAGES_PATH, "valid_item_2")
+    import  = imports(:uiuc_saf_new)
+    upload_to_s3(package, import)
+    @instance.import_from_s3(import)
+
+    # Test the created item's immediate properties
+    item = Item.order(created_at: :desc).limit(1).first
+    assert_not_nil item.handle
+    assert_equal Item::Stages::APPROVED, item.stage
+
+    # Test bitstream #1
+    assert_equal 2, item.bitstreams.count
+    bs = item.bitstreams.where(filename: "README.txt").first
+    assert_equal File.size(File.join(PACKAGES_PATH, "valid_item_2", "item_1", "README.txt")),
+                 bs.length
+    assert_equal Bitstream::Bundle::CONTENT, bs.bundle
+    assert_equal Bitstream.permanent_key(institution_key: bs.institution.key,
+                                         item_id:         bs.item_id,
+                                         filename:        bs.filename),
+                 bs.permanent_key
+    assert_equal "Hello world", bs.description
+    assert bs.primary
+
+    # Test bitstream #2
+    bs = item.bitstreams.where(filename: "license.txt").first
+    assert_equal File.size(File.join(PACKAGES_PATH, "valid_item_2", "item_1", "license.txt")),
+                 bs.length
+    assert_equal Bitstream::Bundle::LICENSE, bs.bundle
+    assert_equal Bitstream.permanent_key(institution_key: bs.institution.key,
+                                         item_id:         bs.item_id,
+                                         filename:        bs.filename),
+                 bs.permanent_key
+    assert_equal "License file", bs.description
+    assert !bs.primary
+  end
+
   test "import_from_s3() adds imported items to imported_items before failure" do
     package = File.join(PACKAGES_PATH, "one_invalid_item")
     import  = imports(:uiuc_saf_new)

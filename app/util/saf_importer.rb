@@ -192,7 +192,10 @@ class SafImporter
           # Add bitstreams corresponding to each line in the content file.
           content_file_key = item_dir + "/content"
           unless store.object_exists?(key: content_file_key)
-            raise IOError, "Missing content file for item #{item_dir}"
+            content_file_key = item_dir + "/contents"
+            unless store.object_exists?(key: content_file_key)
+              raise IOError, "Missing content file for item #{item_dir}"
+            end
           end
           content = store.get_object(key: content_file_key).read
           add_bitstreams_from_s3(item:                 item,
