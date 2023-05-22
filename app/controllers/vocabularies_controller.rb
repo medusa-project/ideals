@@ -94,6 +94,17 @@ class VocabulariesController < ApplicationController
   # Responds to `GET /vocabularies/:id`
   #
   def show
+    @permitted_params = params.permit(Search::RESULTS_PARAMS +
+                                        Search::SIMPLE_SEARCH_PARAMS)
+    @start            = @permitted_params[:start].to_i.abs
+    @window           = window_size
+    q                 = "%#{@permitted_params[:q]&.downcase}%"
+    @terms            = @vocabulary.vocabulary_terms.
+      where("LOWER(displayed_value) LIKE ? OR LOWER(stored_value) LIKE ?", q, q).
+      order(:displayed_value)
+    @count            = @terms.count
+    @terms            = @terms.limit(@window).offset(@start)
+    @current_page     = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
   end
 
   ##

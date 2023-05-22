@@ -1,0 +1,41 @@
+- pagination = paginate(count:            @count,
+                        page:             @current_page,
+                        per_page:         @window,
+                        permitted_params: @permitted_params)
+
+.row.justify-content-md-center
+  .col-md-auto
+    = pagination
+
+- if @terms.any?
+  %table.table
+    %thead
+      %th
+      %th Displayed Term
+      %th Stored Term
+    %tbody
+      - @terms.each do |term|
+        %tr
+          %td{style: "width: 1px; white-space: nowrap"}
+            .btn-group
+              %button.btn.btn-light.btn-sm.edit-term{type:                 "button",
+                                                     "data-bs-toggle":     "modal",
+                                                     "data-bs-target":     "#edit-term-modal",
+                                                     "data-vocabulary-id": @vocabulary.id,
+                                                     "data-term-id":       term.id}
+                %i.fa.fa-pencil-alt
+                Edit
+              = link_to(vocabulary_vocabulary_term_path(@vocabulary, term),
+                                    class:  "btn btn-danger btn-sm",
+                                    method: :delete,
+                                    data: { confirm: "Are you sure you want to delete this term?" }) do
+                %i.fa.fa-trash
+                Delete
+          %td= term.displayed_value
+          %td= term.stored_value
+- else
+  No terms to show.
+
+.row.justify-content-md-center
+  .col-md-auto
+    = pagination
