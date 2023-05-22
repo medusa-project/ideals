@@ -4,7 +4,7 @@ module ApplicationHelper
 
   # These tags will not be filtered out when displaying user-entered HTML.
   # See {allowed_html_tags}.
-  ALLOWED_HTML_TAGS           = %w(a b dd dl dt em h1 h2 h3 h4 h5 h6 i li ol p strong sub sup ul)
+  ALLOWED_HTML_TAGS           = %w(a b blockquote br dd dl dt em h1 h2 h3 h4 h5 h6 i li ol p pre q s small strong sub sup u ul)
   ALLOWED_HTML_TAG_ATTRIBUTES = %w(href title)
   CAPTCHA_SALT                = ::Configuration.instance.secret_key_base
   MAX_PAGINATION_LINKS        = 5
