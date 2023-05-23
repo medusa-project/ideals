@@ -369,13 +369,13 @@ module ApplicationHelper
   def google_analytics_tags
     id = current_institution&.google_analytics_measurement_id
     if id.present?
-      return "<script async src=\"https://www.googletagmanager.com/gtag/js?id=#{id}\"></script>
+      return raw("<script async src=\"https://www.googletagmanager.com/gtag/js?id=#{id}\"></script>
       <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
         gtag('config', '#{id}');
-      </script>"
+      </script>")
     end
     nil
   end
