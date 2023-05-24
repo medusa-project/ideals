@@ -1,0 +1,20 @@
+uid_field: eppn
+extra_fields:
+  - eppn
+  - unscoped-affiliation
+  - uid
+  - sn
+  - org-dn
+  - nickname
+  - givenName
+  - member
+  - telephoneNumber
+  - iTrustAffiliation
+  - departmentName
+  - programCode
+  - levelCode
+  - overwriteUserAttrs # custom property needed in testing
+request_type: header
+info_fields:
+  name: displayName
+  email: mail

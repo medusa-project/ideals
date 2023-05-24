@@ -14,23 +14,6 @@ SAML_SETUP_PROC = lambda do |env|
   s.options[:name_identifier_format]             = "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
 end
 
-SHIBBOLETH_SETUP_PROC = lambda do |env|
-  request     = Rack::Request.new(env)
-  institution = Institution.find_by_fqdn(request.host_with_port)
-  unless institution.shibboleth_auth_enabled
-    raise "This institution does not support Shibboleth authentication."
-  end
-  env['omniauth.strategy'].options = {
-    request_type: "params",
-    uid_field:    "eppn",
-    info_fields:  {
-      name:  institution.shibboleth_name_attribute,
-      email: institution.shibboleth_email_attribute
-    },
-    extra_fields: institution.shibboleth_extra_attributes
-  }
-end
-
 Rails.application.config.middleware.use OmniAuth::Builder do
   # The identity provider (for local password logins) is available in all
   # environments.
@@ -46,11 +29,9 @@ Rails.application.config.middleware.use OmniAuth::Builder do
     provider :developer
   else
     # The real Shibboleth provider is available in all other environments.
-    # N.B.: this provider is added here, but it needs further setup at request
-    # time as its properties will vary depending on which institution's host is
-    # being accessed.
-    # See: https://github.com/omniauth/omniauth/wiki/Setup-Phase
-    provider :shibboleth, setup: SHIBBOLETH_SETUP_PROC
+    # TODO: I haven't been able to get omniauth-shibboleth working using the setup phase, so its configuration is currently hard-coded for UIUC
+    shib_opts = YAML.load_file(File.join(Rails.root, 'config', 'shibboleth.yml'))
+    provider :shibboleth, shib_opts.symbolize_keys
   end
 
   # SAML (everybody else) is available in all environments.
