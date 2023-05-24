@@ -219,6 +219,22 @@ class InstitutionTest < ActiveSupport::TestCase
     assert !@instance.valid?
   end
 
+  # auth_enabled?()
+
+  test "auth_enabled?() returns false if no authentication methods are enabled" do
+    @instance.local_auth_enabled = false
+    @instance.saml_auth_enabled = false
+    @instance.shibboleth_auth_enabled = false
+    assert !@instance.auth_enabled?
+  end
+
+  test "auth_enabled?() returns false if an authentication method is enabled" do
+    @instance.local_auth_enabled = true
+    @instance.saml_auth_enabled = false
+    @instance.shibboleth_auth_enabled = false
+    assert @instance.auth_enabled?
+  end
+
   # banner_image_url()
 
   test "banner_image_url() returns nil when banner_image is not set" do
@@ -716,14 +732,6 @@ class InstitutionTest < ActiveSupport::TestCase
     assert !@instance.valid?
   end
 
-  # saml_idp_entity_id
-
-  test "saml_idp_entity_id and shibboleth_org_dn cannot both be filled in" do
-    @instance.saml_idp_entity_id = "cats"
-    @instance.shibboleth_org_dn  = "dogs"
-    assert !@instance.valid?
-  end
-
   # saml_sp_entity_id()
 
   test "saml_sp_entity_id() returns a correct value" do
@@ -743,12 +751,11 @@ class InstitutionTest < ActiveSupport::TestCase
     assert !@instance.valid?
   end
 
-  # shibboleth_org_dn
+  # shibboleth_extra_attributes
 
-  test "shibboleth_org_dn and saml_idp_entity_id cannot both be filled in" do
-    @instance.shibboleth_org_dn  = "dogs"
-    @instance.saml_idp_entity_id = "cats"
-    assert !@instance.valid?
+  test "shibboleth_extra_attributes can be set to a CSV string" do
+    @instance.update!(shibboleth_extra_attributes: "dogs, cats, foxes")
+    assert_equal %w(dogs cats foxes), @instance.shibboleth_extra_attributes
   end
 
   # update_from_openathens() (OpenAthens concern)

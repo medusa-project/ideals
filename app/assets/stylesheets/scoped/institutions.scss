@@ -1,4 +1,11 @@
 body#show_institution {
+  #authentication-tab-content {
+    dd ul {
+      list-style: none;
+      margin-left: 0;
+      padding-left: 0;
+    }
+  }
   #theme-tab-content {
     .card-body {
       display: flex;

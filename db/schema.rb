@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_18_154604) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_23_143549) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -371,6 +371,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_18_154604) do
     t.string "saml_idp_entity_id"
     t.integer "saml_email_location"
     t.string "google_analytics_measurement_id"
+    t.boolean "local_auth_enabled", default: true, null: false
+    t.boolean "saml_auth_enabled", default: false, null: false
+    t.boolean "shibboleth_auth_enabled", default: false, null: false
+    t.string "shibboleth_email_attribute", default: "mail"
+    t.string "shibboleth_name_attribute", default: "displayName"
+    t.text "shibboleth_extra_attributes", default: "[]"
     t.index ["fqdn"], name: "index_institutions_on_fqdn", unique: true
     t.index ["incoming_message_queue"], name: "index_institutions_on_incoming_message_queue", unique: true
     t.index ["key"], name: "index_institutions_on_key", unique: true

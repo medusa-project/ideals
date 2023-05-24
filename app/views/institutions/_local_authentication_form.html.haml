@@ -1,0 +1,20 @@
+-# @param institution [Institution]
+
+= form_for(institution, url: institution_settings_path(institution), remote: true) do |f|
+  .error-messages
+    -# populated via ajax by shared/_validation_messages.js.erb
+
+  .mb-3
+    .form-check
+      = f.check_box(:local_auth_enabled,
+                    value:   "true",
+                    checked: f.object.local_auth_enabled,
+                    id:      "local-auth-enabled",
+                    class:   "form-check-input")
+      %label.form-check-label{for: "local-auth-enabled"}
+        Enabled
+
+  .clearfix
+    .float-end
+      %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel
+      = f.submit("Save Changes", class: "btn btn-primary")

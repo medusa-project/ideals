@@ -1,104 +1,197 @@
-.btn-group.float-end{role: "group"}
-  - if policy(@institution).edit_authentication?
-    - if @institution.sso_federation == Institution::SSOFederation::OPENATHENS
-      -# Refresh OpenAthens Metadata button
-      = link_to(institution_refresh_openathens_metadata_path,
-                class: "btn btn-light", method: :patch) do
-        %i.fa.fa-sync
-        Refresh OpenAthens Metadata
-    -# Edit button
-    %button.btn.btn-light.edit-authentication{"data-bs-target":       "#edit-authentication-modal",
-                                              "data-bs-toggle":       "modal",
-                                              type:                   "button",
-                                              "data-institution-key": @institution.key }
-      %i.fa.fa-pencil-alt
-      Edit
+%ul.nav.nav-tabs{role: "tablist"}
+  %li.nav-item{role: "presentation"}
+    %button#local-tab.nav-link.active{"data-bs-toggle": "tab",
+                                      "data-bs-target": "#local-tab-pane",
+                                      type:             "button",
+                                      role:             "tab",
+                                      "aria-controls":  "local-tab-pane",
+                                      "aria-selected":  "true"} Local
+  %li.nav-item{role: "presentation"}
+    %button#saml-tab.nav-link{"data-bs-toggle": "tab",
+                              "data-bs-target": "#saml-tab-pane",
+                              type:             "button",
+                              role:             "tab",
+                              "aria-controls":  "saml-tab-pane",
+                              "aria-selected":  "false"} SAML
+  %li.nav-item{role: "presentation"}
+    %button#shibboleth-tab.nav-link{"data-bs-toggle": "tab",
+                                    "data-bs-target": "#shibboleth-tab-pane",
+                                    type:             "button",
+                                    role:             "tab",
+                                    "aria-controls":  "shibboleth-tab-pane",
+                                    "aria-selected":  "true"} Shibboleth
 
-.clearfix.mb-3
+.tab-content
+  #local-tab-pane.tab-pane.fade.show.active{role:              "tabpanel",
+                                            "aria-labelledby": "local-tab",
+                                            tabindex:          "0"}
+    - if policy(@institution).edit_local_authentication?
+      .btn-group.float-end{role: "group"}
+        -# Edit button
+        %button.btn.btn-light.edit-local-authentication{"data-bs-target":       "#edit-local-authentication-modal",
+                                                        "data-bs-toggle":       "modal",
+                                                        type:                   "button",
+                                                        "data-institution-key": @institution.key }
+          %i.fa.fa-pencil-alt
+          Edit
 
-%dl
-  - if @institution.key == "uiuc"
-    %dt Organization DN
-    %dd
-      - if @institution.shibboleth_org_dn.present?
-        %code= @institution.shibboleth_org_dn
-      - else
-        Not Set
-  - else
-    %dt SSO Federation
-    %dd
-      - if @institution.sso_federation.present?
-        = Institution::SSOFederation.label_for(@institution.sso_federation)
-      - else
-        = boolean(false, style: :word, false_value: "NOT SET")
-    %dt IdP Entity ID
-    %dd
-      - if @institution.saml_idp_entity_id.present?
-        %code= @institution.saml_idp_entity_id
-      - else
-        = boolean(false, style: :word, false_value: "NOT SET")
-    %dt SP Entity ID
-    %dd
-      %code= @institution.saml_sp_entity_id
-    %dt SP Metadata URL
-    %dd
-      - if @institution.saml_idp_entity_id.present?
-        = link_to("#{@institution.scope_url}/auth/saml/metadata",
-                  "#{@institution.scope_url}/auth/saml/metadata")
-      - else
-        = boolean(false, style: :word, false_value: "NOT AVAILABLE")
-    %dt Email Location
-    %dd
-      - if @institution.saml_email_location.present?
-        = Institution::SAMLEmailLocation.label_for(@institution.saml_email_location)
-      - else
-        = boolean(false, style: :word, false_value: "NOT SET")
-    - if @institution.saml_email_location == Institution::SAMLEmailLocation::ATTRIBUTE
-      %dt Email Attribute
+    .clearfix.mb-3
+
+    %dl
+      %dt Enabled
       %dd
-        - if @institution.saml_email_attribute.present?
-          %code= @institution.saml_email_attribute
+        = boolean(@institution.local_auth_enabled, style: :word)
+
+  #saml-tab-pane.tab-pane.fade{role:              "tabpanel",
+                               "aria-labelledby": "saml-tab",
+                               tabindex:          "0"}
+    .btn-group.float-end{role: "group"}
+      - if policy(@institution).edit_saml_authentication?
+        - if @institution.sso_federation == Institution::SSOFederation::OPENATHENS
+          -# Refresh OpenAthens Metadata button
+          = link_to(institution_refresh_openathens_metadata_path,
+                    class: "btn btn-light", method: :patch) do
+            %i.fa.fa-sync
+            Refresh OpenAthens Metadata
+        -# Edit button
+        %button.btn.btn-light.edit-saml-authentication{"data-bs-target":       "#edit-saml-authentication-modal",
+                                                       "data-bs-toggle":       "modal",
+                                                       type:                   "button",
+                                                       "data-institution-key": @institution.key }
+          %i.fa.fa-pencil-alt
+          Edit
+
+    .clearfix.mb-3
+
+    %dl
+      %dt Enabled
+      %dd
+        = boolean(@institution.saml_auth_enabled, style: :word)
+      %dt SSO Federation
+      %dd
+        - if @institution.sso_federation.present?
+          = Institution::SSOFederation.label_for(@institution.sso_federation)
         - else
           = boolean(false, style: :word, false_value: "NOT SET")
-    %dt First Name Attribute
-    %dd
-      - if @institution.saml_first_name_attribute.present?
-        %code= @institution.saml_first_name_attribute
-      - else
-        = boolean(false, style: :word, false_value: "NOT SET")
-    %dt Last Name Attribute
-    %dd
-      - if @institution.saml_last_name_attribute.present?
-        %code= @institution.saml_last_name_attribute
-      - else
-        = boolean(false, style: :word, false_value: "NOT SET")
+      %dt IdP Entity ID
+      %dd
+        - if @institution.saml_idp_entity_id.present?
+          %code= @institution.saml_idp_entity_id
+        - else
+          = boolean(false, style: :word, false_value: "NOT SET")
+      %dt SP Entity ID
+      %dd
+        %code= @institution.saml_sp_entity_id
+      %dt SP Metadata URL
+      %dd
+        - if @institution.saml_idp_entity_id.present?
+          = link_to("#{@institution.scope_url}/auth/saml/metadata",
+                      "#{@institution.scope_url}/auth/saml/metadata")
+        - else
+          = boolean(false, style: :word, false_value: "NOT AVAILABLE")
+      %dt Email Location
+      %dd
+        - if @institution.saml_email_location.present?
+          = Institution::SAMLEmailLocation.label_for(@institution.saml_email_location)
+        - else
+          = boolean(false, style: :word, false_value: "NOT SET")
+      - if @institution.saml_email_location == Institution::SAMLEmailLocation::ATTRIBUTE
+        %dt Email Attribute
+        %dd
+          - if @institution.saml_email_attribute.present?
+            %code= @institution.saml_email_attribute
+          - else
+            = boolean(false, style: :word, false_value: "NOT SET")
+      %dt First Name Attribute
+      %dd
+        - if @institution.saml_first_name_attribute.present?
+          %code= @institution.saml_first_name_attribute
+        - else
+          = boolean(false, style: :word, false_value: "NOT SET")
+      %dt Last Name Attribute
+      %dd
+        - if @institution.saml_last_name_attribute.present?
+          %code= @institution.saml_last_name_attribute
+        - else
+          = boolean(false, style: :word, false_value: "NOT SET")
+      %dt SSO Service URL
+      %dd
+        - if @institution.saml_idp_sso_service_url.present?
+          = link_to(@institution.saml_idp_sso_service_url,
+                    @institution.saml_idp_sso_service_url)
+        - else
+          Not Set
+      %dt IdP Certificate
+      %dd
+        - if @institution.saml_idp_cert.present?
+          - begin
+            - cert = OpenSSL::X509::Certificate.new(@institution.saml_idp_cert)
+            %dl
+              %dt Subject
+              %dd
+                %code= cert.subject
+              %dt Issuer
+              %dd
+                %code= cert.issuer
+              %dt Issued
+              %dd= cert.not_before
+              %dt Expires
+              %dd= cert.not_after
+          - rescue
+            = boolean(false, style: :word, false_value: "INVALID")
+        - else
+          = boolean(false, style: :word, false_value: "NOT SET")
 
-- if @institution.key != "uiuc"
-  %dl
-    %dt SSO Service URL
-    %dd
-      - if @institution.saml_idp_sso_service_url.present?
-        = link_to(@institution.saml_idp_sso_service_url,
-                  @institution.saml_idp_sso_service_url)
-      - else
-        Not Set
-    %dt IdP Certificate
-    %dd
-      - if @institution.saml_idp_cert.present?
-        - begin
-          - cert = OpenSSL::X509::Certificate.new(@institution.saml_idp_cert)
-          %dl
-            %dt Subject
-            %dd
-              %code= cert.subject
-            %dt Issuer
-            %dd
-              %code= cert.issuer
-            %dt Issued
-            %dd= cert.not_before
-            %dt Expires
-            %dd= cert.not_after
-        - rescue
-          = boolean(false, style: :word, false_value: "INVALID")
-      - else
-        = boolean(false, style: :word, false_value: "NOT SET")
+  #shibboleth-tab-pane.tab-pane.fade{role:              "tabpanel",
+                                     "aria-labelledby": "shibboleth-tab",
+                                     tabindex:          "0"}
+    - if policy(@institution).edit_shibboleth_authentication?
+      .btn-group.float-end{role: "group"}
+        -# Edit button
+        %button.btn.btn-light.edit-shibboleth-authentication{"data-bs-target":       "#edit-shibboleth-authentication-modal",
+                                                             "data-bs-toggle":       "modal",
+                                                             type:                   "button",
+                                                             "data-institution-key": @institution.key }
+          %i.fa.fa-pencil-alt
+          Edit
+
+    .clearfix.mb-3
+
+    %dl
+      %dt Enabled
+      %dd
+        = boolean(@institution.shibboleth_auth_enabled, style: :word)
+      %dt Organization DN
+      %dd
+        - if @institution.shibboleth_org_dn.present?
+          %code= @institution.shibboleth_org_dn
+        - else
+          = boolean(false, style: :word, false_value: "NOT SET")
+      %dt Email Attribute
+      %dd
+        - if @institution.shibboleth_email_attribute.present?
+          %code= @institution.shibboleth_email_attribute
+        - else
+          = boolean(false, style: :word, false_value: "NOT SET")
+      %dt Name Attribute
+      %dd
+        - if @institution.shibboleth_name_attribute.present?
+          %code= @institution.shibboleth_name_attribute
+        - else
+          = boolean(false, style: :word, false_value: "NOT SET")
+      %dt Extra Attributes
+      %dd
+        - if @institution.shibboleth_extra_attributes&.any?
+          %ul
+            - @institution.shibboleth_extra_attributes.sort.each do |attr|
+              %li
+                %code= attr
+        - else
+          = boolean(false, style: :word, false_value: "NONE")
+
+= render partial: "shared/xhr_modal",
+         locals: { id: "edit-local-authentication-modal", title: "Edit Local Authentication" }
+= render partial: "shared/xhr_modal",
+         locals: { id: "edit-saml-authentication-modal", title: "Edit SAML Authentication" }
+= render partial: "shared/xhr_modal",
+         locals: { id: "edit-shibboleth-authentication-modal", title: "Edit Shibboleth Authentication" }

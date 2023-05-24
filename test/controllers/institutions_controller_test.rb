@@ -191,31 +191,6 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  # edit_authentication()
-
-  test "edit_authentication() returns HTTP 404 for unscoped requests" do
-    host! ::Configuration.instance.main_host
-    get institution_edit_authentication_path(@institution), xhr: true
-    assert_response :not_found
-  end
-
-  test "edit_authentication() returns HTTP 403 for logged-out users" do
-    get institution_edit_authentication_path(@institution), xhr: true
-    assert_response :forbidden
-  end
-
-  test "edit_authentication() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:southwest))
-    get institution_edit_authentication_path(@institution), xhr: true
-    assert_response :forbidden
-  end
-
-  test "edit_authentication() returns HTTP 200" do
-    log_in_as(users(:southwest_admin))
-    get institution_edit_authentication_path(@institution), xhr: true
-    assert_response :ok
-  end
-
   # edit_deposit_agreement()
 
   test "edit_deposit_agreement() returns HTTP 404 for unscoped requests" do
@@ -291,6 +266,31 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # edit_local_authentication()
+
+  test "edit_local_authentication() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_edit_local_authentication_path(@institution), xhr: true
+    assert_response :not_found
+  end
+
+  test "edit_local_authentication() returns HTTP 403 for logged-out users" do
+    get institution_edit_local_authentication_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_local_authentication() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    get institution_edit_local_authentication_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_local_authentication() returns HTTP 200" do
+    log_in_as(users(:southwest_admin))
+    get institution_edit_local_authentication_path(@institution), xhr: true
+    assert_response :ok
+  end
+
   # edit_preservation()
 
   test "edit_preservation() returns HTTP 404 for unscoped requests" do
@@ -341,6 +341,31 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # edit_saml_authentication()
+
+  test "edit_saml_authentication() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_edit_saml_authentication_path(@institution), xhr: true
+    assert_response :not_found
+  end
+
+  test "edit_saml_authentication() returns HTTP 403 for logged-out users" do
+    get institution_edit_saml_authentication_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_saml_authentication() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    get institution_edit_saml_authentication_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_saml_authentication() returns HTTP 200" do
+    log_in_as(users(:southwest_admin))
+    get institution_edit_saml_authentication_path(@institution), xhr: true
+    assert_response :ok
+  end
+
   # edit_settings()
 
   test "edit_settings() returns HTTP 404 for unscoped requests" do
@@ -363,6 +388,31 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   test "edit_settings() returns HTTP 200" do
     log_in_as(users(:southwest_admin))
     get institution_edit_settings_path(@institution), xhr: true
+    assert_response :ok
+  end
+
+  # edit_shibboleth_authentication()
+
+  test "edit_shibboleth_authentication() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_edit_shibboleth_authentication_path(@institution), xhr: true
+    assert_response :not_found
+  end
+
+  test "edit_shibboleth_authentication() returns HTTP 403 for logged-out users" do
+    get institution_edit_shibboleth_authentication_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_shibboleth_authentication() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    get institution_edit_shibboleth_authentication_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_shibboleth_authentication() returns HTTP 200" do
+    log_in_as(users(:southwest_admin))
+    get institution_edit_shibboleth_authentication_path(@institution), xhr: true
     assert_response :ok
   end
 

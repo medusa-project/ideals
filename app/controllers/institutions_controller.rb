@@ -67,14 +67,6 @@ class InstitutionsController < ApplicationController
   end
 
   ##
-  # Responds to `GET /institutions/:key/edit-authentication`
-  #
-  def edit_authentication
-    render partial: "institutions/authentication_form",
-           locals: { institution: @institution }
-  end
-
-  ##
   # Used for editing the deposit agreement.
   #
   # Responds to `GET /institutions/:key/edit-deposit-agreement` (XHR only)
@@ -105,6 +97,14 @@ class InstitutionsController < ApplicationController
   end
 
   ##
+  # Responds to `GET /institutions/:key/edit-local-authentication`
+  #
+  def edit_local_authentication
+    render partial: "institutions/local_authentication_form",
+           locals: { institution: @institution }
+  end
+
+  ##
   # Responds to `GET /institutions/:key/edit-preservation`
   #
   def edit_preservation
@@ -121,10 +121,26 @@ class InstitutionsController < ApplicationController
   end
 
   ##
+  # Responds to `GET /institutions/:key/edit-saml-authentication`
+  #
+  def edit_saml_authentication
+    render partial: "institutions/saml_authentication_form",
+           locals: { institution: @institution }
+  end
+
+  ##
   # Responds to `GET /institutions/:key/edit-settings`
   #
   def edit_settings
     render partial: "institutions/settings_form",
+           locals: { institution: @institution }
+  end
+
+  ##
+  # Responds to `GET /institutions/:key/edit-shibboleth-authentication`
+  #
+  def edit_shibboleth_authentication
+    render partial: "institutions/shibboleth_authentication_form",
            locals: { institution: @institution }
   end
 
@@ -686,6 +702,10 @@ class InstitutionsController < ApplicationController
                                         :description_element_id,
                                         :google_analytics_measurement_id,
                                         :handle_uri_element_id,
+                                        :title_element_id,
+                                        # Authentication tab
+                                        :local_auth_enabled,
+                                        :saml_auth_enabled,
                                         :saml_email_attribute,
                                         :saml_email_location,
                                         :saml_first_name_attribute,
@@ -693,9 +713,13 @@ class InstitutionsController < ApplicationController
                                         :saml_idp_entity_id,
                                         :saml_idp_sso_service_url,
                                         :saml_last_name_attribute,
+                                        :shibboleth_auth_enabled,
+                                        :shibboleth_email_attribute,
+                                        :shibboleth_extra_attributes,
+                                        :shibboleth_host,
+                                        :shibboleth_name_attributes,
                                         :shibboleth_org_dn,
                                         :sso_federation,
-                                        :title_element_id,
                                         # Theme tab
                                         :active_link_color,
                                         :banner_image_height,

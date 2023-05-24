@@ -27,10 +27,6 @@ class InstitutionPolicy < ApplicationPolicy
     edit_administering_groups
   end
 
-  def edit_authentication
-    edit_settings
-  end
-
   def edit_deposit_agreement
     edit_settings
   end
@@ -43,6 +39,10 @@ class InstitutionPolicy < ApplicationPolicy
     edit_settings
   end
 
+  def edit_local_authentication
+    edit_settings
+  end
+
   def edit_preservation
     update_preservation
   end
@@ -51,8 +51,16 @@ class InstitutionPolicy < ApplicationPolicy
     update_properties
   end
 
+  def edit_saml_authentication
+    edit_local_authentication
+  end
+
   def edit_settings
     update_settings
+  end
+
+  def edit_shibboleth_authentication
+    edit_local_authentication
   end
 
   def edit_theme
@@ -76,7 +84,7 @@ class InstitutionPolicy < ApplicationPolicy
   end
 
   def refresh_openathens_metadata
-    edit_authentication
+    edit_saml_authentication
   end
 
   def remove_banner_image

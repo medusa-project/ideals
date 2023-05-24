@@ -2,7 +2,7 @@
 - provide :title, @user_group.name
 
 - can_edit                   = policy(@user_group).edit?
-- show_shibboleth_dimensions = @user_group.institution&.shibboleth_org_dn.present? || !@user_group.institution
+- show_shibboleth_dimensions = @user_group.institution&.shibboleth_auth_enabled || !@user_group.institution
 
 .btn-group.float-end{role: "group"}
   - if can_edit

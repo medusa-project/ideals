@@ -84,17 +84,21 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/element-mappings/edit", to: "institutions#edit_element_mappings", via: :get,
           constraints: lambda { |request| request.xhr? }
-    match "/edit-authentication", to: "institutions#edit_authentication", via: :get,
-          constraints: lambda { |request| request.xhr? }
     match "/edit-deposit-agreement", to: "institutions#edit_deposit_agreement", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-deposit-questions", to: "institutions#edit_deposit_questions", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/edit-local-authentication", to: "institutions#edit_local_authentication", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-preservation", to: "institutions#edit_preservation", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-properties", to: "institutions#edit_properties", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/edit-saml-authentication", to: "institutions#edit_saml_authentication", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/edit-settings", to: "institutions#edit_settings", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/edit-shibboleth-authentication", to: "institutions#edit_shibboleth_authentication", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-theme", to: "institutions#edit_theme", via: :get,
           constraints: lambda { |request| request.xhr? }

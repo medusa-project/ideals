@@ -12,8 +12,8 @@ class SessionsController < ApplicationController
     if Rails.env.development? || Rails.env.test?
       redirect_to "/auth/developer"
     else
-      shib_opts = YAML.load_file(File.join(Rails.root, 'config', 'shibboleth.yml'))[Rails.env]
-      redirect_to "/Shibboleth.sso/Login?target=https://#{shib_opts['host']}/auth/shibboleth/callback"
+      target = "https://#{current_institution.fqdn}/auth/shibboleth/callback"
+      redirect_to "/Shibboleth.sso/Login?target=#{target}"
     end
   end
 

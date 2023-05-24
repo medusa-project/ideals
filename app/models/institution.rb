@@ -60,6 +60,8 @@
 #                               latitude.
 # * `link_color`                Theme hyperlink color.
 # * `link_hover_color`          Theme hover-over-hyperlink color.
+# * `local_auth_enabled`        Whether local-identity authentication is
+#                               enabled.
 # * `longitude_degrees`         Degrees component of the institution's
 #                               longitude.
 # * `longitude_minutes`         Minutes component of the institution's
@@ -70,6 +72,9 @@
 # * `medusa_file_group_id`      ID of the Medusa file group in which the
 #                               institution's content is stored.
 # * `name`                      Institution name.
+# * `primary_color`             Theme primary color.
+# * `primary_hover_color`       Theme hover-over primary color.
+# * `saml_auth_enabled`         Whether SAML authentication is enabled.
 # * `saml_email_attribute`      Name of the SAML attribute containing the email
 #                               address. Used only when `saml_email_location`
 #                               is set to
@@ -89,11 +94,16 @@
 #                               authentication.
 # * `saml_idp_sso_service_url`  Required only by institutions that use SAML for
 #                               authentication.
-# * `primary_color`             Theme primary color.
-# * `primary_hover_color`       Theme hover-over primary color.
 # * `service_name`              Name of the service that the institution is
 #                               running. For example, at UIUC, this would be
 #                               "IDEALS."
+# * `shibboleth_auth_enabled`   Whether Shibboleth authentication is enabled.
+# * `shibboleth_email_attribute` Shibboleth email attribute.
+# * `shibboleth_extra_attributes` Array of extra attributes to request from the
+#                               Shibboleth IdP. This can also be set to a
+#                               comma-separated string which will be
+#                               transformed into an array upon save.
+# * `shibboleth_name_attribute` Shibboleth name attribute.
 # * `shibboleth_org_dn`         Value of an `eduPersonOrgDN` attribute from the
 #                               Shibboleth IdP. This should be filled in by all
 #                               institutions that use Shibboleth for
@@ -183,6 +193,8 @@ class Institution < ApplicationRecord
   has_many :users
   has_many :vocabularies
 
+  serialize :shibboleth_extra_attributes, JSON
+
   validates :feedback_email, allow_blank: true, length: {maximum: 255},
             format: {with: StringUtils::EMAIL_REGEX}
 
@@ -212,8 +224,7 @@ class Institution < ApplicationRecord
             allow_blank: true
   validates :service_name, presence: true
 
-  validate :disallow_key_changes, :validate_css_colors,
-           :validate_authentication_method
+  validate :disallow_key_changes, :validate_css_colors
 
   # N.B.: order is important!
   after_create :add_default_deposit_agreement_questions,
@@ -221,6 +232,8 @@ class Institution < ApplicationRecord
                :add_default_element_mappings, :add_default_metadata_profile,
                :add_default_submission_profile, :add_default_index_pages,
                :add_default_user_groups
+
+  before_save :arrayize_shibboleth_extra_attributes_csv
 
   ##
   # @param extension [String]
@@ -318,6 +331,13 @@ class Institution < ApplicationRecord
     sql += "GROUP BY ins.id
       ORDER BY ins.name;"
     connection.execute(sql)
+  end
+
+  ##
+  # @return [Boolean] Whether at least one authentication method is enabled.
+  #
+  def auth_enabled?
+    local_auth_enabled || saml_auth_enabled || shibboleth_auth_enabled
   end
 
   ##
@@ -1008,6 +1028,21 @@ class Institution < ApplicationRecord
                            defines_institution: false).save!
   end
 
+  ##
+  # {shibboleth_extra_attributes} is a serialized array. This method allows us
+  # to set it to a comma-separated string (from e.g. a textarea) and have it
+  # auto-transformed into an array.
+  #
+  def arrayize_shibboleth_extra_attributes_csv
+    if self.shibboleth_extra_attributes.kind_of?(String) &&
+      self.shibboleth_extra_attributes&.include?(",") &&
+      !self.shibboleth_extra_attributes.start_with?("[") &&
+      !self.shibboleth_extra_attributes.end_with?("]")
+      self.shibboleth_extra_attributes =
+        self.shibboleth_extra_attributes.split(",").map(&:strip)
+    end
+  end
+
   def disallow_key_changes
     if !new_record? && key_changed?
       errors.add(:key, "cannot be changed")
@@ -1021,17 +1056,6 @@ class Institution < ApplicationRecord
   def upload_theme_image(io:, filename:)
     key = self.class.image_key_prefix(self.key) + filename
     PersistentStore.instance.put_object(key: key, io: io, public: true)
-  end
-
-  ##
-  # Ensures that {shibboleth_org_dn} and {saml_idp_entity_id} are not both filled
-  # in.
-  #
-  def validate_authentication_method
-    if self.shibboleth_org_dn.present? && self.saml_idp_entity_id.present?
-      errors.add(:base, "Organization DN and SAML IdP entity ID cannot both "\
-                        "be present")
-    end
   end
 
   def validate_css_colors

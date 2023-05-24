@@ -16,7 +16,7 @@
 
 = render partial: "shared/flashes"
 
-- if logged_in?
+- if logged_in? || !current_institution.auth_enabled?
   = render partial: "welcome"
 - else
   .row

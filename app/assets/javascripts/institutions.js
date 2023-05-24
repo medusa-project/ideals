@@ -66,10 +66,17 @@ const InstitutionView = function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/authentication";
         $.get(url, function (data) {
             $("#authentication-tab-content").html(data);
-            $("button.edit-authentication").on("click", function() {
-                const url = ROOT_URL + "/institutions/" + institutionKey + "/edit-authentication";
+            $("button.edit-local-authentication").on("click", function() {
+                const url = ROOT_URL + "/institutions/" + institutionKey + "/edit-local-authentication";
                 $.get(url, function(data) {
-                    const modalBody = $("#edit-authentication-modal .modal-body");
+                    const modalBody = $("#edit-local-authentication-modal .modal-body");
+                    modalBody.html(data);
+                });
+            });
+            $("button.edit-saml-authentication").on("click", function() {
+                const url = ROOT_URL + "/institutions/" + institutionKey + "/edit-saml-authentication";
+                $.get(url, function(data) {
+                    const modalBody = $("#edit-saml-authentication-modal .modal-body");
                     modalBody.html(data);
                     const ssoFederationRadio = modalBody.find("input[name='institution[sso_federation]']");
                     const emailLocationMenu  = modalBody.find("select[name='institution[saml_email_location]']");
@@ -107,6 +114,13 @@ const InstitutionView = function() {
                     });
                     onProviderRadioChanged(ssoFederationRadio.filter(":checked"));
                     onEmailLocationChanged(emailLocationMenu);
+                });
+            });
+            $("button.edit-shibboleth-authentication").on("click", function() {
+                const url = ROOT_URL + "/institutions/" + institutionKey + "/edit-shibboleth-authentication";
+                $.get(url, function(data) {
+                    const modalBody = $("#edit-shibboleth-authentication-modal .modal-body");
+                    modalBody.html(data);
                 });
             });
         });
