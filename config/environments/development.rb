@@ -36,6 +36,12 @@ Rails.application.configure do
   config.active_job.queue_adapter = :async
   config.active_job.queue_name_prefix = "ideals_#{Rails.env}"
 
+  # This check is probably not needed except when doing IP-based authorization
+  # which is bad practice and most tenants aren't going to do; otherwise it
+  # could raise annoying ActionDispatch::RemoteIp::IpSpoofAttackErrors which
+  # don't really help us accomplish anything.
+  config.action_dispatch.ip_spoofing_check = false
+
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
 

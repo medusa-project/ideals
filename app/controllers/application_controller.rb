@@ -10,7 +10,6 @@ class ApplicationController < ActionController::Base
   rescue_from ActionController::InvalidCrossOriginRequest, with: :rescue_invalid_cross_origin_request
   rescue_from ActionController::UnknownFormat, with: :rescue_unknown_format
   rescue_from ActionDispatch::Http::Parameters::ParseError, with: :rescue_parse_error
-  rescue_from ActionDispatch::RemoteIp::IpSpoofAttackError, with: :rescue_ip_spoof
   rescue_from ActiveRecord::RecordNotFound, with: :rescue_not_found
   rescue_from GoneError, with: :rescue_gone
   rescue_from NotAuthorizedError, with: :rescue_unauthorized
@@ -199,10 +198,6 @@ class ApplicationController < ActionController::Base
       format.json { head status: :gone }
       format.xml { render xml: {status: 410}.to_xml, status: :gone }
     end
-  end
-
-  def rescue_ip_spoof
-    render plain: 'Client IP mismatch.', status: :bad_request
   end
 
   ##

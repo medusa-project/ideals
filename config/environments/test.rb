@@ -32,6 +32,12 @@ Rails.application.configure do
   # Raise exceptions instead of rendering exception templates.
   config.action_dispatch.show_exceptions = false
 
+  # This check is probably not needed except when doing IP-based authorization
+  # which is bad practice and most tenants aren't going to do; otherwise it
+  # could raise annoying ActionDispatch::RemoteIp::IpSpoofAttackErrors which
+  # don't really help us accomplish anything.
+  config.action_dispatch.ip_spoofing_check = false
+
   # Disable request forgery protection in test environment.
   config.action_controller.allow_forgery_protection = false
 
