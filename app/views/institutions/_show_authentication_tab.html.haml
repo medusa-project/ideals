@@ -181,7 +181,7 @@
           = boolean(false, style: :word, false_value: "NOT SET")
       %dt Extra Attributes
       %dd
-        - if @institution.shibboleth_extra_attributes&.any?
+        - if @institution.shibboleth_extra_attributes.present?
           %ul
             - @institution.shibboleth_extra_attributes.sort.each do |attr|
               %li
