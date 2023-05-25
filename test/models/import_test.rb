@@ -2,12 +2,12 @@ require "test_helper"
 
 class ImportTest < ActiveSupport::TestCase
 
-  class KindTest < ActiveSupport::TestCase
+  class FormatTest < ActiveSupport::TestCase
 
     test "to_s() returns a correct value" do
-      assert_equal "SAF Package", Import::Kind.to_s(Import::Kind::SAF)
-      assert_equal "CSV File", Import::Kind.to_s(Import::Kind::CSV)
-      assert_equal "Unknown", Import::Kind.to_s(9999)
+      assert_equal "SAF Package", Import::Format.to_s(Import::Format::SAF)
+      assert_equal "CSV File", Import::Format.to_s(Import::Format::CSV)
+      assert_equal "Unknown", Import::Format.to_s(9999)
     end
 
   end

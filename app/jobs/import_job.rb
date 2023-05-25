@@ -12,7 +12,7 @@ class ImportJob < ApplicationJob
   ##
   # @param args [Array<Hash>] One-element array containing a Hash with
   #                           `:import` and `:user` keys.
-  # @return [Integer]  One of the {Import::Kind} constant values, used for
+  # @return [Integer]  One of the {Import::Format} constant values, used for
   #                    testing.
   # @raises [ArgumentError]
   #
@@ -29,7 +29,7 @@ class ImportJob < ApplicationJob
                                  status_text: "Importing items from CSV")
       import.save!
       CsvImporter.new.import_from_s3(import, submitter)
-      Import::Kind::CSV
+      Import::Format::CSV
     else
       import.task = Task.create!(name:        self.class.name,
                                  institution: submitter&.institution,
@@ -38,7 +38,7 @@ class ImportJob < ApplicationJob
                                  status_text: "Importing items from SAF package")
       import.save!
       SafImporter.new.import_from_s3(import)
-      Import::Kind::SAF
+      Import::Format::SAF
     end
   end
 

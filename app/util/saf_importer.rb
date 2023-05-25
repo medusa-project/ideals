@@ -176,8 +176,8 @@ class SafImporter
     imported_items    = import.imported_items || []
     item_key_prefixes.reject!{ |k| imported_items.select{ |i| k.end_with?(i['item_id']) }.any? }
 
-    import.update!(kind:  Import::Kind::SAF,
-                   files: import.object_keys)
+    import.update!(format: Import::Format::SAF,
+                   files:  import.object_keys)
     import.task&.update!(status: Task::Status::RUNNING)
 
     # Iterate through each item pseudo-directory.

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_23_143549) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_25_202114) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -273,12 +273,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_23_143549) do
     t.text "imported_items"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "kind"
+    t.integer "format"
     t.bigint "institution_id", null: false
     t.bigint "task_id"
     t.index ["collection_id"], name: "index_imports_on_collection_id"
+    t.index ["format"], name: "index_imports_on_format"
     t.index ["institution_id"], name: "index_imports_on_institution_id"
-    t.index ["kind"], name: "index_imports_on_kind"
     t.index ["task_id"], name: "index_imports_on_task_id", unique: true
     t.index ["user_id"], name: "index_imports_on_user_id"
   end

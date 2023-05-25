@@ -99,7 +99,7 @@ class CsvImporter
   end
 
   ##
-  # Imports from an [Import] instance corresponding to a CSV file in the
+  # Imports from an {Import} instance corresponding to a CSV file in the
   # application S3 bucket.
   #
   # @param import [Import]
@@ -110,7 +110,7 @@ class CsvImporter
     object_keys    = import.object_keys
     csv_object_key = object_keys.first
     imported_items = []
-    import.update!(kind:           Import::Kind::CSV,
+    import.update!(format:         Import::Format::CSV,
                    files:          [csv_object_key],
                    imported_items: imported_items)
     import.task&.update!(status: Task::Status::RUNNING)

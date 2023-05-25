@@ -320,13 +320,13 @@ class SafImporterTest < ActiveSupport::TestCase
     end
   end
 
-  test "import_from_s3() sets the import kind" do
+  test "import_from_s3() sets the import format" do
     package = File.join(PACKAGES_PATH, "valid_item")
     import  = imports(:uiuc_saf_new)
     upload_to_s3(package, import)
     @instance.import_from_s3(import)
 
-    assert_equal Import::Kind::SAF, import.kind
+    assert_equal Import::Format::SAF, import.format
   end
 
   test "import_from_s3() creates correct items" do

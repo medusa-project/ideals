@@ -4,31 +4,31 @@
 #
 # # Attributes
 #
-# * `collection_id`      ID of the {Collection} into which new items are to be
-#                        imported.
-# * `created_at`         Managed by ActiveRecord.
-# * `files`              JSON array of all files to import.
-# * `imported_items`     JSON array of objects with `item_id` and `handle` keys.
-#                        This is analogous to the contents of a mapfile (see
-#                        {SafImporter}) and can be used to reconstruct one.
-# * `institution_id`     Foreign key to {Institution} representing the
-#                        institution into which items are being imported.
-# * `kind`               One of the {Import::Kind} constant values. This may be
-#                        null in the case of a newly created instance to which
-#                        files have not been uploaded yet.
-# * `task_id`            Foreign key to {Task} which can be used for status
-#                        reports.
-# * `updated_at`         Managed by ActiveRecord.
-# * `user_id`            ID of the {User} who initiated the import.
+# * `collection_id`  ID of the {Collection} into which new items are to be
+#                    imported.
+# * `created_at`     Managed by ActiveRecord.
+# * `files`          JSON array of all files to import.
+# * `format`         One of the {Import::Format} constant values. This may be
+#                    null in the case of a newly created instance to which
+#                    files have not been uploaded yet.
+# * `imported_items` JSON array of objects with `item_id` and `handle` keys.
+#                    This is analogous to the contents of a mapfile (see
+#                    {SafImporter}) and can be used to reconstruct one.
+# * `institution_id` Foreign key to {Institution} representing the institution
+#                    into which items are being imported.
+# * `task_id`        Foreign key to {Task} which can be used for status
+#                    reports.
+# * `updated_at`     Managed by ActiveRecord.
+# * `user_id`        ID of the {User} who initiated the import.
 #
 class Import < ApplicationRecord
 
-  class Kind
+  class Format
     SAF = 0
     CSV = 1
 
-    def self.to_s(kind)
-      case kind
+    def self.to_s(format)
+      case format
       when 0
         "SAF Package"
       when 1

@@ -175,13 +175,13 @@ class CsvImporterTest < ActiveSupport::TestCase
 
   # import_from_s3()
 
-  test "import_from_s3() sets the import kind" do
+  test "import_from_s3() sets the import format" do
     csv    = file_fixture("csv/new.csv")
     import = imports(:uiuc_csv_new)
     upload_to_s3(csv, import)
     @instance.import_from_s3(import, users(:example_sysadmin))
 
-    assert_equal Import::Kind::CSV, import.kind
+    assert_equal Import::Format::CSV, import.format
   end
 
   test "import_from_s3() creates correct items" do

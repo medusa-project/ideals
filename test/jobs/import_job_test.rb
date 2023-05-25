@@ -29,14 +29,14 @@ class ImportJobTest < ActiveSupport::TestCase
     import = imports(:uiuc_csv_new)
     import.upload_file(relative_path: "new.csv",
                        io:            file_fixture("csv/new.csv"))
-    kind = ImportJob.new.perform(import: import)
-    assert_equal Import::Kind::CSV, kind
+    format = ImportJob.new.perform(import: import)
+    assert_equal Import::Format::CSV, format
   end
 
   test "perform() runs the SAF importer if the Import has multiple keys" do
     import = imports(:uiuc_saf_new)
-    kind = ImportJob.new.perform(import: import)
-    assert_equal Import::Kind::SAF, kind
+    format = ImportJob.new.perform(import: import)
+    assert_equal Import::Format::SAF, format
   end
 
 end

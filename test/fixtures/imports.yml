@@ -6,7 +6,7 @@ southwest_saf_new:
   user:               southwest_admin
   institution:        southwest
   collection:         southwest_unit1_collection1
-  kind:               <%= Import::Kind::SAF %>
+  format:             <%= Import::Format::SAF %>
   files:              "[]"
   imported_items:     "[]"
   task:               southwest_saf_import
@@ -17,7 +17,7 @@ uiuc_csv_new:
   user:               uiuc_admin
   institution:        uiuc
   collection:         uiuc_collection1
-  kind:               <%= Import::Kind::CSV %>
+  format:             <%= Import::Format::CSV %>
   files:              "[]"
   imported_items:     "[]"
   task:               csv_import
@@ -26,7 +26,7 @@ uiuc_saf_new:
   user:               uiuc_admin
   institution:        uiuc
   collection:         uiuc_collection1
-  kind:               <%= Import::Kind::SAF %>
+  format:             <%= Import::Format::SAF %>
   files:              "[]"
   imported_items:     "[]"
   task:               saf_import
