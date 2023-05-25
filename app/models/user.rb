@@ -477,7 +477,7 @@ class User < ApplicationRecord
     return if attrs[:overwriteUserAttrs] == "false"
 
     self.institution ||= institution
-    case self.institution.saml_email_location
+    case institution.saml_email_location
     when Institution::SAMLEmailLocation::ATTRIBUTE
       self.email       = attrs[institution.saml_email_attribute]&.first
     else
