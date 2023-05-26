@@ -253,7 +253,7 @@ class PersistentStoreTest < ActiveSupport::TestCase
   # upload_path()
 
   test "upload_path() uploads correct objects with correct keys" do
-    root_path = File.join(Rails.root, "test", "fixtures", "saf_packages", "valid_item")
+    root_path = File.join(Rails.root, "test", "fixtures", "packages", "saf", "valid_item")
     store     = PersistentStore.instance
     store.upload_path(root_path:  root_path,
                        key_prefix: "prefix/")
