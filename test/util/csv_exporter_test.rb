@@ -22,7 +22,8 @@ class CsvExporterTest < ActiveSupport::TestCase
     csv        = @instance.export(units: [unit])
     rows       = CSV.parse(csv)
     assert_equal 1 + all_items.length, rows.length
-    assert_equal %w(id dc:title dc:description dc:subject), rows[0]
+    assert_equal %w(id filenames file_descriptions dc:title dc:description dc:subject),
+                 rows[0]
   end
 
   test "export() includes child collections" do
@@ -33,7 +34,8 @@ class CsvExporterTest < ActiveSupport::TestCase
     csv              = @instance.export(collections: [collection])
     rows             = CSV.parse(csv)
     assert_equal 1 + all_items.length, rows.length
-    assert_equal %w(id dc:title dc:description dc:subject), rows[0]
+    assert_equal %w(id filenames file_descriptions dc:title dc:description dc:subject),
+                 rows[0]
   end
 
   test "export() respects the elements argument" do
@@ -41,7 +43,8 @@ class CsvExporterTest < ActiveSupport::TestCase
     csv        = @instance.export(collections: [collection],
                                   elements:    %w(dc:creator dc:description))
     rows       = CSV.parse(csv)
-    assert_equal %w(id dc:creator dc:description), rows[0]
+    assert_equal %w(id filenames file_descriptions dc:creator dc:description),
+                 rows[0]
   end
 
   # export_collection()
@@ -54,7 +57,8 @@ class CsvExporterTest < ActiveSupport::TestCase
     csv              = @instance.export_collection(collection)
     rows             = CSV.parse(csv)
     assert_equal 1 + all_items.length, rows.length
-    assert_equal %w(id dc:title dc:description dc:subject), rows[0]
+    assert_equal %w(id filenames file_descriptions dc:title dc:description dc:subject),
+                 rows[0]
   end
 
   test "export_collection() respects the elements argument" do
@@ -62,7 +66,8 @@ class CsvExporterTest < ActiveSupport::TestCase
     csv        = @instance.export_collection(collection,
                                              elements: %w(dc:creator dc:description))
     rows       = CSV.parse(csv)
-    assert_equal %w(id dc:creator dc:description), rows[0]
+    assert_equal %w(id filenames file_descriptions dc:creator dc:description),
+                 rows[0]
   end
 
   # export_unit()
@@ -73,7 +78,8 @@ class CsvExporterTest < ActiveSupport::TestCase
     csv       = @instance.export_unit(unit)
     rows      = CSV.parse(csv)
     assert_equal 1 + all_items.length, rows.length
-    assert_equal %w(id dc:title dc:description dc:subject), rows[0]
+    assert_equal %w(id filenames file_descriptions dc:title dc:description dc:subject),
+                 rows[0]
   end
 
   test "export_unit() respects the elements argument" do
@@ -81,7 +87,8 @@ class CsvExporterTest < ActiveSupport::TestCase
     csv  = @instance.export_unit(unit,
                                  elements: %w(dc:creator dc:description))
     rows = CSV.parse(csv)
-    assert_equal %w(id dc:creator dc:description), rows[0]
+    assert_equal %w(id filenames file_descriptions dc:creator dc:description),
+                 rows[0]
   end
 
 end

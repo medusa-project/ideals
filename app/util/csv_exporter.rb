@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 ##
-# Exports [Item]s in CSV format.
+# Exports {Item}s in CSV format.
 #
-# See [CsvImporter] for documentation of the CSV format.
+# See {CsvImporter} for documentation of the CSV format.
 #
 class CsvExporter
 
@@ -24,10 +26,7 @@ class CsvExporter
     if units.empty? && collections.empty?
       raise ArgumentError, "No units or collections specified."
     end
-    if elements.empty?
-      elements = (units.first || collections.first).institution.
-        default_metadata_profile.elements.map(&:name)
-    end
+    # Compile a list of collection IDs from which to export items.
     collection_ids = Set.new
     units.each do |unit|
       collection_ids += unit.collections.pluck(:id)
@@ -36,7 +35,14 @@ class CsvExporter
       collection_ids << collection.id
       collection_ids += collection.all_children.pluck(:id)
     end
+    # Compile a list of elements to include.
+    if elements.empty?
+      profile  = collections.first&.effective_metadata_profile ||
+        units.first&.effective_metadata_profile
+      elements = profile.elements.map(&:name)
+    end
 
+    # SQL is used for efficiency here--using ActiveRecord would be super slow.
     sql = select_clause(elements) +
       from_clause +
       "LEFT JOIN collection_item_memberships cim ON cim.item_id = i.id " +
@@ -86,19 +92,36 @@ class CsvExporter
   # @return [String]
   #
   def select_clause(elements)
-    columns = []
+    columns = ["i.id"]
+    # Filenames column
+    columns << "array_to_string(
+       array(
+         SELECT b.filename
+         FROM bitstreams b
+         WHERE b.item_id = i.id
+         ORDER BY b.filename
+       ), '||') AS filenames\n"
+    # File descriptions column
+    columns << "array_to_string(
+       array(
+         SELECT b.description
+         FROM bitstreams b
+         WHERE b.item_id = i.id
+         ORDER BY b.filename
+       ), '||') AS file_descriptions\n"
+    # Element columns
     elements.each_with_index do |element, index|
       columns << "array_to_string(
         array(
-          SELECT replace(replace(coalesce(ae.string, '') || '&&<' || coalesce(ae.uri, '') || '>', '&&<>', ''), '||&&', '')
+          SELECT replace(replace(ae.string || '&&<' || coalesce(ae.uri, '') || '>', '&&<>', ''), '||&&', '')
           FROM ascribed_elements ae
           LEFT JOIN registered_elements re ON ae.registered_element_id = re.id
           WHERE ae.item_id = i.id
             AND re.name = '#{element}'
             AND (length(ae.string) > 0 OR length(ae.uri) > 0)
-          ), '||') AS c_#{index}\n"
+          ), '||') AS e_#{index}\n"
     end
-    "SELECT i.id,\n" + columns.join(",") + " "
+    "SELECT " + columns.join(", ") + " "
   end
 
   def from_clause
@@ -111,7 +134,7 @@ class CsvExporter
 
   def to_csv(elements, results)
     CSV.generate(headers: true) do |csv|
-      csv << ["id"] + elements
+      csv << ["id", "filenames", "file_descriptions"] + elements
       results.each do |row|
         csv << row.values
       end
