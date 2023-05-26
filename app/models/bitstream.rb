@@ -206,6 +206,7 @@ class Bitstream < ApplicationRecord
     # @return [String] English label for the value.
     #
     def self.label(value)
+      return "Content" if value == 0
       label = Bundle.constants
           .find{ |c| Bundle.const_get(c) == value }
           .to_s
