@@ -1,11 +1,38 @@
 # frozen_string_literal: true
 
+##
+# # How imports work
+#
+# Before any uploading happens, a new {Import} instance is created representing
+# the import. The import is associated with a {Collection} into which files
+# are being imported.
+#
+# In the UI, there is a file upload "drop zone" that enables upload of some
+# kind of file or package, such as a CSV file, CSV package, or SAF package.
+# The {upload_file} method receives these files and stores them in the
+# application bucket.
+#
+# After all files have been uploaded, {complete} is called which invokes an
+# {ImportJob} to work asynchronously on the import using whatever importer it
+# deems necessary (e.g. {CsvImporter}, {SafImporter}, etc.)
+#
 class ImportsController < ApplicationController
 
   before_action :ensure_institution_host, :ensure_logged_in
   before_action :set_import, except: [:create, :index, :new]
   before_action :authorize_import, except: [:create, :index, :new]
   before_action :store_location, only: :index
+
+  ##
+  # Responds to `POST /imports/:id`
+  #
+  def complete
+    ImportJob.perform_later(import: @import, user: current_user)
+    toast!(title:   "Files uploaded",
+           message: "The files have been uploaded. The import will commence "\
+                    "momentarily.")
+    render "shared/reload"
+  end
 
   ##
   # Responds to `POST /imports`
@@ -80,17 +107,6 @@ class ImportsController < ApplicationController
   #
   def show
     render partial: "show"
-  end
-
-  ##
-  # Responds to `PUT/PATCH /imports/:id`
-  #
-  def update # TODO: rename to complete or something
-    ImportJob.perform_later(import: @import, user: current_user)
-    toast!(title:   "Files uploaded",
-           message: "The files have been uploaded. The import will commence "\
-                    "momentarily.")
-    render "shared/reload"
   end
 
   ##

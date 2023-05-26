@@ -71,8 +71,8 @@ const ImportsView = function() {
 
         function completeUpload() {
             $.ajax({
-                method:  "PUT",
-                url:     $("input[name=import_uri]").val(),
+                method:  "POST",
+                url:     $("input[name=import_uri]").val() + "/complete",
                 headers: { "X-CSRF-Token": CSRF_TOKEN },
                 success: function() {
                     console.debug("completeUpload() succeeded");
