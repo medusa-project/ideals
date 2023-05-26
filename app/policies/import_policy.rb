@@ -16,16 +16,30 @@ class ImportPolicy < ApplicationPolicy
     @import          = import
   end
 
+  def complete
+    if @ctx_institution != @import.institution
+      return WRONG_SCOPE_RESULT
+    elsif @user != @import.user
+      return {
+        authorized: false,
+        reason:     "Imports can only be modified by the user who created them."
+      }
+    end
+    result = create
+    return result unless result[:authorized]
+    AUTHORIZED_RESULT
+  end
+
   def create
     index
   end
 
   def delete_all_files
-    update
+    complete
   end
 
   def edit
-    update
+    complete
   end
 
   def index
@@ -43,22 +57,8 @@ class ImportPolicy < ApplicationPolicy
     effective_institution_admin(@user, @import.institution, @role_limit)
   end
 
-  def update
-    if @ctx_institution != @import.institution
-      return WRONG_SCOPE_RESULT
-    elsif @user != @import.user
-      return {
-        authorized: false,
-        reason:     "Imports can only be modified by the user who created them."
-      }
-    end
-    result = create
-    return result unless result[:authorized]
-    AUTHORIZED_RESULT
-  end
-
   def upload_file
-    update
+    complete
   end
 
 end

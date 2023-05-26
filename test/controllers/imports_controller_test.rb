@@ -13,6 +13,57 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
     @import.delete_all_files
   end
 
+  # complete()
+
+  test "complete() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    post import_complete_path(@import)
+    assert_response :not_found
+  end
+
+  test "complete() redirects to root page for logged-out users" do
+    post "/imports/bogus/complete"
+    assert_redirected_to @import.institution.scope_url
+  end
+
+  test "complete() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    post import_complete_path(@import)
+    assert_response :forbidden
+  end
+
+  test "complete() completes an element" do
+    log_in_as(users(:southwest_admin))
+    collection_id = collections(:southwest_unit1_collection1).id
+    post import_complete_path(@import),
+         xhr: true,
+         params: {
+           import: {
+             collection_id: collection_id
+           }
+         }
+    @import.reload
+    assert_equal collection_id, @import.collection_id
+  end
+
+  test "complete() returns HTTP 200" do
+    log_in_as(users(:southwest_admin))
+    post import_complete_path(@import),
+         xhr: true,
+         params: {
+           import: {
+             collection_id: collections(:southwest_unit1_collection1).id
+           }
+         }
+    assert_response :ok
+  end
+
+  test "complete() returns HTTP 404 for a nonexistent import" do
+    log_in_as(users(:southwest_admin))
+    post "/imports/bogus/complete"
+    assert_response :not_found
+  end
+
   # create()
 
   test "create() returns HTTP 404 for unscoped requests" do
@@ -229,57 +280,6 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
 
     get import_path(@import, role: Role::LOGGED_OUT)
     assert_response :forbidden
-  end
-
-  # update()
-
-  test "update() returns HTTP 404 for unscoped requests" do
-    host! ::Configuration.instance.main_host
-    patch import_path(@import)
-    assert_response :not_found
-  end
-
-  test "update() redirects to root page for logged-out users" do
-    patch "/imports/bogus"
-    assert_redirected_to @import.institution.scope_url
-  end
-
-  test "update() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:southwest))
-    patch import_path(@import)
-    assert_response :forbidden
-  end
-
-  test "update() updates an element" do
-    log_in_as(users(:southwest_admin))
-    collection_id = collections(:southwest_unit1_collection1).id
-    patch "/imports/#{@import.id}",
-          xhr: true,
-          params: {
-            import: {
-              collection_id: collection_id
-            }
-          }
-    @import.reload
-    assert_equal collection_id, @import.collection_id
-  end
-
-  test "update() returns HTTP 200" do
-    log_in_as(users(:southwest_admin))
-    patch import_path(@import),
-          xhr: true,
-          params: {
-            import: {
-              collection_id: collections(:southwest_unit1_collection1).id
-            }
-          }
-    assert_response :ok
-  end
-
-  test "update() returns HTTP 404 for nonexistent elements" do
-    log_in_as(users(:southwest_admin))
-    patch "/elements/bogus"
-    assert_response :not_found
   end
 
   # upload_file()

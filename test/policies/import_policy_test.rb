@@ -6,7 +6,79 @@ class ImportPolicyTest < ActiveSupport::TestCase
     @import = imports(:southwest_saf_new)
   end
 
-  # create?
+  # complete?()
+
+  test "complete?() returns false with a nil user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @import.institution)
+    policy = ImportPolicy.new(context, @import)
+    assert !policy.complete?
+  end
+
+  test "complete?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = ImportPolicy.new(context, @import)
+    assert !policy.complete?
+  end
+
+  test "complete?() is restrictive by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ImportPolicy.new(context, @import)
+    assert !policy.complete?
+  end
+
+  test "complete?() does not authorize users other than the one who created the
+  instance" do
+    user    = users(:southwest_sysadmin) # instance was created by uiuc_admin
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ImportPolicy.new(context, @import)
+    assert !policy.complete?
+  end
+
+  test "complete?() authorizes sysadmins" do
+    user    = make_sysadmin(@import.user)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ImportPolicy.new(context, @import)
+    assert policy.complete?
+  end
+
+  test "complete?() authorizes administrators of the same institution" do
+    user    = users(:southwest_admin)
+    import  = Import.new(user:        user,
+                         institution: user.institution,
+                         collection:  collections(:uiuc_collection1),
+                         format:      Import::Format::CSV)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ImportPolicy.new(context, import)
+    assert policy.complete?
+  end
+
+  test "complete?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = ImportPolicy.new(context, @import)
+    assert !policy.complete?
+  end
+
+  test "complete?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::COLLECTION_SUBMITTER)
+    policy  = ImportPolicy.new(context, @import)
+    assert !policy.complete?
+  end
+
+  # create?()
 
   test "create?() returns false with a nil user" do
     context = RequestContext.new(user:        nil,
@@ -402,78 +474,6 @@ class ImportPolicyTest < ActiveSupport::TestCase
                                  role_limit:  Role::COLLECTION_SUBMITTER)
     policy  = ImportPolicy.new(context, @import)
     assert !policy.show?
-  end
-
-  # update?()
-
-  test "update?() returns false with a nil user" do
-    context = RequestContext.new(user:        nil,
-                                 institution: @import.institution)
-    policy = ImportPolicy.new(context, @import)
-    assert !policy.update?
-  end
-
-  test "update?() does not authorize an incorrect scope" do
-    context = RequestContext.new(user:        users(:southwest_admin),
-                                 institution: institutions(:northeast))
-    policy  = ImportPolicy.new(context, @import)
-    assert !policy.update?
-  end
-
-  test "update?() is restrictive by default" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = ImportPolicy.new(context, @import)
-    assert !policy.update?
-  end
-
-  test "update?() does not authorize users other than the one who created the
-  instance" do
-    user    = users(:southwest_sysadmin) # instance was created by uiuc_admin
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = ImportPolicy.new(context, @import)
-    assert !policy.update?
-  end
-
-  test "update?() authorizes sysadmins" do
-    user    = make_sysadmin(@import.user)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = ImportPolicy.new(context, @import)
-    assert policy.update?
-  end
-
-  test "update?() authorizes administrators of the same institution" do
-    user    = users(:southwest_admin)
-    import  = Import.new(user:        user,
-                         institution: user.institution,
-                         collection:  collections(:uiuc_collection1),
-                         format:      Import::Format::CSV)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = ImportPolicy.new(context, import)
-    assert policy.update?
-  end
-
-  test "update?() does not authorize administrators of a different
-  institution" do
-    user    = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: institutions(:northeast))
-    policy  = ImportPolicy.new(context, @import)
-    assert !policy.update?
-  end
-
-  test "update?() respects role limits" do
-    # sysadmin user limited to an insufficient role
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::COLLECTION_SUBMITTER)
-    policy  = ImportPolicy.new(context, @import)
-    assert !policy.update?
   end
 
   # upload_file?()

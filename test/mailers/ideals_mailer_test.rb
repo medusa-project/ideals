@@ -15,7 +15,7 @@ class IdealsMailerTest < ActionMailer::TestCase
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
     assert_equal [identity.email], email.to
-    assert_equal "Register your IDEALS account", email.subject
+    assert_equal "Register your Example IR account", email.subject
 
     assert_equal render_template("account_approved.txt",
                                  url: identity.registration_url),
@@ -35,7 +35,7 @@ class IdealsMailerTest < ActionMailer::TestCase
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
     assert_equal [invitee.email], email.to
-    assert_equal "Your IDEALS account request", email.subject
+    assert_equal "Your Example IR account request", email.subject
 
     assert_equal render_template("account_denied.txt"),
                  email.text_part.body.raw_source
@@ -54,7 +54,7 @@ class IdealsMailerTest < ActionMailer::TestCase
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
     assert_equal [identity.email], email.to
-    assert_equal "Welcome to IDEALS!", email.subject
+    assert_equal "Welcome to Example IR!", email.subject
 
     assert_equal render_template("account_registered.txt",
                                  service_name: institution.service_name,
@@ -77,7 +77,7 @@ class IdealsMailerTest < ActionMailer::TestCase
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
     assert_equal [institution.feedback_email], email.to
-    assert_equal "[TEST: IDEALS] Action required on a new IDEALS user",
+    assert_equal "[TEST: IDEALS] Action required on a new Example IR user",
                  email.subject
 
     invitee_url = sprintf("https://%s/invitees/%d",
@@ -99,7 +99,7 @@ class IdealsMailerTest < ActionMailer::TestCase
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
     assert_equal [invitee.email], email.to
-    assert_equal "Your IDEALS account request", email.subject
+    assert_equal "Your Example IR account request", email.subject
 
     assert_equal render_template("account_request_received.txt"),
                  email.text_part.body.raw_source
@@ -165,7 +165,7 @@ class IdealsMailerTest < ActionMailer::TestCase
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
     assert_equal [identity.email], email.to
-    assert_equal "Register for an account with IDEALS", email.subject
+    assert_equal "Register for an account with Example IR", email.subject
 
     assert_equal render_template("invited.txt", url: identity.registration_url),
                  email.text_part.body.raw_source
@@ -252,7 +252,7 @@ class IdealsMailerTest < ActionMailer::TestCase
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
     assert_equal [identity.email], email.to
-    assert_equal "Reset your IDEALS password", email.subject
+    assert_equal "Reset your Example IR password", email.subject
 
     assert_equal render_template("password_reset.txt",
                                  url: identity.password_reset_url),

@@ -22,8 +22,8 @@ class UserRegistrationTest < ActionDispatch::IntegrationTest
           note:  "Testing"
         }
       }
-      assert ActionMailer::Base.deliveries[0].text_part.body.include?("Thanks for requesting an account with IDEALS")
-      assert ActionMailer::Base.deliveries[1].text_part.body.include?("A new user has requested to register for IDEALS")
+      assert ActionMailer::Base.deliveries[0].text_part.body.include?("Thanks for requesting an account with")
+      assert ActionMailer::Base.deliveries[1].text_part.body.include?("A new user has requested to register for")
       assert_redirected_to @institution.scope_url
     end
   end
