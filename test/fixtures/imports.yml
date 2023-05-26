@@ -17,7 +17,7 @@ uiuc_csv_new:
   user:               uiuc_admin
   institution:        uiuc
   collection:         uiuc_collection1
-  format:             <%= Import::Format::CSV %>
+  format:             <%= Import::Format::CSV_FILE %>
   files:              "[]"
   imported_items:     "[]"
   task:               csv_import

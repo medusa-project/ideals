@@ -6,7 +6,7 @@ class ImportTest < ActiveSupport::TestCase
 
     test "to_s() returns a correct value" do
       assert_equal "SAF Package", Import::Format.to_s(Import::Format::SAF)
-      assert_equal "CSV File", Import::Format.to_s(Import::Format::CSV)
+      assert_equal "CSV File", Import::Format.to_s(Import::Format::CSV_FILE)
       assert_equal "Unknown", Import::Format.to_s(9999)
     end
 

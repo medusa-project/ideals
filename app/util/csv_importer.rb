@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Imports {Item}s in CSV format.
 #
@@ -110,7 +112,7 @@ class CsvImporter
     object_keys    = import.object_keys
     csv_object_key = object_keys.first
     imported_items = []
-    import.update!(format:         Import::Format::CSV,
+    import.update!(format:         Import::Format::CSV_FILE,
                    files:          [csv_object_key],
                    imported_items: imported_items)
     import.task&.update!(status: Task::Status::RUNNING)

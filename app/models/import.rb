@@ -1,6 +1,11 @@
+# frozen_string_literal: true
+
 ##
 # Represents a batch import of {Item}s, such as via {CsvImporter} or
 # {SafImporter}.
+#
+# See the documentation of {ImportsController} for an explanation of how
+# importing works.
 #
 # # Attributes
 #
@@ -24,8 +29,8 @@
 class Import < ApplicationRecord
 
   class Format
-    SAF = 0
-    CSV = 1
+    SAF         = 0
+    CSV_FILE    = 1
 
     def self.to_s(format)
       case format

@@ -52,7 +52,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
     import  = Import.new(user:        user,
                          institution: user.institution,
                          collection:  collections(:uiuc_collection1),
-                         format:      Import::Format::CSV)
+                         format:      Import::Format::CSV_FILE)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, import)
@@ -108,7 +108,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
     import  = Import.new(user:        user,
                          institution: user.institution,
                          collection:  collections(:uiuc_collection1),
-                         format:      Import::Format::CSV)
+                         format:      Import::Format::CSV_FILE)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, import)
@@ -179,7 +179,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
     import  = Import.new(user:        user,
                          institution: user.institution,
                          collection:  collections(:uiuc_collection1),
-                         format:      Import::Format::CSV)
+                         format:      Import::Format::CSV_FILE)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, import)
@@ -251,7 +251,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
     import  = Import.new(user:        user,
                          institution: user.institution,
                          collection:  collections(:uiuc_collection1),
-                         format:      Import::Format::CSV)
+                         format:      Import::Format::CSV_FILE)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, import)
@@ -307,7 +307,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
     import  = Import.new(user:        user,
                          institution: user.institution,
                          collection:  collections(:uiuc_collection1),
-                         format:      Import::Format::CSV)
+                         format:      Import::Format::CSV_FILE)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, import)
@@ -370,7 +370,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
     import  = Import.new(user:        user,
                          institution: user.institution,
                          collection:  collections(:uiuc_collection1),
-                         format:      Import::Format::CSV)
+                         format:      Import::Format::CSV_FILE)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, import)
@@ -441,7 +441,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
     import  = Import.new(user:        user,
                          institution: user.institution,
                          collection:  collections(:uiuc_collection1),
-                         format:      Import::Format::CSV)
+                         format:      Import::Format::CSV_FILE)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, import)
@@ -515,7 +515,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
     import  = Import.new(user:        user,
                          institution: user.institution,
                          collection:  collections(:uiuc_collection1),
-                         format:      Import::Format::CSV)
+                         format:      Import::Format::CSV_FILE)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, import)

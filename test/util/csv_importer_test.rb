@@ -181,7 +181,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     upload_to_s3(csv, import)
     @instance.import_from_s3(import, users(:example_sysadmin))
 
-    assert_equal Import::Format::CSV, import.format
+    assert_equal Import::Format::CSV_FILE, import.format
   end
 
   test "import_from_s3() creates correct items" do

@@ -12,8 +12,8 @@ class ImportJob < ApplicationJob
   ##
   # @param args [Array<Hash>] One-element array containing a Hash with
   #                           `:import` and `:user` keys.
-  # @return [Integer]  One of the {Import::Format} constant values, used for
-  #                    testing.
+  # @return [Integer] One of the {Import::Format} constant values, used for
+  #                   testing.
   # @raises [ArgumentError]
   #
   def perform(*args)
@@ -21,6 +21,7 @@ class ImportJob < ApplicationJob
     submitter = args[0][:user]
     keys      = import.object_keys
 
+    # Try to detect the import format.
     if keys.length == 1 && keys[0].split(".").last.downcase == "csv"
       import.task = Task.create!(name:        self.class.name,
                                  institution: submitter&.institution,
@@ -29,7 +30,7 @@ class ImportJob < ApplicationJob
                                  status_text: "Importing items from CSV")
       import.save!
       CsvImporter.new.import_from_s3(import, submitter)
-      Import::Format::CSV
+      Import::Format::CSV_FILE
     else
       import.task = Task.create!(name:        self.class.name,
                                  institution: submitter&.institution,

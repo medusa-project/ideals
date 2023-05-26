@@ -30,7 +30,7 @@ class ImportJobTest < ActiveSupport::TestCase
     import.upload_file(relative_path: "new.csv",
                        io:            file_fixture("csv/new.csv"))
     format = ImportJob.new.perform(import: import)
-    assert_equal Import::Format::CSV, format
+    assert_equal Import::Format::CSV_FILE, format
   end
 
   test "perform() runs the SAF importer if the Import has multiple keys" do
