@@ -10,24 +10,6 @@ class StringUtilsTest < ActiveSupport::TestCase
     assert_equal expected, StringUtils.rot18(str)
   end
 
-  # uofi_email?()
-
-  test "uofi_email?() returns true for UofI email addresses" do
-    assert StringUtils.uofi_email?("test@illinois.edu")
-    assert StringUtils.uofi_email?("test@uillinois.edu")
-    assert StringUtils.uofi_email?("test@uiuc.edu")
-    assert StringUtils.uofi_email?("TEST@UIUC.EDU")
-  end
-
-  test "uofi_email?() returns false for non-UofI email addresses" do
-    assert !StringUtils.uofi_email?("test@example.org")
-    assert !StringUtils.uofi_email?("test@not-illinois.edu")
-  end
-
-  test "uofi_email?() returns false for malformed email addresses" do
-    assert !StringUtils.uofi_email?("not an email address")
-  end
-
   # url_encode()
 
   test "url_encode() returns a URL-encoded string" do
