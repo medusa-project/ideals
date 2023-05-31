@@ -215,12 +215,12 @@ class IdealsMailer < ApplicationMailer
   #
   def test(recipient)
     mail(to:      recipient,
-         subject: "#{subject_prefix} Hello from IDEALS")
+         subject: "#{subject_prefix} Hello from Illinois IR")
   end
 
   private
 
   def subject_prefix
-    "[#{Rails.env.to_s.upcase}: IDEALS]"
+    "[#{Rails.env.to_s.upcase}: Illinois IR]"
   end
 end

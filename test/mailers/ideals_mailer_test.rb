@@ -77,7 +77,7 @@ class IdealsMailerTest < ActionMailer::TestCase
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
     assert_equal [institution.feedback_email], email.to
-    assert_equal "[TEST: IDEALS] Action required on a new Example IR user",
+    assert_equal "[TEST: Illinois IR] Action required on a new Example IR user",
                  email.subject
 
     invitee_url = sprintf("https://%s/invitees/%d",
@@ -124,7 +124,7 @@ class IdealsMailerTest < ActionMailer::TestCase
 
     assert_equal [from_email], email.from
     assert_equal [to_email], email.to
-    assert_equal "[TEST: IDEALS] User feedback received", email.subject
+    assert_equal "[TEST: Illinois IR] User feedback received", email.subject
     assert_equal render_template("contact.txt",
                                  from_email: from_email,
                                  from_name:  from_name,
@@ -150,7 +150,7 @@ class IdealsMailerTest < ActionMailer::TestCase
     config = ::Configuration.instance
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
     assert_equal config.admin[:tech_mail_list], email.to
-    assert_equal "[TEST: IDEALS] System Error", email.subject
+    assert_equal "[TEST: Illinois IR] System Error", email.subject
     assert_equal "Something broke\r\n\r\n", email.body.raw_source
   end
 
@@ -271,7 +271,7 @@ class IdealsMailerTest < ActionMailer::TestCase
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
     assert_equal [recipient], email.to
-    assert_equal "[TEST: IDEALS] Hello from IDEALS", email.subject
+    assert_equal "[TEST: Illinois IR] Hello from Illinois IR", email.subject
 
     assert_equal render_template("test.txt"), email.text_part.body.raw_source
     assert_equal render_template("test.html"), email.html_part.body.raw_source
