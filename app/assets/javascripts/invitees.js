@@ -14,6 +14,13 @@ const InviteesView = function() {
             e.preventDefault();
             refreshResults($(this).attr("href"));
         });
+        $("button.reject").on("click", function() {
+            const invitee_id = $(this).data("invitee-id");
+            const url        = ROOT_URL + "/invitees/" + invitee_id + "/edit";
+            $.get(url, function(data) {
+                $("#reject-modal .modal-body").html(data);
+            });
+        });
     };
 
     const refreshResults = function(url) {
@@ -21,8 +28,6 @@ const InviteesView = function() {
         if (!url) {
             url = form.attr("action");
         }
-        console.log(url);
-        console.log(form.serialize());
         $.ajax({
             method:  "GET",
             url:     url,
@@ -47,7 +52,7 @@ const InviteesView = function() {
     });
     $("[name=institution_id], [name=approval_state]").on("change", function() {
         refreshResults();
-    });
+    }).trigger("change");
 };
 
 $(document).ready(function() {

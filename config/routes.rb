@@ -145,7 +145,7 @@ Rails.application.routes.draw do
     match "/settings", to: "institutions#update_settings", via: [:patch, :post]
     match "/statistics-by-range", to: "institutions#statistics_by_range", via: :get
   end
-  resources :invitees, except: [:edit, :update] do
+  resources :invitees, except: [:update] do
     collection do
       match "/create", to: "invitees#create_unsolicited", via: :post,
             as: "create_unsolicited"

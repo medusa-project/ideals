@@ -39,3 +39,5 @@
                      window:           @window }
 
 = render partial: "add_modal", locals: { invitee: @new_invitee }
+= render partial: "shared/xhr_modal",
+         locals: { id: "reject-modal", title: "Reject Invitee" }

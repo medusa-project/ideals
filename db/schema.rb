@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_25_202114) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_31_162530) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -399,6 +399,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_25_202114) do
     t.bigint "inviting_user_id"
     t.bigint "institution_id"
     t.boolean "institution_admin", default: false, null: false
+    t.text "rejection_reason"
     t.index ["email"], name: "index_invitees_on_email", unique: true
     t.index ["institution_id"], name: "index_invitees_on_institution_id"
     t.index ["inviting_user_id"], name: "index_invitees_on_inviting_user_id"

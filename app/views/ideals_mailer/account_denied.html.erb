@@ -1,3 +1,9 @@
-<p>Thank you for your interest in <%= @institution.service_name %>. We have denied your account request.</p>
+<p>Thank you for your interest in <%= @institution.service_name %>.</p>
+
+<% if @invitee.rejection_reason.present? %>
+  <p>We have denied your account request: <%= @invitee.rejection_reason %></p>
+<% else %>
+  <p>We have denied your account request.</p>
+<% end %>
 
 <p>If you have any questions, please reply to this email.</p>

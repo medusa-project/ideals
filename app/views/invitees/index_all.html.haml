@@ -31,3 +31,6 @@
                      invitees:         @invitees,
                      permitted_params: @permitted_params,
                      window:           @window }
+
+= render partial: "shared/xhr_modal",
+         locals: { id: "reject-modal", title: "Reject Invitee" }

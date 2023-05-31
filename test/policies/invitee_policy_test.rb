@@ -214,6 +214,65 @@ class InviteePolicyTest < ActiveSupport::TestCase
     assert !policy.destroy?
   end
 
+  # edit?()
+
+  test "edit?() returns false with a nil user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @invitee.institution)
+    policy = InviteePolicy.new(context, @invitee)
+    assert !policy.edit?
+  end
+
+  test "edit?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = InviteePolicy.new(context, @invitee)
+    assert !policy.edit?
+  end
+
+  test "edit?() does not authorize non-sysadmins" do
+    user    = users(:example)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InviteePolicy.new(context, @invitee)
+    assert !policy.edit?
+  end
+
+  test "edit?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InviteePolicy.new(context, @invitee)
+    assert policy.edit?
+  end
+
+  test "edit?() authorizes administrators of the same institution" do
+    user = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InviteePolicy.new(context, @invitee)
+    assert policy.edit?
+  end
+
+  test "edit?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = InviteePolicy.new(context, @invitee)
+    assert !policy.edit?
+  end
+
+  test "edit?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InviteePolicy.new(context, @invitee)
+    assert !policy.edit?
+  end
+
   # index?()
 
   test "index?() returns false with a nil user" do

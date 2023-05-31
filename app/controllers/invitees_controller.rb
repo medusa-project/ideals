@@ -9,9 +9,9 @@ class InviteesController < ApplicationController
   before_action :ensure_institution_host
   before_action :ensure_logged_in, except: [:create_unsolicited, :new]
   before_action :ensure_logged_out, only: [:create_unsolicited, :new]
-  before_action :set_invitee, only: [:approve, :destroy, :reject, :resend_email,
-                                     :show]
-  before_action :authorize_invitee, only: [:approve, :destroy, :reject,
+  before_action :set_invitee, only: [:approve, :destroy, :edit, :reject,
+                                     :resend_email, :show]
+  before_action :authorize_invitee, only: [:approve, :destroy, :edit, :reject,
                                            :resend_email, :show]
   before_action :store_location, only: [:index, :index_all, :show]
 
@@ -109,6 +109,17 @@ class InviteesController < ApplicationController
   end
 
   ##
+  # N.B. contrary to its name, this method is used to render the
+  # reject-an-invitee form, which is the only way an invitee would need to be
+  # edited.
+  #
+  # Responds to `GET /invitees/:id/edit`
+  #
+  def edit
+    render partial: "reject_form"
+  end
+
+  ##
   # Responds to `GET /invitees`
   #
   def index
@@ -148,7 +159,8 @@ class InviteesController < ApplicationController
   # Responds to `PATCH/POST /invitees/:id/reject`.
   #
   def reject
-    @invitee.reject
+    reason = invitee_params[:rejection_reason] rescue nil
+    @invitee.reject(reason: reason)
   rescue => e
     flash['error'] = "#{e}"
     redirect_back fallback_location: invitees_path
@@ -191,7 +203,7 @@ class InviteesController < ApplicationController
   def invitee_params
     params.require(:invitee).permit(:email, :institution_admin,
                                     :institution_id, :inviting_user_id,
-                                    :note)
+                                    :note, :rejection_reason)
   end
 
   def set_invitee

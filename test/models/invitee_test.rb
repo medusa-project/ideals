@@ -151,6 +151,12 @@ class InviteeTest < ActiveSupport::TestCase
     assert_equal Invitee::ApprovalState::REJECTED, @instance.approval_state
   end
 
+  test "reject() updates the rejection reason" do
+    @instance = invitees(:example_pending)
+    @instance.reject(reason: "Nope")
+    assert_equal "Nope", @instance.rejection_reason
+  end
+
   test "reject() sends an email" do
     @instance = invitees(:example_pending)
     assert_emails 1 do

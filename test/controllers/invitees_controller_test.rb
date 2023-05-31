@@ -216,6 +216,31 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  # edit()
+
+  test "edit() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get edit_invitee_path(@invitee)
+    assert_response :not_found
+  end
+
+  test "edit() redirects to the scoped root page for logged-out users" do
+    get edit_invitee_path(@invitee)
+    assert_redirected_to @invitee.institution.scope_url
+  end
+
+  test "edit() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:example))
+    get edit_invitee_path(@invitee)
+    assert_response :forbidden
+  end
+
+  test "edit() returns HTTP 200 upon success" do
+    log_in_as(users(:example_sysadmin))
+    get edit_invitee_path(@invitee)
+    assert_response :ok
+  end
+
   # index()
 
   test "index() returns HTTP 404 for unscoped requests" do

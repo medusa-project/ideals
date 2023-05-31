@@ -1,5 +1,8 @@
 Thank you for your interest in Example IR.
-We have denied your account request.
+
+We have denied your account request:
+
+Not good enough
 
 If you have any questions, please reply to this email.
 

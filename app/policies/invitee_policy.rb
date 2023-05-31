@@ -36,6 +36,10 @@ class InviteePolicy < ApplicationPolicy
     approve
   end
 
+  def edit
+    reject
+  end
+
   def index
     create
   end

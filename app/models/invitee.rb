@@ -48,6 +48,8 @@
 #                       requesting an account. For users who were invited and
 #                       did not request their account, this is autofilled with
 #                       such a notice.
+# * `rejection_reason`  Contains the reason entered by an administrator who has
+#                       rejected the invitee.
 # * `updated_at`        Managed by ActiveRecord.
 #
 class Invitee < ApplicationRecord
@@ -124,11 +126,13 @@ class Invitee < ApplicationRecord
   end
 
   ##
+  # @param reason [String] Optional.
   # @see approve
   # @see invite
   #
-  def reject
-    self.update!(approval_state: ApprovalState::REJECTED)
+  def reject(reason: nil)
+    self.update!(approval_state:   ApprovalState::REJECTED,
+                 rejection_reason: reason)
     send_rejection_email
   end
 

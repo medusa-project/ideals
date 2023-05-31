@@ -29,6 +29,7 @@ class IdealsMailerTest < ActionMailer::TestCase
 
   test "account_denied() sends the expected email" do
     invitee = invitees(:example_pending)
+    invitee.update!(rejection_reason: "Not good enough")
 
     email = IdealsMailer.account_denied(invitee).deliver_now
     assert !ActionMailer::Base.deliveries.empty?

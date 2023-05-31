@@ -1,0 +1,15 @@
+= form_for(@invitee, url: invitee_reject_path(@invitee), remote: true) do |f|
+  .error-messages
+    -# populated via ajax by shared/_validation_messages.js.erb
+
+  .mb-3
+    = f.label :rejection_reason, "Reason", class: "form-label"
+    = f.text_area :rejection_reason, class: "form-control"
+    .form-text
+      = icon_for(:info)
+      If provided, this will be included in the email sent to the invitee.
+
+  .clearfix
+    .float-end
+      %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel
+      = f.submit("Reject Invitee", class: "btn btn-primary")
