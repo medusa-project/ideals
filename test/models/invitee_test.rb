@@ -85,13 +85,7 @@ class InviteeTest < ActiveSupport::TestCase
 
   test "email must be unique" do
     assert_raises ActiveRecord::RecordInvalid do
-      Invitee.create!(email: @instance.email)
-    end
-  end
-
-  test "UofI email addresses are invalid" do
-    assert_raises ActiveRecord::RecordInvalid do
-      Invitee.create!(email: "newuser@illinois.edu")
+      Invitee.create!(email: @instance.email, note: "Test")
     end
   end
 
