@@ -739,13 +739,18 @@ class Item < ApplicationRecord
   # @return [Bitstream]
   #
   def representative_bitstream
-    self.bitstreams.find(&:primary) ||
-      self.bitstreams.
-        select{ |b| b.bundle == Bitstream::Bundle::CONTENT }.
-        sort{ |a, b|
-          (a.filename.split(".").last.downcase == 'pdf' ? 'a' : 'zzz') <=>
-          b.filename.split(".").last.downcase }.
-        first
+    b = self.bitstreams.find(&:primary)
+    return b if b
+    candidates = self.bitstreams.select{ |b| b.bundle == Bitstream::Bundle::CONTENT }
+    b = candidates.
+      sort_by(&:bundle_position).
+      find{ |b| b.has_representative_image? }
+    return b if b
+    candidates.
+      sort{ |a, b|
+        (a.filename.split(".").last.downcase == "pdf" ? "0" : "zzz") <=>
+        b.filename.split(".").last.downcase }.
+      first
   end
 
   ##
