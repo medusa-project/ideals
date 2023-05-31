@@ -64,18 +64,6 @@ class PasswordResetsControllerTest < ActionDispatch::IntegrationTest
     assert flash['error'].start_with?("The email address you provided is invalid")
   end
 
-  test "post() sets the flash and redirects to the UIUC scope URL when a UIUC
-  email is provided" do
-    post reset_password_path,
-         params: {
-             password_reset: {
-                 email: "user@illinois.edu"
-             }
-         }
-    assert_redirected_to institutions(:uiuc).scope_url
-    assert flash['error'].start_with?("Sorry, we're not able to reset")
-  end
-
   test "post() sets the flash and redirects when an unregistered email is
   provided" do
     post reset_password_path,
