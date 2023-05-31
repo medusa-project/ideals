@@ -7,7 +7,7 @@ class ImportJobTest < ActiveSupport::TestCase
   end
 
   test "perform() associates a correct Task to the import" do
-    import = imports(:uiuc_csv_new)
+    import = imports(:uiuc_csv_file_new)
     import.update!(task: nil)
     import.upload_file(relative_path: "new.csv",
                        io:            file_fixture("csv/new.csv"))
@@ -24,17 +24,35 @@ class ImportJobTest < ActiveSupport::TestCase
     assert task.status_text.start_with?("Import")
   end
 
-  test "perform() runs the CSV importer if the Import has one key ending in
-  .csv" do
-    import = imports(:uiuc_csv_new)
+  test "perform() runs the CSV file importer if the Import has one key ending
+  in .csv" do
+    import = imports(:uiuc_csv_file_new)
     import.upload_file(relative_path: "new.csv",
                        io:            file_fixture("csv/new.csv"))
     format = ImportJob.new.perform(import: import)
     assert_equal Import::Format::CSV_FILE, format
   end
 
-  test "perform() runs the SAF importer if the Import has multiple keys" do
-    import = imports(:uiuc_saf_new)
+  test "perform() runs the CSV package importer for CSV packages" do
+    import = imports(:uiuc_csv_package_new)
+    package_root = file_fixture_path + "/packages/csv/valid_items"
+    Dir.glob(File.join(package_root, "**", "*")).each do |file|
+      next if File.directory?(file)
+      import.upload_file(relative_path: file.gsub(package_root, ""),
+                         io:            File.new(file))
+    end
+    format = ImportJob.new.perform(import: import)
+    assert_equal Import::Format::CSV_PACKAGE, format
+  end
+
+  test "perform() runs the SAF package importer for SAF packages" do
+    import       = imports(:uiuc_saf_new)
+    package_root = file_fixture_path + "/packages/saf/valid_item"
+    Dir.glob(File.join(package_root, "**", "*")).each do |file|
+      next if File.directory?(file)
+      import.upload_file(relative_path: file.gsub(package_root, ""),
+                         io:            File.new(file))
+    end
     format = ImportJob.new.perform(import: import)
     assert_equal Import::Format::SAF, format
   end

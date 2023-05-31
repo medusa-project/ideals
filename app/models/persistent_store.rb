@@ -204,14 +204,18 @@ class PersistentStore
   # Uploads every file in a directory tree to the application S3 bucket under
   # the given key prefix.
   #
-  # @param root_path [String] Root path on the file system.
+  # @param root_path [String] Local root path.
   # @param key_prefix [String] Key prefix of uploaded objects.
+  # @param uploaded_keys [Array<String>] Uploaded keys will be added to this
+  #                                      array.
   #
-  def upload_path(root_path:, key_prefix:)
+  def upload_path(root_path:, key_prefix:, uploaded_keys: []) # TODO: rename to put_objects()
+    raise IOError, "Not a directory: #{root_path}" unless File.directory?(root_path)
     key_prefix = key_prefix[0..-2] if key_prefix.end_with?("/")
     Dir.glob(root_path + "/**/*").select{ |p| File.file?(p) }.each do |path|
-      rel_path = path.gsub(root_path, "")
-      put_object(key: key_prefix + rel_path, path: path)
+      key = key_prefix + path.gsub(root_path, "")
+      put_object(key: key, path: path)
+      uploaded_keys << key
     end
   end
 

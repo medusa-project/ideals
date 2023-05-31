@@ -252,8 +252,17 @@ class PersistentStoreTest < ActiveSupport::TestCase
 
   # upload_path()
 
+  test "upload_path() raises an error if root_path does not exist" do
+    root_path = "/bogus/bogus/bogus"
+    store     = PersistentStore.instance
+    assert_raises IOError do
+      store.upload_path(root_path:  root_path,
+                        key_prefix: "prefix/")
+    end
+  end
+
   test "upload_path() uploads correct objects with correct keys" do
-    root_path = File.join(Rails.root, "test", "fixtures", "packages", "saf", "valid_item")
+    root_path = File.join(file_fixture_path, "packages", "saf", "valid_item")
     store     = PersistentStore.instance
     store.upload_path(root_path:  root_path,
                        key_prefix: "prefix/")
@@ -262,6 +271,17 @@ class PersistentStoreTest < ActiveSupport::TestCase
     assert store.object_exists?(key: "prefix/item_1/content")
     assert store.object_exists?(key: "prefix/item_1/dublin_core.xml")
     assert store.object_length(key: "prefix/item_1/dublin_core.xml") > 0
+  end
+
+  test "upload_path() adds uploaded keys to the uploaded_keys array" do
+    root_path     = File.join(file_fixture_path, "packages", "saf", "valid_item")
+    store         = PersistentStore.instance
+    uploaded_keys = []
+    store.upload_path(root_path:     root_path,
+                      key_prefix:    "prefix/",
+                      uploaded_keys: uploaded_keys)
+
+    assert_equal 5, uploaded_keys.length
   end
 
 end

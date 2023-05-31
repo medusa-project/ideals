@@ -67,7 +67,18 @@ failed:
   detail:           Something happened
   backtrace:        Pretend that this is a backtrace
 
-csv_import:
+csv_file_import:
+  name:             ImportTask
+  status:           <%= Task::Status::PENDING %>
+  status_text:      Waiting
+  percent_complete: 0
+  started_at:
+  stopped_at:
+  indeterminate:    false
+  detail:
+  backtrace:
+
+csv_package_import:
   name:             ImportTask
   status:           <%= Task::Status::PENDING %>
   status_text:      Waiting

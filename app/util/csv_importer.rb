@@ -3,24 +3,88 @@
 ##
 # Imports {Item}s in CSV format.
 #
-# # CSV Format
+# # Import types
+#
+# Two main types of content are supported: standalone files, and packages.
+# This class supports both types.
+#
+# ## Standalone files
+#
+# The CSV file format is documented below. The primary difference between
+# standalone files and packages is that there is no way to attach {Bitstream}s
+# a.k.a. files to items when importing a CSV file alone. But standalone CSV
+# files are more convenient for any kind of operation that doesn't involve
+# adding bitstreams/files to items.
+#
+# ## Packages
+#
+# The package format is a superset of the file format. A CSV file (in its
+# standard format) is present within the root directory of a package, which is
+# a directory or folder. It may contain other files in the same folder, or
+# subfolders, that can be referenced from within the CSV file.
+#
+# # CSV File Format Specification
 #
 # ## Header row
 #
-# The header row defines the metadata values contained in succeeding rows.
-# The first column, `id`, refers to an item's internal database ID. The other
-# columns contain metadata element values, and are optional.
+# The first column, `id`, refers to an item's internal database ID. The next
+# several columns refer to various system-required item properties. The
+# remaining columns correspond to the elements in the effective
+# {MetadataProfile} of the collection that apply to the item.
+#
+# All columns are required except metadata columns. When a metadata column is
+# missing, the corresponding metadata elements of the items in the CSV file
+# will be left unchanged. For new items in the CSV file, a missing metadata
+# column may be an error depending on whether it is required or not.
 #
 # ## Non-header rows
 #
-# Each row corresponds to a particular item, with each cell specifying a
-# [RegisteredElement metadata element] value. Multiple values are separated
-# with a double pipe (`||`).
+# Each row corresponds to a particular item, and each cell corresponds to a
+# property or {AscribedElement metadata element} value of that item. For item
+# updates, the first cell contains the item's database ID. To create new items,
+# a plus sign (`+`) must be entered into the first cell. An empty first cell is
+# always invalid.
 #
-# # Element processing
+# The next group of cells correspond to various system properties of the item.
 #
-# Existing values can be edited, and additional values can be added using the
-# double pipe.
+# The last group of cells contain metadata element values.
+#
+# Most cells support multiple values by concatenating them together with a
+# double pipe (`||`).
+#
+# ### Files
+#
+# Files can be uploaded along with items by referencing them within the
+# `filenames` column. Multiple files can be referenced from the same cell by
+# concatenating them together with a double pipe (`||`). The files may exist in
+# the same path as the CSV file, or within subdirectories. In this case, their
+# full path relative to the CSV file's directory would be included in the
+# `filenames` column.
+#
+# Files can also be added to existing items, but existing items' files cannot
+# be updated. For example, an item that has a file named `document.pdf` can
+# have a `document2.pdf` added to it; but not another `document.pdf`.
+#
+# ### File descriptions
+#
+# Files may optionally have descriptions appended to them. These must be
+# entered in the same order as the filenames in the `filenames` column. Like
+# the filenames, multiple descriptions must be concatenated together with a
+# double pipe (`||`). If there are three files, and only the first and third
+# are to receive descriptions, then the cell value would be:
+#
+# `First file description||||Third file description`
+#
+# (The space between the double pipes where the second description would go is
+# empty.)
+#
+# ## Element processing
+#
+# Existing values can be edited, and additional values for the same element can
+# be added by concatenating them together with a double pipe (`||`). If an
+# element does not appear as a column in the CSV, any existing values of that
+# element are left unchanged. Leaving a column intact but with no value will
+# cause that element to be deleted.
 #
 # During an import, the metadata for the field/item combination represented by
 # each cell is changed to reflect the contents of the CSV. Note that this means
@@ -28,41 +92,51 @@
 # needed for some of the values, the unchanged values must still appear in the
 # CSV or they will be deleted.
 #
-# If an element does not appear as a column in the CSV, metadata values of that
-# element are ignored and unaffected by the editing process.
+# # CSV Package Format Specification
 #
-# Leaving a column intact but with no value will cause that element to be
-# deleted.
-#
-# # Metadata-only items
-#
-# To create a new item, enter a plus sign (`+`) in the `id` column.
+# A CSV package is a directory/folder consisting of a single CSV file at the
+# root level of the package and any number of other files referenced from the
+# `files` column cells in the CSV file. These files may reside in the same
+# folder as the CSV file itself, or in subfolders. (To support same-named files
+# attached to different items, subfolders will be required.)
 #
 class CsvImporter
 
-  MULTI_VALUE_DELIMITER = "||"
-  NEW_ITEM_INDICATOR    = "+"
+  MULTI_VALUE_DELIMITER          = "||"
+  NEW_ITEM_INDICATOR             = "+"
+  ELEMENT_COLUMNS_OFFSET        = 3
+
+  ID_COLUMN_INDEX                = 0
+  FILES_COLUMN_INDEX             = 1
+  FILE_DESCRIPTIONS_COLUMN_INDEX = 2
+
 
   ##
-  # Imports from a CSV string.
+  # Imports items from a CSV string.
   #
   # @param csv [String] CSV string.
+  # @param object_keys [Enumerable<String>] Keys of objects in the application
+  #                                         bucket that are referenced in the
+  #                                         CSV's `files` column.
   # @param submitter [User]
   # @param primary_collection [Collection] Collection to import new items into.
-  # @param imported_items [Array] For each imported item, whether created or
-  #                               updated, a hash containing `item_id` and
-  #                               `handle` keys will be added.
+  # @param imported_items [Array<Hash>] For each imported item, whether created
+  #                                     or updated, a hash containing
+  #                                     `:item_id` and `:handle` keys will be
+  #                                     added.
   # @param print_progress [Boolean] Whether to print progress updates to
   #                                 stdout.
   # @return [void]
   #
   def import(csv:,
+             object_keys: [],
              submitter:,
              primary_collection:,
              imported_items: [],
              print_progress: false,
              task:           nil)
     rows     = CSV.parse(csv)
+    validate_header(rows[0])
     num_rows = rows.length - 1 # exclude header
     progress = print_progress ? Progress.new(num_rows) : nil
     # Work inside a transaction to avoid any incompletely created items.
@@ -73,17 +147,25 @@ class CsvImporter
           progress&.report(row_index, status_text)
           task&.progress(row_index / (rows.length - 1).to_f,
                          status_text: status_text)
-          item_id = row[0].strip
+          # Create or update the item.
+          item_id = row[ID_COLUMN_INDEX].strip
           if item_id == NEW_ITEM_INDICATOR
-            item = create_item(submitter:          submitter,
-                               primary_collection: primary_collection,
-                               header_row:         rows[0],
-                               columns:            row[1..])
+            item = create_item(submitter:             submitter,
+                               primary_collection:    primary_collection,
+                               element_column_names:  rows[0][ELEMENT_COLUMNS_OFFSET..],
+                               element_column_values: row[ELEMENT_COLUMNS_OFFSET..],
+                               file_rel_paths:        row[FILES_COLUMN_INDEX]&.split(MULTI_VALUE_DELIMITER),
+                               file_descriptions:     row[FILE_DESCRIPTIONS_COLUMN_INDEX]&.split(MULTI_VALUE_DELIMITER),
+                               import_object_keys:    object_keys)
           else
-            item = update_item(item_id:    item_id,
-                               submitter:  submitter,
-                               header_row: rows[0],
-                               columns:    row[1..])
+            item = Item.find(item_id)
+            item = update_item(item:                  item,
+                               submitter:             submitter,
+                               element_column_names:  rows[0][ELEMENT_COLUMNS_OFFSET..],
+                               element_column_values: row[ELEMENT_COLUMNS_OFFSET..],
+                               file_rel_paths:        row[FILES_COLUMN_INDEX]&.split(MULTI_VALUE_DELIMITER),
+                               file_descriptions:     row[FILE_DESCRIPTIONS_COLUMN_INDEX]&.split(MULTI_VALUE_DELIMITER),
+                               import_object_keys:    object_keys)
           end
           imported_items << {
             item_id: item.id,
@@ -101,17 +183,20 @@ class CsvImporter
   end
 
   ##
-  # Imports from an {Import} instance corresponding to a CSV file in the
-  # application S3 bucket.
+  # Imports from an {Import} instance corresponding to either a CSV file or CSV
+  # package in the application S3 bucket.
   #
   # @param import [Import]
   # @param submitter [User]
   # @return [void]
   #
   def import_from_s3(import, submitter)
-    object_keys    = import.object_keys
-    csv_object_key = object_keys.first
-    imported_items = []
+    # Find the CSV file.
+    object_keys      = import.object_keys
+    root_object_keys = object_keys.select{ |k| k.split("/").length == object_keys.map{ |kl| kl.split("/").length }.sort.first }
+    csv_object_key   = root_object_keys.find{ |k| k.downcase.end_with?(".csv") }
+
+    imported_items   = []
     import.update!(format:         Import::Format::CSV_FILE,
                    files:          [csv_object_key],
                    imported_items: imported_items)
@@ -119,6 +204,7 @@ class CsvImporter
 
     csv = PersistentStore.instance.get_object(key: csv_object_key).read
     import(csv:                csv,
+           object_keys:        object_keys,
            submitter:          submitter,
            primary_collection: import.collection,
            imported_items:     imported_items,
@@ -135,50 +221,123 @@ class CsvImporter
 
   private
 
-  def create_item(submitter:, primary_collection:, header_row:, columns:)
+  def create_item(submitter:,
+                  primary_collection:,
+                  element_column_names:,
+                  element_column_values:,
+                  file_rel_paths:,
+                  file_descriptions:,
+                  import_object_keys:)
     item = CreateItemCommand.new(submitter:          submitter,
                                  institution:        primary_collection.institution,
                                  primary_collection: primary_collection,
                                  stage:              Item::Stages::APPROVED,
                                  event_description:  "Item imported from CSV.").execute
     item.assign_handle
-    ascribe_metadata(item:       item,
-                     header_row: header_row,
-                     columns:    columns)
+    ascribe_metadata(item:          item,
+                     column_names:  element_column_names,
+                     column_values: element_column_values)
+    associate_bitstreams(item:               item,
+                         file_rel_paths:     file_rel_paths,
+                         file_descriptions:  file_descriptions,
+                         import_object_keys: import_object_keys)
     item.save!
     item
   end
 
-  def update_item(item_id:, submitter:, header_row:, columns:)
-    item = Item.find(item_id)
+  def update_item(item:,
+                  submitter:,
+                  element_column_names:,
+                  element_column_values:,
+                  file_rel_paths:,
+                  file_descriptions:,
+                  import_object_keys:)
     UpdateItemCommand.new(item:        item,
                           user:        submitter,
                           description: "Updated via CSV").execute do
-      ascribe_metadata(item:       item,
-                       header_row: header_row,
-                       columns:    columns)
+      ascribe_metadata(item:          item,
+                       column_names:  element_column_names,
+                       column_values: element_column_values)
+      associate_bitstreams(item:               item,
+                           file_rel_paths:     file_rel_paths,
+                           file_descriptions:  file_descriptions,
+                           import_object_keys: import_object_keys)
       item.save!
     end
     item
   end
 
-  def ascribe_metadata(item:, header_row:, columns:)
-    columns.each_with_index do |cell_value, column_index|
-      column_index += 1
-      element_name  = header_row[column_index]
-      item.elements.select{ |e| e.name == element_name }.each(&:destroy)
-      values = cell_value.split(MULTI_VALUE_DELIMITER)
-      values.select(&:present?).each_with_index do |value, value_index|
-        reg_el = RegisteredElement.where(name:        element_name,
-                                         institution: item.institution).limit(1).first
-        unless reg_el
-          raise ArgumentError, "Element not present in registry: #{element_name}"
+  def ascribe_metadata(item:, column_names:, column_values:)
+    column_values.each_with_index do |cell_value, column_index|
+      element_name  = column_names[column_index]
+      item.elements.select{ |e| e.name == element_name }.each(&:delete)
+      if cell_value.present?
+        values = cell_value.split(MULTI_VALUE_DELIMITER)
+        values.select(&:present?).each_with_index do |value, value_index|
+          reg_el = RegisteredElement.where(name:        element_name,
+                                           institution: item.institution).limit(1).first
+          unless reg_el
+            raise ArgumentError, "Element not present in registry: #{element_name}"
+          end
+          item.elements.build(registered_element: reg_el,
+                              string:             value.strip,
+                              position:           value_index + 1)
         end
-        item.elements.build(registered_element: reg_el,
-                            string:             value.strip,
-                            position:           value_index + 1)
       end
     end
+  end
+
+  ##
+  # @param item [Item]
+  # @param file_rel_paths [Array<String>] Relative paths within the package.
+  # @param file_descriptions [Array<String>]
+  # @param import_object_keys [Array<String>] Keys of files to import,
+  #                                           corresponding to `files`.
+  #
+  def associate_bitstreams(item:,
+                           file_rel_paths:,
+                           file_descriptions:,
+                           import_object_keys:)
+    primary         = true
+    bundle_position = 0
+    file_rel_paths&.each_with_index do |rel_path, file_index|
+      filename = rel_path.split("/").last
+      # Does the item already have a file with this name? If so, we will
+      # skip it.
+      unless item.bitstreams.find{ |b| b.filename == filename }
+        # Was this file actually uploaded, i.e. does it exist in the bucket?
+        # If so, we will copy it into its permanent location within the bucket,
+        # and create a Bitstream to represent it. If not, we will skip it.
+        upload_key = import_object_keys.find{ |k| k.end_with?(rel_path) }
+        if upload_key
+          store         = PersistentStore.instance
+          permanent_key = Bitstream.permanent_key(institution_key: item.institution.key,
+                                                  item_id:         item.id,
+                                                  filename:        filename)
+          Bitstream.create!(item:            item,
+                            permanent_key:   permanent_key,
+                            filename:        filename,
+                            bundle:          Bitstream::Bundle::CONTENT,
+                            bundle_position: bundle_position,
+                            primary:         primary,
+                            description:     file_descriptions ? file_descriptions[file_index] : nil,
+                            length:          store.object_length(key: upload_key))
+          store.copy_object(source_key: upload_key,
+                            target_key: permanent_key)
+          primary          = false
+          bundle_position += 1
+        end
+      end
+    end
+  end
+
+  ##
+  # @param row [Hash<String>]
+  #
+  def validate_header(row)
+    raise ArgumentError, "Missing ID column" if row[ID_COLUMN_INDEX] != "id"
+    raise ArgumentError, "Missing files column" if row[FILES_COLUMN_INDEX] != "files"
+    raise ArgumentError, "Missing file_descriptions column" if row[FILE_DESCRIPTIONS_COLUMN_INDEX] != "file_descriptions"
   end
 
 end

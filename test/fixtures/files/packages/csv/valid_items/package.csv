@@ -1,0 +1,3 @@
+id,files,file_descriptions,dc:title,dc:subject,dc:creator,dc:contributor,dc:description:abstract,dc:date:issued,dc:identifier:uri,dc:type
++,item1/hello.txt||item1/license.txt,Hello world||License file,New Item 1,Subject 1||Subject 2,,,,,,
++,item2/hello.txt||item2/license.txt,Hello world||License file,New Item 2,Subject 1||Subject 2,,,,,,

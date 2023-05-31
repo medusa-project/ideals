@@ -1,2 +1,2 @@
-id,dc:title
-+,New CSV Item
+id,files,file_descriptions,dc:title
++,hello.txt,"",New CSV Item

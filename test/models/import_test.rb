@@ -7,6 +7,7 @@ class ImportTest < ActiveSupport::TestCase
     test "to_s() returns a correct value" do
       assert_equal "SAF Package", Import::Format.to_s(Import::Format::SAF)
       assert_equal "CSV File", Import::Format.to_s(Import::Format::CSV_FILE)
+      assert_equal "CSV Package", Import::Format.to_s(Import::Format::CSV_PACKAGE)
       assert_equal "Unknown", Import::Format.to_s(9999)
     end
 
@@ -109,12 +110,18 @@ class ImportTest < ActiveSupport::TestCase
 
   # progress()
 
-  test "progress() updates percent_complete and imported_items" do
+  test "progress() updates imported_items" do
+    percent_complete = 0.35
+    imported_items   = [{ 'item_id' => 9999, 'handle' => "handle" }]
+    @instance.progress(percent_complete, imported_items)
+    assert_equal imported_items, @instance.imported_items
+  end
+
+  test "progress() updates the associated Task's percent_complete" do
     percent_complete = 0.35
     imported_items   = [{ 'item_id' => 9999, 'handle' => "handle" }]
     @instance.progress(percent_complete, imported_items)
     assert_equal percent_complete, @instance.task.percent_complete
-    assert_equal imported_items, @instance.imported_items
   end
 
   # root_key_prefix()

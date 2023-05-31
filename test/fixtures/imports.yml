@@ -13,14 +13,23 @@ southwest_saf_new:
 
 ################################## uiuc #####################################
 
-uiuc_csv_new:
+uiuc_csv_file_new:
   user:               uiuc_admin
   institution:        uiuc
   collection:         uiuc_collection1
   format:             <%= Import::Format::CSV_FILE %>
   files:              "[]"
   imported_items:     "[]"
-  task:               csv_import
+  task:               csv_file_import
+
+uiuc_csv_package_new:
+  user:               uiuc_admin
+  institution:        uiuc
+  collection:         uiuc_collection1
+  format:             <%= Import::Format::CSV_PACKAGE %>
+  files:              "[]"
+  imported_items:     "[]"
+  task:               csv_package_import
 
 uiuc_saf_new:
   user:               uiuc_admin

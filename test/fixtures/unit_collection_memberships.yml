@@ -17,6 +17,11 @@ southwest_unit1_collection2:
   collection:   southwest_unit1_collection2
   primary:      true
 
+southwest_unit1_empty:
+  unit:         southwest_unit1
+  collection:   southwest_unit1_empty
+  primary:      true
+
 ################################## uiuc #####################################
 
 uiuc_unit1_collection1:

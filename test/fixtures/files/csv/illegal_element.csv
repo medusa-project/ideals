@@ -1,2 +1,2 @@
-id,bogus
-+,Value of bogus element
+id,files,file_descriptions,bogus
++,"","",Value of bogus element

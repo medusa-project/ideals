@@ -14,10 +14,43 @@ class CsvImporterTest < ActiveSupport::TestCase
 
   # import()
 
+  test "import() raises an error for a missing id column" do
+    csv = CSV.generate do |row|
+      row << ["files", "file_descriptions", "dc:creator"]
+    end
+    assert_raises ArgumentError do
+      @instance.import(csv:                csv,
+                       submitter:          users(:example_sysadmin),
+                       primary_collection: collections(:uiuc_empty))
+    end
+  end
+
+  test "import() raises an error for a missing files column" do
+    csv = CSV.generate do |row|
+      row << ["id", "file_descriptions", "dc:creator"]
+    end
+    assert_raises ArgumentError do
+      @instance.import(csv:                csv,
+                       submitter:          users(:example_sysadmin),
+                       primary_collection: collections(:uiuc_empty))
+    end
+  end
+
+  test "import() raises an error for a missing file_descriptions column" do
+    csv = CSV.generate do |row|
+      row << ["id", "files", "dc:creator"]
+    end
+    assert_raises ArgumentError do
+      @instance.import(csv:                csv,
+                       submitter:          users(:example_sysadmin),
+                       primary_collection: collections(:uiuc_empty))
+    end
+  end
+
   test "import() parses multi-value elements correctly" do
     csv = CSV.generate do |row|
-      row << ["id", "dc:creator"]
-      row << ["+", "Bob||Susan||Chris"]
+      row << ["id", "files", "file_descriptions", "dc:creator"]
+      row << ["+", nil, nil, "Bob||Susan||Chris"]
     end
     @instance.import(csv:                csv,
                      submitter:          users(:example_sysadmin),
@@ -31,8 +64,8 @@ class CsvImporterTest < ActiveSupport::TestCase
 
   test "import() assigns positions to multi-value elements" do
     csv = CSV.generate do |row|
-      row << ["id", "dc:creator"]
-      row << ["+", "Bob||Susan||Chris"]
+      row << ["id", "files", "file_descriptions", "dc:creator"]
+      row << ["+", nil, nil, "Bob||Susan||Chris"]
     end
     @instance.import(csv:                csv,
                      submitter:          users(:uiuc_admin),
@@ -50,8 +83,8 @@ class CsvImporterTest < ActiveSupport::TestCase
 
   test "import() creates a new item" do
     csv = CSV.generate do |row|
-      row << ["id", "dc:title"]
-      row << ["+" ,"New Item"]
+      row << ["id", "files", "file_descriptions", "dc:title"]
+      row << ["+", nil, nil, "New Item"]
     end
     @instance.import(csv:                csv,
                      submitter:          users(:example_sysadmin),
@@ -61,10 +94,137 @@ class CsvImporterTest < ActiveSupport::TestCase
     assert_equal "New Item", item.title
   end
 
+  test "import() raises an error for a missing file" do
+    package_path = File.join(file_fixture_path, "packages", "csv", "missing_file")
+    csv          = File.read(File.join(package_path, "package.csv"))
+    keys         = []
+    assert_raises do
+      @instance.import(csv:                csv,
+                       object_keys:        keys,
+                       submitter:          users(:southwest_admin),
+                       primary_collection: collections(:southwest_unit1_empty))
+    end
+  end
+
+  test "import() attaches Bitstreams to new items" do
+    package_path = File.join(file_fixture_path, "packages", "csv", "valid_items")
+    csv          = File.read(File.join(package_path, "package.csv"))
+    keys         = []
+    PersistentStore.instance.upload_path(root_path:     package_path,
+                                         key_prefix:    "tmp",
+                                         uploaded_keys: keys)
+
+    @instance.import(csv:                csv,
+                     object_keys:        keys,
+                     submitter:          users(:southwest_admin),
+                     primary_collection: collections(:southwest_unit1_empty))
+    item       = Item.order(created_at: :desc).limit(1).first
+    bitstreams = item.bitstreams
+    assert_equal 2, bitstreams.count
+    bitstream = bitstreams.find{ |b| b.filename == "hello.txt" }
+    assert_equal 28, bitstream.length
+    assert_equal Bitstream.permanent_key(institution_key: item.institution.key,
+                                         item_id:         item.id,
+                                         filename:        bitstream.filename),
+                 bitstream.permanent_key
+    assert_equal "Hello world", bitstream.description
+    assert bitstream.primary
+    assert_equal 0, bitstream.bundle_position
+  end
+
+  test "import() attaches Bitstreams to existing items" do
+    item = items(:southwest_unit1_collection1_item1)
+    csv  = CSV.generate do |row|
+      row << ["id", "files", "file_descriptions"]
+      row << [item.id, "tmp/escher_lego.png", nil]
+    end
+
+    file = file_fixture("escher_lego.png")
+    S3Client.instance.put_object(bucket: PersistentStore::BUCKET,
+                                 key:    "tmp/escher_lego.png",
+                                 body:   File.new(file))
+
+    assert_difference "Bitstream.count", 1 do
+      @instance.import(csv:                csv,
+                       object_keys:        ["tmp/escher_lego.png"],
+                       submitter:          users(:southwest_admin),
+                       primary_collection: collections(:southwest_unit1_empty))
+    end
+  end
+
+  test "import() marks the first attached Bitstream as primary" do
+    item  = items(:southwest_unit1_collection1_item1)
+    item.bitstreams.destroy_all
+    files = %w[gull.jpg pooh.jpg]
+    csv   = CSV.generate do |row|
+      row << %w[id files file_descriptions]
+      row << [item.id, files.map{ |f| "tmp/#{f}" }.join("||"), nil]
+    end
+
+    files.each do |file|
+      fixture = file_fixture(file)
+      S3Client.instance.put_object(bucket: PersistentStore::BUCKET,
+                                   key:    "tmp/#{file}",
+                                   body:   File.new(fixture))
+    end
+
+    @instance.import(csv:                csv,
+                     object_keys:        files.map{ |f| "tmp/#{f}" },
+                     submitter:          users(:southwest_admin),
+                     primary_collection: collections(:southwest_unit1_empty))
+
+    item.reload
+    b = item.bitstreams.where(filename: "gull.jpg").first
+    assert b.primary?
+    b = item.bitstreams.where(filename: "pooh.jpg").first
+    assert !b.primary?
+  end
+
+  test "import() sets bundle positions on attached bitstreams" do
+    item  = items(:southwest_unit1_collection1_item1)
+    item.bitstreams.destroy_all
+    files = %w[gull.jpg pooh.jpg]
+    csv   = CSV.generate do |row|
+      row << %w[id files file_descriptions]
+      row << [item.id, files.map{ |f| "tmp/#{f}" }.join("||"), nil]
+    end
+
+    files.each do |file|
+      fixture = file_fixture(file)
+      S3Client.instance.put_object(bucket: PersistentStore::BUCKET,
+                                   key:    "tmp/#{file}",
+                                   body:   File.new(fixture))
+    end
+
+    @instance.import(csv:                csv,
+                     object_keys:        files.map{ |f| "tmp/#{f}" },
+                     submitter:          users(:southwest_admin),
+                     primary_collection: collections(:southwest_unit1_empty))
+
+    item.reload
+    item.bitstreams.order(:bundle_position).each_with_index do |bs, index|
+      assert_equal index, bs.bundle_position
+    end
+  end
+
+  test "import() ignores files that are already attached to an item" do
+    item  = items(:southwest_unit1_collection1_item1)
+    csv   = CSV.generate do |row|
+      row << ["id", "files", "file_descriptions"]
+      row << [item.id, "approved.png", nil]
+    end
+    assert_no_difference "Bitstream.count" do
+      @instance.import(csv:                csv,
+                       object_keys:        ["this shouldn't be used"],
+                       submitter:          users(:southwest_admin),
+                       primary_collection: collections(:southwest_unit1_empty))
+    end
+  end
+
   test "import() adds created items to the imported_items array" do
     csv = CSV.generate do |row|
-      row << ["id", "dc:title"]
-      row << ["+" ,"New Item"]
+      row << ["id", "files", "file_descriptions", "dc:title"]
+      row << ["+", nil, nil, "New Item"]
     end
     imported_items = []
     @instance.import(csv:                csv,
@@ -77,8 +237,8 @@ class CsvImporterTest < ActiveSupport::TestCase
   test "import() raises an error when an unrecognized element is present in the
   CSV" do
     csv = CSV.generate do |row|
-      row << ["id", "dc:bogus"]
-      row << ["+", "New Value"]
+      row << ["id", "files", "file_descriptions", "dc:bogus"]
+      row << ["+", nil, nil, "New Value"]
     end
     assert_raises ArgumentError do
       @instance.import(csv:                csv,
@@ -90,10 +250,22 @@ class CsvImporterTest < ActiveSupport::TestCase
   test "import() raises an error when a non-existent item ID is present in the
   CSV" do
     csv = CSV.generate do |row|
-      row << ["id", "dc:title"]
-      row << ["999999", "New Value"]
+      row << ["id", "files", "file_descriptions", "dc:title"]
+      row << ["999999", nil, nil, "New Value"]
     end
     assert_raises ActiveRecord::RecordNotFound do
+      @instance.import(csv:                csv,
+                       submitter:          users(:example_sysadmin),
+                       primary_collection: collections(:uiuc_empty))
+    end
+  end
+
+  test "import() raises an error for a blank item ID cell" do
+    csv = CSV.generate do |row|
+      row << ["id", "files", "file_descriptions", "dc:title"]
+      row << [nil, nil, nil, "New Value"]
+    end
+    assert_raises do
       @instance.import(csv:                csv,
                        submitter:          users(:example_sysadmin),
                        primary_collection: collections(:uiuc_empty))
@@ -103,8 +275,8 @@ class CsvImporterTest < ActiveSupport::TestCase
   test "import() updates an existing item" do
     item = items(:uiuc_item1)
     csv = CSV.generate do |row|
-      row << ["id", "dc:title"]
-      row << ["#{item.id}", "New Title"]
+      row << ["id", "files", "file_descriptions", "dc:title"]
+      row << [item.id, nil, nil, "New Title"]
     end
     @instance.import(csv:                csv,
                      submitter:          users(:example_sysadmin),
@@ -116,8 +288,8 @@ class CsvImporterTest < ActiveSupport::TestCase
   test "import() deletes elements corresponding to blank element values" do
     item = items(:uiuc_described)
     csv = CSV.generate do |row|
-      row << ["id", "dc:subject"]
-      row << ["#{item.id}", ""]
+      row << ["id", "files", "file_descriptions", "dc:subject"]
+      row << [item.id, nil, nil, ""]
     end
     @instance.import(csv:                csv,
                      submitter:          users(:example_sysadmin),
@@ -130,8 +302,8 @@ class CsvImporterTest < ActiveSupport::TestCase
   CSV" do
     item = items(:uiuc_described)
     csv = CSV.generate do |row|
-      row << ["id", "dc:title"]
-      row << ["#{item.id}", "New Title"]
+      row << ["id", "files", "file_descriptions", "dc:title"]
+      row << [item.id, nil, nil, "New Title"]
     end
     @instance.import(csv:                csv,
                      submitter:          users(:example_sysadmin),
@@ -144,8 +316,8 @@ class CsvImporterTest < ActiveSupport::TestCase
   test "import() succeeds the import's task upon success" do
     item = items(:uiuc_described)
     csv = CSV.generate do |row|
-      row << ["id", "dc:title"]
-      row << ["#{item.id}", "New Title"]
+      row << ["id", "files", "file_descriptions", "dc:title"]
+      row << [item.id, nil, nil, "New Title"]
     end
     task = Task.create!(name: "TestImport", status_text: "Lorem Ipsum")
     @instance.import(csv:                csv,
@@ -159,8 +331,8 @@ class CsvImporterTest < ActiveSupport::TestCase
   test "import() fails the import's task upon error" do
     item = items(:uiuc_described)
     csv = CSV.generate do |row|
-      row << ["id", "bogus"]
-      row << ["#{item.id}", "Bogus element value"]
+      row << ["id", "files", "file_descriptions", "bogus"]
+      row << [item.id, nil, nil, "Bogus element value"]
     end
     task = Task.create!(name: "TestImport", status_text: "Lorem Ipsum")
     assert_raises do
@@ -177,7 +349,7 @@ class CsvImporterTest < ActiveSupport::TestCase
 
   test "import_from_s3() sets the import format" do
     csv    = file_fixture("csv/new.csv")
-    import = imports(:uiuc_csv_new)
+    import = imports(:uiuc_csv_file_new)
     upload_to_s3(csv, import)
     @instance.import_from_s3(import, users(:example_sysadmin))
 
@@ -186,7 +358,7 @@ class CsvImporterTest < ActiveSupport::TestCase
 
   test "import_from_s3() creates correct items" do
     csv    = file_fixture("csv/new.csv")
-    import = imports(:uiuc_csv_new)
+    import = imports(:uiuc_csv_file_new)
     upload_to_s3(csv, import)
     @instance.import_from_s3(import, users(:example_sysadmin))
 
@@ -203,7 +375,7 @@ class CsvImporterTest < ActiveSupport::TestCase
 
   test "import_from_s3() fails the import's task upon error" do
     csv    = file_fixture("csv/illegal_element.csv")
-    import = imports(:uiuc_csv_new)
+    import = imports(:uiuc_csv_file_new)
     upload_to_s3(csv, import)
 
     assert_raises do
@@ -215,7 +387,7 @@ class CsvImporterTest < ActiveSupport::TestCase
 
   test "import_from_s3() succeeds the import's task upon success" do
     csv    = file_fixture("csv/new.csv")
-    import = imports(:uiuc_csv_new)
+    import = imports(:uiuc_csv_file_new)
     upload_to_s3(csv, import)
 
     @instance.import_from_s3(import, users(:example_sysadmin))

@@ -2,7 +2,8 @@ require 'test_helper'
 
 class SafImporterTest < ActiveSupport::TestCase
 
-  PACKAGES_PATH = File.join(Rails.root, "test", "fixtures", "packages", "saf")
+  PACKAGES_PATH = File.join(Rails.root, "test", "fixtures", "files",
+                            "packages", "saf")
 
   setup do
     setup_s3

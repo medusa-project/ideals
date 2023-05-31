@@ -31,6 +31,7 @@ class Import < ApplicationRecord
   class Format
     SAF         = 0
     CSV_FILE    = 1
+    CSV_PACKAGE = 2
 
     def self.to_s(format)
       case format
@@ -38,6 +39,8 @@ class Import < ApplicationRecord
         "SAF Package"
       when 1
         "CSV File"
+      when 2
+        "CSV Package"
       else
         "Unknown"
       end
@@ -114,7 +117,8 @@ class Import < ApplicationRecord
   end
 
   ##
-  # @param relative_path [String]
+  # @param relative_path [String] Path of a file within an import package
+  #                               relative to the root of the package.
   # @param io [IO]
   #
   def upload_file(relative_path:, io:)
