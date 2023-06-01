@@ -19,9 +19,9 @@
       %label.form-check-label{for: "oaf"}
         = Institution::SSOFederation.label_for(Institution::SSOFederation::OPENATHENS)
     .form-check
-      = f.radio_button(:sso_federation, Institution::SSOFederation::NONE, id: "saml", class: "form-check-input")
+      = f.radio_button(:sso_federation, nil, id: "saml", class: "form-check-input")
       %label.form-check-label{for: "saml"}
-        = Institution::SSOFederation.label_for(Institution::SSOFederation::NONE)
+        None
 
   %hr
 

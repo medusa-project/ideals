@@ -47,7 +47,7 @@
                                tabindex:          "0"}
     .btn-group.float-end{role: "group"}
       - if policy(@institution).edit_saml_authentication?
-        - if @institution.sso_federation == Institution::SSOFederation::OPENATHENS
+        - if @institution.sso_federation.present?
           -# Refresh OpenAthens Metadata button
           = link_to(institution_refresh_openathens_metadata_path,
                     class: "btn btn-light", method: :patch) do

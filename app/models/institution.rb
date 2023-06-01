@@ -141,13 +141,10 @@ class Institution < ApplicationRecord
   end
 
   class SSOFederation
-    NONE       = 0
     OPENATHENS = 1
 
     def self.label_for(value)
       case value
-      when NONE
-        "None"
       when OPENATHENS
         "OpenAthens Federation"
       else
