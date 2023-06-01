@@ -229,7 +229,7 @@ class InstitutionsController < ApplicationController
   # Responds to `PATCH /institutions/:id/refresh-openathens-metadata`
   #
   def refresh_openathens_metadata
-    RefreshOpenathensMetadataJob.perform_later(institution: @institution,
+    RefreshFederationMetadataJob.perform_later(institution: @institution,
                                                user:        current_user)
   rescue => e
     flash['error'] = "#{e}"

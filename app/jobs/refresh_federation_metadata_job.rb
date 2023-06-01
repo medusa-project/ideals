@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class RefreshOpenathensMetadataJob < ApplicationJob
+class RefreshFederationMetadataJob < ApplicationJob
 
   queue_as :admin
 
@@ -19,13 +19,13 @@ class RefreshOpenathensMetadataJob < ApplicationJob
                                institution:   institution,
                                user:          user,
                                started_at:    Time.now,
-                               status_text:   "Updating OpenAthens Federation "\
-                                              "metadata for #{institution.name}")
+                               status_text:   "Updating federation metadata "\
+                                              "for #{institution.name}")
     is_temp_file = false
     begin
       if Rails.env.development? || Rails.env.test?
         xml_file = File.new(File.join(Rails.root, "test", "fixtures", "files",
-                                      "oaf_metadata.xml"))
+                                      "federation_metadata.xml"))
       else
         xml_file     = Institution.fetch_openathens_metadata
         is_temp_file = true
