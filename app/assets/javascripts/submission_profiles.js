@@ -40,6 +40,15 @@ const SubmissionProfiles = {
 
         $('button.edit-submission-profile').on("click",
             SubmissionProfiles.EditSubmissionProfileClickHandler);
+        $("button.add-element").on("click", function() {
+            const profile_id = $(this).data("submission-profile-id");
+            const url        = ROOT_URL + "/submission-profiles/" + profile_id +
+                "/elements/new";
+            $.get(url, function(data) {
+                const modalBody = $("#add-element-modal .modal-body");
+                modalBody.html(data);
+            });
+        });
         $("button.edit-element").on("click", function() {
             const profile_id = $(this).data("submission-profile-id");
             const element_id = $(this).data("element-id");

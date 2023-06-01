@@ -30,6 +30,10 @@ class SubmissionProfileElementPolicy < ApplicationPolicy
     update
   end
 
+  def new
+    create
+  end
+
   def update
     if @ctx_institution != @element.submission_profile.institution
       return WRONG_SCOPE_RESULT

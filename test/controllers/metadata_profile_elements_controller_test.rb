@@ -158,6 +158,31 @@ class MetadataProfileElementsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # new()
+
+  test "new() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get new_metadata_profile_metadata_profile_element_path(@profile)
+    assert_response :not_found
+  end
+
+  test "new() redirects to root page for logged-out users" do
+    get new_metadata_profile_metadata_profile_element_path(@profile)
+    assert_redirected_to @profile.institution.scope_url
+  end
+
+  test "new() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:uiuc))
+    get new_metadata_profile_metadata_profile_element_path(@profile)
+    assert_response :forbidden
+  end
+
+  test "new() returns HTTP 200 for authorized users" do
+    log_in_as(users(:uiuc_admin))
+    get new_metadata_profile_metadata_profile_element_path(@profile)
+    assert_response :ok
+  end
+
   # update()
 
   test "update() returns HTTP 404 for unscoped requests" do

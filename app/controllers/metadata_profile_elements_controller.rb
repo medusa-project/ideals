@@ -52,6 +52,16 @@ class MetadataProfileElementsController < ApplicationController
   end
 
   ##
+  # Responds to `GET /metadata-profiles/:metadata_profile_id/elements/new`
+  #
+  def new
+    authorize(MetadataProfileElement)
+    @profile = MetadataProfile.find(params[:metadata_profile_id])
+    @element = @profile.elements.build
+    render partial: "form", locals: { profile: @profile, element: @element }
+  end
+
+  ##
   # Responds to `PATCH /metadata-profiles/:metadata_profile_id/elements/:id`
   # (XHR only)
   #

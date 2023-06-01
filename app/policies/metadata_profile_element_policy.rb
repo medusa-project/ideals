@@ -30,6 +30,10 @@ class MetadataProfileElementPolicy < ApplicationPolicy
     update
   end
 
+  def new
+    create
+  end
+
   def update
     if @element.metadata_profile.global?
       return effective_sysadmin(@user, @role_limit)

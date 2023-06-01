@@ -202,7 +202,7 @@ Rails.application.routes.draw do
   end
   resources :metadata_profiles, path: "metadata-profiles" do
     match "/clone", to: "metadata_profiles#clone", via: :post
-    resources :metadata_profile_elements, path: "elements", except: [:new, :index, :show]
+    resources :metadata_profile_elements, path: "elements", except: [:index, :show]
   end
   match '/oai-pmh', to: 'oai_pmh#handle', via: %w(get post), as: 'oai_pmh'
   resources :prebuilt_searches, path: "prebuilt-searches"
@@ -220,7 +220,7 @@ Rails.application.routes.draw do
         constraints: lambda { |request| request.xhr? }
   resources :submission_profiles, path: "submission-profiles" do
     match "/clone", to: "submission_profiles#clone", via: :post
-    resources :submission_profile_elements, path: "elements", except: [:new, :index, :show]
+    resources :submission_profile_elements, path: "elements", except: [:index, :show]
   end
   resources :submissions, except: [:index, :show] do
     match "/complete", to: "submissions#complete", via: :post

@@ -39,6 +39,14 @@ const MetadataProfiles = {
 
         $('button.edit-metadata-profile').on("click",
             MetadataProfiles.EditMetadataProfileClickHandler);
+        $("button.add-element").on("click", function() {
+            const profile_id = $(this).data("metadata-profile-id");
+            const url        = ROOT_URL + "/metadata-profiles/" + profile_id +
+                "/elements/new";
+            $.get(url, function(data) {
+                $("#add-element-modal .modal-body").html(data);
+            });
+        });
         $("button.edit-element").on("click", function() {
             const profile_id = $(this).data("metadata-profile-id");
             const element_id = $(this).data("element-id");

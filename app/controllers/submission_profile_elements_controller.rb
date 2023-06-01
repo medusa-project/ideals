@@ -53,6 +53,16 @@ class SubmissionProfileElementsController < ApplicationController
   end
 
   ##
+  # Responds to `GET /submission-profiles/:submission_profile_id/elements/new`
+  #
+  def new
+    authorize(SubmissionProfileElement)
+    @profile = SubmissionProfile.find(params[:submission_profile_id])
+    @element = @profile.elements.build
+    render partial: "form", locals: { profile: @profile, element: @element }
+  end
+
+  ##
   # Responds to `PATCH /submission-profiles/:submission_profile_id/elements/:id`
   # (XHR only)
   #

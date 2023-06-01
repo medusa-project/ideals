@@ -67,9 +67,10 @@
     - if policy(@profile).edit?
       .btn-group.float-end.mb-3{role: "group"}
         -# Add Element button
-        %button.btn.btn-light{"data-bs-target": "#add-element-modal",
-                              "data-bs-toggle": "modal",
-                              type:             "button"}
+        %button.btn.btn-light.add-element{"data-bs-target":           "#add-element-modal",
+                                          "data-bs-toggle":           "modal",
+                                          type:                       "button",
+                                          "data-metadata-profile-id": @profile.id}
           %i.fa.fa-plus
           Add Element
     %table.table
@@ -177,6 +178,7 @@
 
 = render partial: "shared/xhr_modal",
          locals: { id: "edit-metadata-profile-modal", title: "Edit Metadata Profile" }
-= render partial: "metadata_profile_elements/add_modal"
+= render partial: "shared/xhr_modal",
+         locals: { id: "add-element-modal", title: "Add Element" }
 = render partial: "shared/xhr_modal",
          locals: { id: "edit-element-modal", title: "Edit Element" }
