@@ -93,7 +93,7 @@ class CsvExporter
   #
   def select_clause(elements)
     columns = ["i.id"]
-    # Filenames column
+    # files column
     columns << "array_to_string(
        array(
          SELECT b.filename
@@ -101,7 +101,7 @@ class CsvExporter
          WHERE b.item_id = i.id
          ORDER BY b.filename
        ), '||') AS filenames\n"
-    # File descriptions column
+    # file_descriptions column
     columns << "array_to_string(
        array(
          SELECT b.description
@@ -109,6 +109,40 @@ class CsvExporter
          WHERE b.item_id = i.id
          ORDER BY b.filename
        ), '||') AS file_descriptions\n"
+    # embargo_types column
+    columns << "array_to_string(
+       array(
+         SELECT e.kind
+         FROM embargoes e
+         WHERE e.item_id = i.id
+         ORDER BY e.expires_at
+       ), '||') AS embargo_types\n"
+    # embargo_expirations column
+    columns << "array_to_string(
+       array(
+         SELECT e.expires_at
+         FROM embargoes e
+         WHERE e.item_id = i.id
+         ORDER BY e.expires_at
+       ), '||') AS embargo_expirations\n"
+    # embargo_exempt_user_groups column
+    columns << "array_to_string(
+       array(
+         SELECT ug.key
+         FROM embargoes e
+         LEFT JOIN embargoes_user_groups eug ON e.id = eug.embargo_id
+         LEFT JOIN user_groups ug on eug.user_group_id = ug.id
+         WHERE e.item_id = i.id
+         ORDER BY e.expires_at
+       ), '||') AS embargo_exempt_user_groups\n"
+    # embargo_reasons column
+    columns << "array_to_string(
+       array(
+         SELECT e.reason
+         FROM embargoes e
+         WHERE e.item_id = i.id
+         ORDER BY e.expires_at
+       ), '||') AS embargo_reason\n"
     # Element columns
     elements.each_with_index do |element, index|
       columns << "array_to_string(
@@ -134,7 +168,7 @@ class CsvExporter
 
   def to_csv(elements, results)
     CSV.generate(headers: true) do |csv|
-      csv << ["id", "filenames", "file_descriptions"] + elements
+      csv << CsvImporter::REQUIRED_COLUMNS + elements
       results.each do |row|
         csv << row.values
       end

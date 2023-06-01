@@ -22,7 +22,7 @@ class CsvExporterTest < ActiveSupport::TestCase
     csv        = @instance.export(units: [unit])
     rows       = CSV.parse(csv)
     assert_equal 1 + all_items.length, rows.length
-    assert_equal %w(id filenames file_descriptions dc:title dc:description dc:subject),
+    assert_equal CsvImporter::REQUIRED_COLUMNS + %w[dc:title dc:description dc:subject],
                  rows[0]
   end
 
@@ -34,7 +34,7 @@ class CsvExporterTest < ActiveSupport::TestCase
     csv              = @instance.export(collections: [collection])
     rows             = CSV.parse(csv)
     assert_equal 1 + all_items.length, rows.length
-    assert_equal %w(id filenames file_descriptions dc:title dc:description dc:subject),
+    assert_equal CsvImporter::REQUIRED_COLUMNS + %w[dc:title dc:description dc:subject],
                  rows[0]
   end
 
@@ -43,7 +43,7 @@ class CsvExporterTest < ActiveSupport::TestCase
     csv        = @instance.export(collections: [collection],
                                   elements:    %w(dc:creator dc:description))
     rows       = CSV.parse(csv)
-    assert_equal %w(id filenames file_descriptions dc:creator dc:description),
+    assert_equal CsvImporter::REQUIRED_COLUMNS + %w[dc:creator dc:description],
                  rows[0]
   end
 
@@ -57,7 +57,7 @@ class CsvExporterTest < ActiveSupport::TestCase
     csv              = @instance.export_collection(collection)
     rows             = CSV.parse(csv)
     assert_equal 1 + all_items.length, rows.length
-    assert_equal %w(id filenames file_descriptions dc:title dc:description dc:subject),
+    assert_equal CsvImporter::REQUIRED_COLUMNS + %w[dc:title dc:description dc:subject],
                  rows[0]
   end
 
@@ -66,7 +66,7 @@ class CsvExporterTest < ActiveSupport::TestCase
     csv        = @instance.export_collection(collection,
                                              elements: %w(dc:creator dc:description))
     rows       = CSV.parse(csv)
-    assert_equal %w(id filenames file_descriptions dc:creator dc:description),
+    assert_equal CsvImporter::REQUIRED_COLUMNS + %w[dc:creator dc:description],
                  rows[0]
   end
 
@@ -78,7 +78,7 @@ class CsvExporterTest < ActiveSupport::TestCase
     csv       = @instance.export_unit(unit)
     rows      = CSV.parse(csv)
     assert_equal 1 + all_items.length, rows.length
-    assert_equal %w(id filenames file_descriptions dc:title dc:description dc:subject),
+    assert_equal CsvImporter::REQUIRED_COLUMNS + %w[dc:title dc:description dc:subject],
                  rows[0]
   end
 
@@ -87,7 +87,7 @@ class CsvExporterTest < ActiveSupport::TestCase
     csv  = @instance.export_unit(unit,
                                  elements: %w(dc:creator dc:description))
     rows = CSV.parse(csv)
-    assert_equal %w(id filenames file_descriptions dc:creator dc:description),
+    assert_equal CsvImporter::REQUIRED_COLUMNS + %w[dc:creator dc:description],
                  rows[0]
   end
 

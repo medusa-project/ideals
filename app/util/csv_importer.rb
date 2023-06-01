@@ -28,9 +28,9 @@
 # ## Header row
 #
 # The first column, `id`, refers to an item's internal database ID. The next
-# several columns refer to various system-required item properties. The
-# remaining columns correspond to the elements in the effective
-# {MetadataProfile} of the collection that apply to the item.
+# several columns refer to various system-level item properties. The remaining
+# columns correspond to the elements in the effective {MetadataProfile} of the
+# collection that apply to the item.
 #
 # All columns are required except metadata columns. When a metadata column is
 # missing, the corresponding metadata elements of the items in the CSV file
@@ -45,7 +45,17 @@
 # a plus sign (`+`) must be entered into the first cell. An empty first cell is
 # always invalid.
 #
-# The next group of cells correspond to various system properties of the item.
+# The next group of cells correspond to various system properties of the item:
+#
+# * `files`                      Names of all files attached to an item. For
+#                                uploads, this may be a path relative to a
+#                                package root in which the CSV resides.
+# * `file_descriptions`          File description strings.
+# * `embargo_types`              One of the {Embargo::Kind} constant values.
+# * `embargo_expirations`        Dates in `YYYY-MM-DD` format, or blank values
+#                                to indicate no expiration.
+# * `embargo_exempt_user_groups` Comma-separated user group keys.
+# * `embargo_reasons`            Embargo reason strings.
 #
 # The last group of cells contain metadata element values.
 #
@@ -102,14 +112,11 @@
 #
 class CsvImporter
 
-  MULTI_VALUE_DELIMITER          = "||"
-  NEW_ITEM_INDICATOR             = "+"
-  ELEMENT_COLUMNS_OFFSET        = 3
-
-  ID_COLUMN_INDEX                = 0
-  FILES_COLUMN_INDEX             = 1
-  FILE_DESCRIPTIONS_COLUMN_INDEX = 2
-
+  MULTI_VALUE_DELIMITER  = "||"
+  NEW_ITEM_INDICATOR     = "+"
+  REQUIRED_COLUMNS       = %w[id files file_descriptions embargo_types
+                              embargo_expirations embargo_exempt_user_groups
+                              embargo_reasons]
 
   ##
   # Imports items from a CSV string.
@@ -148,24 +155,21 @@ class CsvImporter
           task&.progress(row_index / (rows.length - 1).to_f,
                          status_text: status_text)
           # Create or update the item.
-          item_id = row[ID_COLUMN_INDEX].strip
+          item_id = row[REQUIRED_COLUMNS.index("id")]&.strip
+          raise ArgumentError, "Missing item ID" if item_id.blank?
           if item_id == NEW_ITEM_INDICATOR
-            item = create_item(submitter:             submitter,
-                               primary_collection:    primary_collection,
-                               element_column_names:  rows[0][ELEMENT_COLUMNS_OFFSET..],
-                               element_column_values: row[ELEMENT_COLUMNS_OFFSET..],
-                               file_rel_paths:        row[FILES_COLUMN_INDEX]&.split(MULTI_VALUE_DELIMITER),
-                               file_descriptions:     row[FILE_DESCRIPTIONS_COLUMN_INDEX]&.split(MULTI_VALUE_DELIMITER),
-                               import_object_keys:    object_keys)
+            item = create_item(submitter:          submitter,
+                               primary_collection: primary_collection,
+                               element_names:      rows[0][REQUIRED_COLUMNS.length..],
+                               row:                row,
+                               import_object_keys: object_keys)
           else
             item = Item.find(item_id)
-            item = update_item(item:                  item,
-                               submitter:             submitter,
-                               element_column_names:  rows[0][ELEMENT_COLUMNS_OFFSET..],
-                               element_column_values: row[ELEMENT_COLUMNS_OFFSET..],
-                               file_rel_paths:        row[FILES_COLUMN_INDEX]&.split(MULTI_VALUE_DELIMITER),
-                               file_descriptions:     row[FILE_DESCRIPTIONS_COLUMN_INDEX]&.split(MULTI_VALUE_DELIMITER),
-                               import_object_keys:    object_keys)
+            item = update_item(item:               item,
+                               submitter:          submitter,
+                               element_names:      rows[0][REQUIRED_COLUMNS.length..],
+                               row:                row,
+                               import_object_keys: object_keys)
           end
           imported_items << {
             item_id: item.id,
@@ -223,10 +227,8 @@ class CsvImporter
 
   def create_item(submitter:,
                   primary_collection:,
-                  element_column_names:,
-                  element_column_values:,
-                  file_rel_paths:,
-                  file_descriptions:,
+                  element_names:,
+                  row:,
                   import_object_keys:)
     item = CreateItemCommand.new(submitter:          submitter,
                                  institution:        primary_collection.institution,
@@ -234,34 +236,33 @@ class CsvImporter
                                  stage:              Item::Stages::APPROVED,
                                  event_description:  "Item imported from CSV.").execute
     item.assign_handle
-    ascribe_metadata(item:          item,
-                     column_names:  element_column_names,
-                     column_values: element_column_values)
     associate_bitstreams(item:               item,
-                         file_rel_paths:     file_rel_paths,
-                         file_descriptions:  file_descriptions,
+                         row:                row,
                          import_object_keys: import_object_keys)
+    ascribe_metadata(item:          item,
+                     column_names:  element_names,
+                     column_values: row[REQUIRED_COLUMNS.length..])
+    associate_embargoes(item: item, row: row)
     item.save!
     item
   end
 
   def update_item(item:,
                   submitter:,
-                  element_column_names:,
-                  element_column_values:,
-                  file_rel_paths:,
-                  file_descriptions:,
+                  element_names:,
+                  row:,
                   import_object_keys:)
     UpdateItemCommand.new(item:        item,
                           user:        submitter,
                           description: "Updated via CSV").execute do
-      ascribe_metadata(item:          item,
-                       column_names:  element_column_names,
-                       column_values: element_column_values)
       associate_bitstreams(item:               item,
-                           file_rel_paths:     file_rel_paths,
-                           file_descriptions:  file_descriptions,
+                           row:                row,
                            import_object_keys: import_object_keys)
+      ascribe_metadata(item:          item,
+                       column_names:  element_names,
+                       column_values: row[REQUIRED_COLUMNS.length..])
+      associate_embargoes(item: item,
+                          row:  row)
       item.save!
     end
     item
@@ -289,17 +290,17 @@ class CsvImporter
 
   ##
   # @param item [Item]
-  # @param file_rel_paths [Array<String>] Relative paths within the package.
-  # @param file_descriptions [Array<String>]
+  # @param row [Array<String>]
   # @param import_object_keys [Array<String>] Keys of files to import,
   #                                           corresponding to `files`.
   #
   def associate_bitstreams(item:,
-                           file_rel_paths:,
-                           file_descriptions:,
+                           row:,
                            import_object_keys:)
-    primary         = true
-    bundle_position = 0
+    file_rel_paths    = row[REQUIRED_COLUMNS.index("files")]&.split(MULTI_VALUE_DELIMITER)
+    file_descriptions = row[REQUIRED_COLUMNS.index("file_descriptions")]&.split(MULTI_VALUE_DELIMITER)
+    primary           = true
+    bundle_position   = 0
     file_rel_paths&.each_with_index do |rel_path, file_index|
       filename = rel_path.split("/").last
       # Does the item already have a file with this name? If so, we will
@@ -331,13 +332,47 @@ class CsvImporter
     end
   end
 
+  def associate_embargoes(item:, row:)
+    types              = row[REQUIRED_COLUMNS.index("embargo_types")]&.split(MULTI_VALUE_DELIMITER)
+    expirations        = row[REQUIRED_COLUMNS.index("embargo_expirations")]&.split(MULTI_VALUE_DELIMITER)
+    exempt_user_groups = row[REQUIRED_COLUMNS.index("embargo_exempt_user_groups")]&.split(MULTI_VALUE_DELIMITER)
+    reasons            = row[REQUIRED_COLUMNS.index("embargo_reasons")]&.split(MULTI_VALUE_DELIMITER)
+    return unless types&.any? || expirations&.any? ||
+      reasons&.any?
+    if types.length != expirations.length ||
+      expirations.length != reasons.length
+      raise ArgumentError, "Missing an embargo column value. Ensure that " +
+        "there are equal numbers of values (separated by " +
+        "#{MULTI_VALUE_DELIMITER}) in all embargo-related columns."
+    end
+    item.embargoes.destroy_all
+    types.each_with_index do |type, index|
+      embargo = Embargo.new(item:      item,
+                            kind:      type,
+                            perpetual: false,
+                            reason:    reasons[index])
+      if expirations[index].present?
+        embargo.expires_at = Time.parse(expirations[index])
+      else
+        embargo.perpetual = true
+      end
+      # Add user groups
+      exempt_user_groups[index]&.split(",")&.select(&:present?)&.each do |key|
+        embargo.user_groups << UserGroup.find_by_key(key)
+      end
+      embargo.save!
+    end
+  end
+
   ##
   # @param row [Hash<String>]
   #
   def validate_header(row)
-    raise ArgumentError, "Missing ID column" if row[ID_COLUMN_INDEX] != "id"
-    raise ArgumentError, "Missing files column" if row[FILES_COLUMN_INDEX] != "files"
-    raise ArgumentError, "Missing file_descriptions column" if row[FILE_DESCRIPTIONS_COLUMN_INDEX] != "file_descriptions"
+    REQUIRED_COLUMNS.each_with_index do |column, index|
+      if row[index] != column
+        raise ArgumentError, "Missing #{column} column"
+      end
+    end
   end
 
 end

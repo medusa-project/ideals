@@ -1,2 +1,2 @@
-id,files,file_descriptions,bogus
-+,"","",Value of bogus element
+id,files,file_descriptions,embargo_types,embargo_expirations,embargo_exempt_user_groups,embargo_reasons,bogus
++,"","","","","","",Value of bogus element
