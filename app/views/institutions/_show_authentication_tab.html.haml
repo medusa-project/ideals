@@ -48,11 +48,11 @@
     .btn-group.float-end{role: "group"}
       - if policy(@institution).edit_saml_authentication?
         - if @institution.sso_federation.present?
-          -# Refresh OpenAthens Metadata button
-          = link_to(institution_refresh_openathens_metadata_path,
+          -# Refresh Federation Metadata button
+          = link_to(institution_refresh_federation_metadata_path,
                     class: "btn btn-light", method: :patch) do
             %i.fa.fa-sync
-            Refresh OpenAthens Metadata
+            Refresh Federation Metadata
         -# Edit button
         %button.btn.btn-light.edit-saml-authentication{"data-bs-target":       "#edit-saml-authentication-modal",
                                                        "data-bs-toggle":       "modal",
@@ -72,7 +72,7 @@
         - if @institution.sso_federation.present?
           = Institution::SSOFederation.label_for(@institution.sso_federation)
         - else
-          = boolean(false, style: :word, false_value: "NOT SET")
+          None
       %dt IdP Entity ID
       %dd
         - if @institution.saml_idp_entity_id.present?

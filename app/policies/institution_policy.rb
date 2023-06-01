@@ -83,7 +83,7 @@ class InstitutionPolicy < ApplicationPolicy
     effective_sysadmin(@user, @role_limit)
   end
 
-  def refresh_openathens_metadata
+  def refresh_federation_metadata
     edit_saml_authentication
   end
 

@@ -141,7 +141,7 @@ Rails.application.routes.draw do
     match "/item-download-counts", to: "institutions#item_download_counts", via: :get
     match "/preservation", to: "institutions#update_preservation", via: [:patch, :post]
     match "/properties", to: "institutions#update_properties", via: [:patch, :post]
-    match "/refresh-openathens-metadata", to: "institutions#refresh_openathens_metadata", via: :patch
+    match "/refresh-federation-metadata", to: "institutions#refresh_federation_metadata", via: :patch
     match "/settings", to: "institutions#update_settings", via: [:patch, :post]
     match "/statistics-by-range", to: "institutions#statistics_by_range", via: :get
   end

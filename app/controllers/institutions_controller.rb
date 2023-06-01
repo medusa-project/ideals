@@ -226,9 +226,9 @@ class InstitutionsController < ApplicationController
   end
 
   ##
-  # Responds to `PATCH /institutions/:id/refresh-openathens-metadata`
+  # Responds to `PATCH /institutions/:id/refresh-federation-metadata`
   #
-  def refresh_openathens_metadata
+  def refresh_federation_metadata
     RefreshFederationMetadataJob.perform_later(institution: @institution,
                                                user:        current_user)
   rescue => e

@@ -825,57 +825,57 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.new?
   end
 
-  # refresh_openathens_metadata?()
+  # refresh_federation_metadata?()
 
-  test "refresh_openathens_metadata?() returns false with a nil user" do
+  test "refresh_federation_metadata?() returns false with a nil user" do
     context = RequestContext.new(user:        nil,
                                  institution: @institution)
     policy = InstitutionPolicy.new(context, @institution)
-    assert !policy.refresh_openathens_metadata?
+    assert !policy.refresh_federation_metadata?
   end
 
-  test "refresh_openathens_metadata?() is restrictive by default" do
+  test "refresh_federation_metadata?() is restrictive by default" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: @institution)
     policy  = InstitutionPolicy.new(context, @institution)
-    assert !policy.refresh_openathens_metadata?
+    assert !policy.refresh_federation_metadata?
   end
 
-  test "refresh_openathens_metadata?() authorizes sysadmins" do
+  test "refresh_federation_metadata?() authorizes sysadmins" do
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: @institution)
     policy  = InstitutionPolicy.new(context, @institution)
-    assert policy.refresh_openathens_metadata?
+    assert policy.refresh_federation_metadata?
   end
 
-  test "refresh_openathens_metadata?() authorizes administrators of the same
+  test "refresh_federation_metadata?() authorizes administrators of the same
   institution" do
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: @institution)
     policy  = InstitutionPolicy.new(context, user.institution)
-    assert policy.refresh_openathens_metadata?
+    assert policy.refresh_federation_metadata?
   end
 
-  test "refresh_openathens_metadata?() does not authorize administrators of
+  test "refresh_federation_metadata?() does not authorize administrators of
   different institutions" do
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: @institution)
     policy  = InstitutionPolicy.new(context, @institution)
-    assert policy.refresh_openathens_metadata?
+    assert policy.refresh_federation_metadata?
   end
 
-  test "refresh_openathens_metadata?() respects role limits" do
+  test "refresh_federation_metadata?() respects role limits" do
     # sysadmin user limited to an insufficient role
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
     policy  = InstitutionPolicy.new(context, @institution)
-    assert !policy.refresh_openathens_metadata?
+    assert !policy.refresh_federation_metadata?
   end
 
   # remove_banner_image?()
