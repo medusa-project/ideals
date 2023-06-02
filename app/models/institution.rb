@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 ##
-# The root of the main entity tree. All {Unit}s reside directly in an
-# institution.
+# The root of the main entity tree, and a container for {Unit}s.
 #
 # Each institution has its own domain name at which its own website, scoped to
-# its own content, is available. It may also use its own authentication system.
+# its own content, is available. Its website has a distinct theme from other
+# websites. It may also use its own authentication system.
 #
 # # Attributes
 #
@@ -118,7 +118,6 @@
 class Institution < ApplicationRecord
 
   include Breadcrumb
-  include Openathens
 
   class SAMLEmailLocation
     NAMEID    = 0
@@ -141,17 +140,25 @@ class Institution < ApplicationRecord
   end
 
   class SSOFederation
+    ITRUST     = 0
     OPENATHENS = 1
 
     def self.label_for(value)
       case value
+      when ITRUST
+        "iTrust"
       when OPENATHENS
-        "OpenAthens Federation"
+        "OpenAthens"
       else
         "Unknown"
       end
     end
   end
+
+  ITRUST_METADATA_URL     = "https://md.itrust.illinois.edu/itrust-metadata/itrust-metadata.xml"
+  OPENATHENS_METADATA_URL = "http://fed.openathens.net/oafed/metadata"
+  SAML_METADATA_NS        = "urn:oasis:names:tc:SAML:2.0:metadata"
+  XML_DS_NS               = "http://www.w3.org/2000/09/xmldsig#"
 
   belongs_to :author_element, class_name: "RegisteredElement",
              foreign_key: :author_element_id, optional: true
@@ -259,6 +266,39 @@ class Institution < ApplicationRecord
   end
 
   ##
+  # @param federation [Integer] One of the {SSOFederation} constant values.
+  # @return [File] SSO federation metadata XML file.
+  #
+  def self.fetch_federation_metadata(federation)
+    case federation
+    when SSOFederation::ITRUST
+      uri = ITRUST_METADATA_URL
+    when SSOFederation::OPENATHENS
+      uri = OPENATHENS_METADATA_URL
+    else
+      raise "Unrecognized federation"
+    end
+    uri  = URI.parse(uri)
+    file = Tempfile.new("metadata")
+    begin
+      file.binmode
+      Net::HTTP.start(uri.host, uri.port) do |http|
+        request = Net::HTTP::Get.new(uri)
+        http.request(request) do |response|
+          response.read_body do |chunk|
+            file.write(chunk)
+          end
+          file.close
+        end
+      end
+      return file
+    rescue => e
+      file.unlink
+      raise e
+    end
+  end
+
+  ##
   # @return [Enumerable<Hash>]
   #
   def self.file_sizes
@@ -338,7 +378,7 @@ class Institution < ApplicationRecord
   end
 
   ##
-  # @return [String] Presigned S3 URL.
+  # @return [String]
   #
   def banner_image_url
     return nil if self.banner_image_filename.blank?
@@ -454,7 +494,7 @@ class Institution < ApplicationRecord
   ##
   # @param size [Integer] One of the sizes defined in
   #                       {InstitutionsHelper#FAVICONS}.
-  # @return [String] Presigned S3 URL.
+  # @return [String]
   #
   def favicon_url(size:)
     return nil unless self.has_favicon
@@ -465,7 +505,7 @@ class Institution < ApplicationRecord
   end
 
   ##
-  # @return [String] Presigned S3 URL.
+  # @return [String]
   #
   def footer_image_url
     return nil if self.footer_image_filename.blank?
@@ -475,7 +515,7 @@ class Institution < ApplicationRecord
   end
 
   ##
-  # @return [String] Presigned S3 URL.
+  # @return [String]
   #
   def header_image_url
     return nil if self.header_image_filename.blank?
@@ -629,6 +669,31 @@ class Institution < ApplicationRecord
 
   def to_param
     key
+  end
+
+  ##
+  # @param metadata_xml_file [File]
+  #
+  def update_from_federation_metadata(metadata_xml_file)
+    if self.saml_idp_entity_id.blank?
+      raise "saml_idp_entity_id is not set"
+    end
+    File.open(metadata_xml_file) do |file|
+      doc     = Nokogiri::XML(file)
+      results = doc.xpath("/md:EntitiesDescriptor/md:EntityDescriptor[@entityID = '#{self.saml_idp_entity_id}']",
+                          md: SAML_METADATA_NS)
+      if results.any?
+        ed = results.first
+        self.saml_idp_sso_service_url = ed.xpath("./md:IDPSSODescriptor/md:SingleSignOnService[@Binding = 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect']/@Location",
+                                                 md: SAML_METADATA_NS).first&.text
+        self.saml_idp_cert = "-----BEGIN CERTIFICATE-----\n" +
+          ed.xpath("//ds:X509Certificate", ds: XML_DS_NS).first.text +
+          "\n-----END CERTIFICATE-----"
+        self.save!
+      else
+        raise "No matching entityID found in federation metadata"
+      end
+    end
   end
 
   ##

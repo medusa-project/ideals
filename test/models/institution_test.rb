@@ -26,10 +26,24 @@ class InstitutionTest < ActiveSupport::TestCase
     assert_equal "favicon-128x128.png", Institution.favicon_filename(size: 128)
   end
 
-  # fetch_openathens_metadata() (Openathens concern)
+  # fetch_federation_metadata()
 
-  test "fetch_openathens_metadata() downloads an XML file" do
-    file = Institution.fetch_openathens_metadata
+  test "fetch_federation_metadata() raises an error when the federation is not
+  recognized" do
+    assert_raises do
+      Institution.fetch_federation_metadata(52)
+    end
+  end
+
+  test "fetch_federation_metadata() downloads an iTrust XML file" do
+    file = Institution.fetch_federation_metadata(Institution::SSOFederation::ITRUST)
+    assert file.size > 0
+  ensure
+    file&.unlink
+  end
+
+  test "fetch_federation_metadata() downloads an OpenAthens XML file" do
+    file = Institution.fetch_federation_metadata(Institution::SSOFederation::OPENATHENS)
     assert file.size > 0
   ensure
     file&.unlink
@@ -758,34 +772,35 @@ class InstitutionTest < ActiveSupport::TestCase
     assert_equal %w(dogs cats foxes), @instance.shibboleth_extra_attributes
   end
 
-  # update_from_openathens() (OpenAthens concern)
+  # update_from_federation_metadata()
 
-  test "update_from_openathens() raises an error if the institution's entity ID
-  is not set" do
+  test "update_from_federation_metadata() raises an error if the institution's
+  entityID is not set" do
     @instance.saml_idp_entity_id = nil
     xml_file = file_fixture("oaf_metadata.xml")
 
     assert_raises do
-      @instance.update_from_openathens(xml_file)
+      @instance.update_from_federation_metadata(xml_file)
     end
   end
 
-  test "update_from_openathens() raises an error if there is no matching
-  entityID in the XML file" do
+  test "update_from_federation_metadata() raises an error if there is no
+  matching entityID in the XML file" do
     @instance.saml_idp_entity_id = "bogus"
     xml_file = file_fixture("oaf_metadata.xml")
 
     assert_raises do
-      @instance.update_from_openathens(xml_file)
+      @instance.update_from_federation_metadata(xml_file)
     end
   end
 
-  test "update_from_openathens() updates properties from OAF metadata" do
+  test "update_from_federation_metadata() updates properties from OAF
+  metadata" do
     @instance.saml_idp_sso_service_url = nil
     @instance.saml_idp_cert            = nil
     xml_file = file_fixture("oaf_metadata.xml")
 
-    @instance.update_from_openathens(xml_file)
+    @instance.update_from_federation_metadata(xml_file)
     assert_equal "https://login.openathens.net/saml/2/sso/southwest.edu",
                  @instance.saml_idp_sso_service_url
     assert @instance.saml_idp_cert.starts_with?("-----BEGIN CERTIFICATE-----\n")

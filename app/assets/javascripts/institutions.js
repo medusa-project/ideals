@@ -82,17 +82,14 @@ const InstitutionView = function() {
                     const emailLocationMenu  = modalBody.find("select[name='institution[saml_email_location]']");
 
                     const onProviderRadioChanged = function(checkedRadio) {
-                        switch(checkedRadio.val()) {
-                            case "0": // generic SAML
-                                $("[name='institution[saml_idp_cert]']").parent().show();
-                                $("[name='institution[saml_idp_sso_service_url]']").parent().show();
-                                $("[name='institution[saml_idp_entity_id]']").next("p").hide();
-                                break;
-                            case "1": // OAF
-                                $("[name='institution[saml_idp_cert]']").parent().hide();
-                                $("[name='institution[saml_idp_sso_service_url]']").parent().hide();
-                                $("[name='institution[saml_idp_entity_id]']").next("p").show();
-                                break;
+                        if (parseInt(checkedRadio.val()) >= 0) {
+                            $("[name='institution[saml_idp_cert]']").parent().hide();
+                            $("[name='institution[saml_idp_sso_service_url]']").parent().hide();
+                            $("[name='institution[saml_idp_entity_id]']").next("p").show();
+                        } else {
+                            $("[name='institution[saml_idp_cert]']").parent().show();
+                            $("[name='institution[saml_idp_sso_service_url]']").parent().show();
+                            $("[name='institution[saml_idp_entity_id]']").next("p").hide();
                         }
                     };
                     const onEmailLocationChanged = function(select) {

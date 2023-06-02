@@ -14,10 +14,10 @@ class RefreshFederationMetadataJobTest < ActiveSupport::TestCase
     assert_equal user, task.user
     assert task.indeterminate
     assert_not_nil task.started_at
-    assert task.status_text.start_with?("Updating OpenAthens")
+    assert task.status_text.start_with?("Updating federation")
   end
 
-  test "perform() refreshes an institution's OpenAthens metadata" do
+  test "perform() refreshes an institution's federation metadata" do
     institution = institutions(:southwest)
     institution.update!(saml_idp_cert: nil)
 

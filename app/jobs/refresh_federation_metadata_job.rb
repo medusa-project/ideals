@@ -25,12 +25,12 @@ class RefreshFederationMetadataJob < ApplicationJob
     begin
       if Rails.env.development? || Rails.env.test?
         xml_file = File.new(File.join(Rails.root, "test", "fixtures", "files",
-                                      "federation_metadata.xml"))
+                                      "oaf_metadata.xml"))
       else
-        xml_file     = Institution.fetch_openathens_metadata
+        xml_file     = Institution.fetch_federation_metadata(institution.sso_federation)
         is_temp_file = true
       end
-      institution.update_from_openathens(xml_file)
+      institution.update_from_federation_metadata(xml_file)
     rescue => e
       task.fail(detail:    e.message,
                 backtrace: e.backtrace)

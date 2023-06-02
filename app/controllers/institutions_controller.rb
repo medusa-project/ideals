@@ -235,9 +235,9 @@ class InstitutionsController < ApplicationController
     flash['error'] = "#{e}"
   else
     toast!(title: "Refreshing metadata",
-           message: "This institution's OpenAthens Federation metadata is "\
-                    "being refreshed in the background. Please wait a moment "\
-                    "and then reload the page.")
+           message: "This institution's federation metadata is being "\
+                    "refreshed in the background. Please wait a moment and "\
+                    "then reload the page.")
   ensure
     redirect_back fallback_location: @institution
   end

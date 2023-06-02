@@ -13,17 +13,15 @@ namespace :institutions do
 
   desc "Update the auth metadata of all institutions"
   task :update_auth_metadata => :environment do
-    # OpenAthens Federation
-    xml_file = Institution.fetch_openathens_metadata
-    begin
-      Institution.where(sso_federation: Institution::SSOFederation::OPENATHENS).each do |institution|
-        institution.update_from_openathens(xml_file)
-      end
-    ensure
-      xml_file.unlink
+    md_files = {}
+    Institution.distinct(:sso_federation).pluck(:sso_federation).select(&:present?).each do |federation|
+      md_files[federation] = Institution.fetch_federation_metadata(federation)
     end
 
-    # Other federations go here
+    Institution.where.not(sso_federation: nil).each do |institution|
+      institution.update_from_federation_metadata(md_files[institution.sso_federation])
+    end
+    md_files.each(&:unlink)
   end
 
 end

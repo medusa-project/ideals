@@ -15,13 +15,17 @@
 
   .mb-3
     .form-check
-      = f.radio_button(:sso_federation, Institution::SSOFederation::OPENATHENS, id: "oaf", class: "form-check-input")
-      %label.form-check-label{for: "oaf"}
-        = Institution::SSOFederation.label_for(Institution::SSOFederation::OPENATHENS)
-    .form-check
       = f.radio_button(:sso_federation, nil, id: "saml", class: "form-check-input")
       %label.form-check-label{for: "saml"}
         None
+    .form-check
+      = f.radio_button(:sso_federation, Institution::SSOFederation::ITRUST, id: "itrust", class: "form-check-input")
+      %label.form-check-label{for: "itrust"}
+        = Institution::SSOFederation.label_for(Institution::SSOFederation::ITRUST)
+    .form-check
+      = f.radio_button(:sso_federation, Institution::SSOFederation::OPENATHENS, id: "oaf", class: "form-check-input")
+      %label.form-check-label{for: "oaf"}
+        = Institution::SSOFederation.label_for(Institution::SSOFederation::OPENATHENS)
 
   %hr
 
@@ -30,8 +34,8 @@
     = f.text_field :saml_idp_entity_id, class: "form-control"
     %p.form-text
       = icon_for(:info)
-      After changing this value, you should refresh the OpenAthens
-      metadata from the page beneath this panel.
+      After changing this value, you should refresh the federation metadata
+      from the page beneath this panel.
   .mb-3
     = f.label :saml_idp_sso_service_url, "IdP SSO Service URL"
     = f.text_field :saml_idp_sso_service_url, class: "form-control"
