@@ -12,8 +12,17 @@
     = f.text_field :name, class: 'form-control'
     %p.form-text
       = icon_for(:info)
-      The name may describe what the user group is for or who belongs to it.
-      It must be unique among the user groups in your institution.
+      May describe what the user group is for or who belongs to it.
+      Must be unique among the user groups in your institution.
+
+  - if f.object.new_record?
+    .mb-3
+      = f.label :key, class: "required"
+      = f.text_field :key, class: 'form-control'
+      %p.form-text
+        = icon_for(:info)
+        A short, unique alphanumeric string to identify the group. Cannot be
+        changed later.
 
   .clearfix
     .float-end

@@ -29,9 +29,11 @@
 #                         `nil`, indicating that the group is global, available
 #                         to all institutions.
 # * `key`                 Short string identifier that is unique within an
-#                         institutional scope. This is generally used only
-#                         within the application to get a handle on certain
-#                         {#SYSTEM_REQUIRED_GROUPS system-required groups}.
+#                         institutional scope. This is used within the
+#                         application to get a handle on certain
+#                         {#SYSTEM_REQUIRED_GROUPS system-required groups},
+#                         and also to construct {Embargo item embargoes} within
+#                         import files.
 # * `name`                Arbitrary human-readable name that is unique within
 #                         an institutional scope.
 # * `updated_at`          Managed by ActiveRecord.
