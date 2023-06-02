@@ -293,6 +293,9 @@ class User < ApplicationRecord
     # Check for institution admin.
     return true if institution_admin?(collection.institution)
     # Check for unit admin.
+    # There may be cases where primary_unit is set but units aren't (such as
+    # new collections that haven't been persisted yet).
+    return true if effective_unit_admin?(collection.primary_unit)
     collection.all_units.each do |unit|
       return true if effective_unit_admin?(unit)
     end
