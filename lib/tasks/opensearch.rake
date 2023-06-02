@@ -56,11 +56,6 @@ namespace :opensearch do
 
   namespace :tasks do
 
-    desc 'Delete a task'
-    task :delete, [:id] => :environment do |task, args|
-      OpenSearchClient.instance.delete_task(args[:id])
-    end
-
     desc 'Show the status of a task'
     task :show, [:id] => :environment do |task, args|
       puts JSON.pretty_generate(OpenSearchClient.instance.get_task(args[:id]))
