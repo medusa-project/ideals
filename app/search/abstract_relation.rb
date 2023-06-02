@@ -561,12 +561,13 @@ class AbstractRelation
                 j.child! do
                   if query[:term].kind_of?(String)
                     # https://www.elastic.co/guide/en/elasticsearch/reference/7.17/query-dsl-match-query.html
-                    j.match do
-                      # This query doesn't support field weights
-                      j.set! query[:field] do
-                        j.query sanitize(query[:term])
-                        j.operator "AND"
-                      end
+                    j.simple_query_string do
+                      j.query              sanitize(query[:term])
+                      j.default_operator   "AND"
+                      j.flags              "PHRASE"
+                      j.lenient            true
+                      j.quote_field_suffix RegisteredElement::EXACT_FIELD_SUFFIX
+                      j.fields             [query[:field]]
                     end
                   else
                     j.range do
@@ -611,11 +612,12 @@ class AbstractRelation
               if @query[:term].kind_of?(String)
                 # https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-simple-query-string-query.html
                 j.simple_query_string do
-                  j.query            sanitize(@query[:term])
-                  j.default_operator "AND"
-                  j.flags            "NONE"
-                  j.lenient          true
-                  j.fields           @query[:fields]
+                  j.query              sanitize(@query[:term])
+                  j.default_operator   "AND"
+                  j.flags              "PHRASE"
+                  j.lenient            true
+                  j.quote_field_suffix RegisteredElement::EXACT_FIELD_SUFFIX
+                  j.fields             @query[:fields]
                 end
               elsif @query[:term].respond_to?(:keys) && (@query[:term][:year] || @query[:term][:from_year])
                 date_range_from_query(j, @query)

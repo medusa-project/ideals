@@ -44,6 +44,7 @@ class RegisteredElement < ApplicationRecord
   end
 
   DATE_FIELD_PREFIX     = "d"
+  EXACT_FIELD_SUFFIX    = ".exact"
   KEYWORD_FIELD_SUFFIX  = ".keyword"
   SORTABLE_FIELD_SUFFIX = ".sort"
   TEXT_FIELD_PREFIX     = "t"
