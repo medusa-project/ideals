@@ -156,7 +156,8 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(user)
 
     File.open(file_fixture("escher_lego.png"), "r") do |file|
-      @import.upload_file(relative_path: "item1/image.jpg", io: file)
+      @import.upload_io(io:            file,
+                        relative_path: "item1/image.jpg")
     end
     assert_equal 1, @import.object_keys.length
 

@@ -124,8 +124,8 @@ class ImportsController < ApplicationController
       render plain:  "X-Relative-Path header not provided",
              status: :bad_request and return
     end
-    @import.upload_file(relative_path: relative_path,
-                        io:            request.env['rack.input'])
+    @import.upload_io(io:            request.body,
+                      relative_path: relative_path)
     head :no_content
   end
 

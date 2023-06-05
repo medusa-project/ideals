@@ -117,29 +117,16 @@ class Import < ApplicationRecord
   end
 
   ##
+  # @param io [IO]
   # @param relative_path [String] Path of a file within an import package
   #                               relative to the root of the package.
-  # @param io [IO]
   #
-  def upload_file(relative_path:, io:)
-    Tempfile.open("import") do |tempfile|
-      IO.copy_stream(io, tempfile)
-      tempfile.close
-      store = PersistentStore.instance
-      key   = object_key(relative_path)
-      # When used to simply upload the IO argument, put_object() fails randomly
-      # and silently as of AWS SDK 1.111.0/Rails 7. Here is a workaround
-      # whereby we retry the upload as many times as necessary, pausing in
-      # between attempts. Don't ask me why the pausing works. (Is this only a
-      # problem with Minio?)
-      20.times do
-        store.put_object(key:             key,
-                         institution_key: self.institution.key,
-                         path:            tempfile.path)
-        sleep 1
-        break if store.object_exists?(key: key)
-      end
-    end
+  def upload_io(io:, relative_path:)
+    store = PersistentStore.instance
+    key   = object_key(relative_path)
+    store.put_object(key:             key,
+                     institution_key: self.institution.key,
+                     io:              io)
   end
 
 

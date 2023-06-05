@@ -35,8 +35,8 @@ class ImportTest < ActiveSupport::TestCase
   test "delete_all_files() deletes all corresponding files from the application
   S3 bucket" do
     File.open(file_fixture("escher_lego.png"), "r") do |file|
-      @instance.upload_file(relative_path: "item1/escher_lego.png",
-                            io:            file)
+      @instance.upload_io(io:            file,
+                          relative_path: "item1/escher_lego.png")
     end
     assert_equal 1, @instance.object_keys.length
 
@@ -50,8 +50,8 @@ class ImportTest < ActiveSupport::TestCase
   bucket" do
     fixture = file_fixture("escher_lego.png")
     File.open(fixture, "r") do |file|
-      @instance.upload_file(relative_path: "item1/escher_lego1.jpg",
-                            io:            file)
+      @instance.upload_io(io:            file,
+                          relative_path: "item1/escher_lego1.jpg")
     end
     assert_equal 1, @instance.object_keys.length
 
@@ -64,16 +64,16 @@ class ImportTest < ActiveSupport::TestCase
   test "item_key_prefixes() returns all item key prefixes" do
     fixture = file_fixture("escher_lego.png")
     File.open(fixture, "r") do |file|
-      @instance.upload_file(relative_path: "item1/escher_lego1.jpg",
-                            io:            file)
+      @instance.upload_io(io:            file,
+                          relative_path: "item1/escher_lego1.jpg")
     end
     File.open(fixture, "r") do |file|
-      @instance.upload_file(relative_path: "item1/escher_lego2.jpg",
-                            io:            file)
+      @instance.upload_io(io:            file,
+                          relative_path: "item1/escher_lego2.jpg")
     end
     File.open(fixture, "r") do |file|
-      @instance.upload_file(relative_path: "item2/escher_lego1.jpg",
-                            io:            file)
+      @instance.upload_io(io:            file,
+                          relative_path: "item2/escher_lego1.jpg")
     end
     prefixes = @instance.item_key_prefixes
     assert_equal 2, prefixes.count
@@ -95,12 +95,12 @@ class ImportTest < ActiveSupport::TestCase
   test "object_keys() returns all object keys" do
     fixture = file_fixture("escher_lego.png")
     File.open(fixture, "r") do |file|
-      @instance.upload_file(relative_path: "item1/escher_lego1.jpg",
-                            io:            file)
+      @instance.upload_io(io:            file,
+                          relative_path: "item1/escher_lego1.jpg")
     end
     File.open(fixture, "r") do |file|
-      @instance.upload_file(relative_path: "item1/escher_lego2.jpg",
-                            io:            file)
+      @instance.upload_io(io:            file,
+                          relative_path: "item1/escher_lego2.jpg")
     end
     keys = @instance.object_keys
     assert_equal 2, keys.count
@@ -135,8 +135,8 @@ class ImportTest < ActiveSupport::TestCase
 
   test "save() deletes all uploaded files when the task is succeeded" do
     File.open(file_fixture("escher_lego.png"), "r") do |file|
-      @instance.upload_file(relative_path: "item1/escher_lego.png",
-                            io:            file)
+      @instance.upload_io(io:            file,
+                          relative_path: "item1/escher_lego.png")
     end
     assert_equal 1, @instance.object_keys.length
     @instance.task.succeed
@@ -144,12 +144,12 @@ class ImportTest < ActiveSupport::TestCase
     assert_equal 0, @instance.object_keys.length
   end
 
-  # upload_file()
+  # upload_io()
 
-  test "upload_file() uploads a file" do
+  test "upload_io() uploads an IO" do
     File.open(file_fixture("escher_lego.png"), "r") do |file|
-      @instance.upload_file(relative_path: "item1/escher_lego.png",
-                            io:            file)
+      @instance.upload_io(io:            file,
+                          relative_path: "item1/escher_lego.png")
     end
     expected_key = @instance.object_key("item1/escher_lego.png")
     assert PersistentStore.instance.object_exists?(key: expected_key)
