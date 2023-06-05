@@ -9,8 +9,8 @@ class ImportJobTest < ActiveSupport::TestCase
   test "perform() associates a correct Task to the import" do
     import = imports(:uiuc_csv_file_new)
     import.update!(task: nil)
-    import.upload_file(relative_path: "new.csv",
-                       io:            file_fixture("csv/new.csv"))
+    import.upload_io(io:            File.new(file_fixture("csv/new.csv")),
+                     relative_path: "new.csv")
     user = users(:southwest)
     ImportJob.new.perform(import: import, user: user)
     import.reload
@@ -27,8 +27,8 @@ class ImportJobTest < ActiveSupport::TestCase
   test "perform() runs the CSV file importer if the Import has one key ending
   in .csv" do
     import = imports(:uiuc_csv_file_new)
-    import.upload_file(relative_path: "new.csv",
-                       io:            file_fixture("csv/new.csv"))
+    import.upload_io(io:            File.new(file_fixture("csv/new.csv")),
+                     relative_path: "new.csv")
     format = ImportJob.new.perform(import: import)
     assert_equal Import::Format::CSV_FILE, format
   end
@@ -38,8 +38,8 @@ class ImportJobTest < ActiveSupport::TestCase
     package_root = file_fixture_path + "/packages/csv/valid_items"
     Dir.glob(File.join(package_root, "**", "*")).each do |file|
       next if File.directory?(file)
-      import.upload_file(relative_path: file.gsub(package_root, ""),
-                         io:            File.new(file))
+      import.upload_io(io:            File.new(file),
+                       relative_path: file.gsub(package_root, ""))
     end
     format = ImportJob.new.perform(import: import)
     assert_equal Import::Format::CSV_PACKAGE, format
@@ -50,8 +50,8 @@ class ImportJobTest < ActiveSupport::TestCase
     package_root = file_fixture_path + "/packages/saf/valid_item"
     Dir.glob(File.join(package_root, "**", "*")).each do |file|
       next if File.directory?(file)
-      import.upload_file(relative_path: file.gsub(package_root, ""),
-                         io:            File.new(file))
+      import.upload_io(io:            File.new(file),
+                       relative_path: file.gsub(package_root, ""))
     end
     format = ImportJob.new.perform(import: import)
     assert_equal Import::Format::SAF, format
