@@ -13,4 +13,12 @@ namespace :units do
     unit.move_to(institution: institution, user: user)
   end
 
+  desc "Reindex all units"
+  task :reindex, [:num_threads] => :environment do |task, args|
+    # N.B.: orphaned documents are not deleted.
+    num_threads = args[:num_threads].to_i
+    num_threads = 1 if num_threads == 0
+    Unit.reindex_all(num_threads: num_threads)
+  end
+
 end

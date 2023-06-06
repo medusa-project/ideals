@@ -112,28 +112,4 @@ namespace :opensearch do
     Item.reindex_all(num_threads: num_threads)
   end
 
-  desc 'Reindex collections'
-  task :reindex_collections, [:num_threads] => :environment do |task, args|
-    # N.B.: orphaned documents are not deleted.
-    num_threads = args[:num_threads].to_i
-    num_threads = 1 if num_threads == 0
-    Collection.reindex_all(num_threads: num_threads)
-  end
-
-  desc 'Reindex items'
-  task :reindex_items, [:num_threads] => :environment do |task, args|
-    # N.B.: orphaned documents are not deleted.
-    num_threads = args[:num_threads].to_i
-    num_threads = 1 if num_threads == 0
-    Item.reindex_all(num_threads: num_threads)
-  end
-
-  desc 'Reindex units'
-  task :reindex_units, [:num_threads] => :environment do |task, args|
-    # N.B.: orphaned documents are not deleted.
-    num_threads = args[:num_threads].to_i
-    num_threads = 1 if num_threads == 0
-    Unit.reindex_all(num_threads: num_threads)
-  end
-
 end
