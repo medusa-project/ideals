@@ -140,7 +140,6 @@ module Indexed
           models = all.order(:id).limit(batch_size).offset(offset)
           models.each do |model|
             unless client.document_exists?(index_name, model.index_id)
-              puts "Reindexing #{model.index_id}"
               model.reindex
               num_indexed += 1
             end
@@ -148,7 +147,6 @@ module Indexed
           offset += batch_size
         end
       end
-      puts "#{num_indexed} models indexed"
     end
 
     ##
