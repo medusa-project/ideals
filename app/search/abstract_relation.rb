@@ -563,7 +563,7 @@ class AbstractRelation
                     # https://www.elastic.co/guide/en/elasticsearch/reference/7.17/query-dsl-match-query.html
                     j.simple_query_string do
                       j.query              sanitize(query[:term])
-                      j.default_operator   "AND"
+                      j.default_operator   "OR"
                       j.flags              "PHRASE"
                       j.lenient            true
                       j.quote_field_suffix RegisteredElement::EXACT_FIELD_SUFFIX
