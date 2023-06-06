@@ -834,19 +834,19 @@ class ItemTest < ActiveSupport::TestCase
                                              uri:    nil).count
   end
 
-  test "save() sends an email when the stage changes from submitting to
+  test "save() sends two emails when the stage changes from submitting to
   submitted and the primary collection is reviewing submissions" do
     @instance = items(:uiuc_submitting)
-    assert_emails 1 do
+    assert_emails 2 do
       @instance.update!(stage: Item::Stages::SUBMITTED)
     end
   end
 
-  test "save() does not send an email when the stage changes from submitting to
+  test "save() sends one email when the stage changes from submitting to
   submitted and the primary collection is not reviewing submissions" do
     @instance = items(:uiuc_submitting)
     @instance.primary_collection.update!(submissions_reviewed: false)
-    assert_emails 0 do
+    assert_emails 1 do
       @instance.update!(stage: Item::Stages::SUBMITTED)
     end
   end

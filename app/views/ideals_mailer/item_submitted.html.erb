@@ -1,0 +1,15 @@
+<p>Thank you for submitting your item, <b><%= @item_title %></b>, to
+  <%= @service_name %>.</p>
+
+<% if @submissions_reviewed %>
+  <p>Your submission will now go through its collection's review process.
+  You will receive an e-mail notification as soon as your submission has
+  joined the collection, or if there is a problem with your submission. You
+  may also check on the status of your submission by visiting your submissions
+  page.</p>
+<% else %>
+  <p>It is now permanently available at the following URL:
+  <a href="<%= @item_handle_url %>"><%= @item_handle_url %></a></p>
+<% end %>
+
+<p>If you have any questions, please reply to this email.</p>

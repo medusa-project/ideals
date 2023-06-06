@@ -242,6 +242,28 @@ class IdealsMailerTest < ActionMailer::TestCase
                  email.html_part.body.raw_source
   end
 
+  # item_submitted()
+
+  test "item_submitted() sends the expected email" do
+    item  = items(:uiuc_submitted)
+    email = IdealsMailer.item_submitted(item).deliver_now
+    assert !ActionMailer::Base.deliveries.empty?
+
+    assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
+    assert_equal [item.submitter.email], email.to
+    assert_equal [item.institution.feedback_email], email.reply_to
+    assert_equal "Your item has been submitted", email.subject
+
+    assert_equal render_template("item_submitted.txt",
+                                 item_title:   item.title,
+                                 service_name: item.institution.service_name),
+                 email.text_part.body.raw_source
+    assert_equal render_template("item_submitted.html",
+                                 item_title:   item.title,
+                                 service_name: item.institution.service_name),
+                 email.html_part.body.raw_source
+  end
+
   # password_reset()
 
   test "password_reset() sends the expected email" do

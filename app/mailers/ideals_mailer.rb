@@ -201,6 +201,20 @@ class IdealsMailer < ApplicationMailer
   end
 
   ##
+  # Sends an email to an item's submitter after it has been submitted.
+  #
+  # @param item [Item]
+  #
+  def item_submitted(item)
+    @item_title           = item.title
+    @submissions_reviewed = item.primary_collection.submissions_reviewed
+    @service_name         = item.institution.service_name
+    mail(to:       [item.submitter.email],
+         reply_to: [item.institution.feedback_email],
+         subject:  "Your item has been submitted")
+  end
+
+  ##
   # @param identity [Identity]
   #
   def password_reset(identity)

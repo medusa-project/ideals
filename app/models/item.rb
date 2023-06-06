@@ -819,9 +819,11 @@ class Item < ApplicationRecord
     # This ivar helps prevent duplicate sends.
     if !@email_sent_after_submission &&
         stage_was == Stages::SUBMITTING &&
-        stage == Stages::SUBMITTED &&
-        effective_primary_collection&.submissions_reviewed
-      IdealsMailer.item_requires_review(self).deliver_now
+        stage == Stages::SUBMITTED
+      IdealsMailer.item_submitted(self).deliver_now
+      if effective_primary_collection&.submissions_reviewed
+        IdealsMailer.item_requires_review(self).deliver_now
+      end
       @sent_email_after_submission = true
     end
   end
