@@ -84,6 +84,23 @@ class OpenSearchClientTest < ActiveSupport::TestCase
     # TODO: write this
   end
 
+  # document_exists?()
+
+  test "document_exists?() returns false for a missing document" do
+    begin
+      @instance.create_index(@test_index)
+      assert !@instance.document_exists?(@test_index, "bogus")
+    ensure
+      @instance.delete_index(@test_index) rescue nil
+    end
+  end
+
+  test "document_exists?() returns true for an existing document" do
+    @instance.create_index(@test_index)
+    @instance.index_document(@test_index, "id1", {})
+    assert @instance.document_exists?(@test_index, "id1")
+  end
+
   # get_document()
 
   test "get_document() returns nil for a missing document" do

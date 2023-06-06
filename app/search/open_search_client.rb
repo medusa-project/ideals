@@ -153,6 +153,19 @@ class OpenSearchClient
   # @param id [String]
   # @return [Hash, nil]
   #
+  def document_exists?(index_name, id)
+    url = sprintf("%s/%s/_doc/%s",
+                  Configuration.instance.opensearch[:endpoint],
+                  index_name, id)
+    response = @http_client.head(url)
+    response.status == 200
+  end
+
+  ##
+  # @param index_name [String]
+  # @param id [String]
+  # @return [Hash, nil]
+  #
   def get_document(index_name, id)
     url = sprintf("%s/%s/_doc/%s",
                   Configuration.instance.opensearch[:endpoint],
