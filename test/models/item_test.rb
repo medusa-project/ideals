@@ -35,6 +35,14 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal count - 1, Item.search.institution(institution).count
   end
 
+  # index_unindexed() (Indexed concern)
+
+  test "index_unindexed() indexes all unindexed models" do
+    Item.index_unindexed
+    refresh_opensearch
+    assert Item.search.count > 0
+  end
+
   # non_embargoed()
 
   test "non_embargoed() returns all non-all-access-embargoed items" do

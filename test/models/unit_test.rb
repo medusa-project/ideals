@@ -23,6 +23,14 @@ class UnitTest < ActiveSupport::TestCase
     assert_equal count - 1, Unit.search.institution(institution).count
   end
 
+  # index_unindexed() (Indexed concern)
+
+  test "index_unindexed() indexes all unindexed models" do
+    Unit.index_unindexed
+    refresh_opensearch
+    assert Unit.search.count > 0
+  end
+
   # search() (Indexed concern)
 
   test "search() returns a UnitRelation" do

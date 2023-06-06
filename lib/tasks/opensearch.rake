@@ -63,6 +63,13 @@ namespace :opensearch do
 
   end
 
+  desc "Index all unindexed database entities"
+  task :index_unindexed => :environment do
+    Unit.index_unindexed
+    Collection.index_unindexed
+    Item.index_unindexed
+  end
+
   desc 'Purge all documents from the index'
   task :purge => :environment do
     OpenSearchClient.instance.purge

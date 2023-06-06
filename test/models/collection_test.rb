@@ -26,6 +26,14 @@ class CollectionTest < ActiveSupport::TestCase
     assert_equal count - 1, Collection.search.institution(institution).count
   end
 
+  # index_unindexed() (Indexed concern)
+
+  test "index_unindexed() indexes all unindexed models" do
+    Collection.index_unindexed
+    refresh_opensearch
+    assert Collection.search.count > 0
+  end
+
   # search() (Indexed concern)
 
   test "search() returns a CollectionRelation" do

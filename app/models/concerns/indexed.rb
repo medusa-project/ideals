@@ -71,17 +71,17 @@ module Indexed
     #
     def delete_document(id)
       query = {
-          query: {
-              bool: {
-                  filter: [
-                      {
-                          term: {
-                              OpenSearchIndex::StandardFields::ID => id
-                          }
-                      }
-                  ]
+        query: {
+          bool: {
+            filter: [
+              {
+                term: {
+                  OpenSearchIndex::StandardFields::ID => id
+                }
               }
+            ]
           }
+        }
       }
       OpenSearchClient.instance.delete_by_query(JSON.generate(query))
     end
@@ -111,6 +111,38 @@ module Indexed
         progress.report(index, "Deleting orphaned documents")
       end
       puts "\nDeleted #{num_deleted} documents"
+    end
+
+    ##
+    # Indexes all database entities that aren't already indexed. This achieves
+    # the same result as {#reindex_all}, but much more efficiently, when it is
+    # known that the schema hasn't changed since the last time {#reindex_all}
+    # was run.
+    #
+    def index_unindexed
+      batch_size  = 1000
+      offset      = 0
+      count       = all.count
+      client      = OpenSearchClient.instance
+      index_name  = Configuration.instance.opensearch[:index]
+      progress    = Progress.new(count)
+      num_indexed = 0
+
+      uncached do
+        while offset + batch_size < count + batch_size do
+          progress.report(offset, "Indexing unindexed #{to_s} documents")
+          models = all.order(:id).limit(batch_size).offset(offset)
+          models.each do |model|
+            unless client.document_exists?(index_name, model.index_id)
+              puts "Reindexing #{model.index_id}"
+              model.reindex
+              num_indexed += 1
+            end
+          end
+          offset += batch_size
+        end
+      end
+      puts "#{num_indexed} models indexed"
     end
 
     ##
@@ -184,7 +216,7 @@ module Indexed
     def indexed_document
       index ||= Configuration.instance.opensearch[:index]
       OpenSearchClient.instance.get_document(index,
-                                                self.index_id)
+                                             self.index_id)
     end
 
     ##
@@ -194,8 +226,8 @@ module Indexed
     def reindex(index = nil)
       index ||= Configuration.instance.opensearch[:index]
       OpenSearchClient.instance.index_document(index,
-                                                  self.index_id,
-                                                  self.as_indexed_json)
+                                               self.index_id,
+                                               self.as_indexed_json)
     end
   end
 
