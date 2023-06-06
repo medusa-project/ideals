@@ -10,8 +10,12 @@
 # 1. Are faceted
 # 2. Are natural- or relevance-sorted
 # 3. Are field-weighted
-# 4. Would require a complicated/impossible SQL query
-# 5. Need better performance than the database can provide
+# 4. Require fine-grained control over query processing
+# 5. Would require a complicated/impossible SQL query
+# 6. Need better performance than the database can provide
+#
+# **All** models of a particular class get indexed, including buried ones,
+# embargoed ones, etc.
 #
 # # Querying
 #
@@ -25,7 +29,8 @@
 # {as_indexed_json}) upon transaction commit. They are **not** sent upon save
 # or destroy. Whenever creating, updating, or deleting outside of a
 # transaction, you must {reindex reindex} or {delete_document delete} the
-# document manually.
+# document manually. (If you make a mistake here, you can use {index_unindexed}
+# to rectify it.)
 #
 # This behavior has implications for batch processing. When updating large
 # numbers of indexed models, it is common to use a technique like
@@ -58,7 +63,8 @@
 # require clients to understand ES concepts to construct their queries, which
 # are hardly trivial. Also, this application is hosted in AWS, which has
 # recently forked ES into its own OpenSearch product, which is not guaranteed
-# to remain compatible with Elastic's gems.
+# to remain compatible with Elastic's gems. Although AWS publishes its own SDK
+# for OpenSearch, all of the same concerns apply.
 #
 module Indexed
   extend ActiveSupport::Concern
