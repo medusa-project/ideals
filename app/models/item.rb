@@ -821,7 +821,7 @@ class Item < ApplicationRecord
         stage_was == Stages::SUBMITTING &&
         stage == Stages::SUBMITTED &&
         effective_primary_collection&.submissions_reviewed
-      IdealsMailer.item_submitted(self).deliver_now
+      IdealsMailer.item_requires_review(self).deliver_now
       @sent_email_after_submission = true
     end
   end

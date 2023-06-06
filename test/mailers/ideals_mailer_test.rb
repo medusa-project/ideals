@@ -221,22 +221,22 @@ class IdealsMailerTest < ActionMailer::TestCase
                  email.html_part.body.raw_source
   end
 
-  # item_submitted()
+  # item_requires_review()
 
-  test "item_submitted() sends the expected email" do
+  test "item_requires_review() sends the expected email" do
     item  = items(:uiuc_submitted)
-    email = IdealsMailer.item_submitted(item).deliver_now
+    email = IdealsMailer.item_requires_review(item).deliver_now
     assert !ActionMailer::Base.deliveries.empty?
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
     assert_equal ["admin@example.edu"], email.to
     assert_equal "A new IDEALS item requires review", email.subject
 
-    assert_equal render_template("item_submitted.txt",
+    assert_equal render_template("item_requires_review.txt",
                                  item_url:   "#{item.institution.scope_url}/items/#{item.id}",
                                  review_url: "#{item.institution.scope_url}/items/review"),
                  email.text_part.body.raw_source
-    assert_equal render_template("item_submitted.html",
+    assert_equal render_template("item_requires_review.html",
                                  item_url:   "#{item.institution.scope_url}/items/#{item.id}",
                                  review_url: "#{item.institution.scope_url}/items/review"),
                  email.html_part.body.raw_source

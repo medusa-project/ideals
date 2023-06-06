@@ -186,7 +186,7 @@ class IdealsMailer < ApplicationMailer
   #
   # @param item [Item]
   #
-  def item_submitted(item)
+  def item_requires_review(item)
     @institution      = item.institution
     @item_url         = item_url(item, host: @institution.scope_url)
     @review_url       = items_review_url(host: @institution.scope_url)
