@@ -818,7 +818,6 @@ class Institution < ApplicationRecord
     self.registered_elements.build(name:             "ideals:handleURI",
                                    label:            "Handle URI",
                                    input_type:       RegisteredElement::InputType::TEXT_FIELD)
-
     self.registered_elements.build(name:             "dc:contributor",
                                    label:            "Contributor",
                                    input_type:       RegisteredElement::InputType::TEXT_FIELD)
@@ -900,24 +899,6 @@ class Institution < ApplicationRecord
     self.registered_elements.build(name:             "orcid:identifier",
                                    label:            "ORCID Identifier",
                                    input_type:       RegisteredElement::InputType::TEXT_FIELD)
-    self.registered_elements.build(name:             "thesis:degree:department",
-                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
-                                   label:            "Dissertation/Thesis Degree Department")
-    self.registered_elements.build(name:             "thesis:degree:discipline",
-                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
-                                   label:            "Dissertation/Thesis Degree Discipline")
-    self.registered_elements.build(name:             "thesis:degree:grantor",
-                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
-                                   label:            "Degree Granting Institution")
-    self.registered_elements.build(name:             "thesis:degree:level",
-                                   label:            "Dissertation or Thesis",
-                                   vocabulary:       Vocabulary.find_by_name("Dissertation Thesis"))
-    self.registered_elements.build(name:             "thesis:degree:name",
-                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
-                                   label:            "Degree")
-    self.registered_elements.build(name:             "thesis:degree:program",
-                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
-                                   label:            "Dissertation/Thesis Degree Program")
     self.save!
   end
 
