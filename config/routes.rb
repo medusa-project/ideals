@@ -60,6 +60,7 @@ Rails.application.routes.draw do
   resources :downloads, only: :show, param: :key do
     match "/file", to: "downloads#file", via: :get, as: "file"
   end
+  resources :element_namespaces, path: "element-namespaces", except: :show
   resources :file_formats, path: "file-formats", only: :index
   match '/global-user-groups', to: "user_groups#index_global", via: :get,
         as: "global_user_groups"
@@ -104,6 +105,8 @@ Rails.application.routes.draw do
     match "/edit-theme", to: "institutions#edit_theme", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/element-mappings", to: "institutions#show_element_mappings", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/element-namespaces", to: "institutions#show_element_namespaces", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/elements", to: "institutions#show_element_registry", via: :get,
           constraints: lambda { |request| request.xhr? }

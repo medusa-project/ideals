@@ -183,6 +183,7 @@ class Institution < ApplicationRecord
            class_name: "UserGroup", source: :user_group
   has_many :deposit_agreement_questions
   has_many :downloads
+  has_many :element_namespaces
   has_many :imports
   has_many :index_pages
   has_many :invitees
@@ -233,9 +234,9 @@ class Institution < ApplicationRecord
   # N.B.: order is important!
   after_create :add_default_deposit_agreement_questions,
                :add_default_vocabularies, :add_default_elements,
-               :add_default_element_mappings, :add_default_metadata_profile,
-               :add_default_submission_profile, :add_default_index_pages,
-               :add_default_user_groups
+               :add_default_element_mappings, :add_default_element_namespaces,
+               :add_default_metadata_profile, :add_default_submission_profile,
+               :add_default_index_pages, :add_default_user_groups
 
   before_save :arrayize_shibboleth_extra_attributes_csv
 
@@ -609,6 +610,19 @@ class Institution < ApplicationRecord
   end
 
   ##
+  # @return [Enumerable<String>] Unique prefixes of all registered elements.
+  #
+  def registered_element_prefixes
+    self.registered_elements.
+      pluck(:name).
+      map{ |n| n.split(":") }.
+      reject{ |n| n.length < 2 }. # exclude unprefixed elements
+      map(&:first).
+      uniq.
+      sort
+  end
+
+  ##
   # @return [Enumerable<RegisteredElement>] All system-required elements.
   #
   def required_elements
@@ -926,6 +940,18 @@ class Institution < ApplicationRecord
                  date_approved_element:  self.registered_elements.find_by_name("ideals:date:approved"),
                  date_published_element: self.registered_elements.find_by_name("ideals:date:published"),
                  handle_uri_element:     self.registered_elements.find_by_name("ideals:handleURI"))
+  end
+
+  def add_default_element_namespaces
+    self.element_namespaces.build(prefix: "dc",
+                                  uri:    "http://purl.org/dc/elements/1.1/")
+    self.element_namespaces.build(prefix: "dcterms",
+                                  uri:    "http://purl.org/dc/terms/")
+    self.element_namespaces.build(prefix: "ideals",
+                                  uri:    "https://www.ideals.illinois.edu/ns/")
+    self.element_namespaces.build(prefix: "orcid",
+                                  uri:    "http://dbpedia.org/ontology/orcidId")
+    self.save!
   end
 
   def add_default_metadata_profile

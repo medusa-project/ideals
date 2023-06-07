@@ -1,0 +1,27 @@
+%table.table
+  %thead
+    %tr
+      %th
+      %th Prefix
+      %th URI
+  %tbody
+    - @namespaces.each do |namespace|
+      %tr
+        %td{style: "width: 1px; white-space: nowrap"}
+          .btn-group
+            %button.btn.btn-light.btn-sm.edit-element-namespace{type:                       "button",
+                                                                "data-bs-toggle":           "modal",
+                                                                "data-bs-target":           "#edit-element-namespace-modal",
+                                                                "data-element-namespace-id": namespace.id}
+              %i.fa.fa-pencil-alt
+              Edit
+            = link_to(element_namespace_path(namespace),
+                      class: "btn btn-danger btn-sm",
+                      method: :delete,
+                      data: { confirm: "Are you sure you want to delete this namespace?" }) do
+              %i.fa.fa-trash
+              Delete
+        %td
+          %code= namespace.prefix
+        %td
+          %code= namespace.uri

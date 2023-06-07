@@ -1,0 +1,19 @@
+= form_for(@namespace, remote: true) do |f|
+  .error-messages
+    -# populated via ajax by shared/_validation_messages.js.erb
+
+  = f.hidden_field :institution_id, value: f.object.institution_id
+
+  .mb-3
+    = f.label :prefix, class: "required"
+    = f.text_field :prefix, class: "form-control"
+
+  .mb-3
+    = f.label :uri, "URI", class: "required"
+    = f.text_field :uri, class: "form-control"
+
+  .clearfix
+    .float-end
+      %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel
+      = f.submit(f.object.new_record? ? "Create Namespace" : "Save Changes",
+                 class: "btn btn-primary")

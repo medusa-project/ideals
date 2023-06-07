@@ -152,6 +152,15 @@ class InstitutionTest < ActiveSupport::TestCase
                  institution.handle_uri_element
   end
 
+  test "create() adds default element namespaces" do
+    institution = Institution.create!(name:             "New Institution",
+                                      service_name:     "New",
+                                      key:              "new",
+                                      fqdn:             "example.net",
+                                      main_website_url: "https://example.net")
+    assert_equal 4, institution.element_namespaces.count
+  end
+
   test "create() adds a default index page" do
     institution = Institution.create!(name:             "New Institution",
                                       service_name:     "New",
@@ -726,6 +735,14 @@ class InstitutionTest < ActiveSupport::TestCase
     end
     task.reload
     assert task.succeeded?
+  end
+
+  # registered_element_prefixes()
+
+  test "registered_element_prefixes() returns all registered element
+  prefixes" do
+    assert_equal %w[dc dcterms ideals thesis],
+                 @instance.registered_element_prefixes
   end
 
   # required_elements

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_01_214848) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_06_212028) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -189,6 +189,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_01_214848) do
     t.index ["institution_id"], name: "index_downloads_on_institution_id"
     t.index ["key"], name: "index_downloads_on_key", unique: true
     t.index ["task_id"], name: "index_downloads_on_task_id"
+  end
+
+  create_table "element_namespaces", force: :cascade do |t|
+    t.bigint "institution_id"
+    t.string "prefix", null: false
+    t.string "uri", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["institution_id", "prefix"], name: "index_element_namespaces_on_institution_id_and_prefix", unique: true
+    t.index ["institution_id", "uri"], name: "index_element_namespaces_on_institution_id_and_uri", unique: true
   end
 
   create_table "email_patterns", force: :cascade do |t|
@@ -793,6 +803,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_01_214848) do
   add_foreign_key "deposit_agreement_questions", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "downloads", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "downloads", "tasks", on_update: :cascade, on_delete: :nullify
+  add_foreign_key "element_namespaces", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "email_patterns", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "embargoes", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "embargoes_user_groups", "embargoes", on_update: :cascade, on_delete: :cascade

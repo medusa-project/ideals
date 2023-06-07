@@ -1,0 +1,39 @@
+-# N.B.: this template must be kept aligned with institutions/_show_element_namespaces_tab
+
+- provide :body_id, "element_namespaces"
+- provide :title, "Element Namespaces"
+
+= hidden_field_tag :institution_id, current_institution.id
+
+.btn-group.float-end{role: "group"}
+  -# Add Namespace button
+  %button.btn.btn-light.add-element-namespace{"data-bs-target": "#add-element-namespace-modal",
+                                              "data-bs-toggle": "modal",
+                                              type:             "button"}
+    %i.fa.fa-plus
+    Add Namespace
+
+%h1 Element Namespaces
+
+.alert.alert-light
+  = icon_for(:info)
+  These rules associate the prefixes of your
+  = link_to("registered elements", registered_elements_path)
+  with URIs, for dissemination in XML and Linked Data.
+
+.alert.alert-warning
+  %p
+    = icon_for(:warning)
+    The following prefixes, used by one or more of your registered elements,
+    have not been defined yet:
+  %ul
+    - @unaccounted_prefixes.each do |prefix|
+      %li
+        %code= prefix
+
+= render partial: "listing"
+
+= render partial: "shared/xhr_modal",
+         locals: { id: "add-element-namespace-modal", title: "Add Element Namespace" }
+= render partial: "shared/xhr_modal",
+         locals: { id: "edit-element-namespace-modal", title: "Edit Element Namespace" }

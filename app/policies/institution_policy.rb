@@ -137,6 +137,10 @@ class InstitutionPolicy < ApplicationPolicy
     show
   end
 
+  def show_element_namespaces
+    show_metadata_profiles
+  end
+
   def show_element_registry
     show_metadata_profiles
   end

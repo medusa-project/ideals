@@ -1293,6 +1293,41 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.show_element_mappings?
   end
 
+  # show_element_namespaces?()
+
+  test "show_element_namespaces?() returns false with a nil request context" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @institution)
+    policy = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_element_namespaces?
+  end
+
+  test "show_element_namespaces?() is restrictive by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_element_namespaces?
+  end
+
+  test "show_element_namespaces?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.show_element_namespaces?
+  end
+
+  test "show_element_namespaces?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_element_namespaces?
+  end
+
   # show_element_registry?()
 
   test "show_element_registry?() returns false with a nil request context" do

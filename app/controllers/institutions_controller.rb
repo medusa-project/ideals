@@ -341,6 +341,19 @@ class InstitutionsController < ApplicationController
   end
 
   ##
+  # Renders HTML for the sysadmin-only element namespaces tab in show-
+  # institution view.
+  #
+  # Responds to `GET /institutions/:key/element-namespaces` (XHR only)
+  #
+  def show_element_namespaces
+    @namespaces           = @institution.element_namespaces.order(:prefix)
+    @unaccounted_prefixes = @institution.registered_element_prefixes -
+      @namespaces.map(&:prefix)
+    render partial: "show_element_namespaces_tab"
+  end
+
+  ##
   # Renders HTML for the sysadmin-only element registry tab in show-institution
   # view.
   #

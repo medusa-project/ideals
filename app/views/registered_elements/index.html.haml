@@ -15,6 +15,21 @@
 
 %h1 Element Registry
 
+- if @unaccounted_prefixes.any?
+  .alert.alert-warning
+    %p
+      = icon_for(:warning)
+      The following prefixes, used by one or more elements, have not
+      been defined yet:
+    %ul
+      - @unaccounted_prefixes.each do |prefix|
+        %li
+          %code= prefix
+    %p
+      Navigate to
+      = link_to("Element Namespaces", element_namespaces_path)
+      to associate these prefixes with URIs.
+
 .card.mb-3
   .card-body
     = filter_field(placeholder: "Filter")

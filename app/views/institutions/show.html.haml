@@ -97,6 +97,15 @@
                                               "aria-selected":  "false"}
           = icon_for(RegisteredElement)
           Element Mappings
+      - if policy(@institution).show_element_namespaces?
+        %button#element-namespaces-tab.nav-link{"data-bs-target": "#element-namespaces-tab-content",
+                                                "data-bs-toggle": "pill",
+                                                role:             "tab",
+                                                type:             "button",
+                                                "aria-controls":  "element-namespaces-tab-content",
+                                                "aria-selected":  "false"}
+          %i.fa.fa-code
+          Element Namespaces
       - if policy(@institution).show_element_registry?
         %button#element-registry-tab.nav-link{"data-bs-target": "#element-registry-tab-content",
                                               "data-bs-toggle": "pill",
@@ -200,6 +209,11 @@
     - if policy(@institution).show_element_mappings?
       #element-mappings-tab-content.tab-pane.fade{role:              "tabpanel",
                                                   "aria-labelledby": "element-mappings-tab"}
+        = spinner
+
+    - if policy(@institution).show_element_namespaces?
+      #element-namespaces-tab-content.tab-pane.fade{role:              "tabpanel",
+                                                    "aria-labelledby": "element-namespaces-tab"}
         = spinner
 
     - if policy(@institution).show_element_registry?

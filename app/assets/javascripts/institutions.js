@@ -373,12 +373,23 @@ const InstitutionView = function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/element-mappings";
         $.get(url, function(data) {
             $("#element-mappings-tab-content").html(data);
-            $('button.edit-element-mappings').on('click', function() {
+            $("button.edit-element-mappings").on("click", function() {
                 $.get(url + "/edit", function(data) {
                     const modalBody = $("#edit-element-mappings-modal .modal-body");
                     modalBody.html(data);
                 });
             });
+        });
+    });
+
+    $("#element-namespaces-tab").on("show.bs.tab", function() {
+        const url = ROOT_URL + "/institutions/" + institutionKey + "/element-namespaces";
+        $.get(url, function(data) {
+            $("#element-namespaces-tab-content").html(data);
+            $("button.add-element-namespace").on("click",
+                ElementNamespaces.AddElementNamespaceClickHandler);
+            $("button.edit-element-namespace").on("click",
+                ElementNamespaces.EditElementNamespaceClickHandler);
         });
     });
 

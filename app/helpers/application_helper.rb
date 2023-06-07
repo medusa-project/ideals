@@ -463,6 +463,8 @@ module ApplicationHelper
       icon   = "far #{format.icon}" if format
     when "Collection"
       icon = "far fa-folder-open"
+    when "ElementNamespace"
+      icon = "fa fa-code"
     when "FileFormat"
       icon = "fa fa-file"
     when "Import"
