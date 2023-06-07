@@ -743,7 +743,7 @@ class Item < ApplicationRecord
     return b if b
     candidates = self.bitstreams.select{ |b| b.bundle == Bitstream::Bundle::CONTENT }
     b = candidates.
-      sort_by(&:bundle_position).
+      sort_by{ |b| [b.bundle_position ? 0 : 1, b.bundle_position] }.
       find{ |b| b.has_representative_image? }
     return b if b
     candidates.
