@@ -140,16 +140,16 @@ const InstitutionView = function() {
                     modalBody.html(data);
 
                     const updateQuestionIndices = function() {
-                        modalBody.find(".question").each(function (qindex, question) {
+                        modalBody.find(".question").each(function(qindex, question) {
                             $(question).find(".card-header h5").each(function () {
                                 $(this).text("Question " + (qindex + 1));
                             });
-                            const textarea = $(question).find("textarea");
-                            const newName  = textarea.attr("name")
-                                .replace(/questions\[[0-9]]/, "questions[" + qindex + "]");
-                            textarea.attr("name", newName);
-
-                            $(question).find(".response").each(function (rindex, response) {
+                            $(question).find("textarea").each(function(tindex, textarea) {
+                                const newName = $(textarea).attr("name")
+                                    .replace(/questions\[[0-9]]/, "questions[" + qindex + "]");
+                                $(textarea).attr("name", newName);
+                            });
+                            $(question).find(".response").each(function(rindex, response) {
                                 $(response).find(".card-header h6").each(function () {
                                     $(this).text("Response " + (rindex + 1));
                                 });
