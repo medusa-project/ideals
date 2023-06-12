@@ -170,6 +170,10 @@ const InstitutionView = function() {
                             const clone = $(this).prev().clone();
                             clone.find("input[type=text], textarea").val("");
                             clone.find("input[type=checkbox]").prop("checked", false);
+                            const numResponses = clone.find(".response").length;
+                            for (let i = numResponses; i > 1; i--) {
+                                clone.find(".response:last").remove();
+                            }
                             $(this).before(clone);
                             updateQuestionIndices();
                             updateEventListeners();
