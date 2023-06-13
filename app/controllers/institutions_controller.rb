@@ -726,6 +726,8 @@ class InstitutionsController < ApplicationController
                                         :saml_idp_entity_id,
                                         :saml_idp_sso_service_url,
                                         :saml_last_name_attribute,
+                                        :saml_sp_private_cert,
+                                        :saml_sp_public_cert,
                                         :shibboleth_auth_enabled,
                                         :shibboleth_email_attribute,
                                         :shibboleth_extra_attributes,

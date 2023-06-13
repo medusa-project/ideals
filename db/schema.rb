@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_06_212028) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_12_142125) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -387,6 +387,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_06_212028) do
     t.string "shibboleth_email_attribute", default: "mail"
     t.string "shibboleth_name_attribute", default: "displayName"
     t.text "shibboleth_extra_attributes", default: "[]"
+    t.text "saml_sp_public_cert"
+    t.text "saml_sp_private_cert"
     t.index ["fqdn"], name: "index_institutions_on_fqdn", unique: true
     t.index ["incoming_message_queue"], name: "index_institutions_on_incoming_message_queue", unique: true
     t.index ["key"], name: "index_institutions_on_key", unique: true

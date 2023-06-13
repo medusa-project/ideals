@@ -94,6 +94,10 @@
 #                               authentication.
 # * `saml_idp_sso_service_url`  Required only by institutions that use SAML for
 #                               authentication.
+# * `saml_sp_private_cert`      May be required by institutions that use SAML
+#                               for authentication.
+# * `saml_sp_public_cert`       May be required by institutions that use SAML
+#                               for authentication.
 # * `service_name`              Name of the service that the institution is
 #                               running. For example, at UIUC, this would be
 #                               "IDEALS."

@@ -84,7 +84,9 @@
         %code= @institution.saml_sp_entity_id
       %dt SP Metadata URL
       %dd
-        - if @institution.saml_sp_entity_id.present?
+        - if !@institution.saml_auth_enabled
+          = boolean(false, style: :word, false_value: "SAML IS DISABLED")
+        - elsif @institution.saml_sp_entity_id.present?
           = link_to("#{@institution.scope_url}/auth/saml/metadata",
                       "#{@institution.scope_url}/auth/saml/metadata")
         - else
@@ -121,6 +123,46 @@
                     @institution.saml_idp_sso_service_url)
         - else
           Not Set
+      %dt SP Private Certificate
+      %dd
+        - if @institution.saml_sp_private_cert.present?
+          - begin
+            - cert = OpenSSL::X509::Certificate.new(@institution.saml_sp_private_cert)
+            %dl
+              %dt Subject
+              %dd
+                %code= cert.subject
+              %dt Issuer
+              %dd
+                %code= cert.issuer
+              %dt Issued
+              %dd= cert.not_before
+              %dt Expires
+              %dd= cert.not_after
+          - rescue
+            = boolean(false, style: :word, false_value: "INVALID")
+        - else
+          = boolean(false, style: :word, false_value: "NOT SET")
+      %dt SP Public Certificate
+      %dd
+        - if @institution.saml_sp_public_cert.present?
+          - begin
+            - cert = OpenSSL::X509::Certificate.new(@institution.saml_sp_public_cert)
+            %dl
+              %dt Subject
+              %dd
+                %code= cert.subject
+              %dt Issuer
+              %dd
+                %code= cert.issuer
+              %dt Issued
+              %dd= cert.not_before
+              %dt Expires
+              %dd= cert.not_after
+          - rescue
+            = boolean(false, style: :word, false_value: "INVALID")
+        - else
+          = boolean(false, style: :word, false_value: "NOT SET")
       %dt IdP Certificate
       %dd
         - if @institution.saml_idp_cert.present?
