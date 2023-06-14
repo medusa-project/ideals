@@ -633,8 +633,7 @@ class Institution < ApplicationRecord
   # @return [String]
   #
   def saml_sp_entity_id
-    scheme = (Rails.env.development? || Rails.env.test?) ? "http" : "https"
-    "#{scheme}://idp.#{self.fqdn}/entity"
+    [scope_url, "entity"].join("/")
   end
 
   ##
