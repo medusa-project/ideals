@@ -13,6 +13,9 @@ SAML_SETUP_PROC = lambda do |env|
   s.options[:idp_cert]                           = institution.saml_idp_cert
   s.options[:certificate]                        = institution.saml_sp_public_cert
   s.options[:private_key]                        = institution.saml_sp_private_cert
+  if institution.saml_sp_public_cert.present?
+    s.options[:security]                         = { want_assertions_encrypted: true }
+  end
   s.options[:name_identifier_format]             = "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
 end
 
