@@ -41,7 +41,7 @@ This is a getting-started guide and brief technical manual for developers.
 ## Dependencies
 
 * PostgreSQL >= 9.x
-* OpenSearch 1.x with the `analysis-icu` plugin installed
+* OpenSearch >= 1.x with the `analysis-icu` plugin installed
 * An S3 storage service, such as AWS S3 or [Minio Server](https://min.io)
 * VIPS
 * Poppler or xpdf (for the `pdftotext` tool)

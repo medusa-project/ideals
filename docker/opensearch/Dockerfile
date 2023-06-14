@@ -1,4 +1,4 @@
-FROM public.ecr.aws/opensearchproject/opensearch:1
+FROM public.ecr.aws/opensearchproject/opensearch:2
 
 ENV discovery.type=single-node
 
