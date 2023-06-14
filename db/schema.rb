@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_12_142125) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_14_140803) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -397,7 +397,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_12_142125) do
     t.index ["outgoing_message_queue"], name: "index_institutions_on_outgoing_message_queue", unique: true
     t.index ["saml_idp_cert"], name: "index_institutions_on_saml_idp_cert", unique: true
     t.index ["saml_idp_entity_id"], name: "index_institutions_on_saml_idp_entity_id", unique: true
-    t.index ["saml_idp_sso_service_url"], name: "index_institutions_on_saml_idp_sso_service_url", unique: true
     t.index ["shibboleth_org_dn"], name: "index_institutions_on_shibboleth_org_dn", unique: true
   end
 
