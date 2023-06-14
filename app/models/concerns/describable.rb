@@ -22,14 +22,6 @@ module Describable
     end
 
     ##
-    # @return [String] Value of any description {AscribedElement} in the
-    #                  {elements} association, or an empty string if not found.
-    #
-    def description
-      self.element(self.institution.description_element&.name)&.string || ""
-    end
-
-    ##
     # @param name [String] Name of a {RegisteredElement}.
     # @return [AscribedElement] Any element matching the given name, or `nil`
     #         if no such element exists.

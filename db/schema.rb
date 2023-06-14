@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_14_141208) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_14_153017) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -365,7 +365,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_14_141208) do
     t.integer "earliest_search_year", default: 2000, null: false
     t.bigint "title_element_id"
     t.bigint "author_element_id"
-    t.bigint "description_element_id"
     t.bigint "date_submitted_element_id"
     t.bigint "date_approved_element_id"
     t.bigint "date_published_element_id"
@@ -825,7 +824,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_14_141208) do
   add_foreign_key "institutions", "registered_elements", column: "date_approved_element_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "institutions", "registered_elements", column: "date_published_element_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "institutions", "registered_elements", column: "date_submitted_element_id", on_update: :cascade, on_delete: :restrict
-  add_foreign_key "institutions", "registered_elements", column: "description_element_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "institutions", "registered_elements", column: "handle_uri_element_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "institutions", "registered_elements", column: "title_element_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "invitees", "institutions", on_update: :cascade, on_delete: :cascade

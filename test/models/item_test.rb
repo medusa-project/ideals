@@ -456,19 +456,6 @@ class ItemTest < ActiveSupport::TestCase
                  @instance.bitstreams.where(permanent_key: nil).count
   end
 
-  # description() (Describable concern)
-
-  test "description() returns the description element value" do
-    item = items(:uiuc_described)
-    assert_equal "Some description", item.description
-  end
-
-  test "description() returns an empty string when there is no description
-  element" do
-    item = items(:uiuc_undescribed)
-    assert_equal "", item.description
-  end
-
   # destroy()
 
   test "destroy() fails for in-archive items" do

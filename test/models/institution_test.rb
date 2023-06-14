@@ -140,8 +140,6 @@ class InstitutionTest < ActiveSupport::TestCase
                  institution.title_element
     assert_equal institution.registered_elements.find_by_name("dc:creator"),
                  institution.author_element
-    assert_equal institution.registered_elements.find_by_name("dc:description"),
-                 institution.description_element
     assert_equal institution.registered_elements.find_by_name("ideals:date:submitted"),
                  institution.date_submitted_element
     assert_equal institution.registered_elements.find_by_name("ideals:date:approved"),
@@ -748,7 +746,7 @@ class InstitutionTest < ActiveSupport::TestCase
   # required_elements
 
   test "required_elements() returns system-required elements" do
-    assert_equal 3, @instance.required_elements.length
+    assert_equal 2, @instance.required_elements.length
   end
 
   # saml_email_location

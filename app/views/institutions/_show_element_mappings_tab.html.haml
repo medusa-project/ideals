@@ -38,14 +38,6 @@
         %code
           = @institution.author_element.name
     %tr
-      %td Description
-      %td &rarr;
-      %td
-        = @institution.description_element.label
-        %br
-        %code
-          = @institution.description_element.name
-    %tr
       %td Date Submitted
       - if @institution.date_submitted_element
         %td &rarr;

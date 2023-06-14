@@ -29,8 +29,6 @@
 # * `date_submitted_element_id` Foreign key to {RegisteredElement} designating
 #                               an element to treat as the date-submitted
 #                               element.
-# * `description_element_id`    Foreign key to {RegisteredElement} designating
-#                               an element to treat as the description element.
 # * `earliest_search_year`      Earliest year available in advanced search.
 # * `feedback_email`            Email address for public feedback.
 # * `footer_background_color`   Theme background color of the footer.
@@ -172,8 +170,6 @@ class Institution < ApplicationRecord
              foreign_key: :date_published_element_id, optional: true
   belongs_to :date_submitted_element, class_name: "RegisteredElement",
              foreign_key: :date_submitted_element_id, optional: true
-  belongs_to :description_element, class_name: "RegisteredElement",
-             foreign_key: :description_element_id, optional: true
   belongs_to :handle_uri_element, class_name: "RegisteredElement",
              foreign_key: :handle_uri_element_id, optional: true
   belongs_to :title_element, class_name: "RegisteredElement",
@@ -630,7 +626,7 @@ class Institution < ApplicationRecord
   # @return [Enumerable<RegisteredElement>] All system-required elements.
   #
   def required_elements
-    [self.title_element, self.author_element, self.description_element]
+    [self.title_element, self.author_element]
   end
 
   ##
@@ -920,7 +916,6 @@ class Institution < ApplicationRecord
   def add_default_element_mappings
     self.update!(title_element:          self.registered_elements.find_by_name("dc:title"),
                  author_element:         self.registered_elements.find_by_name("dc:creator"),
-                 description_element:    self.registered_elements.find_by_name("dc:description"),
                  date_submitted_element: self.registered_elements.find_by_name("ideals:date:submitted"),
                  date_approved_element:  self.registered_elements.find_by_name("ideals:date:approved"),
                  date_published_element: self.registered_elements.find_by_name("ideals:date:published"),

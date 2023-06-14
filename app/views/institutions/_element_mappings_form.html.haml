@@ -26,14 +26,6 @@
       authors are displayed.
 
   .mb-3
-    = f.label(:description_element_id, "Description Element", class: "form-label")
-    = f.select(:description_element_id, element_options, {}, class: "form-select")
-    .form-text
-      = icon_for(:info)
-      This menu tells the system what element to treat as the description element,
-      which affects results lists and everywhere else descriptions are displayed.
-
-  .mb-3
     = f.label(:date_submitted_element_id, "Date Submitted Element", class: "form-label")
     = f.select(:date_submitted_element_id, element_options, { include_blank: true }, class: "form-select")
     .form-text
