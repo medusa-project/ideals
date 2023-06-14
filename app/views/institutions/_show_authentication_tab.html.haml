@@ -47,12 +47,26 @@
                                tabindex:          "0"}
     .btn-group.float-end{role: "group"}
       - if policy(@institution).edit_saml_authentication?
-        - if @institution.sso_federation.present?
-          -# Refresh Federation Metadata button
-          = link_to(institution_refresh_federation_metadata_path,
-                    class: "btn btn-light", method: :patch) do
-            %i.fa.fa-sync
-            Refresh Federation Metadata
+        .dropdown
+          %a.btn.btn-light.dropdown-toggle{href:             "#",
+                                           role:             "button",
+                                           "data-bs-toggle": "dropdown",
+                                           "aria-expanded":  "false"}
+            Actions
+          .dropdown-menu
+            - if @institution.sso_federation.present?
+              -# Refresh Federation Metadata button
+              = link_to(institution_refresh_federation_metadata_path(@institution),
+                        class: "dropdown-item", method: :patch) do
+                %i.fa.fa-sync
+                Refresh Federation Metadata
+            -# Generate Certificates button
+            = link_to(institution_generate_saml_certs_path(@institution),
+                      class: "dropdown-item", method: :patch,
+                      data: { confirm: "Are you sure you want to regenerate certificates? This will overwrite the public and private SP certificates." }) do
+              %i.fa.fa-key
+              Generate SP Certificates
+
         -# Edit button
         %button.btn.btn-light.edit-saml-authentication{"data-bs-target":       "#edit-saml-authentication-modal",
                                                        "data-bs-toggle":       "modal",
@@ -123,52 +137,53 @@
                     @institution.saml_idp_sso_service_url)
         - else
           Not Set
-      %dt SP Private Certificate
-      %dd
-        - if @institution.saml_sp_private_cert.present?
-          - begin
-            - cert = OpenSSL::X509::Certificate.new(@institution.saml_sp_private_cert)
-            %dl
-              %dt Subject
-              %dd
-                %code= cert.subject
-              %dt Issuer
-              %dd
-                %code= cert.issuer
-              %dt Issued
-              %dd= cert.not_before
-              %dt Expires
-              %dd= cert.not_after
-          - rescue
-            = boolean(false, style: :word, false_value: "INVALID")
-        - else
-          = boolean(false, style: :word, false_value: "NOT SET")
       %dt SP Public Certificate
       %dd
         - if @institution.saml_sp_public_cert.present?
           - begin
             - cert = OpenSSL::X509::Certificate.new(@institution.saml_sp_public_cert)
-            %dl
-              %dt Subject
-              %dd
-                %code= cert.subject
-              %dt Issuer
-              %dd
-                %code= cert.issuer
-              %dt Issued
-              %dd= cert.not_before
-              %dt Expires
-              %dd= cert.not_after
+            - if cert.signature_algorithm == "sha256WithRSAEncryption"
+              %dl
+                %dt Signature Algorithm
+                %dd= cert.signature_algorithm
+                %dt Subject
+                %dd
+                  %code= cert.subject
+                %dt Issuer
+                %dd
+                  %code= cert.issuer
+                %dt Issued
+                %dd= cert.not_before
+                %dt Expires
+                %dd= cert.not_after
+            - else
+              = boolean(false, style: :word, false_value: "INVALID")
           - rescue
             = boolean(false, style: :word, false_value: "INVALID")
         - else
           = boolean(false, style: :word, false_value: "NOT SET")
-      %dt IdP Certificate
+      %dt SP Private Certificate
+      %dd
+        - if @institution.saml_sp_private_cert.present?
+          - begin
+            - public_cert = OpenSSL::X509::Certificate.new(@institution.saml_sp_public_cert)
+            - private_cert = OpenSSL::PKey::RSA.new(@institution.saml_sp_private_cert)
+            - if public_cert.check_private_key(private_cert)
+              = boolean(true, style: :word, true_value: "VALID")
+            - else
+              - raise "Invalid signature algorithm"
+          - rescue
+            = boolean(false, style: :word, false_value: "INVALID")
+        - else
+          = boolean(false, style: :word, false_value: "NOT SET")
+      %dt IdP Public Certificate
       %dd
         - if @institution.saml_idp_cert.present?
           - begin
             - cert = OpenSSL::X509::Certificate.new(@institution.saml_idp_cert)
             %dl
+              %dt Signature Algorithm
+              %dd= cert.signature_algorithm
               %dt Subject
               %dd
                 %code= cert.subject

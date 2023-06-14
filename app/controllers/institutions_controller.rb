@@ -154,6 +154,23 @@ class InstitutionsController < ApplicationController
   end
 
   ##
+  # Responds to `PATCH /institutions/:id/generate-saml-certs`
+  #
+  def generate_saml_certs
+    key_pair = CryptUtils.generate_cert_pair(organization: @institution.name,
+                                             common_name:  @institution.service_name)
+    @institution.update!(saml_sp_public_cert:  key_pair[:public],
+                         saml_sp_private_cert: key_pair[:private])
+  rescue => e
+    flash['error'] = "#{e}"
+  else
+    toast!(title:   "Certificates generated",
+           message: "SAML SP certificates have been updated.")
+  ensure
+    redirect_back fallback_location: institution_path(@institution)
+  end
+
+  ##
   # Responds to `GET /institutions`
   #
   def index

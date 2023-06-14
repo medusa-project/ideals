@@ -67,6 +67,10 @@ class InstitutionPolicy < ApplicationPolicy
     edit_settings
   end
 
+  def generate_saml_certs
+    edit_saml_authentication
+  end
+
   def index
     create
   end
