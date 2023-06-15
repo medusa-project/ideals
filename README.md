@@ -59,9 +59,8 @@ of these dependencies, with and without Docker.
 Docker. The working copy is mounted in the app container, so changes to
 application files will be reflected without restarting.
 
-With that running, skip to the [Migrate Content](#Migrate-content-from-DSpace)
-section, if you want to do that. The `rails` in the commands must be changed to
-`./docker-run.sh`, so `rails <task>` becomes `./docker-run.sh <task>`.
+You can run Rails tasks by changing `rails` in commands to `./docker-run.sh`,
+so `rails <task>` becomes `./docker-run.sh <task>`.
 
 ## InstallationWithoutDocker
 
@@ -118,13 +117,17 @@ rails opensearch:indexes:create_alias[ideals_blue_development,ideals_development
 Then when you need to create a new index, you can switch to the other color:
 
 ```sh
+rails opensearch:indexes:delete[ideals_green_development]
 rails opensearch:indexes:create[ideals_green_development]
 rails opensearch:indexes:copy[ideals_blue_development,ideals_green_development]
+# The above command prints a task ID which you can check on periodically with:
+rails opensearch:tasks:show[task-id]
+# When the task has completed:
 rails opensearch:indexes:delete_alias[ideals_blue_development,ideals_development]
 rails opensearch:indexes:create_alias[ideals_green_development,ideals_development]
 ```
-(Instead of using aliases, you could also change the `opensearch/index` key
-in your `development.yml`.)
+(Instead of using aliases, you could change the `opensearch/index` key in your
+in your `config/credentials/development.yml`.)
 
 Note 2: the above does not apply to the test index. This index will be
 recreated automatically when the tests are run.
@@ -152,6 +155,9 @@ restart RabbitMQ:
 $ brew services restart rabbitmq
 ```
 
+Of course, in development, these messages won't go anywhere, unless you are
+running Medusa locally, but that's OK.
+
 ### Configure the Handle.net server
 
 Refer to the instructions in the
@@ -159,11 +165,10 @@ Refer to the instructions in the
 
 ### Create a user account
 
-There are two main categories of accounts: local identity, where account
-information is stored locally in the database, and Shibboleth, where account
-info is provided by a Shibboleth SP. There are rake tasks to create sysadmins
-of both types, but in your local environment, you would only be using the local
-kind:
+Users can be authenticated in two ways: by local email/password, and using
+SAML, where account info is provided by a remote identity provider (IdP). Since
+you won't have access to one of those locally, you will have to use local
+identity authentication:
 
 ```sh
 rails users:create_local_sysadmin[email,password,name,institution_key]
@@ -174,29 +179,27 @@ rails users:create_local_sysadmin[email,password,name,institution_key]
 ## Authentication
 
 Authentication is handled by [OmniAuth](https://github.com/omniauth/omniauth).
-OmniAuth supports many different providers, but the ones used by this app
-include:
+OmniAuth supports many different providers, but the ones used by this app are:
 
 * [Shibboleth](https://github.com/toyokazu/omniauth-shibboleth): handles SSO
   authentication for UIUC only.
 * [SAML](https://github.com/omniauth/omniauth-saml): handles SSO authentication
-  for many CARLI member institutions.
+  for many CARLI member institutions, as well as CARLI itself.
 * [Local identity](https://github.com/omniauth/omniauth-identity):
   credentials are stored in a `local_identities` database table associated with
-  `users`.
+  the `users` table.
 
 The general idea with OmniAuth is that authentication requests (via e.g. a
 login button) are sent to `/auth/:provider`. From there the provider takes
-over, redirecting to an IdP or whatever. Upon successful login, the IdP (or
-provider) calls back to `/auth/:provider/callback` (handled by
-`SessionsController.create()`).
+over, redirecting to an IdP (or whatever). Upon successful login, the IdP (or
+provider) calls back to `/auth/:provider/callback`, which is handled by
+`SessionsController.create()`.
 
 OmniAuth and its providers are configured in `config/initializers/omniauth.rb`.
-Most of the providers can be configured globally, because they either work the
-same across all institutions (local identity), or work with only one
-institution (Shibboleth). But the SAML provider in particular needs to be
-customized per-institution, so that each institution can work with its own
-identity provider (IdP).
+Providers can be configured globally when they work the same across all
+institutions (local identity), or work with only one institution (Shibboleth).
+But the SAML provider in particular needs to be customized per-institution, so
+that each institution can work with its own identity provider (IdP).
 
 Users who have an associated local identity can also log in via some other
 provider, if configured, but not vice versa.
@@ -239,7 +242,7 @@ The policy architecture is very similar to what is provided by the
 [Pundit](https://github.com/varvet/pundit) gem, but Pundit doesn't support
 failure reasons.
 
-See the ApplicationPolicy class for more information.
+See the `ApplicationPolicy` class for more information.
 
 ## ContentStorage
 
@@ -252,8 +255,8 @@ structure:
 * `institutions/:institution_key/uploads/:item_id/`
 
 The high-level PersistentStore class provides access to the bucket and objects
-within it. This class wraps the S3Client class, which itself is a convenience
-wrapper around an Aws::S3::Client from the `aws-sdk-s3` gem.
+within it. This class wraps the `S3Client` class, which itself is a convenience
+wrapper around an `Aws::S3::Client` from the `aws-sdk-s3` gem.
 
 ## OpenSearch
 
@@ -263,7 +266,7 @@ aggregations). It also enables complex queries that would be difficult using
 PostgreSQL alone.
 
 There are two aspects to OpenSearch support: indexing (sending documents to
-OpenSearch) and querying.(getting them out).
+OpenSearch) and querying (getting them out).
 
 ### Indexing
 
@@ -285,8 +288,8 @@ upon index creation (using the `opensearch:indexes:create` rake task).
 
 The queries that the application needs to send to OpenSearch tend to be very
 long and complicated. The Indexed concern also provides a `search()` class
-method that returns one of the AbstractRelation implementations. These work
-similar to ActiveRecord::Relation, using the Builder pattern to greatly
+method that returns one of the `AbstractRelation` implementations. These work
+similar to `ActiveRecord::Relation`, using the Builder pattern to greatly
 simplify the process of searching.
 
 Indexing and searching features both rely on the OpenSearchClient class, which
@@ -300,13 +303,12 @@ prefix that can assist with index management and reindexing.
 
 In order to keep the web server responsive, all operations that would take more
 than a small fraction of a second to complete need to run asynchronously. This
-is accomplished using Rails' ActiveJob feature.
+is accomplished using Rails' ActiveJob framework.
 
 The async adapter is used to run jobs. This adapter simply runs them in a
 separate thread within one of the web server's worker processes, with no fancy
 features like retrying failed jobs etc. The jobs that IDEALS runs are trivial
-enough that this works well without adding the complexity of another
-dependency like Redis, beanstalkd, etc. that many other adapters require.
+enough that this works well without added complexity.
 
 Examining the job classes in `app/jobs`, one will notice that most of their
 `perform()` methods create a Task instance before doing anything. This object
@@ -317,8 +319,8 @@ scoped `/all-tasks` views.
 
 The JavaScript system uses Sprockets, which was the default in earlier versions
 of Rails, and is nice and simple. In this system, JavaScript files are
-organized roughly per-controller. (`ideals.js` contains shared code that they
-can all use.)
+organized roughly per-controller. (The `lib/` directory contains shared code
+organized under JS object keys.
 
 Within each JavaScript file, there are one or more functions followed by an
 on-document-ready function that checks the HTML `<body>` ID to decide which
@@ -341,8 +343,8 @@ $(document).ready(function() {
 ## ModalWindows
 
 The web application makes heavy use of modal windows, mainly for contextual
-forms. The content for most modals is loaded on-demand via XHR which enables
-the rest of the page to load faster. The basic idea is, from a template, to
+forms. The content for most modals is loaded on-demand via XHR, which enables
+the containing page to load faster. The basic idea is, from a template, to
 require `shared/xhr_modal`:
 
 ```haml
@@ -445,8 +447,8 @@ non-institution-specific style overrides in the same folder.
 
 Institution-specific styles are handled differently: an institution can choose
 various colors etc. through the UI, which are injected into its own custom
-stylesheet provided by StylesheetsController. This gets overlaid onto the base
-Bootstrap+global custom styles mentioned above.
+stylesheet provided by `StylesheetsController`. This gets overlaid onto the
+base Bootstrap+global custom styles mentioned above.
 
 # BranchesAndEnvironments
 
@@ -458,7 +460,7 @@ generally happens like this:
 develop -----> demo -----> production
    ^                           |
    |                           |
-   |---------------------------|
+   \---------------------------/
 ```
 
 
