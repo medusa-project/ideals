@@ -24,7 +24,7 @@ that has been modified to mesh with the fixture data. -->
   </ds:Signature>
 
   <!-- Example University -->
-  <md:EntityDescriptor xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui" xmlns:shibmd="urn:mace:shibboleth:metadata:1.0" entityID="https://idp.example.edu">
+  <md:EntityDescriptor xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui" xmlns:shibmd="urn:mace:shibboleth:metadata:1.0" entityID="http://example.edu/entity">
     <md:IDPSSODescriptor WantAuthnRequestsSigned="false" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol urn:oasis:names:tc:SAML:1.1:protocol urn:mace:shibboleth:1.0">
       <md:Extensions>
         <shibmd:Scope regexp="false">example.edu</shibmd:Scope>
@@ -60,7 +60,7 @@ that has been modified to mesh with the fixture data. -->
   </md:EntityDescriptor>
 
   <!-- Northeast University -->
-  <md:EntityDescriptor xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui" xmlns:shibmd="urn:mace:shibboleth:metadata:1.0" entityID="https://idp.northeast.edu">
+  <md:EntityDescriptor xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui" xmlns:shibmd="urn:mace:shibboleth:metadata:1.0" entityID="http://northeast.edu/entity">
     <md:IDPSSODescriptor WantAuthnRequestsSigned="false" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol urn:oasis:names:tc:SAML:1.1:protocol urn:mace:shibboleth:1.0">
       <md:Extensions>
         <shibmd:Scope regexp="false">northeast.edu</shibmd:Scope>
@@ -96,7 +96,7 @@ that has been modified to mesh with the fixture data. -->
   </md:EntityDescriptor>
 
   <!-- Southwest University -->
-  <md:EntityDescriptor xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui" xmlns:shibmd="urn:mace:shibboleth:metadata:1.0" entityID="https://idp.southwest.edu">
+  <md:EntityDescriptor xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui" xmlns:shibmd="urn:mace:shibboleth:metadata:1.0" entityID="http://southwest.edu/entity">
     <md:IDPSSODescriptor WantAuthnRequestsSigned="false" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol urn:oasis:names:tc:SAML:1.1:protocol urn:mace:shibboleth:1.0">
       <md:Extensions>
         <shibmd:Scope regexp="false">southwest.edu</shibmd:Scope>

@@ -691,12 +691,12 @@ class Institution < ApplicationRecord
   # @param metadata_xml_file [File]
   #
   def update_from_federation_metadata(metadata_xml_file)
-    if self.saml_idp_entity_id.blank?
-      raise "saml_idp_entity_id is not set"
+    if self.saml_sp_entity_id.blank?
+      raise "saml_sp_entity_id is not set"
     end
     File.open(metadata_xml_file) do |file|
       doc     = Nokogiri::XML(file)
-      results = doc.xpath("/md:EntitiesDescriptor/md:EntityDescriptor[@entityID = '#{self.saml_idp_entity_id}']",
+      results = doc.xpath("/md:EntitiesDescriptor/md:EntityDescriptor[@entityID = '#{self.saml_sp_entity_id}']",
                           md: SAML_METADATA_NS)
       if results.any?
         ed = results.first
