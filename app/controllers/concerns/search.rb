@@ -26,7 +26,7 @@ module Search
   #                                metadata profile} should already be set.
   # @return [void]
   #
-  def process_search_input(relation)
+  def process_search_query(relation)
     # Params from simple search will contain only `q`.
     # Advanced search params are expected to arrive in the following structure:
     # {

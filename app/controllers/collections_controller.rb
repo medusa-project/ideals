@@ -628,7 +628,7 @@ class CollectionsController < ApplicationController
               @permitted_params[:sort].blank? ? :desc : @permitted_params[:direction].to_sym).
       start(@start).
       limit(@window)
-    process_search_input(@items)
+    process_search_query(@items)
 
     @items        = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)
     @count        = @items.count

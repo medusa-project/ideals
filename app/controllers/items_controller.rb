@@ -213,7 +213,7 @@ class ItemsController < ApplicationController
       @items.order(@permitted_params[:sort] =>
                      (@permitted_params[:direction] == "desc") ? :desc : :asc)
     end
-    process_search_input(@items)
+    process_search_query(@items)
 
     @items        = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)
     @count        = @items.count
