@@ -494,7 +494,7 @@ class Item < ApplicationRecord
   # @raises [StandardError] if the instance already has a handle.
   #
   def assign_handle
-    return if self.handle
+    return if self.handle || !self.institution
     self.create_handle!
     reg_e = self.institution.handle_uri_element
     self.elements.build(registered_element: reg_e,
