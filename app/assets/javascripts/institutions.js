@@ -81,8 +81,8 @@ const InstitutionView = function() {
                     const ssoFederationRadio = modalBody.find("input[name='institution[sso_federation]']");
                     const emailLocationMenu  = modalBody.find("select[name='institution[saml_email_location]']");
 
-                    const onProviderRadioChanged = function(checkedRadio) {
-                        if (parseInt(checkedRadio.val()) >= 0) {
+                    const onFederationRadioChanged = function(checkedRadio) {
+                        if (parseInt(checkedRadio.val()) != 2) { // 2 = Institution::SSOFederation::NONE
                             $("[name='institution[saml_idp_cert]']").parent().hide();
                             $("[name='institution[saml_idp_sso_service_url]']").parent().hide();
                             $("[name='institution[saml_idp_entity_id]']").next("p").show();
@@ -104,12 +104,12 @@ const InstitutionView = function() {
                     };
                     ssoFederationRadio.on("change", function() {
                         const checkedRadio = $("input[name='" + $(this).attr("name") + "']:checked");
-                        onProviderRadioChanged(checkedRadio);
+                        onFederationRadioChanged(checkedRadio);
                     });
                     emailLocationMenu.on("change", function() {
                         onEmailLocationChanged($(this));
                     });
-                    onProviderRadioChanged(ssoFederationRadio.filter(":checked"));
+                    onFederationRadioChanged(ssoFederationRadio.filter(":checked"));
                     onEmailLocationChanged(emailLocationMenu);
                 });
             });
