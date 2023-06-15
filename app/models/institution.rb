@@ -283,24 +283,9 @@ class Institution < ApplicationRecord
     else
       raise "Unrecognized federation"
     end
-    uri  = URI.parse(uri)
-    file = Tempfile.new("metadata")
-    begin
-      file.binmode
-      Net::HTTP.start(uri.host, uri.port) do |http|
-        request = Net::HTTP::Get.new(uri)
-        http.request(request) do |response|
-          response.read_body do |chunk|
-            file.write(chunk)
-          end
-          file.close
-        end
-      end
-      return file
-    rescue => e
-      file.unlink
-      raise e
-    end
+    path = "/tmp/metadata-#{SecureRandom.hex}.xml"
+    `curl -o #{path} #{uri}`
+    return File.new(path)
   end
 
   ##

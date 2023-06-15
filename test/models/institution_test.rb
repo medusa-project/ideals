@@ -39,14 +39,14 @@ class InstitutionTest < ActiveSupport::TestCase
     file = Institution.fetch_federation_metadata(Institution::SSOFederation::ITRUST)
     assert file.size > 0
   ensure
-    file&.unlink
+    File.delete(file)
   end
 
   test "fetch_federation_metadata() downloads an OpenAthens XML file" do
     file = Institution.fetch_federation_metadata(Institution::SSOFederation::OPENATHENS)
     assert file.size > 0
   ensure
-    file&.unlink
+    File.delete(file)
   end
 
   # file_sizes()
