@@ -13,7 +13,7 @@ class Role
 
   # N.B.: Values need to be comparable, i.e. a more privileged role needs to be
   # greater than a lesser role. They are also persisted in the session, so they
-  # must be changed carefully.
+  # should not be changed, thus the spacing, which allows for future additions.
   NO_LIMIT                  = 1000
   SYSTEM_ADMINISTRATOR      = 300
   INSTITUTION_ADMINISTRATOR = 250
