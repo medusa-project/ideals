@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_14_153017) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_15_150029) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -424,6 +424,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_14_153017) do
     t.string "temp_embargo_type"
     t.integer "temp_embargo_kind"
     t.bigint "institution_id"
+    t.text "deposit_agreement"
     t.index ["institution_id"], name: "index_items_on_institution_id"
     t.index ["stage"], name: "index_items_on_stage"
     t.index ["submitter_id"], name: "index_items_on_submitter_id"

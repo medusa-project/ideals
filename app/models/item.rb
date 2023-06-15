@@ -27,6 +27,8 @@
 # # Attributes
 #
 # * `created_at`              Managed by ActiveRecord.
+# * `deposit_agreement`       The deposit agreement that was agreed to by the
+#                             submitter at the time the item was created.
 # * `institution_id`          Foreign key to {Institution}. An item's owning
 #                             institution is the same as that of its
 #                             {effective_primary_unit effective primary unit},

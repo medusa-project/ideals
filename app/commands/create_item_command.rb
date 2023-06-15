@@ -28,7 +28,8 @@ class CreateItemCommand < Command
       item = Item.create!(submitter:          @submitter,
                           institution:        @institution,
                           primary_collection: @primary_collection,
-                          stage:              @stage)
+                          stage:              @stage,
+                          deposit_agreement:  @institution.deposit_agreement)
 
       # For every element with placeholder text in the item's effective
       # submission profile, ascribe a metadata element with a value of that

@@ -29,6 +29,7 @@
 # * `date_submitted_element_id` Foreign key to {RegisteredElement} designating
 #                               an element to treat as the date-submitted
 #                               element.
+# * `deposit_agreement`         Deposit agreement for new item submissions.
 # * `earliest_search_year`      Earliest year available in advanced search.
 # * `feedback_email`            Email address for public feedback.
 # * `footer_background_color`   Theme background color of the footer.

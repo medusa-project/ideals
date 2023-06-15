@@ -17,6 +17,7 @@ class CreateItemCommandTest < ActiveSupport::TestCase
                  item.element("dc:subject").string
     assert_equal Item::Stages::SUBMITTING, item.stage
     assert_equal institution, item.institution
+    assert_equal institution.deposit_agreement, item.deposit_agreement
   end
 
   test "execute() creates an associated Event" do
