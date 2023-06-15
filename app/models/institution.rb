@@ -148,6 +148,8 @@ class Institution < ApplicationRecord
 
     def self.label_for(value)
       case value
+      when NONE
+        "None"
       when ITRUST
         "iTrust"
       when OPENATHENS
