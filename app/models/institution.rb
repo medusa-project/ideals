@@ -142,6 +142,7 @@ class Institution < ApplicationRecord
   end
 
   class SSOFederation
+    NONE       = 2
     ITRUST     = 0
     OPENATHENS = 1
 

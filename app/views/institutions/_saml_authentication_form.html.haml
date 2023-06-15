@@ -15,7 +15,7 @@
 
   .mb-3
     .form-check
-      = f.radio_button(:sso_federation, nil, id: "saml", class: "form-check-input")
+      = f.radio_button(:sso_federation, Institution::SSOFederation::NONE, id: "saml", class: "form-check-input")
       %label.form-check-label{for: "saml"}
         None
     .form-check
