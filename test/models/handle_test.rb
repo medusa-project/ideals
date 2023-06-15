@@ -12,18 +12,6 @@ class HandleTest < ActiveSupport::TestCase
     assert_equal ::Configuration.instance.handles[:prefix], Handle.prefix
   end
 
-  # set_suffix_start()
-
-  test "set_suffix_start() updates the suffix sequence" do
-    Handle.set_suffix_start(54)
-    handle = Handle.new
-    handle.item = items(:uiuc_item1)
-    handle.transient = true
-    handle.save
-    handle.reload
-    assert_equal 54, handle.suffix
-  end
-
   # create()
 
   test "create() puts the handle to the handle server" do

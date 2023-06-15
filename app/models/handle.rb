@@ -39,14 +39,6 @@ class Handle < ApplicationRecord
   end
 
   ##
-  # @param value [Integer]
-  #
-  def self.set_suffix_start(value)
-    ActiveRecord::Base.connection.execute(
-        "ALTER SEQUENCE handles_suffix_seq RESTART WITH #{value};")
-  end
-
-  ##
   # @return [void]
   #
   def delete_from_server
