@@ -2,6 +2,8 @@
 
 class ApplicationController < ActionController::Base
 
+  MAX_START = 10000
+
   protect_from_forgery with: :exception
   helper_method :current_user, :logged_in?, :request_context, :to_do_list
 

@@ -459,7 +459,7 @@ class UnitsController < ApplicationController
 
   def set_item_results_ivars
     @permitted_params = params.permit(RESULTS_PARAMS + [:unit_id])
-    @start            = @permitted_params[:start].to_i.abs
+    @start            = [@permitted_params[:start].to_i.abs, MAX_START].min
     @window           = window_size
     @items            = Item.search.
       institution(@unit.institution).

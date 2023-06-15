@@ -503,7 +503,7 @@ class InstitutionsController < ApplicationController
     @permitted_params = params.permit(Search::RESULTS_PARAMS +
                                         Search::SIMPLE_SEARCH_PARAMS +
                                         [:institution_id])
-    @start            = @permitted_params[:start].to_i.abs
+    @start            = [@permitted_params[:start].to_i.abs, MAX_START].min
     @window           = window_size
     @vocabularies     = Vocabulary.
       where(institution: @institution).

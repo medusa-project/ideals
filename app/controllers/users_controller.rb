@@ -161,7 +161,7 @@ class UsersController < ApplicationController
   end
 
   def set_submittable_collections_ivars
-    @start                   = params[:collections_start].to_i.abs
+    @start                   = [params[:collections_start].to_i.abs, MAX_START].min
     @window                  = window_size
     @permitted_params        = params.permit(:collections_start, :items_start, :window)
     @submittable_collections = @user.effective_submittable_collections
@@ -176,7 +176,7 @@ class UsersController < ApplicationController
 
   def set_submitted_items_ivars
     @permitted_params = params.permit(:direction, :q, :sort, :start)
-    @start            = @permitted_params[:start].to_i.abs
+    @start            = [@permitted_params[:start].to_i.abs, MAX_START].min
     @window           = window_size
     @items            = Item.search.
       institution(current_institution).
@@ -214,7 +214,7 @@ class UsersController < ApplicationController
     @permitted_params = params.permit(Search::RESULTS_PARAMS +
                                         Search::SIMPLE_SEARCH_PARAMS +
                                         [:institution_id])
-    @start            = @permitted_params[:start].to_i.abs
+    @start            = [@permitted_params[:start].to_i.abs, MAX_START].min
     @window           = window_size
     q                 = "%#{@permitted_params[:q]&.downcase}%"
     @users            = User.
