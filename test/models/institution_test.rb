@@ -789,19 +789,9 @@ class InstitutionTest < ActiveSupport::TestCase
 
   # update_from_federation_metadata()
 
-  test "update_from_federation_metadata() raises an error if the institution's
-  entityID is not set" do
-    @instance.saml_idp_entity_id = nil
-    xml_file = file_fixture("oaf_metadata.xml")
-
-    assert_raises do
-      @instance.update_from_federation_metadata(xml_file)
-    end
-  end
-
   test "update_from_federation_metadata() raises an error if there is no
   matching entityID in the XML file" do
-    @instance.saml_idp_entity_id = "bogus"
+    @instance.fqdn = "bogus.org"
     xml_file = file_fixture("oaf_metadata.xml")
 
     assert_raises do

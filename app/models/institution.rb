@@ -160,10 +160,11 @@ class Institution < ApplicationRecord
     end
   end
 
-  ITRUST_METADATA_URL     = "https://md.itrust.illinois.edu/itrust-metadata/itrust-metadata.xml"
-  OPENATHENS_METADATA_URL = "http://fed.openathens.net/oafed/metadata"
-  SAML_METADATA_NS        = "urn:oasis:names:tc:SAML:2.0:metadata"
-  XML_DS_NS               = "http://www.w3.org/2000/09/xmldsig#"
+  ITRUST_METADATA_URL            = "https://md.itrust.illinois.edu/itrust-metadata/itrust-metadata.xml"
+  OPENATHENS_METADATA_URL        = "http://fed.openathens.net/oafed/metadata"
+  SAML_IDP_DISCOVERY_PROTOCOL_NS = "urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol"
+  SAML_METADATA_NS               = "urn:oasis:names:tc:SAML:2.0:metadata"
+  XML_DS_NS                      = "http://www.w3.org/2000/09/xmldsig#"
 
   belongs_to :author_element, class_name: "RegisteredElement",
              foreign_key: :author_element_id, optional: true
@@ -691,17 +692,21 @@ class Institution < ApplicationRecord
   # @param metadata_xml_file [File]
   #
   def update_from_federation_metadata(metadata_xml_file)
-    if self.saml_sp_entity_id.blank?
-      raise "saml_sp_entity_id is not set"
-    end
     File.open(metadata_xml_file) do |file|
       doc     = Nokogiri::XML(file)
       results = doc.xpath("/md:EntitiesDescriptor/md:EntityDescriptor[@entityID = '#{self.saml_sp_entity_id}']",
                           md: SAML_METADATA_NS)
       if results.any?
         ed = results.first
+        # IdP SSO service URL
         self.saml_idp_sso_service_url = ed.xpath("./md:IDPSSODescriptor/md:SingleSignOnService[@Binding = 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect']/@Location",
                                                  md: SAML_METADATA_NS).first&.text
+        if self.saml_idp_sso_service_url.blank?
+          self.saml_idp_sso_service_url = ed.xpath("./md:SPSSODescriptor/md:Extensions/dsr:DiscoveryResponse/@Location",
+                                                   md:  SAML_METADATA_NS,
+                                                   dsr: SAML_IDP_DISCOVERY_PROTOCOL_NS).first&.text
+        end
+        # IdP cert
         self.saml_idp_cert = "-----BEGIN CERTIFICATE-----\n" +
           ed.xpath("//ds:X509Certificate", ds: XML_DS_NS).first.text +
           "\n-----END CERTIFICATE-----"
