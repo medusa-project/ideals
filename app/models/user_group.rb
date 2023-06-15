@@ -87,7 +87,7 @@ class UserGroup < ApplicationRecord
   # @return [UserGroup] The sysadmin group.
   #
   def self.sysadmin
-    UserGroup.find_by_key("sysadmin")
+    UserGroup.find_by_key(SYSADMIN_KEY)
   end
 
   ##
