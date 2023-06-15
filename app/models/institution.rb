@@ -693,7 +693,7 @@ class Institution < ApplicationRecord
         end
         # IdP cert
         self.saml_idp_cert = "-----BEGIN CERTIFICATE-----\n" +
-          ed.xpath("//ds:X509Certificate", ds: XML_DS_NS).first.text +
+          ed.xpath("//ds:X509Certificate", ds: XML_DS_NS).first.text.strip +
           "\n-----END CERTIFICATE-----"
         self.save!
       else
