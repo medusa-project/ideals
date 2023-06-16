@@ -7,6 +7,8 @@ SAML_SETUP_PROC = lambda do |env|
     raise "This institution does not support SAML authentication."
   end
   s = env['omniauth.strategy']
+  # N.B.: Most of these options are documented here:
+  # https://github.com/SAML-Toolkits/ruby-saml
   s.options[:sp_entity_id]                       = institution.saml_sp_entity_id
   s.options[:idp_sso_service_url]                = institution.saml_idp_sso_service_url
   s.options[:idp_sso_service_url_runtime_params] = { original_request_param: :mapped_idp_param }
