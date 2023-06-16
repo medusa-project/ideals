@@ -1,0 +1,30 @@
+.row
+  .col-sm-6
+    .card
+      .card-body
+        %h3 Entities
+        %dl
+          %dt Units
+          %dd= number_with_delimiter(@unit_count)
+          %dt Collections
+          %dd= number_with_delimiter(@collection_count)
+          %dt Items
+          %dd= number_with_delimiter(@item_count)
+          %dt Users
+          %dd= number_with_delimiter(@user_count)
+
+  .col-sm-6
+    .card
+      .card-body
+        %h3 Files
+        %dl
+          %dt Files
+          %dd= number_with_delimiter(@file_sizes[:count])
+          %dt Mean File Size
+          %dd= number_to_human_size(@file_sizes[:mean])
+          %dt Median File Size
+          %dd= number_to_human_size(@file_sizes[:median])
+          %dt Max File Size
+          %dd= number_to_human_size(@file_sizes[:max])
+          %dt Total File Size
+          %dd= number_to_human_size(@file_sizes[:sum])

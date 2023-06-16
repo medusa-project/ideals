@@ -281,6 +281,13 @@ const InstitutionView = function() {
         });
     });
 
+    $("#usage-tab").on("show.bs.tab", function() {
+        const url = ROOT_URL + "/institutions/" + institutionKey + "/usage";
+        $.get(url, function (data) {
+            $("#usage-tab-content").html(data);
+        });
+    });
+
     $("#users-tab").on("show.bs.tab", function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/users";
         $.get(url, function (data) {

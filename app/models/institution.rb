@@ -495,6 +495,23 @@ class Institution < ApplicationRecord
   end
 
   ##
+  # @return [Enumerable<Hash>] Hash with `:count`, `:sum`, `:mean`, `:median`,
+  #                            and `:max` keys.
+  #
+  def file_stats
+    sql = "SELECT COUNT(b.id) AS count, SUM(b.length) AS sum,
+        AVG(b.length) AS mean,
+        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY b.length) AS median,
+        MAX(b.length) AS max
+      FROM institutions ins
+      LEFT JOIN items i ON i.institution_id = ins.id
+      LEFT JOIN bitstreams b ON b.item_id = i.id
+      WHERE ins.id = $1;"
+    values = [self.id]
+    self.class.connection.exec_query(sql, "SQL", values)[0].symbolize_keys
+  end
+
+  ##
   # @return [String]
   #
   def footer_image_url

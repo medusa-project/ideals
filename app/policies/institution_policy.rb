@@ -189,6 +189,10 @@ class InstitutionPolicy < ApplicationPolicy
     effective_sysadmin(@user, @role_limit)
   end
 
+  def show_usage
+    show
+  end
+
   def show_users
     show
   end

@@ -179,6 +179,16 @@
                                         "data-institution-key": @institution.key}
           %i.fa.fa-chart-bar
           Statistics
+      - if policy(@institution).show_usage?
+        %button#usage-tab.nav-link{"data-bs-target":       "#usage-tab-content",
+                                   "data-bs-toggle":       "pill",
+                                   role:                   "tab",
+                                   type:                   "button",
+                                   "aria-controls":        "usage-tab-content",
+                                   "aria-selected":        "false",
+                                   "data-institution-key": @institution.key}
+          %i.fa.fa-chart-bar
+          Usage
       - if policy(@institution).show_access?
         %button#access-tab.nav-link{"data-bs-target":       "#access-tab-content",
                                     "data-bs-toggle":       "pill",
@@ -274,6 +284,11 @@
     - if policy(@institution).show_statistics?
       #statistics-tab-content.tab-pane.fade{role:              "tabpanel",
                                             "aria-labelledby": "statistics-tab"}
+        = spinner
+
+    - if policy(@institution).show_usage?
+      #usage-tab-content.tab-pane.fade{role:              "tabpanel",
+                                       "aria-labelledby": "usage-tab"}
         = spinner
 
     - if policy(@institution).show_access?

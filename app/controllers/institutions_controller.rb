@@ -485,6 +485,28 @@ class InstitutionsController < ApplicationController
   end
 
   ##
+  # Renders HTML for the usage tab in show-institution view.
+  #
+  # Responds to `GET /institutions/:key/usage` (XHR only)
+  #
+  def show_usage
+    @file_sizes       = @institution.file_stats
+    @unit_count       = @institution.units.
+      where(buried: false).
+      count
+    @collection_count = Collection.
+      where(institution: @institution).
+      where(buried: false).
+      count
+    @item_count       = Item.
+      where(institution: @institution).
+      where.not(stage: Item::Stages::BURIED).
+      count
+    @user_count       = @institution.users.count
+    render partial: "show_usage_tab"
+  end
+
+  ##
   # Renders HTML for the users tab in show-institution view.
   #
   # Responds to `GET /institutions/:key/users` (XHR only)

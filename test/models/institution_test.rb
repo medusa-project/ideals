@@ -462,6 +462,17 @@ class InstitutionTest < ActiveSupport::TestCase
     assert @instance.valid?
   end
 
+  # file_stats()
+
+  test "file_stats() returns file statistics" do
+    stats = @instance.file_stats
+    assert stats[:count] > 0
+    assert stats[:sum] > 0
+    assert stats[:mean] > 0
+    assert stats[:median] > 0
+    assert stats[:max] > 0
+  end
+
   # footer_background_color
 
   test "footer_background_color must contain a valid CSS color" do

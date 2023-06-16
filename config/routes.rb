@@ -130,6 +130,8 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/units", to: "institutions#show_units", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/usage", to: "institutions#show_usage", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/users", to: "institutions#show_users", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/vocabularies", to: "institutions#show_vocabularies", via: :get,
