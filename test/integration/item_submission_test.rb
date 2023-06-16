@@ -95,6 +95,15 @@ class ItemSubmissionTest < ActionDispatch::IntegrationTest
     check_messages
   end
 
+  test "submitting an item with no files" do
+    @collection.update!(submissions_reviewed: false)
+    create_item
+    ascribe_no_embargo
+    ascribe_metadata
+    post submission_complete_path(@item)
+    assert_redirected_to edit_submission_path(@item)
+  end
+
 
   private
 
