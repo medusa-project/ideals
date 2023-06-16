@@ -161,11 +161,10 @@ class Institution < ApplicationRecord
     end
   end
 
-  ITRUST_METADATA_URL            = "https://md.itrust.illinois.edu/itrust-metadata/itrust-metadata.xml"
-  OPENATHENS_METADATA_URL        = "http://fed.openathens.net/oafed/metadata"
-  SAML_IDP_DISCOVERY_PROTOCOL_NS = "urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol"
-  SAML_METADATA_NS               = "urn:oasis:names:tc:SAML:2.0:metadata"
-  XML_DS_NS                      = "http://www.w3.org/2000/09/xmldsig#"
+  ITRUST_METADATA_URL     = "https://md.itrust.illinois.edu/itrust-metadata/itrust-metadata.xml"
+  OPENATHENS_METADATA_URL = "http://fed.openathens.net/oafed/metadata"
+  SAML_METADATA_NS        = "urn:oasis:names:tc:SAML:2.0:metadata"
+  XML_DS_NS               = "http://www.w3.org/2000/09/xmldsig#"
 
   belongs_to :author_element, class_name: "RegisteredElement",
              foreign_key: :author_element_id, optional: true
@@ -679,26 +678,32 @@ class Institution < ApplicationRecord
   #
   def update_from_federation_metadata(metadata_xml_file)
     File.open(metadata_xml_file) do |file|
-      doc     = Nokogiri::XML(file)
-      results = doc.xpath("/md:EntitiesDescriptor/md:EntityDescriptor[@entityID = '#{self.saml_sp_entity_id}']",
-                          md: SAML_METADATA_NS)
-      if results.any?
-        ed = results.first
+      doc        = Nokogiri::XML(file)
+      sp_entity  = doc.xpath("/md:EntitiesDescriptor/md:EntityDescriptor[@entityID = '#{self.saml_sp_entity_id}']",
+                             md: SAML_METADATA_NS).first
+      idp_entity = doc.xpath("/md:EntitiesDescriptor/md:EntityDescriptor[@entityID = '#{self.saml_idp_entity_id}']",
+                             md: SAML_METADATA_NS).first
+      if sp_entity
         # IdP SSO service URL
-        self.saml_idp_sso_service_url = ed.xpath("./md:IDPSSODescriptor/md:SingleSignOnService[@Binding = 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect']/@Location",
-                                                 md: SAML_METADATA_NS).first&.text
+        # Does the SP's EntityDescriptor contain an IDPSSODescriptor with an
+        # SSO service URL?
+        self.saml_idp_sso_service_url = sp_entity.xpath("./md:IDPSSODescriptor/md:SingleSignOnService[@Binding = 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect']/@Location",
+                                                        md: SAML_METADATA_NS).first&.text
         if self.saml_idp_sso_service_url.blank?
-          self.saml_idp_sso_service_url = ed.xpath("./md:SPSSODescriptor/md:Extensions/dsr:DiscoveryResponse/@Location",
-                                                   md:  SAML_METADATA_NS,
-                                                   dsr: SAML_IDP_DISCOVERY_PROTOCOL_NS).first&.text
+          # Does its IdP's EntityDescriptor contain one?
+          self.saml_idp_sso_service_url = idp_entity.xpath("./md:IDPSSODescriptor/md:SingleSignOnService[@Binding = 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect']/@Location",
+                                                           md: SAML_METADATA_NS).first&.text
+          if self.saml_idp_sso_service_url.blank?
+            raise "No matching SP or IdP entityID found in federation metadata"
+          end
         end
         # IdP cert
         self.saml_idp_cert = "-----BEGIN CERTIFICATE-----\n" +
-          ed.xpath("//ds:X509Certificate", ds: XML_DS_NS).first.text.strip +
+          idp_entity.xpath("//ds:X509Certificate", ds: XML_DS_NS).first.text.strip +
           "\n-----END CERTIFICATE-----"
         self.save!
       else
-        raise "No matching entityID found in federation metadata"
+        raise "No matching SP entityID found in federation metadata"
       end
     end
   end
