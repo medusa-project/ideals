@@ -3,9 +3,6 @@
 ##
 # Encapsulates a {User} login event.
 #
-# N.B.: it is debatable whether this should be more strongly related to
-# {Event}--perhaps a subclass.
-#
 # # Attributes
 #
 # * `auth_hash`  Serialized OmniAuth hash.
@@ -23,7 +20,7 @@ class Login < ApplicationRecord
     LOCAL      = 0
     # Used only by UIUC.
     SHIBBOLETH = 1
-    # Used by many CARLI member institutions.
+    # Used by many CARLI member institutions, and CARLI itself.
     SAML       = 2
 
     def self.all
@@ -44,11 +41,14 @@ class Login < ApplicationRecord
     end
   end
 
+  has_one :event
   belongs_to :user
 
   serialize :auth_hash, JSON
 
   validates :provider, inclusion: { in: Provider.all }
+
+  after_create :create_event
 
   ##
   # Override to ensure that the argument is serializable.
@@ -73,6 +73,19 @@ class Login < ApplicationRecord
     end
 
     super(auth)
+  end
+
+
+  private
+
+  ##
+  # Creates an {Event}.
+  #
+  def create_event
+    Event.create!(login:       self,
+                  event_type:  Event::Type::LOGIN,
+                  user:        user,
+                  happened_at: Time.now)
   end
 
 end

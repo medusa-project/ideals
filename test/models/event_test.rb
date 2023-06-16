@@ -12,7 +12,7 @@ class EventTest < ActiveSupport::TestCase
   class TypeTest < ActiveSupport::TestCase
 
     test "all() returns all types" do
-      assert_equal [0, 1, 2, 3, 4], Event::Type::all.sort
+      assert_equal [0, 1, 2, 3, 4, 5], Event::Type::all.sort
     end
 
     test "label() raises an error for an invalid type" do
@@ -52,6 +52,7 @@ class EventTest < ActiveSupport::TestCase
   test "instance must be associated with an object" do
     @instance.bitstream = nil
     @instance.item      = nil
+    @instance.login     = nil
     assert !@instance.valid?
 
     @instance.item = items(:uiuc_item1)
@@ -59,6 +60,13 @@ class EventTest < ActiveSupport::TestCase
 
     @instance.bitstream = bitstreams(:uiuc_item1_in_staging)
     @instance.item      = nil
+    @instance.login     = nil
+    assert @instance.valid?
+
+    @instance.bitstream = nil
+    @instance.item      = nil
+    @instance.login     = Login.create!(user:     users(:uiuc),
+                                        provider: Login::Provider::LOCAL)
     assert @instance.valid?
   end
 

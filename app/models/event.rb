@@ -18,6 +18,8 @@
 #                    imported data).
 # * `item_id`        References the {Item} to which the instance relates
 #                    (optional).
+# * `login_id`       References the {Login} to which the instance relates
+#                    (optional).
 # * `updated_at`     Managed by ActiveRecord.
 # * `user_id`        References the {User} who triggered the event. This may be
 #                    nil if the event was triggered by e.g. an automated
@@ -34,6 +36,7 @@ class Event < ApplicationRecord
     UPDATE   = 2
     DOWNLOAD = 3
     UNDELETE = 4
+    LOGIN    = 5
 
     def self.all
       Event::Type.constants.map{ |c| Event::Type::const_get(c) }
@@ -60,6 +63,7 @@ class Event < ApplicationRecord
 
   belongs_to :bitstream, optional: true
   belongs_to :item, optional: true
+  belongs_to :login, optional: true
   belongs_to :user, optional: true
 
   validates :event_type, inclusion: { in: Type.all }
@@ -99,7 +103,7 @@ class Event < ApplicationRecord
   # Ensures that the instance is associated with an object.
   #
   def validate_associated_object
-    if bitstream_id.nil? && item_id.nil?
+    if bitstream_id.nil? && item_id.nil? && login_id.nil?
       errors.add(:base, "is not associated with an entity")
     end
   end

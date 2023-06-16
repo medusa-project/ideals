@@ -6,6 +6,17 @@ class LoginTest < ActiveSupport::TestCase
     @instance = Login.new
   end
 
+  # create()
+
+  test "create() creates an associated Event" do
+    assert_difference "Event.count" do
+      login = Login.create!(provider: Login::Provider::LOCAL,
+                            user:     users(:southwest))
+      event = Event.all.order(created_at: :desc).limit(1).first
+      assert_equal event.login, login
+    end
+  end
+
   # auth_hash=()
 
   test "auth_hash=() sets the provider" do
