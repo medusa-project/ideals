@@ -123,13 +123,26 @@ class User < ApplicationRecord
 
   ##
   # @param auth [OmniAuth::AuthHash]
+  # @param email_location [Integer] One of the {Institution::SAMLEmailLocation}
+  #                                 constant values.
+  # @param email_attribute [String] Required if email_location is
+  #                                 {Institution::SAMLEmailLocation#ATTRIBUTE}.
   # @return [User] Instance corresponding to the given auth hash, or nil if not
   #                found.
   #
-  def self.fetch_from_omniauth_saml(auth)
+  def self.fetch_from_omniauth_saml(auth,
+                                    email_location:,
+                                    email_attribute: "emailAddress")
     auth  = auth.deep_symbolize_keys
-    attrs = auth[:extra][:raw_info].attributes.deep_symbolize_keys
-    email = attrs[:emailAddress]&.first
+
+    case email_location
+    when Institution::SAMLEmailLocation::ATTRIBUTE
+      attrs = auth[:extra][:raw_info].attributes.deep_stringify_keys
+      email = attrs[email_attribute]&.first
+    else
+      email = auth[:uid]
+    end
+
     User.find_by_email(email)
   end
 
@@ -205,7 +218,10 @@ class User < ApplicationRecord
   # @private
   #
   def self.from_omniauth_saml(auth, institution:)
-    user = User.fetch_from_omniauth_saml(auth) || User.new
+    user = User.fetch_from_omniauth_saml(auth,
+                                         email_location:  institution.saml_email_location,
+                                         email_attribute: institution.saml_email_attribute)
+    user ||= User.new
     user.send(:update_from_saml, auth, institution)
     user
   end

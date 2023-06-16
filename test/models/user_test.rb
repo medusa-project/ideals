@@ -130,7 +130,21 @@ class UserTest < ActiveSupport::TestCase
 
   # fetch_from_omniauth_saml()
 
-  test "fetch_from_omniauth_saml() with a matching email returns the user" do
+  test "fetch_from_omniauth_saml() with a matching NameID returns the user" do
+    user = users(:southwest)
+    auth = {
+      provider: "saml",
+      uid: user.email,
+      extra: {
+        raw_info: OneLogin::RubySaml::Attributes.new()
+      }
+    }
+    assert_equal user, User.fetch_from_omniauth_saml(auth,
+                                                     email_location: Institution::SAMLEmailLocation::NAMEID)
+  end
+
+  test "fetch_from_omniauth_saml() with a matching email attribute returns the
+  user" do
     user = users(:southwest)
     auth = {
       provider: "saml",
@@ -142,7 +156,8 @@ class UserTest < ActiveSupport::TestCase
         )
       }
     }
-    assert_equal user, User.fetch_from_omniauth_saml(auth)
+    assert_equal user, User.fetch_from_omniauth_saml(auth,
+                                                     email_location: Institution::SAMLEmailLocation::ATTRIBUTE)
   end
 
   test "fetch_from_omniauth_saml() with a non-matching email returns nil" do
@@ -156,7 +171,8 @@ class UserTest < ActiveSupport::TestCase
         )
       }
     }
-    assert_nil User.fetch_from_omniauth_saml(auth)
+    assert_nil User.fetch_from_omniauth_saml(auth,
+                                             email_location: Institution::SAMLEmailLocation::ATTRIBUTE)
   end
 
   # fetch_from_omniauth_shibboleth()
