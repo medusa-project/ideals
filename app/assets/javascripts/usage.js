@@ -1,20 +1,20 @@
 /**
- * Handles global statistics view (/statistics).
+ * Handles global usage view (/usage).
  *
  * @constructor
  */
-const StatisticsView = function() {
+const UsageView = function() {
     const ROOT_URL = $('input[name="root_url"]').val();
 
     $("#items-tab").on("show.bs.tab", function() {
-        const url = ROOT_URL + "/statistics/items";
+        const url = ROOT_URL + "/usage/items";
         $.get(url, function (data) {
             $("#items-tab-content").html(data);
         });
     }).trigger("show.bs.tab");
 
     $("#files-tab").on("show.bs.tab", function() {
-        const url = ROOT_URL + "/statistics/files";
+        const url = ROOT_URL + "/usage/files";
         $.get(url, function (data) {
             $("#files-tab-content").html(data);
         });
@@ -23,7 +23,7 @@ const StatisticsView = function() {
 
 
 $(document).ready(function() {
-    if ($('body#statistics').length) {
-        new StatisticsView();
+    if ($("body#usage").length) {
+        new UsageView();
     }
 });

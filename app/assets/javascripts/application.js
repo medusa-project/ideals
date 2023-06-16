@@ -40,11 +40,11 @@
 //= require metadata_profiles
 //= require prebuilt_searches
 //= require registered_elements
-//= require statistics
 //= require submission_profiles
 //= require submissions
 //= require tasks
 //= require units
+//= require usage
 //= require user_groups
 //= require users
 //= require vocabularies

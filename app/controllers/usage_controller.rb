@@ -1,14 +1,14 @@
 ##
-# Handles global, sysadmin-level statistics.
+# Handles global, sysadmin-level usage statistics.
 #
-class StatisticsController < ApplicationController
+class UsageController < ApplicationController
 
   before_action :ensure_institution_host, :ensure_logged_in,
                 :authorize_sysadmin
   before_action :store_location, only: :index
 
   ##
-  # Responds to `GET /statistics/files` (XHR only).
+  # Responds to `GET /usage/files` (XHR only).
   #
   def files
     @file_sizes      = Institution.file_sizes
@@ -17,13 +17,13 @@ class StatisticsController < ApplicationController
   end
 
   ##
-  # Responds to `GET /statistics`.
+  # Responds to `GET /usage`.
   #
   def index
   end
 
   ##
-  # Responds to `GET /statistics/items` (XHR only).
+  # Responds to `GET /usage/items` (XHR only).
   #
   def items
     @item_counts      = Institution.item_counts
@@ -35,7 +35,7 @@ class StatisticsController < ApplicationController
   private
 
   def authorize_sysadmin
-    authorize(Statistic)
+    authorize(Usage)
   end
 
 end

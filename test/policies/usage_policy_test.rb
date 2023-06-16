@@ -1,11 +1,11 @@
 require 'test_helper'
 
-class StatisticPolicyTest < ActiveSupport::TestCase
+class UsagePolicyTest < ActiveSupport::TestCase
 
   # files?()
 
   test "files?() returns false with a nil user" do
-    policy = StatisticPolicy.new(nil, Statistic)
+    policy = UsagePolicy.new(nil, Usage)
     assert !policy.files?
   end
 
@@ -13,7 +13,7 @@ class StatisticPolicyTest < ActiveSupport::TestCase
     user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy = StatisticPolicy.new(context, Statistic)
+    policy = UsagePolicy.new(context, Usage)
     assert !policy.files?
   end
 
@@ -21,7 +21,7 @@ class StatisticPolicyTest < ActiveSupport::TestCase
     user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = StatisticPolicy.new(context, Statistic)
+    policy  = UsagePolicy.new(context, Usage)
     assert policy.files?
   end
 
@@ -31,14 +31,14 @@ class StatisticPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
-    policy  = StatisticPolicy.new(context, Statistic)
+    policy  = UsagePolicy.new(context, Usage)
     assert !policy.files?
   end
 
   # index?()
 
   test "index?() returns false with a nil user" do
-    policy = StatisticPolicy.new(nil, Statistic)
+    policy = UsagePolicy.new(nil, Usage)
     assert !policy.index?
   end
 
@@ -46,7 +46,7 @@ class StatisticPolicyTest < ActiveSupport::TestCase
     user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy = StatisticPolicy.new(context, Statistic)
+    policy = UsagePolicy.new(context, Usage)
     assert !policy.index?
   end
 
@@ -54,7 +54,7 @@ class StatisticPolicyTest < ActiveSupport::TestCase
     user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = StatisticPolicy.new(context, Statistic)
+    policy  = UsagePolicy.new(context, Usage)
     assert policy.index?
   end
 
@@ -64,14 +64,14 @@ class StatisticPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
-    policy  = StatisticPolicy.new(context, Statistic)
+    policy  = UsagePolicy.new(context, Usage)
     assert !policy.index?
   end
 
   # items?()
 
   test "items?() returns false with a nil user" do
-    policy = StatisticPolicy.new(nil, Statistic)
+    policy = UsagePolicy.new(nil, Usage)
     assert !policy.items?
   end
 
@@ -79,7 +79,7 @@ class StatisticPolicyTest < ActiveSupport::TestCase
     user    = users(:example)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy = StatisticPolicy.new(context, Statistic)
+    policy = UsagePolicy.new(context, Usage)
     assert !policy.items?
   end
 
@@ -87,7 +87,7 @@ class StatisticPolicyTest < ActiveSupport::TestCase
     user    = users(:example_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = StatisticPolicy.new(context, Statistic)
+    policy  = UsagePolicy.new(context, Usage)
     assert policy.items?
   end
 
@@ -97,7 +97,7 @@ class StatisticPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
-    policy  = StatisticPolicy.new(context, Statistic)
+    policy  = UsagePolicy.new(context, Usage)
     assert !policy.items?
   end
 

@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class StatisticsControllerTest < ActionDispatch::IntegrationTest
+class UsageControllerTest < ActionDispatch::IntegrationTest
 
   setup do
     @institution = institutions(:southwest)
@@ -15,39 +15,39 @@ class StatisticsControllerTest < ActionDispatch::IntegrationTest
 
   test "files() returns HTTP 404 for unscoped requests" do
     host! ::Configuration.instance.main_host
-    get statistics_files_path, xhr: true
+    get usage_files_path, xhr: true
     assert_response :not_found
   end
 
   test "files() returns HTTP 403 for logged-out users" do
-    get statistics_files_path, xhr: true
+    get usage_files_path, xhr: true
     assert_response :forbidden
   end
 
   test "files() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:southwest))
-    get statistics_files_path, xhr: true
+    get usage_files_path, xhr: true
     assert_response :forbidden
   end
 
   test "files() returns HTTP 200 for authorized users" do
     log_in_as(users(:southwest_sysadmin))
-    get statistics_files_path, xhr: true
+    get usage_files_path, xhr: true
     assert_response :ok
   end
 
   test "files() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:southwest_sysadmin))
-    get statistics_files_path
+    get usage_files_path
     assert_response :not_found
   end
 
   test "files() respects role limits" do
     log_in_as(users(:southwest_sysadmin))
-    get statistics_files_path, xhr: true
+    get usage_files_path, xhr: true
     assert_response :ok
 
-    get statistics_files_path(role: Role::LOGGED_OUT), xhr: true
+    get usage_files_path(role: Role::LOGGED_OUT), xhr: true
     assert_response :forbidden
   end
 
@@ -55,33 +55,33 @@ class StatisticsControllerTest < ActionDispatch::IntegrationTest
 
   test "index() returns HTTP 404 for unscoped requests" do
     host! ::Configuration.instance.main_host
-    get statistics_path
+    get usage_path
     assert_response :not_found
   end
 
   test "index() redirects to root page for logged-out users" do
-    get statistics_path
+    get usage_path
     assert_redirected_to @institution.scope_url
   end
 
   test "index() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:southwest))
-    get statistics_path
+    get usage_path
     assert_response :forbidden
   end
 
   test "index() returns HTTP 200 for authorized users" do
     log_in_as(users(:southwest_sysadmin))
-    get statistics_path
+    get usage_path
     assert_response :ok
   end
 
   test "index() respects role limits" do
     log_in_as(users(:southwest_sysadmin))
-    get statistics_path
+    get usage_path
     assert_response :ok
 
-    get statistics_path(role: Role::LOGGED_OUT)
+    get usage_path(role: Role::LOGGED_OUT)
     assert_response :forbidden
   end
 
@@ -89,39 +89,39 @@ class StatisticsControllerTest < ActionDispatch::IntegrationTest
 
   test "items() returns HTTP 404 for unscoped requests" do
     host! ::Configuration.instance.main_host
-    get statistics_items_path, xhr: true
+    get usage_items_path, xhr: true
     assert_response :not_found
   end
 
   test "items() returns HTTP 403 for logged-out users" do
-    get statistics_items_path, xhr: true
+    get usage_items_path, xhr: true
     assert_response :forbidden
   end
 
   test "items() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:southwest))
-    get statistics_items_path, xhr: true
+    get usage_items_path, xhr: true
     assert_response :forbidden
   end
 
   test "items() returns HTTP 200 for authorized users" do
     log_in_as(users(:southwest_sysadmin))
-    get statistics_items_path, xhr: true
+    get usage_items_path, xhr: true
     assert_response :ok
   end
 
   test "items() returns HTTP 404 for non-XHR requests" do
     log_in_as(users(:southwest_sysadmin))
-    get statistics_items_path
+    get usage_items_path
     assert_response :not_found
   end
 
   test "items() respects role limits" do
     log_in_as(users(:southwest_sysadmin))
-    get statistics_items_path, xhr: true
+    get usage_items_path, xhr: true
     assert_response :ok
 
-    get statistics_items_path(role: Role::LOGGED_OUT), xhr: true
+    get usage_items_path(role: Role::LOGGED_OUT), xhr: true
     assert_response :forbidden
   end
 

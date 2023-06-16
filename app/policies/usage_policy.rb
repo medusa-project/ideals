@@ -1,13 +1,13 @@
-class StatisticPolicy < ApplicationPolicy
+class UsagePolicy < ApplicationPolicy
 
   ##
   # @param request_context [RequestContext]
-  # @param statistic [Statistic]
+  # @param usage [Usage]
   #
-  def initialize(request_context, statistic)
+  def initialize(request_context, usage)
     @user       = request_context&.user
     @role_limit = request_context&.role_limit || Role::NO_LIMIT
-    @statistic  = statistic
+    @usage      = usage
   end
 
   def files

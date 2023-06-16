@@ -217,11 +217,6 @@ Rails.application.routes.draw do
   match "/robots", to: "robots#show", via: :get
   match "/settings", to: "settings#index", via: :get
   match "/settings", to: "settings#update", via: :patch
-  match "/statistics", to: "statistics#index", via: :get
-  match "/statistics/files", to: "statistics#files", via: :get,
-        constraints: lambda { |request| request.xhr? }
-  match "/statistics/items", to: "statistics#items", via: :get,
-        constraints: lambda { |request| request.xhr? }
   resources :submission_profiles, path: "submission-profiles" do
     match "/clone", to: "submission_profiles#clone", via: :post
     resources :submission_profile_elements, path: "elements", except: [:index, :show]
@@ -260,6 +255,11 @@ Rails.application.routes.draw do
     match "/statistics-by-range", to: "units#statistics_by_range", via: :get
     match "/undelete", to: "units#undelete", via: :post
   end
+  match "/usage", to: "usage#index", via: :get
+  match "/usage/files", to: "usage#files", via: :get,
+        constraints: lambda { |request| request.xhr? }
+  match "/usage/items", to: "usage#items", via: :get,
+        constraints: lambda { |request| request.xhr? }
   resources :user_groups, path: "user-groups" do
     match "/edit-ad-groups", to: "user_groups#edit_ad_groups", via: :get,
           constraints: lambda { |request| request.xhr? }
