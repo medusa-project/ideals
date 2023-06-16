@@ -44,7 +44,7 @@ class EventTest < ActiveSupport::TestCase
     e3 = Event.create!(happened_at: 3.hours.ago,
                        item:        items(:uiuc_item1),
                        event_type:  Event::Type::CREATE)
-    assert_equal e3, Event.first
+    assert_equal e3, Event.all.order(:happened_at).limit(1).first
   end
 
   # instance-level tests

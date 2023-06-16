@@ -66,13 +66,6 @@ class Event < ApplicationRecord
   validate :validate_changes
   validate :validate_associated_object
 
-  ##
-  # @return [Event] The first event that happened.
-  #
-  def self.first
-    Event.all.order(:happened_at).limit(1).first
-  end
-
   def after_changes
     json = read_attribute(:after_changes)
     json ? JSON.parse(json) : nil
@@ -98,6 +91,7 @@ class Event < ApplicationRecord
     hash = auditable.kind_of?(Auditable) ? auditable.as_change_hash : auditable
     write_attribute(:before_changes, JSON.generate(hash))
   end
+
 
   private
 
