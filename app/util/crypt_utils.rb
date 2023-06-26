@@ -13,7 +13,7 @@ class CryptUtils
   #
   def self.generate_cert_pair(organization:,
                               common_name:,
-                              expires_in: 5.years.to_i)
+                              expires_in: 10.years.to_i)
     key  = OpenSSL::PKey::RSA.new(4096)
     name = OpenSSL::X509::Name.parse("/C=US/ST=Illinois/O=#{organization}/CN=#{common_name}")
     cert = OpenSSL::X509::Certificate.new
