@@ -108,7 +108,8 @@ class RegisteredElementsController < ApplicationController
   private
 
   def registered_element_params
-    params.require(:registered_element).permit(:highwire_mapping, :input_type,
+    params.require(:registered_element).permit(:dublin_core_mapping,
+                                               :highwire_mapping, :input_type,
                                                :institution_id, :label, :name,
                                                :scope_note, :uri,
                                                :vocabulary_id)

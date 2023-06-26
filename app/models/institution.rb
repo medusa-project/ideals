@@ -821,99 +821,128 @@ class Institution < ApplicationRecord
     # These elements are used by default metadata mappings (see
     # add_default_metadata_mappings()) as Dublin Core does not have good
     # equivalents.
-    self.registered_elements.build(name:             "ideals:date:submitted",
-                                   label:            "Date Submitted",
-                                   input_type:       RegisteredElement::InputType::TEXT_FIELD)
-    self.registered_elements.build(name:             "ideals:date:approved",
-                                   label:            "Date Approved",
-                                   input_type:       RegisteredElement::InputType::TEXT_FIELD)
-    self.registered_elements.build(name:             "ideals:date:published",
-                                   label:            "Date Published",
-                                   input_type:       RegisteredElement::InputType::TEXT_FIELD)
-    self.registered_elements.build(name:             "ideals:handleURI",
-                                   label:            "Handle URI",
-                                   input_type:       RegisteredElement::InputType::TEXT_FIELD)
-    self.registered_elements.build(name:             "dc:contributor",
-                                   label:            "Contributor",
-                                   input_type:       RegisteredElement::InputType::TEXT_FIELD)
-    self.registered_elements.build(name:             "dc:contributor:advisor",
-                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
-                                   label:            "Dissertation Director of Research or Thesis Advisor")
-    self.registered_elements.build(name:             "dc:contributor:committeeChair",
-                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
-                                   label:            "Dissertation Chair")
-    self.registered_elements.build(name:             "dc:contributor:committeeMember",
-                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
-                                   label:            "Dissertation Committee Member")
-    self.registered_elements.build(name:             "dc:coverage:spatial",
-                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
-                                   label:            "Geographic Coverage")
-    self.registered_elements.build(name:             "dc:creator",
-                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
-                                   label:            "Creator",
-                                   highwire_mapping: "citation_author")
-    self.registered_elements.build(name:             "dc:date:issued",
-                                   input_type:       RegisteredElement::InputType::DATE,
-                                   label:            "Date of Publication",
-                                   highwire_mapping: "citation_publication_date")
-    self.registered_elements.build(name:             "dc:date:submitted",
-                                   input_type:       RegisteredElement::InputType::DATE,
-                                   label:            "Date Deposited")
-    self.registered_elements.build(name:             "dc:description",
-                                   input_type:       RegisteredElement::InputType::TEXT_AREA,
-                                   label:            "Description")
-    self.registered_elements.build(name:             "dc:description:abstract",
-                                   input_type:       RegisteredElement::InputType::TEXT_AREA,
-                                   label:            "Abstract")
-    self.registered_elements.build(name:             "dc:description:sponsorship",
-                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
-                                   label:            "Sponsor/Grant No.")
-    self.registered_elements.build(name:             "dc:identifier",
-                                   label:            "Identifier",
-                                   vocabulary:       Vocabulary.find_by_name("Degree Names"),
-                                   highwire_mapping: "citation_id")
-    self.registered_elements.build(name:             "dc:identifier:bibliographicCitation",
-                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
-                                   label:            "Complete Citation For This Item")
-    self.registered_elements.build(name:             "dc:identifier:uri",
-                                   label:            "Identifiers: URI or URL")
-    self.registered_elements.build(name:             "dc:language",
-                                   label:            "Language",
-                                   vocabulary:       Vocabulary.find_by_name("Common ISO Languages"),
-                                   highwire_mapping: "citation_language")
-    self.registered_elements.build(name:             "dc:publisher",
-                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
-                                   label:            "Publisher",
-                                   highwire_mapping: "citation_publisher")
-    self.registered_elements.build(name:             "dc:relation:ispartof",
-                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
-                                   label:            "Series Name/Report No.")
-    self.registered_elements.build(name:             "dc:rights",
-                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
-                                   label:            "Copyright Statement")
-    self.registered_elements.build(name:             "dc:subject",
-                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
-                                   label:            "Keyword",
-                                   highwire_mapping: "citation_keywords")
-    self.registered_elements.build(name:             "dcterms:available",
-                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
-                                   label:            "Available")
-    self.registered_elements.build(name:             "dcterms:identifier",
-                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
-                                   label:            "Handle URI")
-    self.registered_elements.build(name:             "dc:title",
-                                   input_type:       RegisteredElement::InputType::TEXT_FIELD,
-                                   label:            "Title",
-                                   highwire_mapping: "citation_title")
-    self.registered_elements.build(name:             "dc:type",
-                                   label:            "Type of Resource",
-                                   vocabulary:       Vocabulary.find_by_name("Common Types"))
-    self.registered_elements.build(name:             "dc:type:genre",
-                                   label:            "Genre of Resource",
-                                   vocabulary:       Vocabulary.find_by_name("Common Genres"))
-    self.registered_elements.build(name:             "orcid:identifier",
-                                   label:            "ORCID Identifier",
-                                   input_type:       RegisteredElement::InputType::TEXT_FIELD)
+    self.registered_elements.build(name:                "ideals:date:submitted",
+                                   label:               "Date Submitted",
+                                   dublin_core_mapping: "date",
+                                   input_type:          RegisteredElement::InputType::TEXT_FIELD)
+    self.registered_elements.build(name:                "ideals:date:approved",
+                                   label:               "Date Approved",
+                                   dublin_core_mapping: "date",
+                                   input_type:          RegisteredElement::InputType::TEXT_FIELD)
+    self.registered_elements.build(name:                "ideals:date:published",
+                                   label:               "Date Published",
+                                   dublin_core_mapping: "date",
+                                   input_type:          RegisteredElement::InputType::TEXT_FIELD)
+    self.registered_elements.build(name:                "ideals:handleURI",
+                                   label:               "Handle URI",
+                                   dublin_core_mapping: "identifier",
+                                   input_type:          RegisteredElement::InputType::TEXT_FIELD)
+    self.registered_elements.build(name:                "dc:contributor",
+                                   label:               "Contributor",
+                                   dublin_core_mapping: "contributor",
+                                   input_type:          RegisteredElement::InputType::TEXT_FIELD)
+    self.registered_elements.build(name:                "dc:contributor:advisor",
+                                   input_type:          RegisteredElement::InputType::TEXT_FIELD,
+                                   dublin_core_mapping: "contributor",
+                                   label:               "Dissertation Director of Research or Thesis Advisor")
+    self.registered_elements.build(name:                "dc:contributor:committeeChair",
+                                   input_type:          RegisteredElement::InputType::TEXT_FIELD,
+                                   dublin_core_mapping: "contributor",
+                                   label:               "Dissertation Chair")
+    self.registered_elements.build(name:                "dc:contributor:committeeMember",
+                                   input_type:          RegisteredElement::InputType::TEXT_FIELD,
+                                   dublin_core_mapping: "contributor",
+                                   label:               "Dissertation Committee Member")
+    self.registered_elements.build(name:                "dc:coverage:spatial",
+                                   input_type:          RegisteredElement::InputType::TEXT_FIELD,
+                                   dublin_core_mapping: "coverage",
+                                   label:               "Geographic Coverage")
+    self.registered_elements.build(name:                "dc:creator",
+                                   input_type:          RegisteredElement::InputType::TEXT_FIELD,
+                                   dublin_core_mapping: "creator",
+                                   label:               "Creator",
+                                   highwire_mapping:    "citation_author")
+    self.registered_elements.build(name:                "dc:date:issued",
+                                   input_type:          RegisteredElement::InputType::DATE,
+                                   dublin_core_mapping: "date",
+                                   label:               "Date of Publication",
+                                   highwire_mapping:    "citation_publication_date")
+    self.registered_elements.build(name:                "dc:date:submitted",
+                                   input_type:          RegisteredElement::InputType::DATE,
+                                   dublin_core_mapping: "date",
+                                   label:               "Date Deposited")
+    self.registered_elements.build(name:                "dc:description",
+                                   input_type:          RegisteredElement::InputType::TEXT_AREA,
+                                   dublin_core_mapping: "description",
+                                   label:               "Description")
+    self.registered_elements.build(name:                "dc:description:abstract",
+                                   input_type:          RegisteredElement::InputType::TEXT_AREA,
+                                   dublin_core_mapping: "description",
+                                   label:               "Abstract")
+    self.registered_elements.build(name:                "dc:description:sponsorship",
+                                   input_type:          RegisteredElement::InputType::TEXT_FIELD,
+                                   dublin_core_mapping: "description",
+                                   label:               "Sponsor/Grant No.")
+    self.registered_elements.build(name:                "dc:identifier",
+                                   label:               "Identifier",
+                                   dublin_core_mapping: "identifier",
+                                   vocabulary:          Vocabulary.find_by_name("Degree Names"),
+                                   highwire_mapping:    "citation_id")
+    self.registered_elements.build(name:                "dc:identifier:bibliographicCitation",
+                                   input_type:          RegisteredElement::InputType::TEXT_FIELD,
+                                   dublin_core_mapping: "identifier",
+                                   label:               "Complete Citation For This Item")
+    self.registered_elements.build(name:                "dc:identifier:uri",
+                                   dublin_core_mapping: "identifier",
+                                   label:               "Identifiers: URI or URL")
+    self.registered_elements.build(name:                "dc:language",
+                                   label:               "Language",
+                                   dublin_core_mapping: "language",
+                                   vocabulary:          Vocabulary.find_by_name("Common ISO Languages"),
+                                   highwire_mapping:    "citation_language")
+    self.registered_elements.build(name:                "dc:publisher",
+                                   input_type:          RegisteredElement::InputType::TEXT_FIELD,
+                                   dublin_core_mapping: "publisher",
+                                   label:               "Publisher",
+                                   highwire_mapping:    "citation_publisher")
+    self.registered_elements.build(name:                "dc:relation:ispartof",
+                                   input_type:          RegisteredElement::InputType::TEXT_FIELD,
+                                   dublin_core_mapping: "relation",
+                                   label:               "Series Name/Report No.")
+    self.registered_elements.build(name:                "dc:rights",
+                                   input_type:          RegisteredElement::InputType::TEXT_FIELD,
+                                   dublin_core_mapping: "rights",
+                                   label:               "Copyright Statement")
+    self.registered_elements.build(name:                "dc:subject",
+                                   input_type:          RegisteredElement::InputType::TEXT_FIELD,
+                                   dublin_core_mapping: "subject",
+                                   label:               "Keyword",
+                                   highwire_mapping:    "citation_keywords")
+    self.registered_elements.build(name:                "dcterms:available",
+                                   input_type:          RegisteredElement::InputType::TEXT_FIELD,
+                                   dublin_core_mapping: "date",
+                                   label:               "Available")
+    self.registered_elements.build(name:                "dcterms:identifier",
+                                   input_type:          RegisteredElement::InputType::TEXT_FIELD,
+                                   dublin_core_mapping: "identifier",
+                                   label:               "Handle URI")
+    self.registered_elements.build(name:                "dc:title",
+                                   input_type:          RegisteredElement::InputType::TEXT_FIELD,
+                                   dublin_core_mapping: "title",
+                                   label:               "Title",
+                                   highwire_mapping:    "citation_title")
+    self.registered_elements.build(name:                "dc:type",
+                                   label:               "Type of Resource",
+                                   dublin_core_mapping: "type",
+                                   vocabulary:          Vocabulary.find_by_name("Common Types"))
+    self.registered_elements.build(name:                "dc:type:genre",
+                                   label:               "Genre of Resource",
+                                   dublin_core_mapping: "type",
+                                   vocabulary:          Vocabulary.find_by_name("Common Genres"))
+    self.registered_elements.build(name:                "orcid:identifier",
+                                   label:               "ORCID Identifier",
+                                   dublin_core_mapping: "identifier",
+                                   input_type:          RegisteredElement::InputType::TEXT_FIELD)
     self.save!
   end
 

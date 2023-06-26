@@ -29,6 +29,7 @@ if policy(@item).show?
           json.name element.name
           json.label element.label
           json.uri element.registered_element.uri
+          json.dublin_core_mapping element.registered_element.dublin_core_mapping
           json.string_value element.string
           json.uri_value element.uri
         end

@@ -1,0 +1,63 @@
+class AddDcMappingColumnToRegisteredElements < ActiveRecord::Migration[7.0]
+  def up
+    add_column :registered_elements, :dublin_core_mapping, :string
+
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'contributor' WHERE name LIKE 'dc:contributor%';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'coverage' WHERE name LIKE 'dc:coverage%';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'creator' WHERE name LIKE 'dc:creator%';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'date' WHERE name LIKE 'dc:date%';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'description' WHERE name LIKE 'dc:description%';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'format' WHERE name LIKE 'dc:format%';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'identifier' WHERE name LIKE 'dc:identifier%';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'language' WHERE name LIKE 'dc:language%';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'description' WHERE name LIKE 'dc:provenance%';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'publisher' WHERE name LIKE 'dc:publisher%';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'relation' WHERE name LIKE 'dc:relation%';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'rights' WHERE name LIKE 'dc:rights%';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'source' WHERE name LIKE 'dc:source%';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'subject' WHERE name LIKE 'dc:subject%';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'title' WHERE name LIKE 'dc:title%';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'type' WHERE name LIKE 'dc:type%';"
+
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'description' WHERE name = 'dcterms:abstract';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'rights' WHERE name = 'dcterms:accessRights';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'title' WHERE name = 'dcterms:alternative';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'date' WHERE name = 'dcterms:available';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'coverage' WHERE name = 'dcterms:coverage';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'date' WHERE name = 'dcterms:created';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'creator' WHERE name = 'dcterms:creator';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'date' WHERE name = 'dcterms:date';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'date' WHERE name = 'dcterms:dateAccepted';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'date' WHERE name = 'dcterms:dateCopyrighted';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'date' WHERE name = 'dcterms:dateSubmitted';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'description' WHERE name = 'dcterms:description';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'format' WHERE name = 'dcterms:format';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'format' WHERE name = 'dcterms:hasFormat';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'identifier' WHERE name = 'dcterms:identifier';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'format' WHERE name = 'dcterms:isFormatOf';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'date' WHERE name = 'dcterms:issued';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'language' WHERE name = 'dcterms:language';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'license' WHERE name = 'dcterms:license';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'date' WHERE name = 'dcterms:modified';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'description' WHERE name = 'dcterms:provenance';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'publisher' WHERE name = 'dcterms:publisher';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'rights' WHERE name = 'dcterms:rights';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'source' WHERE name = 'dcterms:source';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'subject' WHERE name = 'dcterms:subject';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'description' WHERE name = 'dcterms:tableOfContents';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'title' WHERE name = 'dcterms:title';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'type' WHERE name = 'dcterms:type';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'date' WHERE name = 'dcterms:valid';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'creator' WHERE name = 'eperson:firstname';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'language' WHERE name = 'eperson:language';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'creator' WHERE name = 'eperson:lastname';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'date' WHERE name = 'ideals:date:approved';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'date' WHERE name = 'ideals:date:published';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'date' WHERE name = 'ideals:date:submitted';"
+    execute "UPDATE registered_elements SET dublin_core_mapping = 'identifier' WHERE name = 'ideals:handleURI';"
+  end
+
+  def down
+    remove_column :registered_elements, :dublin_core_mapping
+  end
+end

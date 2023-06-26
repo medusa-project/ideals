@@ -77,15 +77,28 @@ module OaiPmhHelper
                               "http://www.openarchives.org/OAI/2.0/oai_dc.xsd"
     }) do
       item.elements.each do |ae|
-        name = ae.name
-        # truncate qualifiers, e.g. dc:format:mimetype -> dc:format
-        if name.start_with?("dc:")
-          parts = name.split(":")
-          if parts.length > 2
-            name = parts[0..parts.length - 2].join(":")
+        value  = ae.string.strip
+        next if value.blank?
+        name   = nil
+        # If the element has a valid DC mapping, use that.
+        dc_map = ae.registered_element.dublin_core_mapping
+        if dc_map.present?
+          if dc_map.start_with?("dc:")
+            name = dc_map
+          elsif !dc_map.include?(":")
+            name = "dc:#{dc_map}"
           end
         end
-        xml.tag!(name, ae.string)
+        # Otherwise, if the element itself is a DC element, use its native name.
+        if ae.name.start_with?("dc:")
+          parts = ae.name.split(":")
+          if parts.length > 2
+            name = parts[0..parts.length - 2].join(":")
+          else
+            name = ae.name
+          end
+        end
+        xml.tag!(name, value) if name
       end
     end
   end

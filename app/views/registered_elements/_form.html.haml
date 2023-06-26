@@ -26,10 +26,13 @@
                {},
                class: "form-select")
   .mb-3
+    = f.label :dublin_core_mapping, "Dublin Core Mapping"
+    = f.text_field :dublin_core_mapping,
+                   class: "form-control"
+  .mb-3
     = f.label :highwire_mapping, "Highwire Press Mapping"
     = f.text_field :highwire_mapping,
                    class: "form-control"
-
   .mb-3
     = f.label :scope_note
     = f.text_area :scope_note, class: "form-control"

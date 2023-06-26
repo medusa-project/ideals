@@ -19,6 +19,15 @@ class RegisteredElementTest < ActiveSupport::TestCase
                  RegisteredElement.sortable_field("dc:title")
   end
 
+  # dublin_core_mapping
+
+  test "dublin_core_mapping must be set to a valid DC element" do
+    @instance.dublin_core_mapping = "title"
+    assert @instance.valid?
+    @instance.dublin_core_mapping = "bogus"
+    assert !@instance.valid?
+  end
+
   # destroy()
 
   test "instances with attached AscribedElements cannot be destroyed" do
