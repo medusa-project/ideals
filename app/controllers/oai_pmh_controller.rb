@@ -151,7 +151,7 @@ class OaiPmhController < ApplicationController
       limit(1).
       first
     @repository_name    = current_institution.service_name
-    @earliest_datestamp = @sample_item&.updated_at&.utc&.iso8601
+    @earliest_datestamp = @sample_item&.created_at&.utc&.iso8601
     @base_url           = oai_pmh_url
     "identify"
   end
