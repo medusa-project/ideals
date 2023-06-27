@@ -55,7 +55,7 @@
                                            "aria-expanded":  "false"}
             Actions
           .dropdown-menu
-            - if @institution.sso_federation.present?
+            - if @institution.sso_federation.present? && @institution.sso_federation != Institution::SSOFederation::NONE
               -# Refresh Federation Metadata button
               = link_to(institution_refresh_federation_metadata_path(@institution),
                         class: "dropdown-item", method: :patch) do
