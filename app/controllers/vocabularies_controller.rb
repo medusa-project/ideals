@@ -105,6 +105,12 @@ class VocabulariesController < ApplicationController
     @count            = @terms.count
     @terms            = @terms.limit(@window).offset(@start)
     @current_page     = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
+
+    if request.xhr?
+      render partial: "terms"
+    else
+      render "show"
+    end
   end
 
   ##

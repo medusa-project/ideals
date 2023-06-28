@@ -36,7 +36,16 @@
 
 %h1= @vocabulary.name
 
-= render partial: "terms"
+.card.mb-3
+  .card-body
+    .row.justify-content-between
+      .col-4
+        = form_tag(vocabulary_path(@vocabulary)) do
+          .filter-field
+            = filter_field(placeholder: "Filter")
+
+#terms-list
+  = render partial: "terms"
 
 = render partial: "shared/xhr_modal",
          locals: { id: "edit-vocabulary-modal", title: "Edit Vocabulary" }

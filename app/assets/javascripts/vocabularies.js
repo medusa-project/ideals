@@ -40,7 +40,8 @@ const Vocabularies = {
             Vocabularies.EditVocabularyClickHandler);
         $("button.add-term").on("click", function() {
             const vocabulary_id = $(this).data("vocabulary-id");
-            const url           = ROOT_URL + "/vocabularies/" + vocabulary_id + "/terms/new";
+            const url           = ROOT_URL + "/vocabularies/" + vocabulary_id +
+                "/terms/new";
             $.get(url, function(data) {
                 $("#add-term-modal .modal-body").html(data);
             });
@@ -61,6 +62,27 @@ const Vocabularies = {
             $.get(url, function(data) {
                 $("#import-terms-modal .modal-body").html(data);
             });
+        });
+
+        const filterField = $("input[name=q]");
+        const refreshResults = function() {
+            const form = filterField.parents("form:last");
+            console.log(form);
+            $.ajax({
+                method: "GET",
+                url:    form.attr("action"),
+                data:   form.serialize(),
+                success: function(data) {
+                    $("#terms-list").html(data);
+                },
+                error: function(data, status, xhr) {
+                }
+            });
+        };
+        let timeout = null;
+        filterField.on("keyup", function() {
+            clearTimeout(timeout);
+            timeout = setTimeout(refreshResults, IDEALS.UIUtils.KEY_DELAY);
         });
     }
 
