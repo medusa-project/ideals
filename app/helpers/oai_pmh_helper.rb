@@ -106,6 +106,7 @@ module OaiPmhHelper
   def oai_pmh_dim_metadata_for(item, xml)
     xml.tag!("dim:dim", {
       "xmlns:dim"          => "http://www.dspace.org/xmlns/dspace/dim",
+      "xmlns:xsi"          => "http://www.w3.org/2001/XMLSchema-instance",
       "xsi:schemaLocation" => "http://www.dspace.org/xmlns/dspace/dim "\
                               "http://www.dspace.org/schema/dim.xsd" }) do
       item.elements.each do |ae|
@@ -119,26 +120,57 @@ module OaiPmhHelper
 
   def oai_pmh_etdms_metadata_for(item, xml)
     xml.tag!("thesis", {
-      "xmlns"          => "http://www.ndltd.org/standards/metadata/etdms/1.0/",
-      "xsi:schemaLocation" => "http://www.ndltd.org/standards/metadata/etdms/1.0/  "\
-                              "http://www.ndltd.org/standards/metadata/etdms/1-0/etdms.xsd" }) do
+      "xmlns"              => "http://www.ndltd.org/standards/metadata/etdms/1.1/",
+      "xmlns:xsi"          => "http://www.w3.org/2001/XMLSchema-instance",
+      "xmlns:dc"           => "http://purl.org/dc/elements/1.1/",
+      "xsi:schemaLocation" => "http://www.ndltd.org/standards/metadata/etdms/1.1/ "\
+                              "http://www.ndltd.org/standards/metadata/etdms/1.1/etdms11.xsd "\
+                              "http://purl.org/dc/elements/1.1/ "\
+                              "http://www.ndltd.org/standards/metadata/etdms/1.1/etdmsdc.xsd"}) do
       item.elements.each do |ae|
-        parts = ae.name.split(":")
-        if parts.length == 1
-          name = parts[0]
-        elsif parts.length > 1
-          name = parts[1]
-        else
-          next
+        value  = ae.string.strip
+        next if value.blank?
+        name   = nil
+        # If the element has a valid DC mapping, use that.
+        dc_map = ae.registered_element.dublin_core_mapping
+        if dc_map.present?
+          if dc_map.start_with?("dc:")
+            name = dc_map
+          elsif !dc_map.include?(":")
+            name = "dc:#{dc_map}"
+          end
         end
-        xml.tag!(name, ae.string)
+        # Otherwise, if the element itself is a DC element, use its native name.
+        if ae.name.start_with?("dc:")
+          parts = ae.name.split(":")
+          if parts.length > 2
+            name = parts[0..parts.length - 2].join(":")
+          else
+            name = ae.name
+          end
+        end
+        xml.tag!(name, value) if name
+      end
+
+      # The ETD-MS encoding was clearly not designed by a programmer...
+      thesis_elements = item.elements.select{ |ae| ae.name.start_with?("thesis:") }
+      if thesis_elements.any?
+        distinct_names = thesis_elements.map{ |ae| ae.name.split(":")[1] }.uniq
+        distinct_names.each do |name|
+          xml.tag!(name) do
+            thesis_elements.select{ |ae| ae.name.include?(":#{name}:") }.each do |ae|
+              parts = ae.name.split(":").drop(1)
+              xml.tag!(parts[1], ae.string)
+            end
+          end
+        end
       end
     end
   end
 
   def oai_pmh_native_metadata_for(item, xml)
     xml.tag!("resource", {
-      "xmlns"          => "http://www.ideals.illinois.edu/oai-pmh/native/",
+      "xmlns"              => "http://www.ideals.illinois.edu/oai-pmh/native/",
       "xsi:schemaLocation" => "http://www.ideals.illinois.edu/oai-pmh/native/ "\
                               "http://www.ideals.illinois.edu/native.xsd" }) do
       item.elements.each do |ae|
