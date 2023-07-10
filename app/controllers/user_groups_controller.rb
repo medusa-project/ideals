@@ -214,9 +214,18 @@ class UserGroupsController < ApplicationController
       UserGroupUser.
         where(user_group: @user_group).
         destroy_all
+      invalid_users = []
       params[:user_group][:users].select(&:present?).each do |user_str|
         user = User.from_autocomplete_string(user_str)
-        @user_group.users << user if user
+        if user
+          @user_group.users << user
+        else
+          invalid_users << user_str
+        end
+      end
+      if invalid_users.any?
+        raise "The following user accounts do not exist. If they have been "\
+              "invited, they have not logged in yet: #{invalid_users.join(", ")}"
       end
     end
   end

@@ -494,6 +494,23 @@ class UserGroupsControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
   end
 
+  test "update() returns HTTP 400 for nonexistent users" do
+    log_in_as(users(:uiuc_sysadmin))
+    group = user_groups(:sysadmin)
+    patch user_group_path(group),
+          xhr: true,
+          params: {
+            user_group: {
+              key:  "cats",
+              name: "cats",
+              users: [
+                "bogususer@example.org"
+              ]
+            }
+          }
+    assert_response :bad_request
+  end
+
   test "update() returns HTTP 404 for nonexistent user groups" do
     log_in_as(users(:uiuc_sysadmin))
     patch "/user-groups/99999"

@@ -6,8 +6,7 @@
 
   .alert.alert-light
     = icon_for(:info)
-    Only email addresses of existing users are accepted. Email addresses for
-    which no user account exists in the system will be discarded.
+    Only email addresses of existing users are accepted.
 
   = hidden_field_tag "user_group[users][]"
   - users = f.object.users
