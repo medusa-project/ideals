@@ -12,7 +12,7 @@
   = f.hidden_field :id, value: f.object.id
 
   = hidden_field_tag "submitting_user_group_ids[]"
-  - UserGroup.order(:name).each do |user_group|
+  - UserGroup.where(institution: collection.institution).order(:name).each do |user_group|
     .form-check
       = check_box_tag "submitting_user_group_ids[]", user_group.id,
                       f.object.submitter_groups.where(user_group: user_group).any?,
