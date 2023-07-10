@@ -415,8 +415,7 @@ class ApplicationController < ActionController::Base
     # * scholarship.illinois.edu (global landing page, still under development,
     #   redirects to www.ideals.illinois.edu until it's ready)
     # * www.ideals.illinois.edu (scoped to UIUC content)
-    # * ideals.illinois.edu (redirects permanently to www.ideals.illinois.edu
-    #   via our ALB)
+    # * ideals.illinois.edu (redirects permanently to www.ideals.illinois.edu)
     # * <institution>.scholarship.illinois.edu (scoped to a non-UIUC
     #   institution)
     #
@@ -426,19 +425,25 @@ class ApplicationController < ActionController::Base
     # * demo.ideals.illinois.edu (scoped to UIUC content)
     # * <institution>.demo.scholarship.illinois.edu (scoped to a non-UIUC
     #   institution)
-    #
-    if request.host == "scholarship.illinois.edu" # this condition will be removed when the global landing page is ready
-      redirect_to "https://www.ideals.illinois.edu",
+    case request.host
+    when "scholarship.illinois.edu" # this condition will be removed when the global landing page is ready
+      redirect_to "https://www.ideals.illinois.edu#{request.fullpath}",
                   status: 302,
                   allow_other_host: true
       return
-    end
-    main_host = ::Configuration.instance.main_host
-    if request.host != main_host && !Institution.exists?(fqdn: request.host_with_port)
-      scheme = (Rails.env.development? || Rails.env.test?) ? "http" : "https"
-      redirect_to scheme + "://" + main_host,
-                  status: :see_other,
+    when "ideals.illinois.edu"
+      redirect_to "https://www.ideals.illinois.edu#{request.fullpath}",
+                  status: :moved_permanently,
                   allow_other_host: true
+      return
+    else
+      main_host = ::Configuration.instance.main_host
+      if request.host != main_host && !Institution.exists?(fqdn: request.host_with_port)
+        scheme = (Rails.env.development? || Rails.env.test?) ? "http" : "https"
+        redirect_to scheme + "://" + main_host,
+                    status: :see_other,
+                    allow_other_host: true
+      end
     end
   end
 
