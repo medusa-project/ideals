@@ -1132,12 +1132,17 @@ class Institution < ApplicationRecord
   end
 
   def add_default_user_groups
-    self.user_groups.build(name:                "#{self.name} Users",
-                           key:                 UserGroup::DEFINING_INSTITUTION_KEY,
-                           defines_institution: true).save!
-    self.user_groups.build(name:                "Institution Administrators",
-                           key:                 "#{self.key}_admin",
-                           defines_institution: false).save!
+    # Normal users
+    users  = self.user_groups.build(name:                "#{self.name} Users",
+                                    key:                 UserGroup::DEFINING_INSTITUTION_KEY,
+                                    defines_institution: true)
+    users.save!
+    # Institution admins
+    admins = self.user_groups.build(name:                "Institution Administrators",
+                                    key:                 "#{self.key}_admin",
+                                    defines_institution: false)
+    admins.save!
+    self.administrator_groups.build(user_group: admins).save!
   end
 
   ##

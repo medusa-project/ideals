@@ -222,6 +222,7 @@ class InstitutionTest < ActiveSupport::TestCase
     group = institution.user_groups.find_by_key("#{institution.key}_admin")
     assert !group.defines_institution
     assert_equal "Institution Administrators", group.name
+    assert institution.administrator_groups.map(&:user_group).include?(group)
   end
 
   # active_link_color
