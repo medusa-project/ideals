@@ -50,7 +50,7 @@ class Import < ApplicationRecord
   belongs_to :collection
   belongs_to :institution
   belongs_to :task, optional: true
-  belongs_to :user
+  belongs_to :user, optional: true
 
   serialize :files, JSON
   serialize :imported_items, JSON
