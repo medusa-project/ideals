@@ -194,7 +194,7 @@ class Invitee < ApplicationRecord
     unless self.identity
       id = LocalIdentity.find_by(email: self.email)
       if id
-        id.invitee = self
+        self.update!(identity: id)
       else
         # A password is required, so just set a random one. It will be updated
         # during registration.
