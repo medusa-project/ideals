@@ -22,7 +22,7 @@
     - video/3gpp2
   category: video
   icon: file-video-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
   viewer_method: video_tag_for
 7z:
   short_name: 7Zip
@@ -33,7 +33,7 @@
     - application/x-7z-compressed
   category: archive
   icon: file-archive-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 aac:
   short_name: AAC
   long_name: Advanced Audio Coding
@@ -44,7 +44,7 @@ aac:
     - audio/mp4
   category: audio
   icon: file-audio-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
   viewer_method: audio_tag_for
 ai:
   short_name: AI
@@ -55,7 +55,7 @@ ai:
     - application/postscript
   category: image
   icon: file-image-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 aiff:
   short_name: AIFF
   long_name: Audio Interchange File Format
@@ -67,7 +67,7 @@ aiff:
     - audio/aiff
   category: audio
   icon: file-audio-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
   viewer_method: audio_tag_for
 asc:
   short_name: ActionScript
@@ -79,7 +79,7 @@ asc:
     - text/x-actionscript
   category: code
   icon: file-code-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 au:
   short_name: AU
   long_name: AU
@@ -90,7 +90,7 @@ au:
     - audio/basic
   category: audio
   icon: file-audio-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 avi:
   short_name: AVI
   long_name: AVI
@@ -100,7 +100,7 @@ avi:
     - video/avi
   category: video
   icon: file-video-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
   viewer_method: video_tag_for
 bibtex:
   short_name: BibTeX
@@ -111,7 +111,7 @@ bibtex:
     - application/x-bibtex
   category: code
   icon: file-code-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 bmp:
   short_name: BMP
   long_name: Bitmap
@@ -121,7 +121,7 @@ bmp:
     - image/bmp
   category: image
   icon: file-image-o
-  readable_by_vips: true
+  readable_by_imagemagick: true
   viewer_method: image_tag_for
 bst:
   short_name: BST
@@ -132,7 +132,7 @@ bst:
     - application/x-bibtex
   category: code
   icon: file-code-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 bz2:
   short_name: bzip2
   long_name: bzip2
@@ -142,7 +142,7 @@ bz2:
     - application/x-bzip2
   category: archive
   icon: file-archive-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 c:
   short_name: C
   long_name: C Source
@@ -152,7 +152,7 @@ c:
     - text/plain
   category: code
   icon: file-code-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
   viewer_method: text_viewer_for
 cpp:
   short_name: C++
@@ -163,7 +163,7 @@ cpp:
     - text/plain
   category: code
   icon: file-code-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
   viewer_method: text_viewer_for
 css:
   short_name: CSS
@@ -174,7 +174,7 @@ css:
     - text/css
   category: code
   icon: file-code-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
   viewer_method: text_viewer_for
 csv:
   short_name: CSV
@@ -185,7 +185,7 @@ csv:
     - text/csv
   category: document
   icon: file-text-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 doc:
   short_name: Word
   long_name: Word Document
@@ -195,7 +195,7 @@ doc:
     - application/msword
   category: document
   icon: file-word-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 docx:
   short_name: Word
   long_name: Word Document
@@ -206,7 +206,7 @@ docx:
     - application/vnd.openxmlformats-officedocument.wordprocessingml.document
   category: document
   icon: file-word-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 dvi:
   short_name: DVI
   long_name: Device Independent Format
@@ -216,7 +216,7 @@ dvi:
     - application/x-dvi
   category: binary
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 eps:
   short_name: EPS
   long_name: Encapsulated PostScript
@@ -226,7 +226,7 @@ eps:
     - application/postscript
   category: document
   icon: file-text-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 epub:
   short_name: ePUB
   long_name: ePUB
@@ -236,7 +236,7 @@ epub:
     - application/epub+zip
   category: document
   icon: file-text-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 exe:
   short_name: EXE
   long_name: Windows Executable
@@ -246,7 +246,7 @@ exe:
     - application/octet-stream
   category: binary
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 f:
   short_name: Fortran
   long_name: Fortran
@@ -256,7 +256,7 @@ f:
     - text/x-fortran
   category: code
   icon: file-code-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 fla:
   short_name: Flash
   long_name: Flash Animation
@@ -266,7 +266,7 @@ fla:
     - application/octet-stream
   category: binary
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 flac:
   short_name: FLAC
   long_name: Free Lossless Audio Codec
@@ -277,7 +277,7 @@ flac:
     - audio/x-flac
   category: audio
   icon: file-audio-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 flv:
   short_name: FLV
   long_name: Flash Video
@@ -289,7 +289,7 @@ flv:
     - video/mp4
   category: video
   icon: file-video-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 fm:
   short_name: FM
   long_name: FrameMaker
@@ -299,7 +299,7 @@ fm:
     - application/vnd.framemaker
   category: document
   icon: file-text-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 gif:
   short_name: GIF
   long_name: GIF
@@ -309,7 +309,7 @@ gif:
     - image/gif
   category: image
   icon: file-image-o
-  readable_by_vips: true
+  readable_by_imagemagick: true
   viewer_method: image_tag_for
 gzip:
   short_name: GZip
@@ -322,7 +322,7 @@ gzip:
     - application/gzip
   category: archive
   icon: file-archive-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 heif:
   short_name: HEIF
   long_name: High Efficiency Image Format
@@ -338,7 +338,7 @@ heif:
     - image/heic-sequence
   category: image
   icon: file-image-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 html:
   short_name: HTML
   long_name: Hypertext Markup Language
@@ -349,7 +349,7 @@ html:
     - text/html
   category: code
   icon: file-code-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 iso:
   short_name: ISO
   long_name: ISO Image
@@ -359,7 +359,7 @@ iso:
     - application/octet-stream
   category: binary
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 jpeg:
   short_name: JPEG
   long_name: JPEG JFIF
@@ -370,7 +370,7 @@ jpeg:
     - image/jpeg
   category: image
   icon: file-image-o
-  readable_by_vips: true
+  readable_by_imagemagick: true
   viewer_method: image_tag_for
 jpeg2000:
   short_name: JP2
@@ -381,7 +381,7 @@ jpeg2000:
     - image/jp2
   category: image
   icon: file-image-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 js:
   short_name: JavaScript
   long_name: JavaScript
@@ -391,7 +391,7 @@ js:
     - application/javascript
   category: code
   icon: file-code-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 json:
   short_name: JSON
   long_name: JavaScript Object Notation
@@ -405,7 +405,7 @@ json:
     - text/x-json
   category: code
   icon: file-code-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
   viewer_method: text_viewer_for
 key:
   short_name: Keynote
@@ -416,7 +416,7 @@ key:
     - application/vnd.apple.keynote
   category: document
   icon: file-powerpoint-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 latex:
   short_name: LaTeX
   long_name: LaTeX
@@ -426,7 +426,7 @@ latex:
     - application/x-latex
   category: document
   icon: file-code-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 lyx:
   short_name: LyX
   long_name: LyX
@@ -436,7 +436,7 @@ lyx:
     - application/octet-stream
   category: document
   icon: file-text-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 matlab:
   short_name: MATLAB
   long_name: MATLAB
@@ -446,7 +446,7 @@ matlab:
     - text/x-matlab
   category: code
   icon: file-code-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 ma:
   short_name: Maya
   long_name: Maya ASCII Scene
@@ -456,7 +456,7 @@ ma:
     - text/plain
   category: document
   icon: file-text-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 maude:
   short_name: Maude
   long_name: Maude
@@ -466,7 +466,7 @@ maude:
     - text/plain
   category: code
   icon: file-code-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 mjpeg2000:
   short_name: MJPEG2000
   long_name: Motion JPEG2000
@@ -477,7 +477,7 @@ mjpeg2000:
     - video/mj2
   category: video
   icon: file-video-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 mobi:
   short_name: Mobi
   long_name: Mobipocket
@@ -488,7 +488,7 @@ mobi:
     - application/x-mobipocket-ebook
   category: document
   icon: file-text-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 mhtml:
   short_name: MHTML
   long_name: MIME Encapsulation of Aggregate HTML Documents
@@ -498,7 +498,7 @@ mhtml:
     - application/x-mimearchive
   category: archive
   icon: file-archive-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 mp1_audio:
   short_name: MP1
   long_name: MPEG Audio
@@ -510,7 +510,7 @@ mp1_audio:
     - audio/x-mpeg
   category: audio
   icon: file-audio-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 mp2_audio:
   short_name: MP2
   long_name: MPEG-1 Layer 2
@@ -521,7 +521,7 @@ mp2_audio:
     - audio/x-mpeg
   category: audio
   icon: file-audio-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 mp3_audio:
   short_name: MP3
   long_name: MPEG-1 Layer 3
@@ -532,7 +532,7 @@ mp3_audio:
     - audio/mp3
   category: audio
   icon: file-audio-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
   viewer_method: audio_tag_for
 mp4_audio:
   short_name: MPEG-4
@@ -543,7 +543,7 @@ mp4_audio:
     - audio/mp4
   category: audio
   icon: file-audio-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
   viewer_method: audio_tag_for
 mp4_video:
   short_name: MPEG-4
@@ -556,7 +556,7 @@ mp4_video:
     - video/mp4
   category: video
   icon: file-video-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
   viewer_method: video_tag_for
 mpd:
   short_name: MPD
@@ -572,7 +572,7 @@ mpd:
     - application/mpd
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 mpeg:
   short_name: MPEG-1
   long_name: MPEG-1
@@ -585,7 +585,7 @@ mpeg:
     - video/mpeg
   category: video
   icon: file-video-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
   viewer_method: video_tag_for
 mpeg2:
   short_name: MPEG-2
@@ -596,7 +596,7 @@ mpeg2:
     - video/mpeg
   category: video
   icon: file-video-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
   viewer_method: video_tag_for
 mpp:
   short_name: MPP
@@ -612,7 +612,7 @@ mpp:
     - application/mpp
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 mpx:
   short_name: MPX
   long_name: Microsoft Project Exchange
@@ -627,7 +627,7 @@ mpx:
     - application/mpx
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 odb:
   short_name: ODB
   long_name: OpenDocument Database
@@ -637,7 +637,7 @@ odb:
     - application/vnd.oasis.opendocument.database
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 odc:
   short_name: ODC
   long_name: OpenDocument Chart
@@ -647,7 +647,7 @@ odc:
     - application/vnd.oasis.opendocument.chart
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 odf:
   short_name: ODF
   long_name: OpenDocument Formula
@@ -657,7 +657,7 @@ odf:
     - application/vnd.oasis.opendocument.formula
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 odg:
   short_name: ODG
   long_name: OpenDocument Drawing
@@ -667,7 +667,7 @@ odg:
     - application/vnd.oasis.opendocument.graphics
   category: document
   icon: file-image-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 odi:
   short_name: ODI
   long_name: OpenDocument Image
@@ -677,7 +677,7 @@ odi:
     - application/vnd.oasis.opendocument.image
   category: document
   icon: file-image-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 odm:
   short_name: ODM
   long_name: OpenDocument Master Document
@@ -687,7 +687,7 @@ odm:
     - application/vnd.oasis.opendocument.text-master
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 odp:
   short_name: ODP
   long_name: OpenDocument Presentation
@@ -697,7 +697,7 @@ odp:
     - application/vnd.oasis.opendocument.presentation
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 ods:
   short_name: ODS
   long_name: OpenDocument Spreadsheet
@@ -707,7 +707,7 @@ ods:
     - application/vnd.oasis.opendocument.spreadsheet
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 odt:
   short_name: ODT
   long_name: OpenDocument Text
@@ -718,7 +718,7 @@ odt:
     - application/vnd.oasis.opendocument.text
   category: document
   icon: file-text-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 ogg:
   short_name: Ogg
   long_name: Ogg Vorbis
@@ -728,7 +728,7 @@ ogg:
     - audio/ogg
   category: audio
   icon: file-audio-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
   viewer_method: audio_tag_for
 otg:
   short_name: OTG
@@ -739,7 +739,7 @@ otg:
     - application/vnd.oasis.opendocument.graphics-template
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 oth:
   short_name: OTH
   long_name: OpenDocument HTML Template
@@ -749,7 +749,7 @@ oth:
     - application/vnd.oasis.opendocument.text-web
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 otp:
   short_name: OTP
   long_name: OpenDocument Presentation Template
@@ -759,7 +759,7 @@ otp:
     - application/vnd.oasis.opendocument.presentation-template
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 oxt:
   short_name: OXT
   long_name: OpenOffice Extension
@@ -769,7 +769,7 @@ oxt:
     - application/vnd.openofficeorg.extension
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 pages:
   short_name: Pages
   long_name: Apple Pages Document
@@ -779,7 +779,7 @@ pages:
     - application/vnd.apple.pages
   category: document
   icon: file-text-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 pcd:
   short_name: PCD
   long_name: Photo CD
@@ -789,7 +789,7 @@ pcd:
     - image/pcd
   category: image
   icon: file-image-o
-  readable_by_vips: true
+  readable_by_imagemagick: true
 pdd:
   short_name: PDD
   long_name: PhotoDeluxe
@@ -799,7 +799,7 @@ pdd:
     - application/octet-stream
   category: document
   icon: file-image-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 pdf:
   short_name: PDF
   long_name: Portable Document Format
@@ -809,7 +809,7 @@ pdf:
     - application/pdf
   category: document
   icon: file-pdf-o
-  readable_by_vips: true
+  readable_by_imagemagick: true
   viewer_method: pdfjs_viewer_for
 php:
   short_name: PHP
@@ -820,7 +820,7 @@ php:
     - text/plain
   category: code
   icon: file-code-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
   viewer_method: text_viewer_for
 png:
   short_name: PNG
@@ -831,7 +831,7 @@ png:
     - image/png
   category: image
   icon: file-image-o
-  readable_by_vips: true
+  readable_by_imagemagick: true
   viewer_method: image_tag_for
 pps:
   short_name: PPS
@@ -845,7 +845,7 @@ pps:
     - application/x-mspowerpoint
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 ppt:
   short_name: PowerPoint
   long_name: PowerPoint
@@ -858,7 +858,7 @@ ppt:
     - application/x-mspowerpoint
   category: document
   icon: file-powerpoint-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 pptx:
   short_name: PowerPoint
   long_name: PowerPoint
@@ -869,7 +869,7 @@ pptx:
     - application/vnd.openxmlformats-officedocument.presentationml.presentation
   category: document
   icon: file-powerpoint-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 ps:
   short_name: PostScript
   long_name: PostScript
@@ -879,7 +879,7 @@ ps:
     - application/postscript
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 psd:
   short_name: PSD
   long_name: Photoshop
@@ -893,7 +893,7 @@ psd:
     - image/psd
   category: image
   icon: file-image-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 py:
   short_name: Python
   long_name: Python Script
@@ -903,7 +903,7 @@ py:
     - text/plain
   category: code
   icon: file-code-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
   viewer_method: text_viewer_for
 quicktime:
   short_name: QuickTime
@@ -915,7 +915,7 @@ quicktime:
     - video/quicktime
   category: video
   icon: file-video-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
   viewer_method: video_tag_for
 r:
   short_name: R
@@ -926,7 +926,7 @@ r:
     - text/plain
   category: code
   icon: file-code-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
   viewer_method: text_viewer_for
 rb:
   short_name: Ruby
@@ -937,7 +937,7 @@ rb:
     - text/plain
   category: code
   icon: file-code-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
   viewer_method: text_viewer_for
 ra:
   short_name: RA
@@ -950,7 +950,7 @@ ra:
     - application/vnd.rn-realmedia
   category: audio
   icon: file-audio-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 rar:
   short_name: RAR
   long_name: RAR
@@ -960,7 +960,7 @@ rar:
     - application/x-rar-compressed
   category: archive
   icon: file-archive-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 rdf:
   short_name: RDF
   long_name: Resource Description Framework
@@ -970,7 +970,7 @@ rdf:
     - application/octet-stream
   category: code
   icon: file-code-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 rtf:
   short_name: RTF
   long_name: Rich Text
@@ -981,7 +981,7 @@ rtf:
     - text/richtext
   category: document
   icon: file-text-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 scss:
   short_name: SASS
   long_name: SASS
@@ -993,7 +993,7 @@ scss:
     - text/x-scss
   category: code
   icon: file-code-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
   viewer_method: text_viewer_for
 sdd:
   short_name: StarImpress
@@ -1004,7 +1004,7 @@ sdd:
     - application/vnd.stardivision.impress
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 sdm:
   short_name: StarMail
   long_name: StarMail
@@ -1014,7 +1014,7 @@ sdm:
     - application/vnd.stardivision.mail
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 sda:
   short_name: StarDraw
   long_name: StarDraw
@@ -1024,7 +1024,7 @@ sda:
     - application/vnd.stardivision.draw
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 sdc:
   short_name: StarCalc
   long_name: StarCalc
@@ -1034,7 +1034,7 @@ sdc:
     - application/vnd.stardivision.calc
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 sdp:
   short_name: StarImpress
   long_name: StarImpress Packed
@@ -1044,7 +1044,7 @@ sdp:
     - application/vnd.stardivision.impress-packed
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 sds:
   short_name: StarChart
   long_name: StarChart
@@ -1054,7 +1054,7 @@ sds:
     - application/vnd.stardivision.chart
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 sdw:
   short_name: StarWriter
   long_name: StarWriter
@@ -1064,7 +1064,7 @@ sdw:
     - application/vnd.stardivision.writer
   category: binary
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 sgl:
   short_name: StarWriter
   long_name: StarWriter Global
@@ -1074,7 +1074,7 @@ sgl:
     - application/vnd.stardivision.writer-global
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 sgml:
   short_name: SGML
   long_name: Standard Generalized Markup Language
@@ -1086,7 +1086,7 @@ sgml:
     - text/sgml
   category: code
   icon: file-code-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 stc:
   short_name: OpenOffice Calc
   long_name: OpenOffice Calc Template
@@ -1096,7 +1096,7 @@ stc:
     - application/vnd.sun.xml.calc.template
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 std:
   short_name: OpenOffice Draw
   long_name: OpenOffice Draw Template
@@ -1106,7 +1106,7 @@ std:
     - application/vnd.sun.xml.draw.template
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 sti:
   short_name: OpenOffice Impress
   long_name: OpenOffice Impress Template
@@ -1116,7 +1116,7 @@ sti:
     - application/vnd.sun.xml.impress.template
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 stw:
   short_name: OpenOffice Writer
   long_name: OpenOffice Writer Template
@@ -1126,7 +1126,7 @@ stw:
     - application/vnd.sun.xml.writer.template
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 svg:
   short_name: SVG
   long_name: Scalable Vector Graphics
@@ -1136,7 +1136,7 @@ svg:
     - image/svg+xml
   category: image
   icon: file-image-o
-  readable_by_vips: true
+  readable_by_imagemagick: true
   viewer_method: image_tag_for
 sxc:
   short_name: OpenOffice Calc
@@ -1147,7 +1147,7 @@ sxc:
     - application/vnd.sun.xml.calc
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 sxd:
   short_name: OpenOffice Draw
   long_name: OpenOffice Draw
@@ -1157,7 +1157,7 @@ sxd:
     - application/vnd.sun.xml.draw
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 sxg:
   short_name: OpenOffice Writer
   long_name: OpenOffice Writer Global
@@ -1167,7 +1167,7 @@ sxg:
     - application/vnd.sun.xml.writer.global
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 sxi:
   short_name: OpenOffice Impress
   long_name: OpenOffice Impress
@@ -1177,7 +1177,7 @@ sxi:
     - application/vnd.sun.xml.impress
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 sxm:
   short_name: OpenOffice Math
   long_name: OpenOffice Math
@@ -1187,7 +1187,7 @@ sxm:
     - application/vnd.sun.xml.math
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 sxw:
   short_name: SXW
   long_name: OpenOffice Writer
@@ -1197,7 +1197,7 @@ sxw:
     - application/vnd.sun.xml.writer
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 tar:
   short_name: TAR
   long_name: TAR
@@ -1207,7 +1207,7 @@ tar:
     - application/x-tar
   category: archive
   icon: file-archive-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 tex:
   short_name: TeX
   long_name: TeX
@@ -1217,7 +1217,7 @@ tex:
     - application/x-tex
   category: document
   icon: file-code-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 tiff:
   short_name: TIFF
   long_name: Tagged Image File Format
@@ -1228,7 +1228,7 @@ tiff:
     - image/tiff
   category: image
   icon: file-image-o
-  readable_by_vips: true
+  readable_by_imagemagick: true
   viewer_method: image_tag_for
 tsv:
   short_name: TSV
@@ -1239,7 +1239,7 @@ tsv:
     - text/tsv
   category: document
   icon: file-text-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 ttf:
   short_name: TTF
   long_name: TrueType Font
@@ -1250,7 +1250,7 @@ ttf:
     - application/x-font-ttf
   category: font
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 txt:
   short_name: Text
   long_name: Plain Text
@@ -1260,7 +1260,7 @@ txt:
     - text/plain
   category: document
   icon: file-text-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
   viewer_method: text_viewer_for
 vb:
   short_name: Visual Basic Class
@@ -1271,7 +1271,7 @@ vb:
     - text/plain
   category: code
   icon: file-code-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 vsd:
   short_name: VSD
   long_name: Visio Drawing
@@ -1285,7 +1285,7 @@ vsd:
     - application/x-vsd
   category: document
   icon: file-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 warc:
   short_name: WARC
   long_name: Web ARChive
@@ -1295,7 +1295,7 @@ warc:
     - application/warc
   category: archive
   icon: file-archive-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 wav:
   short_name: WAV
   long_name: Wave Audio
@@ -1305,7 +1305,7 @@ wav:
     - audio/wav
   category: audio
   icon: file-audio-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
   viewer_method: audio_tag_for
 wma:
   short_name: WMA
@@ -1316,7 +1316,7 @@ wma:
     - audio/x-ms-wma
   category: audio
   icon: file-audio-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
   viewer_method: audio_tag_for
 wmv:
   short_name: WMV
@@ -1327,7 +1327,7 @@ wmv:
     - video/x-ms-wmv
   category: video
   icon: file-video-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
   viewer_method: video_tag_for
 wordperfect:
   short_name: WPD
@@ -1340,7 +1340,7 @@ wordperfect:
     - application/wpd
   category: document
   icon: file-text-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 xls:
   short_name: Excel
   long_name: Excel
@@ -1350,7 +1350,7 @@ xls:
     - application/vnd.ms-excel
   category: document
   icon: file-excel-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 xlsx:
   short_name: Excel
   long_name: Excel
@@ -1361,7 +1361,7 @@ xlsx:
     - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
   category: document
   icon: file-excel-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 xmind:
   short_name: XMind
   long_name: XMind Workbook
@@ -1371,7 +1371,7 @@ xmind:
     - application/x-xmind
   category: document
   icon: file-image-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
 xml:
   short_name: XML
   long_name: XML
@@ -1382,7 +1382,7 @@ xml:
     - text/xml
   category: code
   icon: file-code-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
   viewer_method: xml_viewer_for
 xsd:
   short_name: XSD
@@ -1394,7 +1394,7 @@ xsd:
     - text/xml
   category: code
   icon: file-code-o
-  readable_by_vips: false
+  readable_by_imagemagick: false
   viewer_method: xml_viewer_for
 zip:
   short_name: Zip
@@ -1406,4 +1406,4 @@ zip:
     - application/zip
   category: archive
   icon: file-archive-o
-  readable_by_vips: false
+  readable_by_imagemagick: false

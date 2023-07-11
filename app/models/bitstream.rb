@@ -514,7 +514,7 @@ class Bitstream < ApplicationRecord
   #
   def has_representative_image?
     format = self.format
-    format ? (format.readable_by_vips == true) : false
+    format ? (format.readable_by_imagemagick == true) : false
   end
 
   ##
@@ -739,15 +739,16 @@ class Bitstream < ApplicationRecord
     begin
       source_tempfile = download_to_temp_file
       if source_tempfile
-        crop    = (region == :square) ? "--smartcrop=centre" : ""
-        command = "vipsthumbnail #{source_tempfile.path} #{crop} "\
-                  "--size=#{size}x#{size} "\
-                  "-o %s-#{region}-#{size}.#{format}"
-        result  = system(command)
-        status  = $?.exitstatus
-        raise "Command returned status code #{status}: #{command}" unless result
+        crop       = (region == :square) ? "-gravity center -crop 1:1" : ""
         deriv_path = File.join(File.dirname(source_tempfile.path),
                                "#{File.basename(source_tempfile.path)}-#{region}-#{size}.#{format}")
+        command    = "convert #{source_tempfile.path}[0] "\
+                     "#{crop} "\
+                     "-resize #{size}x#{size} "\
+                     "#{deriv_path}"
+        result     = system(command)
+        status     = $?.exitstatus
+        raise "Command returned status code #{status}: #{command}" unless result
         File.open(deriv_path, "rb") do |file|
           PersistentStore.instance.put_object(key:             target_key,
                                               institution_key: self.institution.key,

@@ -10,7 +10,7 @@ class FileFormatTest < ActiveSupport::TestCase
     assert_equal "JPEG JFIF", format.long_name
     assert_equal %w(image/jpeg), format.media_types
     assert_equal "JPEG", format.short_name
-    assert format.readable_by_vips
+    assert format.readable_by_imagemagick
     assert_equal "image_tag_for", format.viewer_method
   end
 
