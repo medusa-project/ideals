@@ -465,7 +465,8 @@ class Bitstream < ApplicationRecord
   #
   def download_to_temp_file
     source_key = self.effective_key
-    tempfile   = Tempfile.new("#{self.class}-download_to_temp_file-#{self.id}")
+    ext        = self.format&.extensions&.first || "tmp"
+    tempfile   = Tempfile.new(["#{self.class}-download_to_temp_file-#{self.id}", ".#{ext}"])
     begin
       ObjectSpace.undefine_finalizer(tempfile)
       PersistentStore.instance.get_object(key:             source_key,
@@ -743,7 +744,9 @@ class Bitstream < ApplicationRecord
         command = "vipsthumbnail #{source_tempfile.path} #{crop} "\
                   "--size=#{size}x#{size} "\
                   "-o %s-#{region}-#{size}.#{format}"
-        raise "Command failed: #{command}" unless system(command)
+        result  = system(command)
+        status  = $?.exitstatus
+        raise "Command returned status code #{status}: #{command}" unless result
         deriv_path = File.join(File.dirname(source_tempfile.path),
                                "#{File.basename(source_tempfile.path)}-#{region}-#{size}.#{format}")
         File.open(deriv_path, "rb") do |file|
