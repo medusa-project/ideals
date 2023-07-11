@@ -15,28 +15,27 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     assert !policy.create?
   end
 
-  test "create?() authorizes administrators of any institution" do
-    subject_user = users(:southwest)
-    subject_user.institution_administrators.build(institution: subject_user.institution)
-    subject_user.save!
-    context      = RequestContext.new(user:        subject_user,
-                                      institution: subject_user.institution)
-    policy       = UserGroupPolicy.new(context, @user_group)
-    assert policy.create?
+  test "create?() does not authorize non-privileged users" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert !policy.create?
   end
 
-  test "create?() authorizes sysadmins" do
-    user    = users(:southwest_sysadmin)
+  test "create?() authorizes administrators of the same institution" do
+    user = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserGroupPolicy.new(context, @user_group)
     assert policy.create?
   end
 
-  test "create?() does not authorize anybody else" do
-    user    = users(:southwest)
+  test "create?() does not authorize administrators of a different institution
+  than in the request context" do
+    user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
+                                 institution: institutions(:northeast))
     policy  = UserGroupPolicy.new(context, @user_group)
     assert !policy.create?
   end
@@ -548,19 +547,28 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     assert !policy.index?
   end
 
-  test "index?() authorizes sysadmins" do
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy = UserGroupPolicy.new(context, UserGroup)
-    assert policy.index?
-  end
-
-  test "index?() does not authorize anybody else" do
+  test "index?() does not authorize non-privileged users" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserGroupPolicy.new(context, UserGroup)
+    assert !policy.index?
+  end
+
+  test "index?() authorizes institution administrators" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert policy.index?
+  end
+
+  test "index?() does not authorize administrators of a different institution
+  than in the request context" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = UserGroupPolicy.new(context, @user_group)
     assert !policy.index?
   end
 
@@ -713,16 +721,15 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     assert !policy.update?
   end
 
-  test "update?() authorizes sysadmins" do
-    user    = users(:southwest_sysadmin)
+  test "update?() does not authorize non-privileged users" do
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy = UserGroupPolicy.new(context, @user_group)
-    assert policy.update?
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert !policy.update?
   end
 
-  test "update?() authorizes administrators of the same institution as the
-  user group" do
+  test "update?() authorizes administrators of the same institution" do
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -730,8 +737,17 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     assert policy.update?
   end
 
+  test "update?() does not authorize administrators of a different
+  institution than in the request context" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = UserGroupPolicy.new(context, @user_group)
+    assert !policy.update?
+  end
+
   test "update?() does not authorize administrators of a different institution
-  than that of the user group" do
+  than the user group" do
     user    = users(:northeast_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -739,11 +755,22 @@ class UserGroupPolicyTest < ActiveSupport::TestCase
     assert !policy.update?
   end
 
-  test "update?() does not authorize anybody else" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy = UserGroupPolicy.new(context, @user_group)
+  test "update?() authorizes sysadmins to a global user group" do
+    @user_group = user_groups(:sysadmin)
+    user        = users(:southwest_sysadmin)
+    context     = RequestContext.new(user:        user,
+                                     institution: institutions(:northeast))
+    policy      = UserGroupPolicy.new(context, @user_group)
+    assert policy.update?
+  end
+
+  test "update?() does not authorize non-privileged users to a global user
+  group" do
+    @user_group = user_groups(:sysadmin)
+    user        = users(:southwest_admin)
+    context     = RequestContext.new(user:        user,
+                                     institution: institutions(:northeast))
+    policy      = UserGroupPolicy.new(context, @user_group)
     assert !policy.update?
   end
 
