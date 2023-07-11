@@ -743,7 +743,9 @@ class Bitstream < ApplicationRecord
         command = "vipsthumbnail #{source_tempfile.path} #{crop} "\
                   "--size=#{size}x#{size} "\
                   "-o %s-#{region}-#{size}.#{format}"
-        raise "Command failed: #{command}" unless system(command)
+        result  = system(command)
+        status  = $?.exitstatus
+        raise "Command returned status code #{status}: #{command}" unless result
         deriv_path = File.join(File.dirname(source_tempfile.path),
                                "#{File.basename(source_tempfile.path)}-#{region}-#{size}.#{format}")
         File.open(deriv_path, "rb") do |file|
