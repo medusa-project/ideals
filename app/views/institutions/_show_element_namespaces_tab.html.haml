@@ -14,14 +14,15 @@
   = link_to("registered elements", registered_elements_path)
   with URIs for dissemination in XML and Linked Data.
 
-.alert.alert-warning
-  = icon_for(:warning)
-  The following element namespaces, used by one or more of your registered
-  elements, have not been defined yet:
-  %ul
-    - @unaccounted_prefixes.each do |prefix|
-      %li
-        %code= prefix
+- if @unaccounted_prefixes.any?
+  .alert.alert-warning
+    = icon_for(:warning)
+    The following element namespaces, used by one or more of your registered
+    elements, have not been defined yet:
+    %ul
+      - @unaccounted_prefixes.each do |prefix|
+        %li
+          %code= prefix
 
 = render partial: "element_namespaces/listing"
 
