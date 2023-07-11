@@ -17,7 +17,9 @@ class InviteePolicy < ApplicationPolicy
   end
 
   def approve
-    if @invitee.respond_to?(:institution) &&
+    if effective_sysadmin?(@user, @role_limit)
+      return AUTHORIZED_RESULT
+    elsif @invitee.respond_to?(:institution) &&
       @ctx_institution != @invitee.institution
       return WRONG_SCOPE_RESULT
     end
