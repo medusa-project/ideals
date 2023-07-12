@@ -219,6 +219,7 @@ const InstitutionView = function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/invitees";
         $.get(url, function (data) {
             $("#invitees-tab-content").html(data);
+            new Invitees.InviteeFilterForm();
         });
     });
 
