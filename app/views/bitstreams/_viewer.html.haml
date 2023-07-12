@@ -9,6 +9,12 @@
                 class: "btn btn-sm btn-success") do
         %i.fa.fa-download
         Download
+    - if policy(@bitstream).download?
+      -# Copy Link button
+      %button#copy-link.btn.btn-sm.btn-dark{"data-bitstream-url": item_bitstream_object_url(@bitstream.item, @bitstream, dl: 1),
+                                            type:                 "button"}
+        %i.fa.fa-link
+        Copy Link
     - if policy(@bitstream).edit?
       -# Edit button
       %button.btn.btn-sm.btn-dark.edit-bitstream{"data-item-id":      @bitstream.item_id,
