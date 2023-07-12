@@ -143,12 +143,13 @@ class CsvImporter
              print_progress: false,
              task:           nil)
     rows     = CSV.parse(csv)
-    validate_header(rows[0])
     num_rows = rows.length - 1 # exclude header
     progress = print_progress ? Progress.new(num_rows) : nil
     # Work inside a transaction to avoid any incompletely created items.
     Import.transaction do
       begin
+        validate_header(row: rows[0],
+                        submission_profile: primary_collection.effective_submission_profile)
         rows[1..].each_with_index do |row, row_index|
           status_text = "Importing #{num_rows} items from CSV"
           progress&.report(row_index, status_text)
@@ -239,9 +240,10 @@ class CsvImporter
     associate_bitstreams(item:               item,
                          row:                row,
                          import_object_keys: import_object_keys)
-    ascribe_metadata(item:          item,
-                     column_names:  element_names,
-                     column_values: row[REQUIRED_COLUMNS.length..])
+    ascribe_metadata(item:               item,
+                     submission_profile: primary_collection.effective_submission_profile,
+                     column_names:       element_names,
+                     column_values:      row[REQUIRED_COLUMNS.length..])
     associate_embargoes(item: item, row: row)
     item.save!
     item
@@ -258,9 +260,10 @@ class CsvImporter
       associate_bitstreams(item:               item,
                            row:                row,
                            import_object_keys: import_object_keys)
-      ascribe_metadata(item:          item,
-                       column_names:  element_names,
-                       column_values: row[REQUIRED_COLUMNS.length..])
+      ascribe_metadata(item:               item,
+                       submission_profile: item.effective_primary_collection.effective_submission_profile,
+                       column_names:       element_names,
+                       column_values:      row[REQUIRED_COLUMNS.length..])
       associate_embargoes(item: item,
                           row:  row)
       item.save!
@@ -268,7 +271,11 @@ class CsvImporter
     item
   end
 
-  def ascribe_metadata(item:, column_names:, column_values:)
+  def ascribe_metadata(item:,
+                       submission_profile:,
+                       column_names:,
+                       column_values:)
+    required_elements = submission_profile.elements.select(&:required).map(&:name)
     column_values.each_with_index do |cell_value, column_index|
       element_name  = column_names[column_index]
       item.elements.select{ |e| e.name == element_name }.each(&:delete)
@@ -284,6 +291,10 @@ class CsvImporter
                               string:             value.strip,
                               position:           value_index + 1)
         end
+      elsif required_elements.include?(element_name)
+        raise ArgumentError, "Item #{item.id} has a blank #{element_name} "\
+                             "cell, but a value is required by the "\
+                             "submission profile."
       end
     end
   end
@@ -366,8 +377,16 @@ class CsvImporter
 
   ##
   # @param row [Hash<String>]
+  # @param submission_profile [SubmissionProfile]
   #
-  def validate_header(row)
+  def validate_header(row:, submission_profile:)
+    required_elements = submission_profile.elements.select(&:required).map(&:name)
+    missing_elements  = required_elements - row
+    if missing_elements.any?
+      raise ArgumentError, "The following elements are required by the "\
+                           "collection's effective submission profile, but "\
+                           "are missing columns in the CSV: #{missing_elements.join(", ")}"
+    end
     REQUIRED_COLUMNS.each_with_index do |column, index|
       if row[index] != column
         raise ArgumentError, "Missing #{column} column"
