@@ -1451,6 +1451,58 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.show_index_pages?
   end
 
+  # show_invitees?()
+
+  test "show_invitees?() returns false with a nil request context" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @institution)
+    policy = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_invitees?
+  end
+
+  test "show_invitees?() does not authorize non-sysadmins" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_invitees?
+  end
+
+  test "show_invitees?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.show_invitees?
+  end
+
+  test "show_invitees?() authorizes administrators of the same institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.show_invitees?
+  end
+
+  test "show_invitees?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, institutions(:northeast))
+    assert !policy.show_invitees?
+  end
+
+  test "show_invitees?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_invitees?
+  end
+
   # show_metadata_profiles?()
 
   test "show_metadata_profiles?() returns false with a nil request context" do
@@ -1919,7 +1971,8 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert policy.show_users?
   end
 
-  test "show_users?() does not authorize administrators of a different institution" do
+  test "show_users?() does not authorize administrators of a different
+  institution" do
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: @institution)
@@ -2166,7 +2219,8 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert policy.update_settings?
   end
 
-  test "update_settings?() does not authorize administrators of a different institution" do
+  test "update_settings?() does not authorize administrators of a different
+  institution" do
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: @institution)

@@ -1,0 +1,13 @@
+.card.mb-3
+  .card-body
+    = form_tag invitees_path, method: :get, id: "invitees-form", class: "form-inline" do
+      .row.mb-3
+        .col
+          = label_tag nil, "Email", class: "form-label"
+          = filter_field
+        .col
+          = label_tag nil, "Approval State", class: "form-label"
+          = select_tag "approval_state",
+                       options_for_select(Invitee::ApprovalState::all.sort.map{ |s| [s.capitalize, s] },
+                                          params[:approval_state] || Invitee::ApprovalState::PENDING),
+                       class: "form-select"

@@ -160,6 +160,15 @@
                                          "aria-selected":  "false"}
           = icon_for(IndexPage)
           Index Pages
+      - if policy(@institution).show_invitees?
+        %button#invitees-tab.nav-link{"data-bs-target": "#invitees-tab-content",
+                                      "data-bs-toggle": "pill",
+                                      role:             "tab",
+                                      type:             "button",
+                                      "aria-controls":  "invitees-tab-content",
+                                      "aria-selected":  "false"}
+          = icon_for(Invitee)
+          Invitees
       - if policy(@institution).show_users?
         %button#users-tab.nav-link{"data-bs-target": "#users-tab-content",
                                    "data-bs-toggle": "pill",
@@ -274,6 +283,11 @@
     - if policy(@institution).show_units?
       #units-tab-content.tab-pane.fade{role:              "tabpanel",
                                        "aria-labelledby": "units-tab"}
+        = spinner
+
+    - if policy(@institution).show_invitees?
+      #invitees-tab-content.tab-pane.fade{role:              "tabpanel",
+                                          "aria-labelledby": "invitees-tab"}
         = spinner
 
     - if policy(@institution).show_users?

@@ -153,6 +153,10 @@ class InstitutionPolicy < ApplicationPolicy
     show_metadata_profiles
   end
 
+  def show_invitees
+    show
+  end
+
   def show_metadata_profiles
     effective_sysadmin(@user, @role_limit)
   end

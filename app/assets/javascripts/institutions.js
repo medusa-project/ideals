@@ -215,6 +215,13 @@ const InstitutionView = function() {
         });
     });
 
+    $("#invitees-tab").on("show.bs.tab", function() {
+        const url = ROOT_URL + "/institutions/" + institutionKey + "/invitees";
+        $.get(url, function (data) {
+            $("#invitees-tab-content").html(data);
+        });
+    });
+
     $("#metadata-profiles-tab").on("show.bs.tab", function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/metadata-profiles";
         $.get(url, function (data) {
