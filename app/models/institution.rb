@@ -598,9 +598,9 @@ class Institution < ApplicationRecord
         # Generate a bunch of resized derivatives and upload them.
         InstitutionsHelper::FAVICONS.each_with_index do |icon, index|
           deriv_path = "#{tmpdir}/favicon-#{icon[:size]}x#{icon[:size]}.png"
-          `vipsthumbnail #{master_path} --size=#{icon[:size]}x#{icon[:size]} -o #{deriv_path}.v`
-          `vips gravity #{deriv_path}.v #{deriv_path} centre #{icon[:size]} #{icon[:size]} --background "0, 0, 0, 0"`
-          dest_key = "#{key_prefix}favicon-#{icon[:size]}x#{icon[:size]}.png"
+          size       = "#{icon[:size]}x#{icon[:size]}"
+          `convert #{master_path} -background none -resize #{size} -gravity center -extent #{size} #{deriv_path}`
+          dest_key   = "#{key_prefix}favicon-#{icon[:size]}x#{icon[:size]}.png"
           PersistentStore.instance.put_object(key:             dest_key,
                                               institution_key: self.key,
                                               path:            deriv_path,

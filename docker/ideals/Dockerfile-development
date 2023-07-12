@@ -16,10 +16,10 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     curl \
     git \
+    imagemagick \
     libmagic-dev \
     libpq-dev \
     libssl-dev \
-    libvips-tools \
     libyaml-dev \
     poppler-utils \
     shared-mime-info \
