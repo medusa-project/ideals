@@ -489,27 +489,8 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  test "object() increments the bitstream's download count when dl=1" do
-    fixture = file_fixture("pdf.pdf")
-    item    = items(:southwest_unit1_collection1_item1)
-    bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: File.basename(fixture),
-                                       length:   File.size(fixture))
-    bs.save!
-    begin
-      File.open(fixture, "r") do |file|
-        bs.upload_to_staging(file)
-      end
-      get item_bitstream_object_path(item, bs), params: { dl: 1 }
-      bs.reload
-      assert_equal 1, bs.download_count
-    ensure
-      bs.delete_from_staging
-    end
-  end
-
-  test "object() does not increment the bitstream's download count when a dl
-  argument is not provided" do
+  test "object() increments the bitstream's download count when dl is not
+  provided" do
     fixture = file_fixture("pdf.pdf")
     item    = items(:southwest_unit1_collection1_item1)
     bs      = Bitstream.new_in_staging(item:     item,
@@ -521,6 +502,26 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
         bs.upload_to_staging(file)
       end
       get item_bitstream_object_path(item, bs)
+      bs.reload
+      assert_equal 1, bs.download_count
+    ensure
+      bs.delete_from_staging
+    end
+  end
+
+  test "object() does not increment the bitstream's download count when
+  dl=0" do
+    fixture = file_fixture("pdf.pdf")
+    item    = items(:southwest_unit1_collection1_item1)
+    bs      = Bitstream.new_in_staging(item:     item,
+                                       filename: File.basename(fixture),
+                                       length:   File.size(fixture))
+    bs.save!
+    begin
+      File.open(fixture, "r") do |file|
+        bs.upload_to_staging(file)
+      end
+      get item_bitstream_object_path(item, bs), params: { dl: 0 }
       bs.reload
       assert_equal 0, bs.download_count
     ensure
