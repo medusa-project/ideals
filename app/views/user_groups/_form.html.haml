@@ -5,7 +5,7 @@
     -# populated via ajax by shared/_validation_messages.js.erb
 
   -# This value will be cleared via JS if we are on /global-user-groups.
-  = f.hidden_field(:institution_id, value: current_institution.id)
+  = f.hidden_field(:institution_id, value: f.object.institution_id)
 
   .mb-3
     = f.label :name, class: "required"

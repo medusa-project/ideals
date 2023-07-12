@@ -178,6 +178,15 @@
                                    "aria-selected":  "false"}
           = icon_for(User)
           Users
+      - if policy(@institution).show_user_groups?
+        %button#user-groups-tab.nav-link{"data-bs-target": "#user-groups-tab-content",
+                                         "data-bs-toggle": "pill",
+                                         role:             "tab",
+                                         type:             "button",
+                                         "aria-controls":  "user-groups-tab-content",
+                                         "aria-selected":  "false"}
+          = icon_for(UserGroup)
+          User Groups
       - if policy(@institution).show_statistics?
         %button#statistics-tab.nav-link{"data-bs-target":       "#statistics-tab-content",
                                         "data-bs-toggle":       "pill",
@@ -293,6 +302,11 @@
     - if policy(@institution).show_users?
       #users-tab-content.tab-pane.fade{role:              "tabpanel",
                                        "aria-labelledby": "users-tab"}
+        = spinner
+
+    - if policy(@institution).show_user_groups?
+      #user-groups-tab-content.tab-pane.fade{role:              "tabpanel",
+                                             "aria-labelledby": "user-groups-tab"}
         = spinner
 
     - if policy(@institution).show_statistics?

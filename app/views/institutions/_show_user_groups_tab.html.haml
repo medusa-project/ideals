@@ -1,7 +1,4 @@
-- provide :body_id, "user_groups"
-- provide :title, "User Groups"
-
-= hidden_field_tag :institution_id, current_institution.id
+-# N.B.: this template must be kept aligned with user_groups/index
 
 .btn-group.float-end{role: "group"}
   -# Add User Group button
@@ -11,11 +8,7 @@
     %i.fa.fa-plus
     Add User Group
 
-%h1
-  User Groups
-  %small
-    in
-    = current_institution.name
+.clearfix
 
 - if @user_groups.any?
   %ul
@@ -26,6 +19,3 @@
 
 = render partial: "shared/xhr_modal",
          locals: { id: "add-user-group-modal", title: "Add User Group" }
-= render partial: "shared/xhr_modal",
-         locals: { id: "edit-user-group-modal", title: "Edit User Group" }
-

@@ -1302,6 +1302,31 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # show_user_groups()
+
+  test "show_user_groups() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_user_groups_path(@institution), xhr: true
+    assert_response :not_found
+  end
+
+  test "show_user_groups() returns HTTP 403 for logged-out users" do
+    get institution_user_groups_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_user_groups() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    get institution_user_groups_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_user_groups() returns HTTP 200 for authorized users" do
+    log_in_as(users(:southwest_admin))
+    get institution_user_groups_path(@institution), xhr: true
+    assert_response :ok
+  end
+
   # show_users()
 
   test "show_users() returns HTTP 404 for unscoped requests" do

@@ -197,6 +197,10 @@ class InstitutionPolicy < ApplicationPolicy
     show
   end
 
+  def show_user_groups
+    show
+  end
+
   def show_users
     show
   end

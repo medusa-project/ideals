@@ -296,6 +296,15 @@ const InstitutionView = function() {
         });
     });
 
+    $("#user-groups-tab").on("show.bs.tab", function() {
+        const url = ROOT_URL + "/institutions/" + institutionKey + "/user-groups";
+        $.get(url, function (data) {
+            $("#user-groups-tab-content").html(data);
+            $("button.add-user-group").on("click",
+                UserGroups.AddUserGroupClickHandler);
+        });
+    });
+
     $("#users-tab").on("show.bs.tab", function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/users";
         $.get(url, function (data) {

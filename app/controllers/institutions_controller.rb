@@ -531,6 +531,16 @@ class InstitutionsController < ApplicationController
   end
 
   ##
+  # Renders HTML for the user groups tab in show-institution view.
+  #
+  # Responds to `GET /institutions/:key/user-groups` (XHR only)
+  #
+  def show_user_groups
+    @user_groups = UserGroup.where(institution: @institution).order(:name)
+    render partial: "show_user_groups_tab"
+  end
+
+  ##
   # Renders HTML for the users tab in show-institution view.
   #
   # Responds to `GET /institutions/:key/users` (XHR only)
