@@ -746,6 +746,7 @@ class Bitstream < ApplicationRecord
         command    = "convert #{source_tempfile.path}[0] "\
                      "#{crop} "\
                      "-resize #{size}x#{size} "\
+                     "-alpha remove "\
                      "#{deriv_path}"
         result     = system(command)
         status     = $?.exitstatus
