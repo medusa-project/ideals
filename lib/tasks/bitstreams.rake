@@ -61,25 +61,6 @@ namespace :bitstreams do
     puts ""
   end
 
-  desc "Make all bucket objects public" # TODO: this can be removed once it has been done in demo and production
-  task make_all_objects_public: :environment do
-    client     = S3Client.instance
-    bucket     = ::Configuration.instance.storage[:bucket]
-    bitstreams = Bitstream.where("staging_key IS NOT NULL OR permanent_key IS NOT NULL")
-    count      = bitstreams.count
-    progress   = Progress.new(count)
-    Bitstream.uncached do
-      bitstreams.find_each.with_index do |bs, index|
-        client.put_object_acl(
-          acl:    "public-read",
-          bucket: bucket,
-          key:    bs.effective_key
-        )
-        progress.report(index, "Updating object ACLs")
-      end
-    end
-  end
-
   desc "Handle bitstreams for which ingest messages have been sent but no
     response messages have been received"
   task sync_with_medusa: :environment do
