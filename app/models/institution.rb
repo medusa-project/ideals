@@ -284,7 +284,7 @@ class Institution < ApplicationRecord
       raise "Unrecognized federation"
     end
     path = "/tmp/metadata-#{SecureRandom.hex}.xml"
-    `curl -o #{path} #{uri}`
+    `curl -sSo #{path} #{uri}`
     return File.new(path)
   end
 
