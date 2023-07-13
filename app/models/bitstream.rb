@@ -575,6 +575,7 @@ class Bitstream < ApplicationRecord
   end
 
   def move_into_permanent_storage
+    raise "Staging key is blank" if self.staging_key.blank?
     store         = PersistentStore.instance
     permanent_key = self.class.permanent_key(institution_key: self.institution.key,
                                              item_id:         self.item_id,
