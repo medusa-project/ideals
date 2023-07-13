@@ -17,6 +17,20 @@ class PersistentStoreTest < ActiveSupport::TestCase
 
   # copy_object()
 
+  test "copy_object() raises an error if source_key is blank" do
+    assert_raises ArgumentError do
+      PersistentStore.instance.copy_object(source_key: nil,
+                                           target_key: "cats/mainecoon")
+    end
+  end
+
+  test "copy_object() raises an error if target_key is blank" do
+    assert_raises ArgumentError do
+      PersistentStore.instance.copy_object(source_key: "cats/siamese",
+                                           target_key: nil)
+    end
+  end
+
   test "copy_object() copies an object" do
     store = PersistentStore.instance
     file  = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")
@@ -85,6 +99,20 @@ class PersistentStoreTest < ActiveSupport::TestCase
   end
 
   # move_object()
+
+  test "move_object() raises an error if source_key is blank" do
+    assert_raises ArgumentError do
+      PersistentStore.instance.move_object(source_key: nil,
+                                           target_key: "cats/mainecoon")
+    end
+  end
+
+  test "move_object() raises an error if target_key is blank" do
+    assert_raises ArgumentError do
+      PersistentStore.instance.move_object(source_key: "cats/siamese",
+                                           target_key: nil)
+    end
+  end
 
   test "move_object() copies an object" do
     store = PersistentStore.instance
