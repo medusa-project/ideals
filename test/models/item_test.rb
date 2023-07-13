@@ -156,6 +156,75 @@ class ItemTest < ActiveSupport::TestCase
     end
   end
 
+  test "approve() sets correct bitstream bundle positions" do
+    item = items(:uiuc_described)
+    item.bitstreams.build(filename: "Test 1", length: 0)
+    item.bitstreams.build(filename: "Test 6", length: 0)
+    item.bitstreams.build(filename: "Test 5", length: 0)
+    item.bitstreams.build(filename: "Test 3", length: 0)
+    item.bitstreams.build(filename: "Test 2", length: 0)
+    item.bitstreams.build(filename: "Test 4", length: 0)
+    item.save!
+    item.approve
+
+    filenames = item.bitstreams.map(&:filename)
+    NaturalSort.sort!(filenames)
+    item.bitstreams.each do |bs|
+      assert_equal filenames.index(bs.filename), bs.bundle_position
+    end
+  end
+
+  include ActionView::Helpers::TextHelper
+  test "approve() adds a license.txt bitstream when deposit_agreement is
+  present" do
+    deposit_agreement = "This is the deposit agreement. It is intentionally "\
+                        "longer than 80 columns in order to check the word "\
+                        "wrapping."
+    item = Item.create!(institution:        institutions(:southwest),
+                        primary_collection: collections(:southwest_unit1_collection1),
+                        stage:              Item::Stages::APPROVED,
+                        deposit_agreement:  deposit_agreement)
+    item.approve
+
+    assert_equal 1, item.bitstreams.count
+    bs = item.bitstreams.first
+    assert_equal "license.txt", bs.filename
+    assert_equal "license.txt", bs.original_filename
+    assert_equal deposit_agreement.bytesize, bs.length
+    assert_equal Bitstream::Bundle::LICENSE, bs.bundle
+    assert_nil bs.staging_key
+    assert_not_nil bs.permanent_key
+    assert_equal word_wrap(deposit_agreement), bs.data.read
+  end
+
+  test "approve() does not add a license.txt bitstream when deposit_agreement
+  is not present" do
+    item = Item.create!(institution:        institutions(:southwest),
+                        primary_collection: collections(:southwest_unit1_collection1),
+                        stage:              Item::Stages::APPROVED)
+    item.approve
+
+    assert_empty item.bitstreams
+  end
+
+  test "approve() moves all associated Bitstreams into permanent storage" do
+    item    = items(:uiuc_described)
+    fixture = file_fixture("escher_lego.png")
+    @instance.bitstreams.each do |bs|
+      File.open(fixture, "r") do |file|
+        bs.upload_to_staging(file)
+      end
+    end
+
+    item.approve
+    assert_equal item.bitstreams.count,
+                 item.bitstreams.where.not(permanent_key: nil).count
+  end
+
+  test "approve() sends ingest messages to Medusa" do
+    # TODO: write this
+  end
+
   # approved?()
 
   test "approved?() returns true when the stage is set to APPROVED" do
@@ -337,31 +406,6 @@ class ItemTest < ActiveSupport::TestCase
 
   # complete_submission()
 
-  test "complete_submission() creates an associated date-submitted element" do
-    item = items(:uiuc_described)
-    item.complete_submission
-    e = item.element(item.institution.date_submitted_element.name)
-    assert_not_nil e.string
-    assert_equal item.institution, e.registered_element.institution
-  end
-
-  test "complete_submission() sets correct bitstream bundle positions" do
-    item = items(:uiuc_described)
-    item.bitstreams.build(filename: "Test 1", length: 0)
-    item.bitstreams.build(filename: "Test 6", length: 0)
-    item.bitstreams.build(filename: "Test 5", length: 0)
-    item.bitstreams.build(filename: "Test 3", length: 0)
-    item.bitstreams.build(filename: "Test 2", length: 0)
-    item.bitstreams.build(filename: "Test 4", length: 0)
-    item.save!
-    item.complete_submission
-    filenames = item.bitstreams.map(&:filename)
-    NaturalSort.sort!(filenames)
-    item.bitstreams.each do |bs|
-      assert_equal filenames.index(bs.filename), bs.bundle_position
-    end
-  end
-
   test "complete_submission() sets the stage to submitted if the collection is
   reviewing submissions" do
     item = items(:uiuc_described)
@@ -376,6 +420,14 @@ class ItemTest < ActiveSupport::TestCase
     item.primary_collection.submissions_reviewed = false
     item.complete_submission
     assert_equal Item::Stages::APPROVED, item.stage
+  end
+
+  test "complete_submission() creates an associated date-submitted element" do
+    item = items(:uiuc_described)
+    item.complete_submission
+    e = item.element(item.institution.date_submitted_element.name)
+    assert_not_nil e.string
+    assert_equal item.institution, e.registered_element.institution
   end
 
   test "complete_submission() creates an associated date-submitted element
@@ -424,6 +476,7 @@ class ItemTest < ActiveSupport::TestCase
   test "complete_submission() moves all associated Bitstreams into
   permanent storage if the collection is not reviewing submissions" do
     item    = items(:uiuc_described)
+    item.primary_collection.submissions_reviewed = false
     fixture = file_fixture("escher_lego.png")
     @instance.bitstreams.each do |bs|
       File.open(fixture, "r") do |file|
@@ -435,6 +488,83 @@ class ItemTest < ActiveSupport::TestCase
 
     assert_equal item.bitstreams.count,
                  item.bitstreams.where.not(permanent_key: nil).count
+  end
+
+  test "complete_submission() creates an associated date-approved element when
+  the collection is not reviewing submissions" do
+    item = items(:uiuc_submitting)
+    item.primary_collection.submissions_reviewed = false
+    item.institution.update!(handle_uri_element: nil)
+
+    item.complete_submission
+    e = item.element(item.institution.date_approved_element.name)
+    assert_not_nil e.string
+    assert_equal e.registered_element.institution, item.institution
+  end
+
+  test "approve() does not create an associated date-approved element if no
+  such mapping is defined and the collection is not reviewing submissions" do
+    item = items(:uiuc_submitting)
+    item.primary_collection.submissions_reviewed = false
+    item.institution.update!(date_approved_element: nil,
+                             handle_uri_element:    nil)
+    assert_difference "item.elements.count", 1 do # if it were created, we'd expect 2
+      item.complete_submission
+    end
+  end
+
+  test "complete_submission() sets correct bitstream bundle positions when the
+  collection is not reviewing submissions" do
+    item = items(:uiuc_described)
+    item.primary_collection.submissions_reviewed = false
+    item.bitstreams.build(filename: "Test 1", length: 0)
+    item.bitstreams.build(filename: "Test 6", length: 0)
+    item.bitstreams.build(filename: "Test 5", length: 0)
+    item.bitstreams.build(filename: "Test 3", length: 0)
+    item.bitstreams.build(filename: "Test 2", length: 0)
+    item.bitstreams.build(filename: "Test 4", length: 0)
+    item.save!
+    item.complete_submission
+
+    filenames = item.bitstreams.map(&:filename)
+    NaturalSort.sort!(filenames)
+    item.bitstreams.each do |bs|
+      assert_equal filenames.index(bs.filename), bs.bundle_position
+    end
+  end
+
+  include ActionView::Helpers::TextHelper
+  test "complete_submission() adds a license.txt bitstream when
+  deposit_agreement is present and the collection is not reviewing submissions" do
+    deposit_agreement = "This is the deposit agreement. It is intentionally "\
+                        "longer than 80 columns in order to check the word "\
+                        "wrapping."
+    item = items(:uiuc_submitting)
+    item.primary_collection.submissions_reviewed = false
+    item.deposit_agreement = deposit_agreement
+    item.complete_submission
+
+    bs = item.bitstreams.find{ |b| b.filename == "license.txt" }
+    assert_equal "license.txt", bs.original_filename
+    assert_equal deposit_agreement.bytesize, bs.length
+    assert_equal Bitstream::Bundle::LICENSE, bs.bundle
+    assert_nil bs.staging_key
+    assert_not_nil bs.permanent_key
+    assert_equal word_wrap(deposit_agreement), bs.data.read
+  end
+
+  test "complete_submission() does not add a license.txt bitstream when
+  deposit_agreement is not present and the collection is not reviewing
+  submissions" do
+    item = items(:uiuc_submitting)
+    item.primary_collection.submissions_reviewed = false
+    item.complete_submission
+
+    assert_nil item.bitstreams.find{ |b| b.filename == "license.txt" }
+  end
+
+  test "complete_submission() sends ingest messages to Medusa" do
+    # TODO: write this
   end
 
   # delete_from_permanent_storage()

@@ -345,16 +345,33 @@ class Item < ApplicationRecord
   end
 
   ##
-  # Sets {stage} to {Stages::APPROVED} and creates an associated
-  # {AscribedElement} with a string value of the current ISO 8601 timestamp.
+  # Approves the instance by:
+  #
+  # * Setting {stage} to {Stages::APPROVED}
+  # * Creating an associated {AscribedElement} with a string value of the
+  #   current ISO 8601 timestamp.
+  # * Natural-sorting bitstreams by filename
+  # * Creating a license bitstream
+  # * Moving all bitstreams into permanent storage
+  # * Ingesting all bitstreams into Medusa
+  #
+  # N.B. this method may or may not be invoked by {complete_submission}.
   #
   # @return [void]
+  # @see complete_submission
   #
   def approve
     self.stage = Stages::APPROVED
     reg_e      = self.institution.date_approved_element
     self.elements.build(registered_element: reg_e,
                         string:             Time.now.iso8601) if reg_e
+    natural_sort_bitstreams
+    create_license_bitstream if self.deposit_agreement.present?
+    self.move_into_permanent_storage
+    # A handle should always be present at this point, except in testing.
+    if self.handle && self.institution.outgoing_message_queue.present?
+      self.ingest_into_medusa
+    end
     self.save!
   end
 
@@ -531,11 +548,13 @@ class Item < ApplicationRecord
   end
 
   ##
-  # Updates the {stage} property and creates an associated
-  # `dcterms:date:submitted` element with a string value of the current
-  # ISO-8601 timestamp.
+  # Invoked when a user has finished submitting an item. A date-submitted
+  # element is created with a string value of the current ISO-8601 timestamp.
+  # Then, if the owning collection is not reviewing submissions, {approve} is
+  # called. Otherwise, the {stage} property is set to {Stages::SUBMITTED}.
   #
   # @return [void]
+  # @see approve
   #
   def complete_submission
     # Assign a date-submitted element with a string value of the current
@@ -543,15 +562,10 @@ class Item < ApplicationRecord
     reg_e = self.institution.date_submitted_element
     self.elements.build(registered_element: reg_e,
                         string:             Time.now.iso8601).save! if reg_e
-    natural_sort_bitstreams
     if self.primary_collection&.submissions_reviewed
       self.update!(stage: Stages::SUBMITTED)
     else
       self.approve
-      self.move_into_permanent_storage
-      if self.handle && self.institution.outgoing_message_queue.present?
-        self.ingest_into_medusa
-      end
     end
   end
 
@@ -820,6 +834,40 @@ class Item < ApplicationRecord
 
 
   private
+
+  ##
+  # In DSpace, a bitstream representing the deposit agreement that was agreed
+  # to at the time an item was created was ascribed to it. This bitstream was
+  # named `license.txt` and contained the text of the deposit agreement. This
+  # app instead tracks the deposit agreement in the deposit_agreement column,
+  # which is really the source-of-truth for this information, and should be
+  # perfectly sufficient, but it was desired [definitely not by me--ed.] to
+  # continue this behavior of attaching a license.txt bitstream to items
+  # anyway.
+  #
+  # We add the bitstream only after the instance's stage has changed to
+  # approved. This prevents us from having to filter it out of the files table
+  # in the submission form, and keeps this whole "feature" contained to this
+  # method so that it will be easier to remove at some point.
+  #
+  include ActionView::Helpers::TextHelper
+  def create_license_bitstream
+    raise "Instance must be approved" if stage != Stages::APPROVED
+    raise "Deposit agreement is empty" if deposit_agreement.empty?
+    return if self.bitstreams.find{ |b| b.filename == "license.txt" }
+    transaction do
+      text = word_wrap(self.deposit_agreement)
+      bs   = self.bitstreams.build(filename:          "license.txt",
+                                   original_filename: "license.txt",
+                                   bundle:            Bitstream::Bundle::LICENSE,
+                                   length:            text.bytesize,
+                                   staging_key: Bitstream.staging_key(
+                                     institution_key: self.institution.key,
+                                     item_id:         self.id,
+                                     filename:        "license.txt"))
+      bs.upload_to_staging(text)
+    end
+  end
 
   def email_after_submission
     # This ivar helps prevent duplicate sends.
