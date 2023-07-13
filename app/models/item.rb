@@ -704,7 +704,9 @@ class Item < ApplicationRecord
   # @return [void]
   #
   def move_into_permanent_storage
-    self.bitstreams.each(&:move_into_permanent_storage)
+    self.bitstreams.
+      select{ |b| b.staging_key.present? }.
+      each(&:move_into_permanent_storage)
   end
 
   ##
