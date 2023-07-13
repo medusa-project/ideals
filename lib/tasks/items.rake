@@ -2,11 +2,26 @@ require 'rake'
 
 namespace :items do
 
+  desc "Add license.txt bitstreams to items that don't already have them"
+  task add_license_bitstreams: :environment do # TODO: remove this after running in demo & production
+    Item.uncached do
+      items    = Item.
+        where(stage: Item::Stages::APPROVED).
+        where("LENGTH(deposit_agreement) > 0").
+        order(:id)
+      count    = items.count
+      progress = Progress.new(count)
+      items.find_each.with_index do |item, index|
+        item.send(:create_license_bitstream)
+        progress.report(index, "Adding license.txt bitstreams")
+      end
+    end
+  end
+
   desc "Delete expired embargoes"
   task delete_expired_embargoes: :environment do
     Embargo.where("expires_at < NOW()").delete_all
   end
-
 
   desc "Import items from a SAF package"
   task :import_saf, [:package_path, :mapfile_path, :collection_id] => :environment do |task, args|
