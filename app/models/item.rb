@@ -856,7 +856,14 @@ class Item < ApplicationRecord
     raise "Deposit agreement is empty" if deposit_agreement.empty?
     return if self.bitstreams.find{ |b| b.filename == "license.txt" }
     transaction do
-      text = word_wrap(self.deposit_agreement)
+      agreement = self.deposit_agreement.strip
+      if agreement.start_with?("<") # is it HTML?
+        doc  = Kramdown::Document.new(agreement, input: "html")
+        text = doc.to_kramdown
+      else
+        text = agreement
+      end
+      text = word_wrap(text)
       bs   = self.bitstreams.build(filename:          "license.txt",
                                    original_filename: "license.txt",
                                    bundle:            Bitstream::Bundle::LICENSE,

@@ -32,6 +32,9 @@ gem "jbuilder"
 # Use jquery as the JavaScript library
 gem "jquery-rails"
 gem "js_cookie_rails"
+# Used for converting an HTML deposit agreement to Markdown for storage in
+# license.txt bitstreams
+gem "kramdown"
 # For pretty absolute and relative dates
 gem "local_time"
 # High-level access to the Medusa Collection Registry's REST API

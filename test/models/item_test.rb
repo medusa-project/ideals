@@ -197,6 +197,21 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal word_wrap(deposit_agreement), bs.data.read
   end
 
+  test "approve() converts an HTML deposit agreement to Markdown for the
+  license.txt file" do
+    deposit_agreement = "<p>This is the deposit agreement.</p>"\
+                        "<p>It is in HTML format.</p>"
+    item = items(:uiuc_submitting)
+    item.primary_collection.submissions_reviewed = false
+    item.deposit_agreement = deposit_agreement
+    item.approve
+
+    bs       = item.bitstreams.find{ |b| b.filename == "license.txt" }
+    expected = "This is the deposit agreement.\n\nIt is in HTML format."
+    assert_equal expected.bytesize, bs.length
+    assert_equal expected, bs.data.read
+  end
+
   test "approve() does not add a license.txt bitstream when deposit_agreement
   is not present" do
     item = Item.create!(institution:        institutions(:southwest),
@@ -551,6 +566,21 @@ class ItemTest < ActiveSupport::TestCase
     assert_nil bs.staging_key
     assert_not_nil bs.permanent_key
     assert_equal word_wrap(deposit_agreement), bs.data.read
+  end
+
+  test "complete_submission() converts an HTML deposit agreement to Markdown
+  for the license.txt file" do
+    deposit_agreement = "<p>This is the deposit agreement.</p>"\
+                        "<p>It is in HTML format.</p>"
+    item = items(:uiuc_submitting)
+    item.primary_collection.submissions_reviewed = false
+    item.deposit_agreement = deposit_agreement
+    item.complete_submission
+
+    bs       = item.bitstreams.find{ |b| b.filename == "license.txt" }
+    expected = "This is the deposit agreement.\n\nIt is in HTML format."
+    assert_equal expected.bytesize, bs.length
+    assert_equal expected, bs.data.read
   end
 
   test "complete_submission() does not add a license.txt bitstream when
