@@ -23,9 +23,6 @@
 # * `date_approved_element_id`  Foreign key to {RegisteredElement} designating
 #                               an element to treat as the date-approved
 #                               element.
-# * `date_published_element_id` Foreign key to {RegisteredElement} designating
-#                               an element to treat as the date-approved
-#                               element.
 # * `date_submitted_element_id` Foreign key to {RegisteredElement} designating
 #                               an element to treat as the date-submitted
 #                               element.
@@ -170,8 +167,6 @@ class Institution < ApplicationRecord
              foreign_key: :author_element_id, optional: true
   belongs_to :date_approved_element, class_name: "RegisteredElement",
              foreign_key: :date_approved_element_id, optional: true
-  belongs_to :date_published_element, class_name: "RegisteredElement",
-             foreign_key: :date_published_element_id, optional: true
   belongs_to :date_submitted_element, class_name: "RegisteredElement",
              foreign_key: :date_submitted_element_id, optional: true
   belongs_to :handle_uri_element, class_name: "RegisteredElement",
@@ -962,7 +957,6 @@ class Institution < ApplicationRecord
                  author_element:         self.registered_elements.find_by_name("dc:creator"),
                  date_submitted_element: self.registered_elements.find_by_name("ideals:date:submitted"),
                  date_approved_element:  self.registered_elements.find_by_name("ideals:date:approved"),
-                 date_published_element: self.registered_elements.find_by_name("ideals:date:published"),
                  handle_uri_element:     self.registered_elements.find_by_name("ideals:handleURI"))
   end
 

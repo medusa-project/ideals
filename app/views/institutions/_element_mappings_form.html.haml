@@ -44,15 +44,6 @@
       If set to the blank first option in the list, no such element will be added.
 
   .mb-3
-    = f.label(:date_published_element_id, "Date Published Element", class: "form-label")
-    = f.select(:date_published_element_id, element_options, { include_blank: true }, class: "form-select")
-    .form-text
-      = icon_for(:info)
-      When an item first becomes publicly available, an element will
-      automatically be appended to it containing a timestamp in ISO 8601 format.
-      If set to the blank first option in the list, no such element will be added.
-
-  .mb-3
     = f.label(:handle_uri_element_id, "Handle URI Element", class: "form-label")
     = f.select(:handle_uri_element_id, element_options, { include_blank: true }, class: "form-select")
     .form-text

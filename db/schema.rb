@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_07_11_190623) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_13_214151) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -369,7 +369,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_11_190623) do
     t.bigint "author_element_id"
     t.bigint "date_submitted_element_id"
     t.bigint "date_approved_element_id"
-    t.bigint "date_published_element_id"
     t.bigint "handle_uri_element_id"
     t.text "deposit_agreement"
     t.integer "banner_image_height", default: 200, null: false
@@ -827,7 +826,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_11_190623) do
   add_foreign_key "institution_administrators", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "institutions", "registered_elements", column: "author_element_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "institutions", "registered_elements", column: "date_approved_element_id", on_update: :cascade, on_delete: :restrict
-  add_foreign_key "institutions", "registered_elements", column: "date_published_element_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "institutions", "registered_elements", column: "date_submitted_element_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "institutions", "registered_elements", column: "handle_uri_element_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "institutions", "registered_elements", column: "title_element_id", on_update: :cascade, on_delete: :restrict

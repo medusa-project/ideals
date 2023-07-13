@@ -144,8 +144,6 @@ class InstitutionTest < ActiveSupport::TestCase
                  institution.date_submitted_element
     assert_equal institution.registered_elements.find_by_name("ideals:date:approved"),
                  institution.date_approved_element
-    assert_equal institution.registered_elements.find_by_name("ideals:date:published"),
-                 institution.date_published_element
     assert_equal institution.registered_elements.find_by_name("ideals:handleURI"),
                  institution.handle_uri_element
   end

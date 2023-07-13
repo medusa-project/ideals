@@ -15,7 +15,6 @@ empty:
   title_element:             empty_dc_title
   author_element:            empty_dc_creator
   date_approved_element:     empty_ideals_date_approved
-  date_published_element:    empty_ideals_date_published
   date_submitted_element:    empty_ideals_date_submitted
   handle_uri_element:        empty_ideals_handle_uri
 
@@ -36,7 +35,6 @@ example:
   title_element:             example_dc_title
   author_element:            example_dc_creator
   date_approved_element:     example_ideals_date_approved
-  date_published_element:    example_ideals_date_published
   date_submitted_element:    example_ideals_date_submitted
   handle_uri_element:        example_ideals_handle_uri
 
@@ -57,7 +55,6 @@ northeast:
   title_element:             northeast_dc_title
   author_element:            northeast_dc_creator
   date_approved_element:     northeast_ideals_date_approved
-  date_published_element:    northeast_ideals_date_published
   date_submitted_element:    northeast_ideals_date_submitted
   handle_uri_element:        northeast_ideals_handle_uri
   administering_groups:
@@ -80,7 +77,6 @@ southwest:
   title_element:             southwest_dc_title
   author_element:            southwest_dc_creator
   date_approved_element:     southwest_ideals_date_approved
-  date_published_element:    southwest_ideals_date_published
   date_submitted_element:    southwest_ideals_date_submitted
   handle_uri_element:        southwest_ideals_handle_uri
   administering_groups:
@@ -101,7 +97,6 @@ uiuc:
   title_element:               uiuc_dc_title
   author_element:              uiuc_dc_creator
   date_approved_element:       uiuc_ideals_date_approved
-  date_published_element:      uiuc_ideals_date_published
   date_submitted_element:      uiuc_ideals_date_submitted
   handle_uri_element:          uiuc_ideals_handle_uri
   administering_groups:

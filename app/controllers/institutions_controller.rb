@@ -783,7 +783,6 @@ class InstitutionsController < ApplicationController
                                         # Element Mappings tab
                                         :author_element_id,
                                         :date_approved_element_id,
-                                        :date_published_element_id,
                                         :date_submitted_element_id,
                                         :google_analytics_measurement_id,
                                         :handle_uri_element_id,
