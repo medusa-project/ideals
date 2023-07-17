@@ -52,6 +52,9 @@ class UnitPolicy < ApplicationPolicy
       return LOGGED_OUT_RESULT
     elsif effective_sysadmin?(@user, @role_limit)
       return AUTHORIZED_RESULT
+    elsif @unit.kind_of?(Unit) &&
+      @ctx_institution != @unit.institution
+      return WRONG_SCOPE_RESULT
     elsif @unit == Unit &&
       effective_institution_admin?(@user, @ctx_institution, @role_limit)
       return AUTHORIZED_RESULT
