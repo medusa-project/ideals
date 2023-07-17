@@ -667,6 +667,59 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert policy.show_items?
   end
 
+  # show_review_submissions?()
+
+  test "show_review_submissions?() returns false with a nil user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @unit.institution)
+    policy = UnitPolicy.new(context, @unit)
+    assert !policy.show_review_submissions?
+  end
+
+  test "show_review_submissions?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.show_review_submissions?
+  end
+
+  test "show_review_submissions?() is restrictive by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.show_review_submissions?
+  end
+
+  test "show_review_submissions?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UnitPolicy.new(context, @unit)
+    assert policy.show_review_submissions?
+  end
+
+  test "show_review_submissions?() authorizes unit administrators" do
+    user = users(:southwest)
+    user.administering_units << @unit
+    user.save!
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UnitPolicy.new(context, @unit)
+    assert policy.show_review_submissions?
+  end
+
+  test "show_review_submissions?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.show_review_submissions?
+  end
+
   # show_statistics?()
 
   test "show_statistics?() returns true with a nil user" do
@@ -682,6 +735,59 @@ class UnitPolicyTest < ActiveSupport::TestCase
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
     assert policy.show_statistics?
+  end
+
+  # show_submissions_in_progress?()
+
+  test "show_submissions_in_progress?() returns false with a nil user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @unit.institution)
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.show_submissions_in_progress?
+  end
+
+  test "show_submissions_in_progress?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.show_submissions_in_progress?
+  end
+
+  test "show_submissions_in_progress?() is restrictive by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.show_submissions_in_progress?
+  end
+
+  test "show_submissions_in_progress?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UnitPolicy.new(context, @unit)
+    assert policy.show_submissions_in_progress?
+  end
+
+  test "show_submissions_in_progress?() authorizes collection administrators" do
+    user    = users(:southwest)
+    user.administering_units << @unit
+    user.save!
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UnitPolicy.new(context, @unit)
+    assert policy.show_submissions_in_progress?
+  end
+
+  test "show_submissions_in_progress?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.show_submissions_in_progress?
   end
 
   # show_unit_membership?()

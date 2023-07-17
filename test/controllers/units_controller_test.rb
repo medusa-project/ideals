@@ -620,6 +620,48 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_response :gone
   end
 
+  # show_review_submissions()
+
+  test "show_review_submissions() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    unit = units(:uiuc_unit1)
+    get unit_review_submissions_path(unit), xhr: true
+    assert_response :not_found
+  end
+
+  test "show_review_submissions() returns HTTP 403 for logged-out users" do
+    unit = units(:uiuc_unit1)
+    get unit_review_submissions_path(unit), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_review_submissions() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:example))
+    unit = units(:uiuc_unit1)
+    get unit_review_submissions_path(unit), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_review_submissions() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:example_sysadmin))
+    unit = units(:uiuc_unit1)
+    get unit_review_submissions_path(unit)
+    assert_response :not_found
+  end
+
+  test "show_review_submissions() returns HTTP 410 for a buried unit" do
+    log_in_as(users(:uiuc_admin))
+    get unit_review_submissions_path(units(:uiuc_buried)), xhr: true
+    assert_response :gone
+  end
+
+  test "show_review_submissions() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:uiuc_admin))
+    unit = units(:uiuc_unit1)
+    get unit_review_submissions_path(unit), xhr: true
+    assert_response :ok
+  end
+
   # show_statistics()
 
   test "show_statistics() returns HTTP 404 for unscoped requests" do
@@ -641,6 +683,48 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   test "show_statistics() returns HTTP 200" do
     log_in_as(users(:uiuc_admin))
     get unit_statistics_path(units(:uiuc_unit1)), xhr: true
+    assert_response :ok
+  end
+
+  # show_submissions_in_progress()
+
+  test "show_submissions_in_progress() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    unit = units(:uiuc_unit1)
+    get unit_submissions_in_progress_path(unit), xhr: true
+    assert_response :not_found
+  end
+
+  test "show_submissions_in_progress() returns HTTP 403 for logged-out users" do
+    unit = units(:uiuc_unit1)
+    get unit_submissions_in_progress_path(unit), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_submissions_in_progress() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:example))
+    unit = units(:uiuc_unit1)
+    get unit_submissions_in_progress_path(unit), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_submissions_in_progress() returns HTTP 404 for non-XHR requests" do
+    log_in_as(users(:example_sysadmin))
+    unit = units(:uiuc_unit1)
+    get unit_submissions_in_progress_path(unit)
+    assert_response :not_found
+  end
+
+  test "show_submissions_in_progress() returns HTTP 410 for a buried collection" do
+    log_in_as(users(:uiuc_admin))
+    get unit_submissions_in_progress_path(units(:uiuc_buried)), xhr: true
+    assert_response :gone
+  end
+
+  test "show_submissions_in_progress() returns HTTP 200 for XHR requests" do
+    log_in_as(users(:uiuc_admin))
+    unit = units(:uiuc_unit1)
+    get unit_submissions_in_progress_path(unit), xhr: true
     assert_response :ok
   end
 

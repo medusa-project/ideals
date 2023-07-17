@@ -230,6 +230,34 @@ const Units = {
                 });
             });
         });
+
+        $("#review-submissions-tab").on("show.bs.tab", function() {
+            const url = ROOT_URL + "/units/" + unitID + "/review-submissions";
+            $.get(url, function (data) {
+                $("#review-submissions-tab-content").html(data);
+
+                new IDEALS.UIUtils.CheckAllButton($('.check-all'),
+                    $('#review-form input[type=checkbox]'));
+
+                const form = $('form#review-form');
+                const verb = form.find("[name=verb]");
+                $('.approve-checked').on('click', function() {
+                    verb.val("approve");
+                    form.submit();
+                });
+                $('.reject-checked').on('click', function() {
+                    verb.val("reject");
+                    form.submit();
+                });
+            });
+        });
+
+        $("#submissions-in-progress-tab").on("show.bs.tab", function() {
+            const url = ROOT_URL + "/units/" + unitID + "/submissions-in-progress";
+            $.get(url, function(data) {
+                $("#submissions-in-progress-tab-content").html(data);
+            });
+        });
     }
 
 };

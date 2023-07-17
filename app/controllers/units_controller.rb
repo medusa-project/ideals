@@ -230,7 +230,8 @@ class UnitsController < ApplicationController
     if @unit.buried
       render "show_buried", status: :gone and return
     end
-    @new_unit = Unit.new
+    @review_count                  = review_items(0, 0).count
+    @submissions_in_progress_count = submissions_in_progress(0, 0).count
   end
 
   ##
@@ -286,12 +287,42 @@ class UnitsController < ApplicationController
   end
 
   ##
+  # Renders HTML for the review submissions tab in show-show view.
+  #
+  # Responds to `GET /units/:id/review-submissions`
+  #
+  def show_review_submissions
+    @review_permitted_params = params.permit(Search::RESULTS_PARAMS)
+    @review_start            = @review_permitted_params[:start].to_i
+    @review_window           = window_size
+    @review_items            = review_items(@review_start, @review_window)
+    @review_count            = @review_items.count
+    @review_current_page     = @review_items.page
+    render partial: "collections/show_review_submissions_tab"
+  end
+
+  ##
   # Renders HTML for the statistics tab in show-unit view.
   #
   # Responds to `GET /units/:id/statistics`
   #
   def show_statistics
     render partial: "show_statistics_tab"
+  end
+
+  ##
+  # Renders HTML for the submissions-in-progress tab in show-unit view.
+  #
+  # Responds to `GET /units/:id/submissions-in-progress`
+  #
+  def show_submissions_in_progress
+    @permitted_params = params.permit(Search::RESULTS_PARAMS)
+    @start            = [@permitted_params[:start].to_i.abs, MAX_START].min
+    @window           = window_size
+    @items            = submissions_in_progress(@start, @window)
+    @count            = @items.count
+    @current_page     = @items.page
+    render partial: "collections/show_submissions_in_progress_tab"
   end
 
   ##
@@ -457,6 +488,17 @@ class UnitsController < ApplicationController
     end
   end
 
+  def review_items(start, limit)
+    Item.search.
+      institution(@unit.institution).
+      aggregations(false).
+      filter(Item::IndexFields::STAGE, Item::Stages::SUBMITTED).
+      filter(Item::IndexFields::UNITS, @unit.id).
+      order(Item::IndexFields::CREATED).
+      start(start).
+      limit(limit)
+  end
+
   def set_item_results_ivars
     @permitted_params = params.permit(RESULTS_PARAMS + [:unit_id])
     @start            = [@permitted_params[:start].to_i.abs, MAX_START].min
@@ -476,6 +518,17 @@ class UnitsController < ApplicationController
     @items        = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)
     @count        = @items.count
     @current_page = @items.page
+  end
+
+  def submissions_in_progress(start, limit)
+    Item.search.
+      institution(@unit.institution).
+      aggregations(false).
+      filter(Item::IndexFields::STAGE, Item::Stages::SUBMITTING).
+      filter(Item::IndexFields::UNITS, @unit.id).
+      order(Item::IndexFields::CREATED).
+      start(start).
+      limit(limit)
   end
 
   def unit_params

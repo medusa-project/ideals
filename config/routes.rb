@@ -258,7 +258,11 @@ Rails.application.routes.draw do
     match "/item-results", to: "units#item_results", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/item-download-counts", to: "units#item_download_counts", via: :get
+    match "/review-submissions", to: "units#show_review_submissions", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/statistics-by-range", to: "units#statistics_by_range", via: :get
+    match "/submissions-in-progress", to: "units#show_submissions_in_progress", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/undelete", to: "units#undelete", via: :post
   end
   match "/usage", to: "usage#index", via: :get

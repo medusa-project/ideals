@@ -23,6 +23,26 @@
                                       "aria-selected":  "true"}
       = icon_for(Item)
       Items
+    - if policy(@unit).show_review_submissions?
+      %button#review-submissions-tab.nav-link{"data-bs-target": "#review-submissions-tab-content",
+                                              "data-bs-toggle": "pill",
+                                              role:             "tab",
+                                              "aria-controls":  "review-submissions-tab-content",
+                                              "aria-selected":  "false"}
+        %i.fa.fa-tasks
+        Review Submissions
+        - if @review_count > 0
+          %span.badge.rounded-pill.text-bg-danger= @review_count
+    - if policy(@unit).show_submissions_in_progress?
+      %button#submissions-in-progress-tab.nav-link{"data-bs-target": "#submissions-in-progress-tab-content",
+                                                   "data-bs-toggle": "pill",
+                                                   role:             "tab",
+                                                   "aria-controls":  "submissions-in-progress-tab-content",
+                                                   "aria-selected":  "false"}
+        %i.fa.fa-tasks
+        Submissions In Progress
+        - if @submissions_in_progress_count > 0
+          %span.badge.rounded-pill.text-bg-primary= @submissions_in_progress_count
     - if policy(@unit).show_about?
       %button#about-tab.nav-link{"aria-controls":  "about-tab-content",
                                  "aria-selected":  "false",
@@ -60,6 +80,14 @@
     - if policy(@unit).show_about?
       #about-tab-content.tab-pane.fade{"aria-labelledby": "about-tab",
                                        role:              "tabpanel"}
+        = spinner
+    - if policy(@unit).show_review_submissions?
+      #review-submissions-tab-content.tab-pane.fade{role:              "tabpanel",
+                                                    "aria-labelledby": "review-submissions-tab"}
+        = spinner
+    - if policy(@unit).show_submissions_in_progress?
+      #submissions-in-progress-tab-content.tab-pane.fade{role:              "tabpanel",
+                                                         "aria-labelledby": "submissions-in-progress-tab"}
         = spinner
     - if policy(@unit).show_statistics?
       #statistics-tab-content.tab-pane.fade{role:              "tabpanel",
