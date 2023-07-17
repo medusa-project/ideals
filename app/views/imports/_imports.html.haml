@@ -11,9 +11,10 @@
     - @imports.each do |import|
       %tr
         %td
-          = link_to(import.user) do
-            = icon_for(import.user)
-            = import.user.name
+          - if import.user
+            = link_to(import.user) do
+              = icon_for(import.user)
+              = import.user.name
         %td= link_to(import.collection.title, import.collection)
         %td
           - if import.task

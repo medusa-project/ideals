@@ -5,9 +5,12 @@
   %dd= @import.id
   %dt User
   %dd
-    = link_to(@import.user) do
-      = icon_for(@import.user)
-      = @import.user.name
+    - if @import.user
+      = link_to(@import.user) do
+        = icon_for(@import.user)
+        = @import.user.name
+    - else
+      Unknown
   %dt Collection
   %dd= link_to(@import.collection.title, @import.collection)
   %dt Status
