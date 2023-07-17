@@ -14,7 +14,8 @@ const Units = {
     UnitsView: function() {
         new IDEALS.UIUtils.ExpandableResourceList();
         new IDEALS.UIUtils.UserAutocompleter(
-            $("input[name=primary_administrator], input[name='administering_users[]']"));
+            $("input[name=primary_administrator], input[name='administering_users[]']"),
+            true);
         new IDEALS.UIUtils.MultiElementList();
 
         $(".add-unit").on("click", Units.AddUnitClickHandler);
@@ -223,7 +224,7 @@ const Units = {
                     $.get(url, function (data) {
                         $("#edit-administering-users-modal .modal-body").html(data);
                         new IDEALS.UIUtils.UserAutocompleter(
-                            $("input[name=primary_administrator], input[name='administering_users[]']"));
+                            $("input[name=primary_administrator], input[name='administering_users[]']"), true);
                         new IDEALS.UIUtils.MultiElementList();
                     });
                 });

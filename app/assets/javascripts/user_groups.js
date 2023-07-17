@@ -87,12 +87,14 @@ const UserGroupView = function() {
         });
     });
     $("button.edit-users").on("click", function() {
-        const id = $(this).data("user-group-id");
-        const url = ROOT_URL + "/user-groups/" + id + "/edit-users";
+        const id     = $(this).data("user-group-id");
+        const scoped = !$(this).data("user-group-global");
+        const url    = ROOT_URL + "/user-groups/" + id + "/edit-users";
         $.get(url, function(data) {
             $("#edit-users-modal .modal-body").html(data);
             UserGroupForm.attachEventListeners();
-            new IDEALS.UIUtils.UserAutocompleter($("input[name='user_group[users][]']"));
+            new IDEALS.UIUtils.UserAutocompleter($("input[name='user_group[users][]']"),
+                                                 scoped);
         });
     });
     $("button.edit-hosts").on("click", function() {

@@ -390,7 +390,7 @@ const InstitutionView = function() {
                 $.get(url, function (data) {
                     $("#edit-administering-users-modal .modal-body").html(data);
                     new IDEALS.UIUtils.UserAutocompleter(
-                        $("input[name=primary_administrator], input[name='administering_users[]']"));
+                        $("input[name=primary_administrator], input[name='administering_users[]']"), true);
                     new IDEALS.UIUtils.MultiElementList();
                 });
             });

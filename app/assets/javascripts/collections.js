@@ -246,7 +246,7 @@ const CollectionView = function() {
                 const url = ROOT_URL + "/collections/" + collectionID + "/edit-administering-users";
                 $.get(url, function(data) {
                     $("#edit-administering-users-modal .modal-body").html(data);
-                    new IDEALS.UIUtils.UserAutocompleter($("input[name='administrators[]']"));
+                    new IDEALS.UIUtils.UserAutocompleter($("input[name='administrators[]']"), true);
                     new IDEALS.UIUtils.MultiElementList();
                 });
             });
@@ -260,7 +260,7 @@ const CollectionView = function() {
                 const url = ROOT_URL + "/collections/" + collectionID + "/edit-submitting-users";
                 $.get(url, function(data) {
                     $("#edit-submitting-users-modal .modal-body").html(data);
-                    new IDEALS.UIUtils.UserAutocompleter($("input[name='submitters[]']"));
+                    new IDEALS.UIUtils.UserAutocompleter($("input[name='submitters[]']"), true);
                     new IDEALS.UIUtils.MultiElementList();
                 });
             });

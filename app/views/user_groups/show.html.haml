@@ -67,10 +67,11 @@
           .card-body
             - if can_edit
               .float-end
-                %button.btn.btn-light.btn-sm.edit-users{"data-bs-target":     "#edit-users-modal",
-                                                        "data-bs-toggle":     "modal",
-                                                        "data-user-group-id": @user_group.id,
-                                                        type:                 "button"}
+                %button.btn.btn-light.btn-sm.edit-users{"data-bs-target":         "#edit-users-modal",
+                                                        "data-bs-toggle":         "modal",
+                                                        "data-user-group-id":     @user_group.id,
+                                                        "data-user-group-global": @user_group.institution_id.blank? ? "true" : "false",
+                                                        type:                     "button"}
                   %i.fa.fa-pencil-alt
                   Edit
             %h4.card-title Direct User Assignments
