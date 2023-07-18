@@ -8,7 +8,7 @@
     -# populated via ajax by shared/_validation_messages.js.erb
 
   .mb-3
-    = f.label(:title_element_id, "Title Element", class: "form-label")
+    = f.label(:title_element_id, "Title Element", class: "form-label required")
     = f.select(:title_element_id, element_options, {}, class: "form-select")
     .form-text
       = icon_for(:info)
@@ -17,7 +17,7 @@
       titles are displayed.
 
   .mb-3
-    = f.label(:author_element_id, "Author Element", class: "form-label")
+    = f.label(:author_element_id, "Author Element", class: "form-label required")
     = f.select(:author_element_id, element_options, {}, class: "form-select")
     .form-text
       = icon_for(:info)
