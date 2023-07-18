@@ -91,10 +91,10 @@ class IdealsMailer < ApplicationMailer
     # The feedback email may not be set yet for new institutions that haven't
     # been set up properly. In that case it would be better to provide a
     # more helpful error than "SMTP To address not set."
-    if @institution.feedback_email.blank?
+    @institution = invitee.institution
+    if @institution&.feedback_email.blank?
       raise "This institution's feedback email is not set."
     end
-    @institution = invitee.institution
     @invitee     = invitee
     @invitee_url = "https://#{@institution.fqdn}/invitees/#{invitee.id}"
     mail(to:      @institution.feedback_email,
