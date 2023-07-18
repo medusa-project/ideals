@@ -69,6 +69,17 @@ class IdealsMailerTest < ActionMailer::TestCase
 
   # account_request_action_required()
 
+  test "account_request_action_required() raises an error if the institution's
+  feedback email is not set" do
+    invitee     = invitees(:example_pending)
+    institution = institutions(:example)
+    institution.feedback_email = nil
+
+    assert_raises do
+      IdealsMailer.account_request_action_required(invitee).deliver_now
+    end
+  end
+
   test "account_request_action_required() sends the expected email" do
     invitee     = invitees(:example_pending)
     institution = institutions(:example)
