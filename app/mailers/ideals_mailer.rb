@@ -92,7 +92,9 @@ class IdealsMailer < ApplicationMailer
     # been set up properly. In that case it would be better to provide a
     # more helpful error than "SMTP To address not set."
     @institution = invitee.institution
-    if @institution&.feedback_email.blank?
+    if !@institution
+      raise "This invitee is not associated with an institution."
+    elsif @institution.feedback_email.blank?
       raise "This institution's feedback email is not set."
     end
     @invitee     = invitee
