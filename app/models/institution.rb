@@ -816,21 +816,13 @@ class Institution < ApplicationRecord
     # These elements are used by default metadata mappings (see
     # add_default_metadata_mappings()) as Dublin Core does not have good
     # equivalents.
-    self.registered_elements.build(name:                "ideals:date:submitted",
+    self.registered_elements.build(name:                "dcterms:dateSubmitted",
                                    label:               "Date Submitted",
                                    dublin_core_mapping: "date",
                                    input_type:          RegisteredElement::InputType::TEXT_FIELD)
-    self.registered_elements.build(name:                "ideals:date:approved",
-                                   label:               "Date Approved",
+    self.registered_elements.build(name:                "dcterms:dateAccepted",
+                                   label:               "Date Accepted",
                                    dublin_core_mapping: "date",
-                                   input_type:          RegisteredElement::InputType::TEXT_FIELD)
-    self.registered_elements.build(name:                "ideals:date:published",
-                                   label:               "Date Published",
-                                   dublin_core_mapping: "date",
-                                   input_type:          RegisteredElement::InputType::TEXT_FIELD)
-    self.registered_elements.build(name:                "ideals:handleURI",
-                                   label:               "Handle URI",
-                                   dublin_core_mapping: "identifier",
                                    input_type:          RegisteredElement::InputType::TEXT_FIELD)
     self.registered_elements.build(name:                "dc:contributor",
                                    label:               "Contributor",
@@ -879,9 +871,8 @@ class Institution < ApplicationRecord
                                    dublin_core_mapping: "description",
                                    label:               "Sponsor/Grant No.")
     self.registered_elements.build(name:                "dc:identifier",
-                                   label:               "Identifier",
+                                   label:               "Handle URI",
                                    dublin_core_mapping: "identifier",
-                                   vocabulary:          Vocabulary.find_by_name("Degree Names"),
                                    highwire_mapping:    "citation_id")
     self.registered_elements.build(name:                "dc:identifier:bibliographicCitation",
                                    input_type:          RegisteredElement::InputType::TEXT_FIELD,
@@ -955,9 +946,9 @@ class Institution < ApplicationRecord
   def add_default_element_mappings
     self.update!(title_element:          self.registered_elements.find_by_name("dc:title"),
                  author_element:         self.registered_elements.find_by_name("dc:creator"),
-                 date_submitted_element: self.registered_elements.find_by_name("ideals:date:submitted"),
-                 date_approved_element:  self.registered_elements.find_by_name("ideals:date:approved"),
-                 handle_uri_element:     self.registered_elements.find_by_name("ideals:handleURI"))
+                 date_submitted_element: self.registered_elements.find_by_name("dcterms:dateSubmitted"),
+                 date_approved_element:  self.registered_elements.find_by_name("dcterms:dateAccepted"),
+                 handle_uri_element:     self.registered_elements.find_by_name("dc:identifier"))
   end
 
   def add_default_element_namespaces
@@ -965,8 +956,6 @@ class Institution < ApplicationRecord
                                   uri:    "http://purl.org/dc/elements/1.1/")
     self.element_namespaces.build(prefix: "dcterms",
                                   uri:    "http://purl.org/dc/terms/")
-    self.element_namespaces.build(prefix: "ideals",
-                                  uri:    "https://www.ideals.illinois.edu/ns/")
     self.element_namespaces.build(prefix: "orcid",
                                   uri:    "http://dbpedia.org/ontology/orcidId")
     self.save!

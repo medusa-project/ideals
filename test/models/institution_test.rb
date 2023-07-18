@@ -127,7 +127,7 @@ class InstitutionTest < ActiveSupport::TestCase
                                       key:              "new",
                                       fqdn:             "example.net",
                                       main_website_url: "https://example.net")
-    assert_equal 29, institution.registered_elements.count
+    assert_equal 27, institution.registered_elements.count
   end
 
   test "create() adds default element mappings" do
@@ -140,11 +140,11 @@ class InstitutionTest < ActiveSupport::TestCase
                  institution.title_element
     assert_equal institution.registered_elements.find_by_name("dc:creator"),
                  institution.author_element
-    assert_equal institution.registered_elements.find_by_name("ideals:date:submitted"),
+    assert_equal institution.registered_elements.find_by_name("dcterms:dateSubmitted"),
                  institution.date_submitted_element
-    assert_equal institution.registered_elements.find_by_name("ideals:date:approved"),
+    assert_equal institution.registered_elements.find_by_name("dcterms:dateAccepted"),
                  institution.date_approved_element
-    assert_equal institution.registered_elements.find_by_name("ideals:handleURI"),
+    assert_equal institution.registered_elements.find_by_name("dc:identifier"),
                  institution.handle_uri_element
   end
 
@@ -154,7 +154,7 @@ class InstitutionTest < ActiveSupport::TestCase
                                       key:              "new",
                                       fqdn:             "example.net",
                                       main_website_url: "https://example.net")
-    assert_equal 4, institution.element_namespaces.count
+    assert_equal 3, institution.element_namespaces.count
   end
 
   test "create() adds a default index page" do
@@ -749,7 +749,7 @@ class InstitutionTest < ActiveSupport::TestCase
 
   test "registered_element_prefixes() returns all registered element
   prefixes" do
-    assert_equal %w[dc dcterms ideals thesis],
+    assert_equal %w[dc dcterms thesis],
                  @instance.registered_element_prefixes
   end
 

@@ -14,9 +14,9 @@ empty:
   incoming_message_queue:    nowhere_to_empty
   title_element:             empty_dc_title
   author_element:            empty_dc_creator
-  date_approved_element:     empty_ideals_date_approved
-  date_submitted_element:    empty_ideals_date_submitted
-  handle_uri_element:        empty_ideals_handle_uri
+  date_approved_element:     empty_dcterms_dateAccepted
+  date_submitted_element:    empty_dcterms_dateSubmitted
+  handle_uri_element:        empty_dc_identifier
 
 example:
   key:                       example
@@ -34,9 +34,9 @@ example:
   incoming_message_queue:    nowhere_to_example
   title_element:             example_dc_title
   author_element:            example_dc_creator
-  date_approved_element:     example_ideals_date_approved
-  date_submitted_element:    example_ideals_date_submitted
-  handle_uri_element:        example_ideals_handle_uri
+  date_approved_element:     example_dcterms_dateAccepted
+  date_submitted_element:    example_dcterms_dateSubmitted
+  handle_uri_element:        example_dc_identifier
 
 northeast:
   key:                       northeast
@@ -54,9 +54,9 @@ northeast:
   incoming_message_queue:    nowhere_to_northeast
   title_element:             northeast_dc_title
   author_element:            northeast_dc_creator
-  date_approved_element:     northeast_ideals_date_approved
-  date_submitted_element:    northeast_ideals_date_submitted
-  handle_uri_element:        northeast_ideals_handle_uri
+  date_approved_element:     northeast_dcterms_dateAccepted
+  date_submitted_element:    northeast_dcterms_dateSubmitted
+  handle_uri_element:        northeast_dc_identifier
   administering_groups:
     - northeast_admins
 
@@ -76,9 +76,9 @@ southwest:
   incoming_message_queue:    nowhere_to_southwest
   title_element:             southwest_dc_title
   author_element:            southwest_dc_creator
-  date_approved_element:     southwest_ideals_date_approved
-  date_submitted_element:    southwest_ideals_date_submitted
-  handle_uri_element:        southwest_ideals_handle_uri
+  date_approved_element:     southwest_dcterms_dateAccepted
+  date_submitted_element:    southwest_dcterms_dateSubmitted
+  handle_uri_element:        southwest_dc_identifier
   administering_groups:
     - southwest_admins
 
@@ -88,7 +88,7 @@ uiuc:
   name:                        University of Illinois at Urbana-Champaign
   service_name:                IDEALS
   shibboleth_org_dn:           o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu
-  shibboleth_extra_attributes: "<%= JSON.generate(%w(eppn unscoped-affiliation uid sn org-dn nickname givenName member telephoneNumber iTrustAffiliation departmentName programCode levelCode overwriteUserAttrs)).gsub('"', '\"') %>"
+  shibboleth_extra_attributes: "<%= JSON.generate(%w(eppn unscoped-affiliation uid sn org-dn givenName member telephoneNumber iTrustAffiliation departmentName programCode levelCode overwriteUserAttrs)).gsub('"', '\"') %>"
   main_website_url:            https://illinois.edu
   feedback_email:              feedback@fakeuiuc.edu
   welcome_html:                <h1>Welcome to IDEALS</h1>
@@ -96,8 +96,8 @@ uiuc:
   incoming_message_queue:      medusa_to_ideals
   title_element:               uiuc_dc_title
   author_element:              uiuc_dc_creator
-  date_approved_element:       uiuc_ideals_date_approved
-  date_submitted_element:      uiuc_ideals_date_submitted
-  handle_uri_element:          uiuc_ideals_handle_uri
+  date_approved_element:       uiuc_dcterms_dateAccepted
+  date_submitted_element:      uiuc_dcterms_dateSubmitted
+  handle_uri_element:          uiuc_dc_identifier
   administering_groups:
     - uiuc_admins
