@@ -14,7 +14,7 @@
 .alert.alert-info
   = icon_for(:info)
   Once approved, this item's permanent URL (for use in citations) will be:
-  %strong
+  %strong{style: "white-space: nowrap"}
     = @item.handle.url
 
 %ul.nav.nav-pills.nav-justified{role: "tablist"}
