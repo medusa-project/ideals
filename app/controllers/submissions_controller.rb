@@ -102,6 +102,7 @@ class SubmissionsController < ApplicationController
   def edit
     @submission_profile = @item.effective_submission_profile ||
       current_institution.default_submission_profile
+    display_edit_toast
   end
 
   ##
@@ -189,6 +190,28 @@ class SubmissionsController < ApplicationController
     unless @item.submitted?
       flash['error'] = "This item is not in a submitted state."
       redirect_to item_path(@item)
+    end
+  end
+
+  ##
+  # Displays a toast containing a message about changes in the edit form being
+  # saved automatically, but only once. Once it's been displayed, the item ID
+  # is stored in a cookie so it won't be displayed again.
+  #
+  def display_edit_toast
+    if cookies[:submission_notices].blank?
+      cookies[:submission_notices] = JSON.generate([])
+    end
+    notices = Set.new(JSON.parse(cookies[:submission_notices]))
+    unless notices.include?(@item.id)
+      notices << @item.id
+      cookies[:submission_notices] = {
+        value:   JSON.generate(notices.to_a),
+        expires: 1.day.from_now
+      }
+      toast!(title:   nil,
+             message: "Changes are saved automatically. You can leave this "\
+                      "page at any time and return to it later.")
     end
   end
 
