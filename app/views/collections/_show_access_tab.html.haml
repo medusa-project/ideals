@@ -37,7 +37,7 @@
               None
         .card
           .card-body
-            %h5.card-title Effective Group Administrators
+            %h5.card-title Effective Administering Groups
             - groups = @collection.effective_administering_groups
             - if groups.any?
               %ul
@@ -99,7 +99,7 @@
         .card
           .card-body
             %h5.card-title
-              Effective Group Submitters
+              Effective Submitting Groups
             - admins = @collection.effective_submitting_groups
             - if admins.any?
               %ul
