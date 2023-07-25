@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_07_13_214151) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_24_154207) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -217,6 +217,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_13_214151) do
     t.text "reason"
     t.boolean "perpetual", default: false, null: false
     t.integer "kind", null: false
+    t.text "public_reason"
     t.index ["expires_at"], name: "index_embargoes_on_expires_at"
     t.index ["item_id"], name: "index_embargoes_on_item_id"
     t.index ["kind"], name: "index_embargoes_on_kind"

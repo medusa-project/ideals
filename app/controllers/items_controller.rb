@@ -459,6 +459,7 @@ class ItemsController < ApplicationController
         @item.embargoes.build(kind:           embargo[:kind].to_i,
                               user_group_ids: embargo[:user_group_ids]&.uniq,
                               reason:         embargo[:reason],
+                              public_reason:  embargo[:public_reason],
                               perpetual:      embargo[:perpetual] == "true",
                               expires_at:     TimeUtils.ymd_to_time(embargo[:expires_at_year],
                                                                     embargo[:expires_at_month],

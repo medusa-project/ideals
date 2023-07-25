@@ -194,11 +194,21 @@ module ItemsHelper
     html <<         '</div>'
     html <<       '</div>'
     html <<     '</div>' # .row
-    html <<     '<div class="mb-3">'
-    html <<       label_tag("embargoes[#{index}][reason]", "Reason")
-    html <<       text_area_tag("embargoes[#{index}][reason]",
-                                embargo&.reason,
-                                class: "form-control")
+    html <<     '<div class="row">'
+    html <<       '<div class="col-sm-6">'
+    html <<         label_tag("embargoes[#{index}][reason]", "Private Reason")
+    html <<         text_area_tag("embargoes[#{index}][reason]",
+                                  embargo&.reason,
+                                  rows:  3,
+                                  class: "form-control")
+    html <<       '</div>'
+    html <<       '<div class="col-sm-6">'
+    html <<         label_tag("embargoes[#{index}][public_reason]", "Public Reason")
+    html <<         text_area_tag("embargoes[#{index}][public_reason]",
+                                  embargo&.public_reason,
+                                  rows:  3,
+                                  class: "form-control")
+    html <<       '</div>'
     html <<     '</div>'
     html <<   '</div>'
     html << '</div>'
