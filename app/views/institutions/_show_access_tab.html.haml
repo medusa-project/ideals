@@ -22,7 +22,7 @@
                                                                    "data-institution-key": @institution.key}
               %i.fas.fa-pencil-alt
               Edit
-        %h5.card-title Direct Group Administrators
+        %h5.card-title Direct Administrators (Groups)
         - if @institution.administering_groups.any?
           %ul
             - @institution.administering_groups.each do |group|
@@ -41,7 +41,7 @@
                                                                   "data-institution-key": @institution.key}
               %i.fas.fa-pencil-alt
               Edit
-        %h5.card-title Direct User Administrators
+        %h5.card-title Direct Administrators (Users)
         - if @institution.administering_users.any?
           %ul
             - @institution.administering_users.each do |user|

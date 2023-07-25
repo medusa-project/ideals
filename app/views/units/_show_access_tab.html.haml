@@ -9,7 +9,7 @@
                                                                    role:             "button"}
               %i.fas.fa-pencil-alt
               Edit
-        %h5.card-title Direct Group Administrators
+        %h5.card-title Direct Administrators (Groups)
         - if @unit.administering_groups.any?
           %ul
             - @unit.administering_groups.each do |group|
@@ -18,7 +18,7 @@
           None
     .card
       .card-body
-        %h5.card-title Effective Administering Groups
+        %h5.card-title Effective Administrators (Groups)
         - admins = @unit.effective_administering_groups
         - if admins.any?
           %ul
@@ -37,7 +37,7 @@
                                                                   role:             "button"}
               %i.fas.fa-pencil-alt
               Edit
-        %h5.card-title Direct User Administrators
+        %h5.card-title Direct Administrators (Users)
         - if @unit.administering_users.any?
           %ul
             - @unit.administering_users.each do |user|
@@ -47,7 +47,7 @@
           None
     .card
       .card-body
-        %h5.card-title Effective User Administrators
+        %h5.card-title Effective Administrators (Users)
         - admins = @unit.effective_administering_users
         - if admins.any?
           %ul
