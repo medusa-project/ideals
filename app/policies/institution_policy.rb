@@ -87,7 +87,7 @@ class InstitutionPolicy < ApplicationPolicy
     effective_sysadmin(@user, @role_limit)
   end
 
-  def refresh_federation_metadata
+  def refresh_saml_config_metadata
     edit_saml_authentication
   end
 
@@ -211,6 +211,10 @@ class InstitutionPolicy < ApplicationPolicy
 
   def statistics_by_range
     show_statistics
+  end
+
+  def supply_saml_configuration
+    edit_saml_authentication
   end
 
   def update_deposit_agreement_questions

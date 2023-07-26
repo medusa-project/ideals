@@ -182,165 +182,6 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.edit_administering_users?
   end
 
-  # edit_local_authentication?()
-
-  test "edit_local_authentication?() returns false with a nil user" do
-    context = RequestContext.new(user:        nil,
-                                 institution: @institution)
-    policy = InstitutionPolicy.new(context, @institution)
-    assert !policy.edit_local_authentication?
-  end
-
-  test "edit_local_authentication?() is restrictive by default" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: @institution)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert !policy.edit_local_authentication?
-  end
-
-  test "edit_local_authentication?() authorizes sysadmins" do
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: @institution)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert policy.edit_local_authentication?
-  end
-
-  test "edit_local_authentication?() authorizes administrators of the same
-  institution" do
-    user    = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: @institution)
-    policy  = InstitutionPolicy.new(context, user.institution)
-    assert policy.edit_local_authentication?
-  end
-
-  test "edit_local_authentication?() does not authorize administrators of different
-  institutions" do
-    user    = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: @institution)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert policy.edit_local_authentication?
-  end
-
-  test "edit_local_authentication?() respects role limits" do
-    # sysadmin user limited to an insufficient role
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::LOGGED_IN)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert !policy.edit_local_authentication?
-  end
-
-  # edit_saml_authentication?()
-
-  test "edit_saml_authentication?() returns false with a nil user" do
-    context = RequestContext.new(user:        nil,
-                                 institution: @institution)
-    policy = InstitutionPolicy.new(context, @institution)
-    assert !policy.edit_saml_authentication?
-  end
-
-  test "edit_saml_authentication?() is restrictive by default" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: @institution)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert !policy.edit_saml_authentication?
-  end
-
-  test "edit_saml_authentication?() authorizes sysadmins" do
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: @institution)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert policy.edit_saml_authentication?
-  end
-
-  test "edit_saml_authentication?() authorizes administrators of the same
-  institution" do
-    user    = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: @institution)
-    policy  = InstitutionPolicy.new(context, user.institution)
-    assert policy.edit_saml_authentication?
-  end
-
-  test "edit_saml_authentication?() does not authorize administrators of different
-  institutions" do
-    user    = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: @institution)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert policy.edit_saml_authentication?
-  end
-
-  test "edit_saml_authentication?() respects role limits" do
-    # sysadmin user limited to an insufficient role
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::LOGGED_IN)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert !policy.edit_saml_authentication?
-  end
-
-  # edit_shibboleth_authentication?()
-
-  test "edit_shibboleth_authentication?() returns false with a nil user" do
-    context = RequestContext.new(user:        nil,
-                                 institution: @institution)
-    policy = InstitutionPolicy.new(context, @institution)
-    assert !policy.edit_shibboleth_authentication?
-  end
-
-  test "edit_shibboleth_authentication?() is restrictive by default" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: @institution)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert !policy.edit_shibboleth_authentication?
-  end
-
-  test "edit_shibboleth_authentication?() authorizes sysadmins" do
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: @institution)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert policy.edit_shibboleth_authentication?
-  end
-
-  test "edit_shibboleth_authentication?() authorizes administrators of the same
-  institution" do
-    user    = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: @institution)
-    policy  = InstitutionPolicy.new(context, user.institution)
-    assert policy.edit_shibboleth_authentication?
-  end
-
-  test "edit_shibboleth_authentication?() does not authorize administrators of different
-  institutions" do
-    user    = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: @institution)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert policy.edit_shibboleth_authentication?
-  end
-
-  test "edit_shibboleth_authentication?() respects role limits" do
-    # sysadmin user limited to an insufficient role
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::LOGGED_IN)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert !policy.edit_shibboleth_authentication?
-  end
-
   # edit_deposit_agreement?()
 
   test "edit_deposit_agreement?() returns false with a nil user" do
@@ -500,6 +341,59 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.edit_element_mappings?
   end
 
+  # edit_local_authentication?()
+
+  test "edit_local_authentication?() returns false with a nil user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @institution)
+    policy = InstitutionPolicy.new(context, @institution)
+    assert !policy.edit_local_authentication?
+  end
+
+  test "edit_local_authentication?() is restrictive by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.edit_local_authentication?
+  end
+
+  test "edit_local_authentication?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.edit_local_authentication?
+  end
+
+  test "edit_local_authentication?() authorizes administrators of the same
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, user.institution)
+    assert policy.edit_local_authentication?
+  end
+
+  test "edit_local_authentication?() does not authorize administrators of different
+  institutions" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.edit_local_authentication?
+  end
+
+  test "edit_local_authentication?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.edit_local_authentication?
+  end
+
   # edit_preservation?()
 
   test "edit_preservation?() returns false with a nil request context" do
@@ -570,6 +464,59 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.edit_properties?
   end
 
+  # edit_saml_authentication?()
+
+  test "edit_saml_authentication?() returns false with a nil user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @institution)
+    policy = InstitutionPolicy.new(context, @institution)
+    assert !policy.edit_saml_authentication?
+  end
+
+  test "edit_saml_authentication?() is restrictive by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.edit_saml_authentication?
+  end
+
+  test "edit_saml_authentication?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.edit_saml_authentication?
+  end
+
+  test "edit_saml_authentication?() authorizes administrators of the same
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, user.institution)
+    assert policy.edit_saml_authentication?
+  end
+
+  test "edit_saml_authentication?() does not authorize administrators of different
+  institutions" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.edit_saml_authentication?
+  end
+
+  test "edit_saml_authentication?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.edit_saml_authentication?
+  end
+
   # edit_settings?()
 
   test "edit_settings?() returns false with a nil user" do
@@ -621,6 +568,59 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
                                  role_limit:  Role::LOGGED_IN)
     policy  = InstitutionPolicy.new(context, @institution)
     assert !policy.edit_settings?
+  end
+
+  # edit_shibboleth_authentication?()
+
+  test "edit_shibboleth_authentication?() returns false with a nil user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @institution)
+    policy = InstitutionPolicy.new(context, @institution)
+    assert !policy.edit_shibboleth_authentication?
+  end
+
+  test "edit_shibboleth_authentication?() is restrictive by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.edit_shibboleth_authentication?
+  end
+
+  test "edit_shibboleth_authentication?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.edit_shibboleth_authentication?
+  end
+
+  test "edit_shibboleth_authentication?() authorizes administrators of the same
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, user.institution)
+    assert policy.edit_shibboleth_authentication?
+  end
+
+  test "edit_shibboleth_authentication?() does not authorize administrators of different
+  institutions" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.edit_shibboleth_authentication?
+  end
+
+  test "edit_shibboleth_authentication?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.edit_shibboleth_authentication?
   end
 
   # edit_theme?()
@@ -878,57 +878,57 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.new?
   end
 
-  # refresh_federation_metadata?()
+  # refresh_saml_config_metadata?()
 
-  test "refresh_federation_metadata?() returns false with a nil user" do
+  test "refresh_saml_config_metadata?() returns false with a nil user" do
     context = RequestContext.new(user:        nil,
                                  institution: @institution)
     policy = InstitutionPolicy.new(context, @institution)
-    assert !policy.refresh_federation_metadata?
+    assert !policy.refresh_saml_config_metadata?
   end
 
-  test "refresh_federation_metadata?() is restrictive by default" do
+  test "refresh_saml_config_metadata?() is restrictive by default" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: @institution)
     policy  = InstitutionPolicy.new(context, @institution)
-    assert !policy.refresh_federation_metadata?
+    assert !policy.refresh_saml_config_metadata?
   end
 
-  test "refresh_federation_metadata?() authorizes sysadmins" do
+  test "refresh_saml_config_metadata?() authorizes sysadmins" do
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: @institution)
     policy  = InstitutionPolicy.new(context, @institution)
-    assert policy.refresh_federation_metadata?
+    assert policy.refresh_saml_config_metadata?
   end
 
-  test "refresh_federation_metadata?() authorizes administrators of the same
+  test "refresh_saml_config_metadata?() authorizes administrators of the same
   institution" do
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: @institution)
     policy  = InstitutionPolicy.new(context, user.institution)
-    assert policy.refresh_federation_metadata?
+    assert policy.refresh_saml_config_metadata?
   end
 
-  test "refresh_federation_metadata?() does not authorize administrators of
+  test "refresh_saml_config_metadata?() does not authorize administrators of
   different institutions" do
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: @institution)
     policy  = InstitutionPolicy.new(context, @institution)
-    assert policy.refresh_federation_metadata?
+    assert policy.refresh_saml_config_metadata?
   end
 
-  test "refresh_federation_metadata?() respects role limits" do
+  test "refresh_saml_config_metadata?() respects role limits" do
     # sysadmin user limited to an insufficient role
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
     policy  = InstitutionPolicy.new(context, @institution)
-    assert !policy.refresh_federation_metadata?
+    assert !policy.refresh_saml_config_metadata?
   end
 
   # remove_banner_image?()
@@ -2128,6 +2128,59 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
                                  role_limit:  Role::LOGGED_IN)
     policy  = InstitutionPolicy.new(context, @institution)
     assert !policy.statistics_by_range?
+  end
+
+  # supply_saml_configuration?()
+
+  test "supply_saml_configuration?() returns false with a nil user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @institution)
+    policy = InstitutionPolicy.new(context, @institution)
+    assert !policy.supply_saml_configuration?
+  end
+
+  test "supply_saml_configuration?() is restrictive by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.supply_saml_configuration?
+  end
+
+  test "supply_saml_configuration?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.supply_saml_configuration?
+  end
+
+  test "supply_saml_configuration?() authorizes administrators of the same
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, user.institution)
+    assert policy.supply_saml_configuration?
+  end
+
+  test "supply_saml_configuration?() does not authorize administrators of different
+  institutions" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.supply_saml_configuration?
+  end
+
+  test "supply_saml_configuration?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.supply_saml_configuration?
   end
 
   # update_deposit_agreement_questions?()

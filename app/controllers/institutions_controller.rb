@@ -243,18 +243,31 @@ class InstitutionsController < ApplicationController
   end
 
   ##
-  # Responds to `PATCH /institutions/:id/refresh-federation-metadata`
+  # Handles input from both the "Refresh Configuration Metadata" menu item and
+  # "Supply SAML Configuration" modal form.
   #
-  def refresh_federation_metadata
-    RefreshFederationMetadataJob.perform_later(institution: @institution,
-                                               user:        current_user)
+  # Responds to `PATCH /institutions/:id/refresh-saml-config-metadata`
+  #
+  def refresh_saml_config_metadata
+    if params[:configuration_file].present?
+      RefreshSamlConfigMetadataJob.perform_later(institution:        @institution,
+                                                 configuration_file: params[:configuration_file],
+                                                 user:               current_user)
+    elsif params[:configuration_url].present?
+      RefreshSamlConfigMetadataJob.perform_later(institution:       @institution,
+                                                 configuration_url: params[:configuration_url],
+                                                 user:              current_user)
+    else
+      RefreshSamlConfigMetadataJob.perform_later(institution: @institution,
+                                                 user:        current_user)
+    end
   rescue => e
     flash['error'] = "#{e}"
   else
     toast!(title: "Refreshing metadata",
-           message: "This institution's federation metadata is being "\
-                    "refreshed in the background. Please wait a moment and "\
-                    "then reload the page.")
+           message: "This institution's SAML metadata is being refreshed in "\
+                    "the background. Please wait a moment and then reload "\
+                    "the page.")
   ensure
     redirect_back fallback_location: @institution
   end
@@ -621,6 +634,14 @@ class InstitutionsController < ApplicationController
                   filename: "#{@institution.key}_statistics.csv"
       end
     end
+  end
+
+  ##
+  # Responds to `GET /institutions/:key/supply-saml-configuration`
+  #
+  def supply_saml_configuration
+    render partial: "saml_configuration_form",
+           locals: { institution: @institution }
   end
 
   ##

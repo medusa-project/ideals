@@ -71,6 +71,12 @@
 # * `primary_color`             Theme primary color.
 # * `primary_hover_color`       Theme hover-over primary color.
 # * `saml_auth_enabled`         Whether SAML authentication is enabled.
+# * `saml_config_metadata_url`  SAML configuration metadata XML URL. This may
+#                               be used for institutions that are not a member
+#                               of a recognized federation (for which this URL
+#                               is already known and hard-coded into the app)
+#                               to assist in populating the other required SAML
+#                               properties.
 # * `saml_email_attribute`      Name of the SAML attribute containing the email
 #                               address. Used only when `saml_email_location`
 #                               is set to
@@ -267,19 +273,26 @@ class Institution < ApplicationRecord
 
   ##
   # @param federation [Integer] One of the {SSOFederation} constant values.
-  # @return [File] SSO federation metadata XML file.
+  #                             Required if `url` is not supplied.
+  # @param url [String]         Required if `federation` is not supplied.
+  # @return [File]              SSO federation metadata XML file.
   #
-  def self.fetch_federation_metadata(federation)
-    case federation
-    when SSOFederation::ITRUST
-      uri = ITRUST_METADATA_URL
-    when SSOFederation::OPENATHENS
-      uri = OPENATHENS_METADATA_URL
-    else
-      raise "Unrecognized federation"
+  def self.fetch_saml_config_metadata(federation: nil, url: nil)
+    if federation.present? && url.present?
+      raise ArgumentError, "federation and url cannot both be provided"
+    end
+    if federation
+      case federation
+      when SSOFederation::ITRUST
+        url = ITRUST_METADATA_URL
+      when SSOFederation::OPENATHENS
+        url = OPENATHENS_METADATA_URL
+      else
+        raise ArgumentError, "Unrecognized federation"
+      end
     end
     path = "/tmp/metadata-#{SecureRandom.hex}.xml"
-    `curl -sSo #{path} #{uri}`
+    `curl -sSo #{path} #{url}`
     return File.new(path)
   end
 
@@ -688,12 +701,12 @@ class Institution < ApplicationRecord
   ##
   # @param metadata_xml_file [File]
   #
-  def update_from_federation_metadata(metadata_xml_file)
+  def update_from_saml_config_metadata(metadata_xml_file)
     File.open(metadata_xml_file) do |file|
       doc        = Nokogiri::XML(file)
-      sp_entity  = doc.xpath("/md:EntitiesDescriptor/md:EntityDescriptor[@entityID = '#{self.saml_sp_entity_id}']",
+      sp_entity  = doc.xpath("//md:EntityDescriptor[@entityID = '#{self.saml_sp_entity_id}']",
                              md: SAML_METADATA_NS).first
-      idp_entity = doc.xpath("/md:EntitiesDescriptor/md:EntityDescriptor[@entityID = '#{self.saml_idp_entity_id}']",
+      idp_entity = doc.xpath("//md:EntityDescriptor[@entityID = '#{self.saml_idp_entity_id}']",
                              md: SAML_METADATA_NS).first
       if sp_entity
         # IdP SSO service URL

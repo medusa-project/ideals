@@ -34,7 +34,7 @@
     = f.text_field :saml_idp_entity_id, class: "form-control"
     %p.form-text
       = icon_for(:info)
-      After changing this value, you should refresh the federation metadata
+      After changing this value, you should refresh the configuration metadata
       from the page beneath this panel.
   .mb-3
     = f.label :saml_idp_sso_service_url, "IdP SSO Service URL"
@@ -63,6 +63,10 @@
   .mb-3
     = f.label :saml_last_name_attribute, "Last Name Attribute"
     = f.text_field :saml_last_name_attribute, class: "form-control"
+    %p.form-text
+      = icon_for(:info)
+      If you don't have separate first and last name attributes, enter the full
+      name attribute here.
 
   .clearfix
     .float-end

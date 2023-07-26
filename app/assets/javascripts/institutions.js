@@ -113,6 +113,13 @@ const InstitutionView = function() {
                     onEmailLocationChanged(emailLocationMenu);
                 });
             });
+            $("button.supply-saml-configuration").on("click", function() {
+                const url = ROOT_URL + "/institutions/" + institutionKey + "/supply-saml-configuration";
+                $.get(url, function (data) {
+                    const modalBody = $("#supply-saml-configuration-modal .modal-body");
+                    modalBody.html(data);
+                });
+            });
             $("button.edit-shibboleth-authentication").on("click", function() {
                 const url = ROOT_URL + "/institutions/" + institutionKey + "/edit-shibboleth-authentication";
                 $.get(url, function(data) {
