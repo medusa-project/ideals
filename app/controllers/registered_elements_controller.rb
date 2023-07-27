@@ -5,7 +5,7 @@ class RegisteredElementsController < ApplicationController
   before_action :ensure_institution_host, :ensure_logged_in
   before_action :set_element, only: [:edit, :update, :destroy]
   before_action :authorize_element, only: [:edit, :update, :destroy]
-  before_action :store_location, only: :index
+  before_action :store_location, only: [:index, :index_template]
 
   ##
   # Responds to `POST /elements` (XHR only)
@@ -43,7 +43,11 @@ class RegisteredElementsController < ApplicationController
              message: "The element \"#{@element.name}\" has been deleted.")
     ensure
       if current_user.sysadmin?
-        redirect_to institution_path(institution)
+        if institution
+          redirect_to institution_path(institution)
+        else
+          redirect_to template_elements_path
+        end
       else
         redirect_to registered_elements_path
       end
@@ -59,15 +63,26 @@ class RegisteredElementsController < ApplicationController
   end
 
   ##
-  # Responds to `GET /elements`
+  # Displays a list of all of an institution's registered elements.
+  #
+  # Responds to `GET /elements`.
   #
   def index
     authorize RegisteredElement
     institution           = current_institution
     @elements             = RegisteredElement.where(institution: institution).order(:name)
-    @new_element          = RegisteredElement.new(institution: institution)
     @unaccounted_prefixes = institution.registered_element_prefixes -
       institution.element_namespaces.map(&:prefix)
+  end
+
+  ##
+  # Displays a list of all template elements to sysadmins only.
+  #
+  # Responds to `GET /template-elements`.
+  #
+  def index_template
+    authorize RegisteredElement
+    @elements = RegisteredElement.where(template: true).order(:name)
   end
 
   ##
@@ -79,10 +94,6 @@ class RegisteredElementsController < ApplicationController
   #
   def new
     authorize RegisteredElement
-    if params.dig(:registered_element, :institution_id).blank?
-      render plain: "Missing institution ID", status: :bad_request
-      return
-    end
     @element = RegisteredElement.new(registered_element_params)
     render partial: "form"
   end
@@ -111,7 +122,7 @@ class RegisteredElementsController < ApplicationController
     params.require(:registered_element).permit(:dublin_core_mapping,
                                                :highwire_mapping, :input_type,
                                                :institution_id, :label, :name,
-                                               :scope_note, :uri,
+                                               :scope_note, :template, :uri,
                                                :vocabulary_id)
   end
 

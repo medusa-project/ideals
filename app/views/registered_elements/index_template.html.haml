@@ -1,0 +1,28 @@
+- provide :body_id, "template_elements"
+- provide :title, "Template Elements"
+
+.btn-group.float-end{role: "group"}
+  -# Add Element button
+  %button.btn.btn-light.add-element{"data-bs-target": "#add-element-modal",
+                                    "data-bs-toggle": "modal",
+                                    type:             "button"}
+    %i.fa.fa-plus
+    Add Element
+
+%h1 Template Elements
+
+
+.alert.alert-light
+  = icon_for(:info)
+  These elements are added to new institutions upon their creation.
+
+.card.mb-3
+  .card-body
+    = filter_field(placeholder: "Filter")
+
+= render partial: "listing"
+
+= render partial: "shared/xhr_modal",
+         locals: { id: "add-element-modal", title: "Add Element" }
+= render partial: "shared/xhr_modal",
+         locals: { id: "edit-element-modal", title: "Edit Element" }

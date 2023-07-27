@@ -32,6 +32,10 @@ class RegisteredElementPolicy < ApplicationPolicy
     create
   end
 
+  def index_template
+    effective_sysadmin(@user, @role_limit)
+  end
+
   def new
     create
   end

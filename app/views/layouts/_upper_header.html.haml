@@ -61,6 +61,10 @@
               %li
                 %hr.dropdown-divider
               %li
+                = link_to(template_elements_path, class: "dropdown-item") do
+                  = icon_for(RegisteredElement)
+                  Template Elements
+              %li
                 = link_to(MetadataProfile.find_by(institution_id: nil), class: "dropdown-item") do
                   = icon_for(MetadataProfile)
                   Global Metadata Profile

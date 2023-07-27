@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_07_24_154207) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_26_210517) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -601,9 +601,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_24_154207) do
     t.string "highwire_mapping"
     t.bigint "vocabulary_id"
     t.string "dublin_core_mapping"
+    t.boolean "template", default: false, null: false
     t.index ["institution_id", "uri"], name: "index_registered_elements_on_institution_id_and_uri", unique: true
     t.index ["institution_id"], name: "index_registered_elements_on_institution_id"
     t.index ["name", "institution_id"], name: "index_registered_elements_on_name_and_institution_id", unique: true
+    t.index ["template"], name: "index_registered_elements_on_template"
     t.index ["vocabulary_id"], name: "index_registered_elements_on_vocabulary_id"
   end
 

@@ -237,6 +237,39 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
     assert !policy.index?
   end
 
+  # index_template?()
+
+  test "index_template?() returns false with a nil user" do
+    policy = RegisteredElementPolicy.new(nil, Usage)
+    assert !policy.index_template?
+  end
+
+  test "index_template?() does not authorize non-sysadmins" do
+    user    = users(:example)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy = RegisteredElementPolicy.new(context, Usage)
+    assert !policy.index_template?
+  end
+
+  test "index_template?() authorizes sysadmins" do
+    user    = users(:example_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = RegisteredElementPolicy.new(context, Usage)
+    assert policy.index_template?
+  end
+
+  test "index_template?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:example_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = RegisteredElementPolicy.new(context, Usage)
+    assert !policy.index_template?
+  end
+
   # new?()
 
   test "new?() returns false with a nil user" do

@@ -1,10 +1,14 @@
 const RegisteredElements = {
 
     AddRegisteredElementClickHandler: function() {
-        const ROOT_URL      = $("input[name=root_url]").val();
-        const institutionID = $("input[name=institution_id]").val();
-        const url           = ROOT_URL + "/elements/new?" +
-            "registered_element%5Binstitution_id%5D=" + institutionID;
+        const ROOT_URL = $("input[name=root_url]").val();
+        var url        = ROOT_URL + "/elements/new";
+        if ($("body#template_elements").length > 0) {
+            url += "?registered_element%5Btemplate%5D=true";
+        } else {
+            const institutionID = $("input[name=institution_id]").val();
+            url += "?registered_element%5Binstitution_id%5D=" + institutionID;
+        }
         $.get(url, function (data) {
             $("#add-element-modal .modal-body").html(data);
             new IDEALS.UIUtils.CheckAllButton($('.check-all'),
@@ -62,7 +66,7 @@ const RegisteredElements = {
 }
 
 $(document).ready(function() {
-    if ($("body#registered_elements").length) {
+    if ($("body#registered_elements, body#template_elements").length) {
         new RegisteredElements.RegisteredElementsView();
     }
 });

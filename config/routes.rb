@@ -235,6 +235,7 @@ Rails.application.routes.draw do
   end
   match "/submit", to: "submissions#new", via: :get
   resources :tasks, only: [:index, :show]
+  match "/template-elements", to: "registered_elements#index_template", via: :get
   resources :units, except: [:destroy, :edit] do
     match "/about", to: "units#show_about", via: :get,
           constraints: lambda { |request| request.xhr? }

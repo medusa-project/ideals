@@ -27,8 +27,9 @@
             %code= element.uri
           - else
             None
-        %dt Vocabulary
-        %dd= element.vocabulary ? element.vocabulary&.name : "None"
+        - unless element.template
+          %dt Vocabulary
+          %dd= element.vocabulary ? element.vocabulary&.name : "None"
         %dt Input Type
         %dd= element.vocabulary ? "Menu" : element.input_type&.split("_")&.map(&:capitalize)&.join(" ")
         %dt Dublin Core Mapping
@@ -43,17 +44,18 @@
             %code= element.highwire_mapping
           - else
             None
-        %dt Metadata Profiles
-        %dd
-          - if element.metadata_profile_elements.any?
-            = raw(element.metadata_profile_elements.map{ |mpe| link_to(mpe.metadata_profile.name, mpe.metadata_profile) }.join(", "))
-          - else
-            None
-        %dt Submission Profiles
-        %dd
-          - if element.submission_profile_elements.any?
-            = raw(element.submission_profile_elements.map{ |spe| link_to(spe.submission_profile.name, spe.submission_profile) }.join(", "))
-          - else
-            None
-        %dt Scope Note
-        %dd= simple_format(element.scope_note)
+        - unless element.template
+          %dt Metadata Profiles
+          %dd
+            - if element.metadata_profile_elements.any?
+              = raw(element.metadata_profile_elements.map{ |mpe| link_to(mpe.metadata_profile.name, mpe.metadata_profile) }.join(", "))
+            - else
+              None
+          %dt Submission Profiles
+          %dd
+            - if element.submission_profile_elements.any?
+              = raw(element.submission_profile_elements.map{ |spe| link_to(spe.submission_profile.name, spe.submission_profile) }.join(", "))
+            - else
+              None
+          %dt Scope Note
+          %dd= simple_format(element.scope_note)
