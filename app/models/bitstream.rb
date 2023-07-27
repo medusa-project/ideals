@@ -386,14 +386,16 @@ class Bitstream < ApplicationRecord
     institution ||= self.institution
     # N.B.: MessageHandler will nil out medusa_uuid and medusa_key upon success.
     # See inline comment in ingest_into_medusa() for an explanation of this
-    Bitstream.connection_pool.with_connection do
-      message = self.messages.build(operation:   Message::Operation::DELETE,
-                                    medusa_uuid: self.medusa_uuid,
-                                    medusa_key:  self.medusa_key,
-                                    institution: institution)
-      message.save!
-      message.send_message
-    end
+    Thread.new do
+      self.class.connection_pool.with_connection do
+        message = self.messages.build(operation:   Message::Operation::DELETE,
+                                      medusa_uuid: self.medusa_uuid,
+                                      medusa_key:  self.medusa_key,
+                                      institution: institution)
+        message.save!
+        message.send_message
+      end
+    end.join
   end
 
   ##
@@ -536,14 +538,16 @@ class Bitstream < ApplicationRecord
     # If we are inside a transaction, and an error is raised after this block
     # but before commit, we don't want the Message we are creating here to get
     # wiped out by a rollback, so we persist it in a separate DB connection.
-    Bitstream.connection_pool.with_connection do
-      message = self.messages.build(operation:   Message::Operation::INGEST,
-                                    staging_key: staging_key,
-                                    target_key:  target_key,
-                                    institution: self.institution)
-      message.save!
-      message.send_message
-    end
+    Thread.new do
+      self.class.connection_pool.with_connection do
+        message = self.messages.build(operation:   Message::Operation::INGEST,
+                                      staging_key: staging_key,
+                                      target_key:  target_key,
+                                      institution: self.institution)
+        message.save!
+        message.send_message
+      end
+    end.join
   end
 
   ##

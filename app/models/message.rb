@@ -7,7 +7,11 @@
 # a separate database connection, like this:
 #
 # ```
-# ActiveRecord::Base.connection_pool.with_connection { ... persistence code ... }
+# Thread.new do
+#   ActiveRecord::Base.connection_pool.with_connection do
+#     # persistence code...
+#   end
+# end.join
 # ```
 #
 # The objective is to maintain an instance corresponding to each message sent
