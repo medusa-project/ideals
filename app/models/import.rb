@@ -91,18 +91,13 @@ class Import < ApplicationRecord
   end
 
   ##
-  # Updates the progress using a separate database connection, making it usable
-  # from inside a transaction block.
-  #
   # @param progress [Float]
   # @param imported_items [Array<Hash>] Array of hashes with `:item_id` and
   #                                     `:handle` keys.
   #
   def progress(progress, imported_items = [])
-    self.class.connection_pool.with_connection do
-      self.task&.progress(progress)
-      self.update!(imported_items: imported_items)
-    end
+    self.task&.progress(progress)
+    self.update!(imported_items: imported_items)
   end
 
   ##
