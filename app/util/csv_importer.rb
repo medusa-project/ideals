@@ -287,9 +287,10 @@ class CsvImporter
         end
         cell_values = cell_string.split(MULTI_VALUE_DELIMITER)
         cell_values.select(&:present?).each_with_index do |cell_value, value_index|
-          item.elements.build(registered_element: reg_el,
-                              string:             cell_value.strip,
-                              position:           value_index + 1)
+          AscribedElement.create!(item:               item,
+                                  registered_element: reg_el,
+                                  string:             cell_value.strip,
+                                  position:           value_index + 1)
         end
       elsif required_elements.include?(column_element)
         raise ArgumentError, "Item #{item.id} has a blank #{column_element} "\
@@ -297,6 +298,15 @@ class CsvImporter
                              "the submission profile."
       end
     end
+    # TODO: remove this when confident
+    item.reload
+    if !item.element(required_elements.first)
+      raise "Missing a #{required_elements.first} element. This is a bug "\
+            "that the developer thought was fixed, but apparently not. Please "\
+            "report this bug, and also, retry your import. (It only fails "\
+            "sporadically.)"
+    end
+    # end remove
   end
 
   ##
