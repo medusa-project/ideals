@@ -275,15 +275,15 @@ class CsvImporter
                        submission_profile:,
                        column_names:,
                        column_values:)
+    reg_elements      = RegisteredElement.where(institution: item.institution)
     required_elements = submission_profile.elements.select(&:required).map(&:name)
     column_values.each_with_index do |cell_value, column_index|
-      element_name  = column_names[column_index]
+      element_name = column_names[column_index]
       item.elements.select{ |e| e.name == element_name }.each(&:delete)
       if cell_value.present?
         values = cell_value.split(MULTI_VALUE_DELIMITER)
         values.select(&:present?).each_with_index do |value, value_index|
-          reg_el = RegisteredElement.where(name:        element_name,
-                                           institution: item.institution).limit(1).first
+          reg_el = reg_elements.find{ |e| e.name ==  element_name }
           unless reg_el
             raise ArgumentError, "Element not present in registry: #{element_name}"
           end
