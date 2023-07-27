@@ -145,7 +145,8 @@ class CsvImporter
     rows     = CSV.parse(csv)
     num_rows = rows.length - 1 # exclude header
     progress = print_progress ? Progress.new(num_rows) : nil
-    # Work inside a transaction to avoid any incompletely created items.
+    # Work inside a transaction to avoid any incompletely created items. If
+    # any items fail, we want the whole import to fail.
     Import.transaction do
       begin
         validate_header(row: rows[0],
@@ -200,7 +201,6 @@ class CsvImporter
     object_keys      = import.object_keys
     root_object_keys = object_keys.select{ |k| k.split("/").length == object_keys.map{ |kl| kl.split("/").length }.sort.first }
     csv_object_key   = root_object_keys.find{ |k| k.downcase.end_with?(".csv") }
-
     imported_items   = []
     import.update!(format:         Import::Format::CSV_FILE,
                    files:          [csv_object_key],
@@ -277,24 +277,24 @@ class CsvImporter
                        column_values:)
     reg_elements      = RegisteredElement.where(institution: item.institution)
     required_elements = submission_profile.elements.select(&:required).map(&:name)
-    column_values.each_with_index do |cell_value, column_index|
-      element_name = column_names[column_index]
-      item.elements.select{ |e| e.name == element_name }.each(&:delete)
-      if cell_value.present?
-        values = cell_value.split(MULTI_VALUE_DELIMITER)
-        values.select(&:present?).each_with_index do |value, value_index|
-          reg_el = reg_elements.find{ |e| e.name ==  element_name }
-          unless reg_el
-            raise ArgumentError, "Element not present in registry: #{element_name}"
-          end
+    column_values.each_with_index do |cell_string, column_index|
+      column_element = column_names[column_index]
+      item.elements.select{ |e| e.name == column_element }.each(&:delete)
+      if cell_string.present?
+        reg_el = reg_elements.find{ |e| e.name == column_element }
+        unless reg_el
+          raise ArgumentError, "Element not present in registry: #{column_element}"
+        end
+        cell_values = cell_string.split(MULTI_VALUE_DELIMITER)
+        cell_values.select(&:present?).each_with_index do |cell_value, value_index|
           item.elements.build(registered_element: reg_el,
-                              string:             value.strip,
+                              string:             cell_value.strip,
                               position:           value_index + 1)
         end
-      elsif required_elements.include?(element_name)
-        raise ArgumentError, "Item #{item.id} has a blank #{element_name} "\
-                             "cell, but a value is required by the "\
-                             "submission profile."
+      elsif required_elements.include?(column_element)
+        raise ArgumentError, "Item #{item.id} has a blank #{column_element} "\
+                             "cell, but a value in this cell is required by "\
+                             "the submission profile."
       end
     end
   end
