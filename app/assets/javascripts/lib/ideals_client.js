@@ -27,13 +27,18 @@ IDEALS.Client = function() {
 
     /**
      * @param unitID {Number}
+     * @param onlySubmitterAccess {Boolean}
      * @param onSuccess {Function} Function accepting response data.
      */
-    this.fetchUnitCollections = function (unitID, onSuccess) {
+    this.fetchUnitCollections = function (unitID, onlySubmitterAccess, onSuccess) {
+        var url = ROOT_URL + "/units/" + unitID +
+            "/collections-tree-fragment?for-select=true";
+        if (onlySubmitterAccess) {
+            url += "&only-submitter-access=true"
+        }
         $.ajax({
             method: "GET",
-            url: ROOT_URL + "/units/" + unitID +
-                "/collections-tree-fragment?for-select=true",
+            url:    url,
             headers: {"X-CSRF-Token": CSRF_TOKEN},
             success: onSuccess
         });

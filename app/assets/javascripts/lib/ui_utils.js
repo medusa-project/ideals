@@ -128,7 +128,7 @@ IDEALS.UIUtils.CollectionSelectMenus = function() {
         } else {
             unitID = unitMenu.val();
         }
-        new IDEALS.Client().fetchUnitCollections(unitID, function(data) {
+        new IDEALS.Client().fetchUnitCollections(unitID, false, function(data) {
             const collectionMenu = unitMenu.parents(".unit-collection-combo").find(".collection-menu");
             collectionMenu.children().remove();
             if (data.length > 0) {

@@ -41,6 +41,14 @@ class UnitsController < ApplicationController
   #
   # The permissions are the same as those of {show}.
   #
+  # Accepts the following query arguments:
+  #
+  # * `for-select`: Changes the response representation to one that is
+  #                 appropriate to consume by JavaScript for building a select
+  #                 menu.
+  # * `only-submitter-access`: Limits the results to collections for which the
+  #                            current user has submitter access.
+  #
   # Responds to `GET /units/:unit_id/collections-tree-fragment` (XHR only)
   #
   def collections_tree_fragment
@@ -51,6 +59,9 @@ class UnitsController < ApplicationController
         include_children(false).
         order("#{Collection::IndexFields::TITLE}.sort").
         limit(999)
+    if params[:'only-submitter-access'] == "true"
+      @collections = @collections.select{ |c| current_user.effective_submitter?(c) }
+    end
     if params[:'for-select'] == "true"
       render partial: "collections_for_select"
     else
