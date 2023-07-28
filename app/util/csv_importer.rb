@@ -143,12 +143,14 @@ class CsvImporter
              print_progress: false,
              task:           nil)
     rows     = CSV.parse(csv)
-    validate_header(rows[0])
     num_rows = rows.length - 1 # exclude header
     progress = print_progress ? Progress.new(num_rows) : nil
-    # Work inside a transaction to avoid any incompletely created items.
+    # Work inside a transaction to avoid any incompletely created items. If
+    # any items fail, we want the whole import to fail.
     Import.transaction do
       begin
+        validate_header(row: rows[0],
+                        submission_profile: primary_collection.effective_submission_profile)
         rows[1..].each_with_index do |row, row_index|
           status_text = "Importing #{num_rows} items from CSV"
           progress&.report(row_index, status_text)
@@ -199,7 +201,6 @@ class CsvImporter
     object_keys      = import.object_keys
     root_object_keys = object_keys.select{ |k| k.split("/").length == object_keys.map{ |kl| kl.split("/").length }.sort.first }
     csv_object_key   = root_object_keys.find{ |k| k.downcase.end_with?(".csv") }
-
     imported_items   = []
     import.update!(format:         Import::Format::CSV_FILE,
                    files:          [csv_object_key],
@@ -239,9 +240,10 @@ class CsvImporter
     associate_bitstreams(item:               item,
                          row:                row,
                          import_object_keys: import_object_keys)
-    ascribe_metadata(item:          item,
-                     column_names:  element_names,
-                     column_values: row[REQUIRED_COLUMNS.length..])
+    ascribe_metadata(item:               item,
+                     submission_profile: primary_collection.effective_submission_profile,
+                     column_names:       element_names,
+                     column_values:      row[REQUIRED_COLUMNS.length..])
     associate_embargoes(item: item, row: row)
     item.save!
     item
@@ -258,9 +260,10 @@ class CsvImporter
       associate_bitstreams(item:               item,
                            row:                row,
                            import_object_keys: import_object_keys)
-      ascribe_metadata(item:          item,
-                       column_names:  element_names,
-                       column_values: row[REQUIRED_COLUMNS.length..])
+      ascribe_metadata(item:               item,
+                       submission_profile: item.effective_primary_collection.effective_submission_profile,
+                       column_names:       element_names,
+                       column_values:      row[REQUIRED_COLUMNS.length..])
       associate_embargoes(item: item,
                           row:  row)
       item.save!
@@ -268,24 +271,42 @@ class CsvImporter
     item
   end
 
-  def ascribe_metadata(item:, column_names:, column_values:)
-    column_values.each_with_index do |cell_value, column_index|
-      element_name  = column_names[column_index]
-      item.elements.select{ |e| e.name == element_name }.each(&:delete)
-      if cell_value.present?
-        values = cell_value.split(MULTI_VALUE_DELIMITER)
-        values.select(&:present?).each_with_index do |value, value_index|
-          reg_el = RegisteredElement.where(name:        element_name,
-                                           institution: item.institution).limit(1).first
-          unless reg_el
-            raise ArgumentError, "Element not present in registry: #{element_name}"
-          end
-          item.elements.build(registered_element: reg_el,
-                              string:             value.strip,
-                              position:           value_index + 1)
+  def ascribe_metadata(item:,
+                       submission_profile:,
+                       column_names:,
+                       column_values:)
+    reg_elements      = RegisteredElement.where(institution: item.institution)
+    required_elements = submission_profile.elements.select(&:required).map(&:name)
+    column_values.each_with_index do |cell_string, column_index|
+      column_element = column_names[column_index]
+      item.elements.select{ |e| e.name == column_element }.each(&:delete)
+      if cell_string.present?
+        reg_el = reg_elements.find{ |e| e.name == column_element }
+        unless reg_el
+          raise ArgumentError, "Element not present in registry: #{column_element}"
         end
+        cell_values = cell_string.split(MULTI_VALUE_DELIMITER)
+        cell_values.select(&:present?).each_with_index do |cell_value, value_index|
+          AscribedElement.create!(item:               item,
+                                  registered_element: reg_el,
+                                  string:             cell_value.strip,
+                                  position:           value_index + 1)
+        end
+      elsif required_elements.include?(column_element)
+        raise ArgumentError, "Item #{item.id} has a blank #{column_element} "\
+                             "cell, but a value in this cell is required by "\
+                             "the submission profile."
       end
     end
+    # TODO: remove this when confident
+    item.reload
+    if !item.element(required_elements.first)
+      raise "Missing a #{required_elements.first} element. This is a bug "\
+            "that the developer thought was fixed, but apparently not. Please "\
+            "report this bug, and also, retry your import. (It only fails "\
+            "sporadically.)"
+    end
+    # end remove
   end
 
   ##
@@ -366,8 +387,16 @@ class CsvImporter
 
   ##
   # @param row [Hash<String>]
+  # @param submission_profile [SubmissionProfile]
   #
-  def validate_header(row)
+  def validate_header(row:, submission_profile:)
+    required_elements = submission_profile.elements.select(&:required).map(&:name)
+    missing_elements  = required_elements - row
+    if missing_elements.any?
+      raise ArgumentError, "The following elements are required by the "\
+                           "collection's effective submission profile, but "\
+                           "are missing columns in the CSV: #{missing_elements.join(", ")}"
+    end
     REQUIRED_COLUMNS.each_with_index do |column, index|
       if row[index] != column
         raise ArgumentError, "Missing #{column} column"
