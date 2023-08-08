@@ -32,21 +32,21 @@
 # * `detail`           Detailed results of the task.
 # * `indeterminate`    If true, the task's progress cannot be computed and
 #                      {percent_complete} is irrelevant.
-# * `institution_id`   Foreign key to [Institution] representing the
+# * `institution_id`   Foreign key to {Institution} representing the
 #                      institution under which the task is executing. Used for
 #                      scoped tasks view and not always relevant, so may be
 #                      null.
 # * `name`             Consistent name for the task, common across all tasks
-#                      that do the same thing. The name of an [ApplicationJob]
+#                      that do the same thing. The name of an {ApplicationJob}
 #                      subclass would be an example of a good name.
 # * `percent_complete` Float between 0 and 1. Irrelevant if the task is
 #                      {indeterminate}.
-# * `status`           One of the [Task::Status] constant values.
+# * `status`           One of the {Task::Status} constant values.
 # * `status_text`      Short message summarizing the current state of the task.
 # * `started_at`       Time the task started.
 # * `stopped_at`       Time the task stopped (successfully or not).
 # * `updated_at`       Managed by ActiveRecord.
-# * `user_id`          Foreign key to the [User] who invoked the task.
+# * `user_id`          Foreign key to the {User} who invoked the task.
 #
 class Task < ApplicationRecord
 
@@ -72,17 +72,17 @@ class Task < ApplicationRecord
     def self.to_s(status)
       case status
       when Status::PENDING
-        'Pending'
+        "Pending"
       when Status::RUNNING
-        'Running'
+        "Running"
       when Status::PAUSED
-        'Paused'
+        "Paused"
       when Status::STOPPED
-        'Stopped'
+        "Stopped"
       when Status::SUCCEEDED
-        'Succeeded'
+        "Succeeded"
       when Status::FAILED
-        'Failed'
+        "Failed"
       else
         self.to_s
       end
@@ -112,14 +112,12 @@ class Task < ApplicationRecord
   # Fails the instance by setting its status to {Status::FAILED}.
   #
   def fail(detail: nil, backtrace: nil)
-    Thread.new do
-      self.class.connection_pool.with_connection do
-        self.update!(status:     Status::FAILED,
-                     stopped_at: Time.now,
-                     detail:     detail,
-                     backtrace:  backtrace)
-      end
-    end.join
+    self.class.connection_pool.with_connection do
+      self.update!(status:     Status::FAILED,
+                   stopped_at: Time.now,
+                   detail:     detail,
+                   backtrace:  backtrace)
+    end
   end
 
   def failed?
@@ -130,11 +128,9 @@ class Task < ApplicationRecord
   # Pauses the instance by setting its status to {Status::PAUSED}.
   #
   def pause
-    Thread.new do
-      self.class.connection_pool.with_connection do
-        self.update!(status: Status::PAUSED)
-      end
-    end.join
+    self.class.connection_pool.with_connection do
+      self.update!(status: Status::PAUSED)
+    end
   end
 
   def paused?
@@ -162,11 +158,9 @@ class Task < ApplicationRecord
       self.started_at       = Time.now if self.started_at.blank?
       self.status           = Status::RUNNING if progress < 1
       self.status_text      = status_text if status_text.present?
-      Thread.new do
-        self.class.connection_pool.with_connection do
-          self.save!
-        end
-      end.join
+      self.class.connection_pool.with_connection do
+        self.save!
+      end
     end
   end
 
@@ -178,12 +172,10 @@ class Task < ApplicationRecord
   # Stops the instance by setting its status to {Status::STOPPED}.
   #
   def stop
-    Thread.new do
-      self.class.connection_pool.with_connection do
-        self.update!(status:     Status::STOPPED,
-                     stopped_at: Time.now)
-      end
-    end.join
+    self.class.connection_pool.with_connection do
+      self.update!(status:     Status::STOPPED,
+                   stopped_at: Time.now)
+    end
   end
 
   ##
@@ -205,11 +197,9 @@ class Task < ApplicationRecord
     self.stopped_at       = Time.now
     self.backtrace        = nil
     self.status_text      = status_text if status_text.present?
-    Thread.new do
-      self.class.connection_pool.with_connection do
-        self.save!
-      end
-    end.join
+    self.class.connection_pool.with_connection do
+      self.save!
+    end
   end
 
   def succeeded?
