@@ -386,6 +386,30 @@ class UserTest < ActiveSupport::TestCase
     assert !@user.collection_admin?(collections(:uiuc_collection1))
   end
 
+  # collection_submitter?()
+
+  test "collection_submitter?() returns true when the user is a directly
+  assigned submitter in the given collection" do
+    collection = collections(:uiuc_collection1)
+    collection.submitting_users << @user
+    collection.save!
+    assert @user.collection_submitter?(collection)
+  end
+
+  test "collection_submitter?() returns true when the user belongs to a user
+  group that is allowed to submit to the given unit" do
+    group = user_groups(:uiuc_unused)
+    @user.user_groups << group
+    collection = collections(:uiuc_collection1)
+    collection.submitting_users << @user
+    assert @user.collection_submitter?(collection)
+  end
+
+  test "collection_submitter?() returns false when the user is not a submitter
+  in the given collection" do
+    assert !@user.collection_submitter?(collections(:uiuc_collection1))
+  end
+
   # destroy()
 
   test "destroy() destroys the associated Identity" do
@@ -644,30 +668,6 @@ class UserTest < ActiveSupport::TestCase
     new_email = "new@example.edu"
     @user.update!(email: new_email)
     assert_equal new_email, @user.identity.email
-  end
-
-  # submitter?()
-
-  test "submitter?() returns true when the user is a directly assigned
-  submitter in the given collection" do
-    collection = collections(:uiuc_collection1)
-    collection.submitting_users << @user
-    collection.save!
-    assert @user.submitter?(collection)
-  end
-
-  test "submitter?() returns true when the user belongs to a user group that
-  is allowed to submit to the given unit" do
-    group = user_groups(:uiuc_unused)
-    @user.user_groups << group
-    collection = collections(:uiuc_collection1)
-    collection.submitting_users << @user
-    assert @user.submitter?(collection)
-  end
-
-  test "submitter?() returns false when the user is not a submitter in the
-  given collection" do
-    assert !@user.submitter?(collections(:uiuc_collection1))
   end
 
   # sysadmin?()

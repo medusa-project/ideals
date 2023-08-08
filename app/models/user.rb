@@ -298,6 +298,20 @@ class User < ApplicationRecord
 
   ##
   # @param collection [Collection]
+  # @return [Boolean] Whether the instance is a direct submitter of the given
+  #                   collection.
+  # @see #effective_collection_submitter?
+  #
+  def collection_submitter?(collection)
+    return true if collection.submitters.where(user_id: self.id).count > 0
+    collection.submitting_groups.each do |group|
+      return true if self.belongs_to_user_group?(group)
+    end
+    false
+  end
+
+  ##
+  # @param collection [Collection]
   # @return [Boolean] Whether the instance is an effective administrator of the
   #                   given collection, either directly or as a unit or system
   #                   administrator.
@@ -329,15 +343,15 @@ class User < ApplicationRecord
   # @return [Boolean] Whether the instance is an effective submitter in the
   #                   given collection, either directly or as a collection,
   #                   unit, institution, or system administrator.
-  # @see #submitter?
+  # @see #collection_submitter?
   #
   def effective_collection_submitter?(collection)
     return true if effective_collection_admin?(collection)
     # Check the collection itself.
-    return true if submitter?(collection)
+    return true if collection_submitter?(collection)
     # Check all of its parent collections.
     collection.all_parents.each do |parent|
-      return true if submitter?(parent)
+      return true if collection_submitter?(parent)
     end
     false
   end
@@ -413,20 +427,6 @@ class User < ApplicationRecord
     netid = self.email.split("@").first
     return nil if netid.blank?
     netid
-  end
-
-  ##
-  # @param collection [Collection]
-  # @return [Boolean] Whether the instance is a direct submitter of the given
-  #                   collection.
-  # @see #effective_collection_submitter?
-  #
-  def submitter?(collection) # TODO: rename to collection_submitter?
-    return true if collection.submitters.where(user_id: self.id).count > 0
-    collection.submitting_groups.each do |group|
-      return true if self.belongs_to_user_group?(group)
-    end
-    false
   end
 
   ##
