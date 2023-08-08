@@ -325,6 +325,24 @@ class User < ApplicationRecord
   end
 
   ##
+  # @param collection [Collection]
+  # @return [Boolean] Whether the instance is an effective submitter in the
+  #                   given collection, either directly or as a collection,
+  #                   unit, institution, or system administrator.
+  # @see #submitter?
+  #
+  def effective_collection_submitter?(collection)
+    return true if effective_collection_admin?(collection)
+    # Check the collection itself.
+    return true if submitter?(collection)
+    # Check all of its parent collections.
+    collection.all_parents.each do |parent|
+      return true if submitter?(parent)
+    end
+    false
+  end
+
+  ##
   # @param institution [Institution]
   # @return [Boolean] Whether the instance is effectively an administrator of
   #                   the given institution.
@@ -348,24 +366,6 @@ class User < ApplicationRecord
     collections += self.administering_collections
     collections += self.submitting_collections
     collections
-  end
-
-  ##
-  # @param collection [Collection]
-  # @return [Boolean] Whether the instance is an effective submitter in the
-  #                   given collection, either directly or as a collection,
-  #                   unit, institution, or system administrator.
-  # @see #submitter?
-  #
-  def effective_submitter?(collection) # TODO: rename to effective_collection_submitter?
-    return true if effective_collection_admin?(collection)
-    # Check the collection itself.
-    return true if submitter?(collection)
-    # Check all of its parent collections.
-    collection.all_parents.each do |parent|
-      return true if submitter?(parent)
-    end
-    false
   end
 
   ##
@@ -419,7 +419,7 @@ class User < ApplicationRecord
   # @param collection [Collection]
   # @return [Boolean] Whether the instance is a direct submitter of the given
   #                   collection.
-  # @see #effective_submitter?
+  # @see #effective_collection_submitter?
   #
   def submitter?(collection) # TODO: rename to collection_submitter?
     return true if collection.submitters.where(user_id: self.id).count > 0

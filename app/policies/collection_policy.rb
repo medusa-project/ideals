@@ -206,7 +206,7 @@ class CollectionPolicy < ApplicationPolicy
     elsif @collection.kind_of?(Collection) &&
       @ctx_institution != @collection.institution
       return WRONG_SCOPE_RESULT
-    elsif @role_limit >= Role::COLLECTION_SUBMITTER && @user.effective_submitter?(@collection)
+    elsif @role_limit >= Role::COLLECTION_SUBMITTER && @user.effective_collection_submitter?(@collection)
       return AUTHORIZED_RESULT
     end
     { authorized: false,

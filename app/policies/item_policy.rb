@@ -62,7 +62,7 @@ class ItemPolicy < ApplicationPolicy
         # non-sysadmins can submit to collections for which they have submitter
         # privileges
         return AUTHORIZED_RESULT if (@role_limit >= Role::COLLECTION_SUBMITTER) &&
-          @user&.effective_submitter?(collection)
+          @user&.effective_collection_submitter?(collection)
       end
     end
     { authorized: false,

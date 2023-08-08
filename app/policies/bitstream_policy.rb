@@ -69,7 +69,7 @@ class BitstreamPolicy < ApplicationPolicy
         # non-sysadmins can submit to collections for which they have submitter
         # privileges
         return AUTHORIZED_RESULT if @role_limit >= Role::COLLECTION_SUBMITTER &&
-          @user&.effective_submitter?(collection)
+          @user&.effective_collection_submitter?(collection)
       end
     end
     { authorized: false,
@@ -132,7 +132,7 @@ class BitstreamPolicy < ApplicationPolicy
     elsif (@role_limit && @role_limit < @bitstream.role) ||
       (!@user && @bitstream.role > Role::LOGGED_OUT) ||
       (@user && @bitstream.role >= Role::SYSTEM_ADMINISTRATOR) ||
-      (@user && @bitstream.role >= Role::COLLECTION_SUBMITTER && !@user.effective_submitter?(@bitstream.item.effective_primary_collection)) ||
+      (@user && @bitstream.role >= Role::COLLECTION_SUBMITTER && !@user.effective_collection_submitter?(@bitstream.item.effective_primary_collection)) ||
       (@user && @bitstream.role >= Role::COLLECTION_ADMINISTRATOR && !@user.effective_collection_admin?(@bitstream.item.effective_primary_collection)) ||
       (@user && @bitstream.role >= Role::UNIT_ADMINISTRATOR && !@user.effective_unit_admin?(@bitstream.item.effective_primary_unit)) ||
       (@user && @bitstream.role >= Role::INSTITUTION_ADMINISTRATOR && !@user.effective_institution_admin?(@bitstream.institution))
