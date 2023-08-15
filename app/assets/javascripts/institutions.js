@@ -275,6 +275,20 @@ const InstitutionView = function() {
         });
     });
 
+    $("#review-submissions-tab").on("show.bs.tab", function() {
+        const url = ROOT_URL + "/institutions/" + institutionKey + "/review-submissions";
+        $.get(url, function (data) {
+            $("#review-submissions-tab-content").html(data);
+        });
+    });
+
+    $("#submissions-in-progress-tab").on("show.bs.tab", function() {
+        const url = ROOT_URL + "/institutions/" + institutionKey + "/submissions-in-progress";
+        $.get(url, function (data) {
+            $("#submissions-in-progress-tab-content").html(data);
+        });
+    });
+
     $("#theme-tab").on("show.bs.tab", function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/theme";
         $.get(url, function (data) {

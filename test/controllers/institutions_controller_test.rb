@@ -1153,6 +1153,31 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # show_review_submissions()
+
+  test "show_review_submissions() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_review_submissions_path(@institution), xhr: true
+    assert_response :not_found
+  end
+
+  test "show_review_submissions() returns HTTP 403 for logged-out users" do
+    get institution_review_submissions_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_review_submissions() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    get institution_review_submissions_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_review_submissions() returns HTTP 200 for authorized users" do
+    log_in_as(users(:southwest_admin))
+    get institution_review_submissions_path(@institution), xhr: true
+    assert_response :ok
+  end
+
   # show_settings()
 
   test "show_settings() returns HTTP 404 for unscoped requests" do
@@ -1225,6 +1250,31 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   test "show_submission_profiles() returns HTTP 200 for authorized users" do
     log_in_as(users(:southwest_sysadmin))
     get institution_submission_profiles_path(@institution), xhr: true
+    assert_response :ok
+  end
+
+  # show_submissions_in_progress()
+
+  test "show_submissions_in_progress() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_submissions_in_progress_path(@institution), xhr: true
+    assert_response :not_found
+  end
+
+  test "show_submissions_in_progress() returns HTTP 403 for logged-out users" do
+    get institution_submissions_in_progress_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_submissions_in_progress() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    get institution_submissions_in_progress_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_submissions_in_progress() returns HTTP 200 for authorized users" do
+    log_in_as(users(:southwest_admin))
+    get institution_submissions_in_progress_path(@institution), xhr: true
     assert_response :ok
   end
 

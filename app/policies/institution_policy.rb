@@ -173,6 +173,10 @@ class InstitutionPolicy < ApplicationPolicy
     show
   end
 
+  def show_review_submissions
+    show_submissions_in_progress
+  end
+
   def show_settings
     show
   end
@@ -183,6 +187,10 @@ class InstitutionPolicy < ApplicationPolicy
 
   def show_submission_profiles
     show_metadata_profiles
+  end
+
+  def show_submissions_in_progress
+    show
   end
 
   def show_theme

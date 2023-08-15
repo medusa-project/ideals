@@ -18,207 +18,228 @@
   = icon_for(@institution)
   = @institution.name
 
-.row
-  .col-sm-5.col-md-4.col-lg-3
-    .nav.flex-column.nav-pills{role:               "tablist",
-                               "aria-orientation": "vertical"}
-      - if policy(@institution).show_properties?
-        %button#properties-tab.nav-link.active{"data-bs-target": "#properties-tab-content",
-                                               "data-bs-toggle": "pill",
-                                               role:             "tab",
-                                               type:             "button",
-                                               "aria-controls":  "properties-tab-content",
-                                               "aria-selected":  "true"}
-          = icon_for(:info)
-          Properties
-      - if policy(@institution).show_settings?
-        %button#settings-tab.nav-link{"data-bs-target": "#settings-tab-content",
-                                      "data-bs-toggle": "pill",
-                                      role:             "tab",
-                                      type:             "button",
-                                      "aria-controls":  "settings-tab-content",
-                                      "aria-selected":  "false"}
-          %i.fa.fa-cog
-          General Settings
-      - if policy(@institution).show_authentication?
-        %button#authentication-tab.nav-link{"data-bs-target": "#authentication-tab-content",
+.d-flex
+  .nav.nav-pills.flex-column.me-3{role:               "tablist",
+                                  "aria-orientation": "vertical"}
+    - if policy(@institution).show_properties?
+      %button#properties-tab.nav-link.active{"data-bs-target": "#properties-tab-content",
+                                             "data-bs-toggle": "pill",
+                                             role:             "tab",
+                                             type:             "button",
+                                             "aria-controls":  "properties-tab-content",
+                                             "aria-selected":  "true"}
+        = icon_for(:info)
+        Properties
+    - if policy(@institution).show_settings?
+      %button#settings-tab.nav-link{"data-bs-target": "#settings-tab-content",
+                                    "data-bs-toggle": "pill",
+                                    role:             "tab",
+                                    type:             "button",
+                                    "aria-controls":  "settings-tab-content",
+                                    "aria-selected":  "false"}
+        %i.fa.fa-cog
+        General Settings
+    - if policy(@institution).show_authentication?
+      %button#authentication-tab.nav-link{"data-bs-target": "#authentication-tab-content",
+                                          "data-bs-toggle": "pill",
+                                          role:             "tab",
+                                          type:             "button",
+                                          "aria-controls":  "authentication-tab-content",
+                                          "aria-selected":  "false"}
+        %i.fa.fa-lock
+        Authentication
+    - if policy(@institution).show_preservation?
+      %button#preservation-tab.nav-link{"data-bs-target": "#preservation-tab-content",
+                                        "data-bs-toggle": "pill",
+                                        role:             "tab",
+                                        type:             "button",
+                                        "aria-controls":  "preservation-tab-content",
+                                        "aria-selected":  "false"}
+        %i.fa.fa-box-open
+        Preservation
+        - if @institution.outgoing_message_queue.blank?
+          %i.fa.fa-exclamation-triangle.text-danger
+    - if policy(@institution).show_theme?
+      %button#theme-tab.nav-link{"data-bs-target":       "#theme-tab-content",
+                                 "data-bs-toggle":       "pill",
+                                 role:                   "tab",
+                                 type:                   "button",
+                                 "aria-controls":        "theme-tab-content",
+                                 "aria-selected":        "false",
+                                 "data-institution-key": @institution.key}
+        %i.fa.fa-palette
+        Theme
+    - if policy(@institution).show_depositing?
+      %button#depositing-tab.nav-link{"data-bs-target": "#depositing-tab-content",
+                                    "data-bs-toggle":   "pill",
+                                    role:               "tab",
+                                    type:               "button",
+                                    "aria-controls":    "depositing-tab-content",
+                                    "aria-selected":    "false"}
+        %i.fa.fa-plus
+        Deposit Agreement
+    - if policy(@institution).show_review_submissions?
+      %button#review-submissions-tab.nav-link{"data-bs-target": "#review-submissions-tab-content",
+                                              "data-bs-toggle": "pill",
+                                              role:             "tab",
+                                              type:             "button",
+                                              "aria-controls":  "review-submissions-tab-content",
+                                              "aria-selected":  "false"}
+        %i.fa.fa-tasks
+        Review Submissions
+        - if @review_count > 0
+          %span.badge.rounded-pill.text-bg-primary= @review_count
+    - if policy(@institution).show_submissions_in_progress?
+      %button#submissions-in-progress-tab.nav-link{"data-bs-target": "#submissions-in-progress-tab-content",
+                                                   "data-bs-toggle": "pill",
+                                                   role:             "tab",
+                                                   type:             "button",
+                                                   "aria-controls":  "submissions-in-progress-tab-content",
+                                                   "aria-selected":  "false"}
+        %i.fa.fa-tasks
+        Submissions in Progress
+        - if @submissions_in_progress_count > 0
+          %span.badge.rounded-pill.text-bg-primary= @submissions_in_progress_count
+    - if policy(@institution).show_units?
+      %button#units-tab.nav-link{"data-bs-target": "#units-tab-content",
+                                 "data-bs-toggle": "pill",
+                                 role:             "tab",
+                                 type:             "button",
+                                 "aria-controls":  "units-tab-content",
+                                 "aria-selected":  "false"}
+        = icon_for(Unit)
+        Units
+    - if policy(@institution).show_element_mappings?
+      %button#element-mappings-tab.nav-link{"data-bs-target": "#element-mappings-tab-content",
                                             "data-bs-toggle": "pill",
                                             role:             "tab",
                                             type:             "button",
-                                            "aria-controls":  "authentication-tab-content",
+                                            "aria-controls":  "element-mappings-tab-content",
                                             "aria-selected":  "false"}
-          %i.fa.fa-lock
-          Authentication
-      - if policy(@institution).show_preservation?
-        %button#preservation-tab.nav-link{"data-bs-target": "#preservation-tab-content",
-                                          "data-bs-toggle": "pill",
-                                          role:             "tab",
-                                          type:             "button",
-                                          "aria-controls":  "preservation-tab-content",
-                                          "aria-selected":  "false"}
-          %i.fa.fa-box-open
-          Preservation
-          - if @institution.outgoing_message_queue.blank?
-            %i.fa.fa-exclamation-triangle.text-danger
-      - if policy(@institution).show_theme?
-        %button#theme-tab.nav-link{"data-bs-target":       "#theme-tab-content",
-                                   "data-bs-toggle":       "pill",
-                                   role:                   "tab",
-                                   type:                   "button",
-                                   "aria-controls":        "theme-tab-content",
-                                   "aria-selected":        "false",
-                                   "data-institution-key": @institution.key}
-          %i.fa.fa-palette
-          Theme
-      - if policy(@institution).show_depositing?
-        %button#depositing-tab.nav-link{"data-bs-target": "#depositing-tab-content",
-                                      "data-bs-toggle":   "pill",
-                                      role:               "tab",
-                                      type:               "button",
-                                      "aria-controls":    "depositing-tab-content",
-                                      "aria-selected":    "false"}
-          %i.fa.fa-plus
-          Deposit Agreement
-      - if policy(@institution).show_units?
-        %button#units-tab.nav-link{"data-bs-target": "#units-tab-content",
-                                   "data-bs-toggle": "pill",
-                                   role:             "tab",
-                                   type:             "button",
-                                   "aria-controls":  "units-tab-content",
-                                   "aria-selected":  "false"}
-          = icon_for(Unit)
-          Units
-      - if policy(@institution).show_element_mappings?
-        %button#element-mappings-tab.nav-link{"data-bs-target": "#element-mappings-tab-content",
+        = icon_for(RegisteredElement)
+        Element Mappings
+    - if policy(@institution).show_element_namespaces?
+      %button#element-namespaces-tab.nav-link{"data-bs-target": "#element-namespaces-tab-content",
                                               "data-bs-toggle": "pill",
                                               role:             "tab",
                                               type:             "button",
-                                              "aria-controls":  "element-mappings-tab-content",
+                                              "aria-controls":  "element-namespaces-tab-content",
                                               "aria-selected":  "false"}
-          = icon_for(RegisteredElement)
-          Element Mappings
-      - if policy(@institution).show_element_namespaces?
-        %button#element-namespaces-tab.nav-link{"data-bs-target": "#element-namespaces-tab-content",
-                                                "data-bs-toggle": "pill",
-                                                role:             "tab",
-                                                type:             "button",
-                                                "aria-controls":  "element-namespaces-tab-content",
-                                                "aria-selected":  "false"}
-          %i.fa.fa-code
-          Element Namespaces
-      - if policy(@institution).show_element_registry?
-        %button#element-registry-tab.nav-link{"data-bs-target": "#element-registry-tab-content",
-                                              "data-bs-toggle": "pill",
-                                              role:             "tab",
-                                              type:             "button",
-                                              "aria-controls":  "element-registry-tab-content",
-                                              "aria-selected":  "false"}
-          = icon_for(RegisteredElement)
-          Element Registry
-      - if policy(@institution).show_metadata_profiles?
-        %button#metadata-profiles-tab.nav-link{"data-bs-target": "#metadata-profiles-tab-content",
+        %i.fa.fa-code
+        Element Namespaces
+    - if policy(@institution).show_element_registry?
+      %button#element-registry-tab.nav-link{"data-bs-target": "#element-registry-tab-content",
+                                            "data-bs-toggle": "pill",
+                                            role:             "tab",
+                                            type:             "button",
+                                            "aria-controls":  "element-registry-tab-content",
+                                            "aria-selected":  "false"}
+        = icon_for(RegisteredElement)
+        Element Registry
+    - if policy(@institution).show_metadata_profiles?
+      %button#metadata-profiles-tab.nav-link{"data-bs-target": "#metadata-profiles-tab-content",
+                                             "data-bs-toggle": "pill",
+                                             role:             "tab",
+                                             type:             "button",
+                                             "aria-controls":  "metadata-profiles-tab-content",
+                                             "aria-selected":  "false"}
+        = icon_for(MetadataProfile)
+        Metadata Profiles
+    - if policy(@institution).show_submission_profiles?
+      %button#submission-profiles-tab.nav-link{"data-bs-target": "#submission-profiles-tab-content",
                                                "data-bs-toggle": "pill",
                                                role:             "tab",
                                                type:             "button",
-                                               "aria-controls":  "metadata-profiles-tab-content",
+                                               "aria-controls":  "submission-profiles-tab-content",
                                                "aria-selected":  "false"}
-          = icon_for(MetadataProfile)
-          Metadata Profiles
-      - if policy(@institution).show_submission_profiles?
-        %button#submission-profiles-tab.nav-link{"data-bs-target": "#submission-profiles-tab-content",
-                                                 "data-bs-toggle": "pill",
-                                                 role:             "tab",
-                                                 type:             "button",
-                                                 "aria-controls":  "submission-profiles-tab-content",
-                                                 "aria-selected":  "false"}
-          = icon_for(SubmissionProfile)
-          Submission Profiles
-      - if policy(@institution).show_vocabularies?
-        %button#vocabularies-tab.nav-link{"data-bs-target": "#vocabularies-tab-content",
-                                          "data-bs-toggle": "pill",
-                                          role:             "tab",
-                                          type:             "button",
-                                          "aria-controls":  "vocabularies-tab-content",
-                                          "aria-selected":  "false"}
-          = icon_for(Vocabulary)
-          Vocabularies
-      - if policy(@institution).show_prebuilt_searches?
-        %button#prebuilt-searches-tab.nav-link{"data-bs-target": "#prebuilt-searches-tab-content",
-                                               "data-bs-toggle": "pill",
-                                               role:             "tab",
-                                               type:             "button",
-                                               "aria-controls":  "prebuilt-searches-tab-content",
-                                               "aria-selected":  "false"}
-          = icon_for(PrebuiltSearch)
-          Prebuilt Searches
-      - if policy(@institution).show_index_pages?
-        %button#index-pages-tab.nav-link{"data-bs-target": "#index-pages-tab-content",
-                                         "data-bs-toggle": "pill",
-                                         role:             "tab",
-                                         type:             "button",
-                                         "aria-controls":  "index-pages-tab-content",
-                                         "aria-selected":  "false"}
-          = icon_for(IndexPage)
-          Index Pages
-      - if policy(@institution).show_invitees?
-        %button#invitees-tab.nav-link{"data-bs-target": "#invitees-tab-content",
-                                      "data-bs-toggle": "pill",
-                                      role:             "tab",
-                                      type:             "button",
-                                      "aria-controls":  "invitees-tab-content",
-                                      "aria-selected":  "false"}
-          = icon_for(Invitee)
-          Invitees
-      - if policy(@institution).show_users?
-        %button#users-tab.nav-link{"data-bs-target": "#users-tab-content",
-                                   "data-bs-toggle": "pill",
-                                   role:             "tab",
-                                   type:             "button",
-                                   "aria-controls":  "users-tab-content",
-                                   "aria-selected":  "false"}
-          = icon_for(User)
-          Users
-      - if policy(@institution).show_user_groups?
-        %button#user-groups-tab.nav-link{"data-bs-target": "#user-groups-tab-content",
-                                         "data-bs-toggle": "pill",
-                                         role:             "tab",
-                                         type:             "button",
-                                         "aria-controls":  "user-groups-tab-content",
-                                         "aria-selected":  "false"}
-          = icon_for(UserGroup)
-          User Groups
-      - if policy(@institution).show_statistics?
-        %button#statistics-tab.nav-link{"data-bs-target":       "#statistics-tab-content",
-                                        "data-bs-toggle":       "pill",
-                                        role:                   "tab",
-                                        type:                   "button",
-                                        "aria-controls":        "statistics-tab-content",
-                                        "aria-selected":        "false",
-                                        "data-institution-key": @institution.key}
-          %i.fa.fa-chart-bar
-          Statistics
-      - if policy(@institution).show_usage?
-        %button#usage-tab.nav-link{"data-bs-target":       "#usage-tab-content",
-                                   "data-bs-toggle":       "pill",
-                                   role:                   "tab",
-                                   type:                   "button",
-                                   "aria-controls":        "usage-tab-content",
-                                   "aria-selected":        "false",
-                                   "data-institution-key": @institution.key}
-          %i.fa.fa-chart-bar
-          Usage
-      - if policy(@institution).show_access?
-        %button#access-tab.nav-link{"data-bs-target":       "#access-tab-content",
-                                    "data-bs-toggle":       "pill",
-                                    role:                   "tab",
-                                    type:                   "button",
-                                    "aria-controls":        "access-tab-content",
-                                    "aria-selected":        "false",
-                                    "data-institution-key": @institution.key}
-          %i.fa.fa-users
-          Access
+        = icon_for(SubmissionProfile)
+        Submission Profiles
+    - if policy(@institution).show_vocabularies?
+      %button#vocabularies-tab.nav-link{"data-bs-target": "#vocabularies-tab-content",
+                                        "data-bs-toggle": "pill",
+                                        role:             "tab",
+                                        type:             "button",
+                                        "aria-controls":  "vocabularies-tab-content",
+                                        "aria-selected":  "false"}
+        = icon_for(Vocabulary)
+        Vocabularies
+    - if policy(@institution).show_prebuilt_searches?
+      %button#prebuilt-searches-tab.nav-link{"data-bs-target": "#prebuilt-searches-tab-content",
+                                             "data-bs-toggle": "pill",
+                                             role:             "tab",
+                                             type:             "button",
+                                             "aria-controls":  "prebuilt-searches-tab-content",
+                                             "aria-selected":  "false"}
+        = icon_for(PrebuiltSearch)
+        Prebuilt Searches
+    - if policy(@institution).show_index_pages?
+      %button#index-pages-tab.nav-link{"data-bs-target": "#index-pages-tab-content",
+                                       "data-bs-toggle": "pill",
+                                       role:             "tab",
+                                       type:             "button",
+                                       "aria-controls":  "index-pages-tab-content",
+                                       "aria-selected":  "false"}
+        = icon_for(IndexPage)
+        Index Pages
+    - if policy(@institution).show_invitees?
+      %button#invitees-tab.nav-link{"data-bs-target": "#invitees-tab-content",
+                                    "data-bs-toggle": "pill",
+                                    role:             "tab",
+                                    type:             "button",
+                                    "aria-controls":  "invitees-tab-content",
+                                    "aria-selected":  "false"}
+        = icon_for(Invitee)
+        Invitees
+    - if policy(@institution).show_users?
+      %button#users-tab.nav-link{"data-bs-target": "#users-tab-content",
+                                 "data-bs-toggle": "pill",
+                                 role:             "tab",
+                                 type:             "button",
+                                 "aria-controls":  "users-tab-content",
+                                 "aria-selected":  "false"}
+        = icon_for(User)
+        Users
+    - if policy(@institution).show_user_groups?
+      %button#user-groups-tab.nav-link{"data-bs-target": "#user-groups-tab-content",
+                                       "data-bs-toggle": "pill",
+                                       role:             "tab",
+                                       type:             "button",
+                                       "aria-controls":  "user-groups-tab-content",
+                                       "aria-selected":  "false"}
+        = icon_for(UserGroup)
+        User Groups
+    - if policy(@institution).show_statistics?
+      %button#statistics-tab.nav-link{"data-bs-target":       "#statistics-tab-content",
+                                      "data-bs-toggle":       "pill",
+                                      role:                   "tab",
+                                      type:                   "button",
+                                      "aria-controls":        "statistics-tab-content",
+                                      "aria-selected":        "false",
+                                      "data-institution-key": @institution.key}
+        %i.fa.fa-chart-bar
+        Statistics
+    - if policy(@institution).show_usage?
+      %button#usage-tab.nav-link{"data-bs-target":       "#usage-tab-content",
+                                 "data-bs-toggle":       "pill",
+                                 role:                   "tab",
+                                 type:                   "button",
+                                 "aria-controls":        "usage-tab-content",
+                                 "aria-selected":        "false",
+                                 "data-institution-key": @institution.key}
+        %i.fa.fa-chart-bar
+        Usage
+    - if policy(@institution).show_access?
+      %button#access-tab.nav-link{"data-bs-target":       "#access-tab-content",
+                                  "data-bs-toggle":       "pill",
+                                  role:                   "tab",
+                                  type:                   "button",
+                                  "aria-controls":        "access-tab-content",
+                                  "aria-selected":        "false",
+                                  "data-institution-key": @institution.key}
+        %i.fa.fa-users
+        Access
 
-  .tab-content.col-sm-7.col-md-8.col-lg-9
+  .tab-content.w-100
     - if policy(@institution).show_properties?
       #properties-tab-content.tab-pane.fade.show.active{role:              "tabpanel",
                                                         "aria-labelledby": "properties-tab"}
@@ -292,6 +313,16 @@
     - if policy(@institution).show_units?
       #units-tab-content.tab-pane.fade{role:              "tabpanel",
                                        "aria-labelledby": "units-tab"}
+        = spinner
+
+    - if policy(@institution).show_review_submissions?
+      #review-submissions-tab-content.tab-pane.fade{role:              "tabpanel",
+                                                    "aria-labelledby": "review-submissions-tab"}
+        = spinner
+
+    - if policy(@institution).show_submissions_in_progress?
+      #submissions-in-progress-tab-content.tab-pane.fade{role:              "tabpanel",
+                                                         "aria-labelledby": "submissions-in-progress-tab"}
         = spinner
 
     - if policy(@institution).show_invitees?

@@ -122,11 +122,15 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/properties", to: "institutions#show_properties", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/review-submissions", to: "institutions#show_review_submissions", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/settings", to: "institutions#show_settings", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/statistics", to: "institutions#show_statistics", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/submission-profiles", to: "institutions#show_submission_profiles", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/submissions-in-progress", to: "institutions#show_submissions_in_progress", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/supply-saml-configuration", to: "institutions#supply_saml_configuration", via: :get,
           constraints: lambda { |request| request.xhr? }
