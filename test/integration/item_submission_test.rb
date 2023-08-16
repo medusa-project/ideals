@@ -175,7 +175,7 @@ class ItemSubmissionTest < ActionDispatch::IntegrationTest
 
     patch submission_path(@item), params: {
       item: {
-        submitter_id: @user.id # only because item is required in the params
+        stage: Item::Stages::SUBMITTING # only because item is required in the params
       },
       elements: elements
     }
