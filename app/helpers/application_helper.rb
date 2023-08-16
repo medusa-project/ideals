@@ -704,19 +704,16 @@ module ApplicationHelper
   # @param resources [Enumerable<Describable,Unit,Collection>]
   # @param primary_id [Integer] ID of a resource in `resources` to indicate as
   #                             primary.
-  # @param show_submitters [Boolean]
   # @param use_resource_host [Boolean]
   # @return [String] HTML listing.
   #
   def resource_list(resources,
                     primary_id:        nil,
-                    show_submitters:   false,
                     use_resource_host: true)
     html = StringIO.new
     resources.each do |resource|
       html << resource_list_row(resource,
                                 primary:           (primary_id == resource.id),
-                                show_submitter:    show_submitters,
                                 use_resource_host: use_resource_host)
     end
     raw(html.string)
@@ -730,7 +727,6 @@ module ApplicationHelper
   #
   def resource_list_row(resource,
                         primary:           false,
-                        show_submitter:    false,
                         use_resource_host: true)
     embargoed_item = resource.kind_of?(Item) &&
       resource.embargoed_for?(current_user)
@@ -773,13 +769,7 @@ module ApplicationHelper
     end
     html <<     "</h5>"
 
-    if show_submitter && resource.submitter
-      html << link_to(resource.submitter) do
-        icon_for(resource.submitter) + " " + resource.submitter.name
-      end
-      html << " &bull; "
-      html << local_time(resource.created_at)
-    elsif resource.kind_of?(Item)
+    if resource.kind_of?(Item)
       author = resource.authors.map(&:string).join("; ")
       date   = resource.elements.
         select{ |e| e.name == resource.institution.date_approved_element.name }.

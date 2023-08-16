@@ -305,6 +305,58 @@ module ItemsHelper
     raw(html)
   end
 
+  ##
+  # Renders a submission list.
+  #
+  # @param items [Enumerable<Item>]
+  # @return [String] HTML listing.
+  #
+  def submission_list(items)
+    html = StringIO.new
+    items.each do |item|
+      html << submission_list_row(item)
+    end
+    raw(html.string)
+  end
+
+  ##
+  # @param item [Item]
+  # @return [String] HTML string.
+  #
+  def submission_list_row(item)
+    thumb    = thumbnail_for(item)
+    item_url = item_url(item)
+    title    = item.title.present? ? item.title : "(Untitled)"
+    html     = StringIO.new
+    html << "<div class=\"d-flex resource-list mb-3\">"
+    if thumb
+      html <<   "<div class=\"flex-shrink-0 image-thumbnail\">"
+      html <<     link_to(item_url) do
+        thumb
+      end
+    else
+      html <<   "<div class=\"flex-shrink-0 icon-thumbnail\">"
+      html <<     link_to(item_url) do
+        icon_for(item)
+      end
+    end
+    html <<   "</div>"
+    html <<   "<div class=\"flex-grow-1 ms-3\">"
+    html <<     "<h5 class=\"mt-0 mb-0\">"
+    html <<       link_to(title, item_url)
+    html <<     "</h5>"
+    if item.submitter
+      html << link_to(item.submitter) do
+        icon_for(item.submitter) + " " + item.submitter.name
+      end
+      html << " &bull; "
+      html << local_time(item.created_at)
+    end
+    html <<   "</div>"
+    html << "</div>"
+    html.string
+  end
+
 
   private
 
