@@ -313,7 +313,7 @@ const SubmissionForm = function() {
     this.validateMetadataSection = function(includeRequired) {
         // Check that all required elements are filled in.
         let isValid = true;
-        metadataForm.find("input[required], textarea[required]").each(function() {
+        metadataForm.find("input[required], textarea[required], select[required]").each(function() {
             if ($(this).val().length < 1) {
                 isValid = false;
             }
