@@ -219,8 +219,8 @@ class BitstreamsController < ApplicationController
   # Creates a presigned URL for downloading the {Bitstream} and redirects to it
   # via HTTP 307.
   #
-  # If a `dl=1` query argument is supplied, a download event is ascribed to
-  # the bitstream.
+  # If a `dl=0` query argument is supplied, a download event is not ascribed to
+  # the bitstream. Otherwise, it is.
   #
   # Responds to `GET /items/:item_id/bitstreams/:id/object`.
   #
@@ -229,7 +229,7 @@ class BitstreamsController < ApplicationController
   def object
     url = @bitstream.presigned_download_url(content_disposition: download_content_disposition)
     if url
-      @bitstream.add_download(user: current_user) if params[:dl] == "1"
+      @bitstream.add_download(user: current_user) if params[:dl] != "0"
       redirect_to url,
                   status:           :temporary_redirect,
                   allow_other_host: true

@@ -17,17 +17,7 @@ class UserGroupPolicy < ApplicationPolicy
   end
 
   def create
-    if !@user
-      return LOGGED_OUT_RESULT
-    elsif @role_limit >= Role::SYSTEM_ADMINISTRATOR && @user.sysadmin?
-      return AUTHORIZED_RESULT
-    elsif @role_limit >= Role::INSTITUTION_ADMINISTRATOR &&
-      @user.institution_administrators.count > 0
-      return AUTHORIZED_RESULT
-    end
-    { authorized: false,
-      reason: "You must be an administrator of an institution within the "\
-              "same institution as that of the user group." }
+    index
   end
 
   def destroy
@@ -67,17 +57,7 @@ class UserGroupPolicy < ApplicationPolicy
   end
 
   def index
-    if !@user
-      return LOGGED_OUT_RESULT
-    elsif @role_limit >= Role::SYSTEM_ADMINISTRATOR && @user.sysadmin?
-      return AUTHORIZED_RESULT
-    elsif @role_limit >= Role::INSTITUTION_ADMINISTRATOR &&
-      @user.institution_administrators.count > 0
-      return AUTHORIZED_RESULT
-    end
-    { authorized: false,
-      reason: "You must be an administrator of an institution within the "\
-              "same institution as that of the user group." }
+    effective_institution_admin(@user, @ctx_institution, @role_limit)
   end
 
   def index_global
@@ -93,19 +73,13 @@ class UserGroupPolicy < ApplicationPolicy
   end
 
   def update
-    if @user_group.institution && @ctx_institution != @user_group.institution
-      return WRONG_SCOPE_RESULT
-    elsif !@user
+    if !@user
       return LOGGED_OUT_RESULT
-    elsif @role_limit >= Role::SYSTEM_ADMINISTRATOR && @user.sysadmin?
+    elsif effective_sysadmin?(@user, @role_limit)
       return AUTHORIZED_RESULT
-    elsif @role_limit >= Role::INSTITUTION_ADMINISTRATOR &&
-      @user.institution == @user_group.institution &&
-      @user.institution_admin?(@user_group.institution)
-      return AUTHORIZED_RESULT
+    elsif @user_group.institution && @ctx_institution != @user_group.institution
+      return WRONG_SCOPE_RESULT
     end
-    { authorized: false,
-      reason: "You must be an administrator of an institution within the "\
-              "same institution as that of the user group." }
+    effective_institution_admin(@user, @user_group.institution, @role_limit)
   end
 end

@@ -8,6 +8,9 @@
 # elements that are used by the {MetadataProfile#global global metadata profile}
 # in cross-institution contexts. Element names must be unique within the scope.
 #
+# Also not scoped to an institution are template elements. These are the set of
+# elements that are added to new institutions upon creation.
+#
 # # System-Required Elements
 #
 # The system requires certain elements to be present, such as a title element,
@@ -21,9 +24,14 @@
 # * `highwire_mapping`    Name of an equivalent element in the Highwire Press
 #                         meta tag vocabulary.
 # * `input_type`          One of the {InputType} constant values.
+# * `institution_id`      Foreign key to the owning {Institution}. Will be
+#                         null for global and template elements.
 # * `label`               Element label. Often overrides {name} for end-user
 #                         display.
 # * `name`                Element name. Must be unique within an institution.
+# * `scope_note`          Note about the element's purpose.
+# * `template`            If true, this element is added to new institutions
+#                         when they are created.
 # * `updated_at`          Managed by ActiveRecord.
 # * `uri`                 Linked Data URI.
 # * `vocabulary_id`       Foreign key tp {Vocabulary}.
@@ -50,7 +58,7 @@ class RegisteredElement < ApplicationRecord
   SORTABLE_FIELD_SUFFIX = ".sort"
   TEXT_FIELD_PREFIX     = "t"
 
-  belongs_to :institution
+  belongs_to :institution, optional: true
   belongs_to :vocabulary, optional: true
 
   has_many :metadata_profile_elements, inverse_of: :registered_element
@@ -73,6 +81,9 @@ class RegisteredElement < ApplicationRecord
 
   # name
   validates_format_of :name, with: /\A[A-Za-z0-9_\-:]+\z/, allow_blank: false
+
+  # template
+  validate :validate_template_globality
 
   before_save :assign_default_input_type
 
@@ -134,10 +145,20 @@ class RegisteredElement < ApplicationRecord
     super(val == "" ? nil : val)
   end
 
+
   private
 
   def assign_default_input_type
     self.input_type ||= InputType::TEXT_FIELD
+  end
+
+  ##
+  # Ensures that a template element is not scoped to an institution.
+  #
+  def validate_template_globality
+    if template && institution_id.present?
+      errors.add(:institution_id, "cannot be set on template elements")
+    end
   end
 
 end

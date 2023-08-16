@@ -16,6 +16,14 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert !policy.change_parent?(unit2.id)
   end
 
+  test "change_parent?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    unit2   = units(:southwest_unit2)
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.change_parent?(unit2.id)
+  end
+
   test "change_parent?() is restrictive by default" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
@@ -93,6 +101,13 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert policy.children?
   end
 
+  test "children?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.children?
+  end
+
   test "children?() authorizes everyone" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
@@ -124,6 +139,13 @@ class UnitPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        nil,
                                  institution: @unit.institution)
     policy = UnitPolicy.new(context, @unit)
+    assert !policy.create?
+  end
+
+  test "create?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = UnitPolicy.new(context, @unit)
     assert !policy.create?
   end
 
@@ -182,6 +204,13 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert !policy.delete?
   end
 
+  test "delete?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.delete?
+  end
+
   test "delete?() is restrictive by default" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
@@ -225,6 +254,13 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert !policy.edit_administering_groups?
   end
 
+  test "edit_administering_groups?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.edit_administering_groups?
+  end
+
   test "edit_administering_groups?() is restrictive by default" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
@@ -257,6 +293,13 @@ class UnitPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        nil,
                                  institution: @unit.institution)
     policy = UnitPolicy.new(context, @unit)
+    assert !policy.edit_administering_users?
+  end
+
+  test "edit_administering_users?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = UnitPolicy.new(context, @unit)
     assert !policy.edit_administering_users?
   end
 
@@ -295,6 +338,13 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert !policy.edit_membership?
   end
 
+  test "edit_membership?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.edit_membership?
+  end
+
   test "edit_membership?() is restrictive by default" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
@@ -327,6 +377,13 @@ class UnitPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        nil,
                                  institution: @unit.institution)
     policy = UnitPolicy.new(context, @unit)
+    assert !policy.edit_properties?
+  end
+
+  test "edit_properties?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = UnitPolicy.new(context, @unit)
     assert !policy.edit_properties?
   end
 
@@ -365,6 +422,13 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert !policy.export_items?
   end
 
+  test "export_items?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.export_items?
+  end
+
   test "export_items?() is restrictive by default" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
@@ -400,6 +464,13 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert policy.index?
   end
 
+  test "index?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.index?
+  end
+
   test "index?() authorizes everyone" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
@@ -415,6 +486,13 @@ class UnitPolicyTest < ActiveSupport::TestCase
                                  institution: @unit.institution)
     policy = UnitPolicy.new(context, @unit)
     assert policy.item_download_counts?
+  end
+
+  test "item_download_counts?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.item_download_counts?
   end
 
   test "item_download_counts?() authorizes everyone" do
@@ -434,6 +512,13 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert policy.item_results?
   end
 
+  test "item_results?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.item_results?
+  end
+
   test "item_results?() authorizes everyone" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
@@ -448,6 +533,13 @@ class UnitPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        nil,
                                  institution: @unit.institution)
     policy = UnitPolicy.new(context, @unit)
+    assert !policy.new?
+  end
+
+  test "new?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = UnitPolicy.new(context, @unit)
     assert !policy.new?
   end
 
@@ -491,6 +583,13 @@ class UnitPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        nil,
                                  institution: @unit.institution)
     policy = UnitPolicy.new(context, @unit)
+    assert !policy.new_collection?
+  end
+
+  test "new_collection?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = UnitPolicy.new(context, @unit)
     assert !policy.new_collection?
   end
 
@@ -538,6 +637,13 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert policy.show?
   end
 
+  test "show?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.show?
+  end
+
   test "show?() authorizes everyone" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
@@ -555,6 +661,13 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert policy.show_about?
   end
 
+  test "show_about?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.show_about?
+  end
+
   test "show_about?() authorizes everyone" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
@@ -569,6 +682,13 @@ class UnitPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        nil,
                                  institution: @unit.institution)
     policy = UnitPolicy.new(context, @unit)
+    assert !policy.show_access?
+  end
+
+  test "show_access?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = UnitPolicy.new(context, @unit)
     assert !policy.show_access?
   end
 
@@ -607,6 +727,13 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert policy.show_collections?
   end
 
+  test "show_collections?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.show_collections?
+  end
+
   test "show_collections?() authorizes everyone" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
@@ -621,6 +748,13 @@ class UnitPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        nil,
                                  institution: @unit.institution)
     policy = UnitPolicy.new(context, @unit)
+    assert !policy.show_extended_about?
+  end
+
+  test "show_extended_about?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = UnitPolicy.new(context, @unit)
     assert !policy.show_extended_about?
   end
 
@@ -659,12 +793,72 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert policy.show_items?
   end
 
+  test "show_items?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.show_items?
+  end
+
   test "show_items?() authorizes everyone" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
     assert policy.show_items?
+  end
+
+  # show_review_submissions?()
+
+  test "show_review_submissions?() returns false with a nil user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @unit.institution)
+    policy = UnitPolicy.new(context, @unit)
+    assert !policy.show_review_submissions?
+  end
+
+  test "show_review_submissions?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.show_review_submissions?
+  end
+
+  test "show_review_submissions?() is restrictive by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.show_review_submissions?
+  end
+
+  test "show_review_submissions?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UnitPolicy.new(context, @unit)
+    assert policy.show_review_submissions?
+  end
+
+  test "show_review_submissions?() authorizes unit administrators" do
+    user = users(:southwest)
+    user.administering_units << @unit
+    user.save!
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UnitPolicy.new(context, @unit)
+    assert policy.show_review_submissions?
+  end
+
+  test "show_review_submissions?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.show_review_submissions?
   end
 
   # show_statistics?()
@@ -676,12 +870,72 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert policy.show_statistics?
   end
 
+  test "show_statistics?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.show_statistics?
+  end
+
   test "show_statistics?() authorizes everyone" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
     assert policy.show_statistics?
+  end
+
+  # show_submissions_in_progress?()
+
+  test "show_submissions_in_progress?() returns false with a nil user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @unit.institution)
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.show_submissions_in_progress?
+  end
+
+  test "show_submissions_in_progress?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.show_submissions_in_progress?
+  end
+
+  test "show_submissions_in_progress?() is restrictive by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.show_submissions_in_progress?
+  end
+
+  test "show_submissions_in_progress?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UnitPolicy.new(context, @unit)
+    assert policy.show_submissions_in_progress?
+  end
+
+  test "show_submissions_in_progress?() authorizes collection administrators" do
+    user    = users(:southwest)
+    user.administering_units << @unit
+    user.save!
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UnitPolicy.new(context, @unit)
+    assert policy.show_submissions_in_progress?
+  end
+
+  test "show_submissions_in_progress?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.show_submissions_in_progress?
   end
 
   # show_unit_membership?()
@@ -691,6 +945,13 @@ class UnitPolicyTest < ActiveSupport::TestCase
                                  institution: @unit.institution)
     policy = UnitPolicy.new(context, @unit)
     assert policy.show_unit_membership?
+  end
+
+  test "show_unit_membership?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.show_unit_membership?
   end
 
   test "show_unit_membership?() authorizes everyone" do
@@ -710,6 +971,13 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert policy.statistics_by_range?
   end
 
+  test "statistics_by_range?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.statistics_by_range?
+  end
+
   test "statistics_by_range?() authorizes everyone" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
@@ -724,6 +992,13 @@ class UnitPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        nil,
                                  institution: @unit.institution)
     policy = UnitPolicy.new(context, @unit)
+    assert !policy.undelete?
+  end
+
+  test "undelete?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = UnitPolicy.new(context, @unit)
     assert !policy.undelete?
   end
 
@@ -767,6 +1042,13 @@ class UnitPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        nil,
                                  institution: @unit.institution)
     policy = UnitPolicy.new(context, @unit)
+    assert !policy.update?
+  end
+
+  test "update?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = UnitPolicy.new(context, @unit)
     assert !policy.update?
   end
 

@@ -4,11 +4,22 @@
   %h4= @bitstream.description.present? ? @bitstream.description : @bitstream.filename
   .btn-group{role: "group"}
     - if policy(@bitstream).download?
-      -# Download button
-      = link_to(item_bitstream_object_path(@bitstream.item, @bitstream, dl: 1),
-                class: "btn btn-sm btn-success") do
-        %i.fa.fa-download
-        Download
+      -# Download menu
+      .dropdown
+        %button.btn.btn-success.btn-sm.dropdown-toggle{type:             "button",
+                                                       "data-bs-toggle": "dropdown",
+                                                       "aria-expanded":  false}
+          %i.fa.fa-download
+          Download
+        .dropdown-menu
+          = link_to(item_bitstream_object_path(@bitstream.item, @bitstream),
+                    class: "dropdown-item") do
+            %i.fa.fa-download
+            Download File
+          %a#copy-link.dropdown-item{"data-bitstream-url": item_bitstream_object_url(@bitstream.item, @bitstream),
+                                     type:                 "button"}
+            %i.fa.fa-link
+            Copy Link To File
     - if policy(@bitstream).edit?
       -# Edit button
       %button.btn.btn-sm.btn-dark.edit-bitstream{"data-item-id":      @bitstream.item_id,

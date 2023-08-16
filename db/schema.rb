@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_26_142510) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_07_153740) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -217,6 +217,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_26_142510) do
     t.text "reason"
     t.boolean "perpetual", default: false, null: false
     t.integer "kind", null: false
+    t.text "public_reason"
     t.index ["expires_at"], name: "index_embargoes_on_expires_at"
     t.index ["item_id"], name: "index_embargoes_on_item_id"
     t.index ["kind"], name: "index_embargoes_on_kind"
@@ -280,7 +281,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_26_142510) do
 
   create_table "imports", force: :cascade do |t|
     t.bigint "collection_id", null: false
-    t.bigint "user_id", null: false
+    t.bigint "user_id"
     t.text "files"
     t.text "imported_items"
     t.datetime "created_at", null: false
@@ -369,7 +370,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_26_142510) do
     t.bigint "author_element_id"
     t.bigint "date_submitted_element_id"
     t.bigint "date_approved_element_id"
-    t.bigint "date_published_element_id"
     t.bigint "handle_uri_element_id"
     t.text "deposit_agreement"
     t.integer "banner_image_height", default: 200, null: false
@@ -601,9 +601,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_26_142510) do
     t.string "highwire_mapping"
     t.bigint "vocabulary_id"
     t.string "dublin_core_mapping"
+    t.boolean "template", default: false, null: false
     t.index ["institution_id", "uri"], name: "index_registered_elements_on_institution_id_and_uri", unique: true
     t.index ["institution_id"], name: "index_registered_elements_on_institution_id"
     t.index ["name", "institution_id"], name: "index_registered_elements_on_name_and_institution_id", unique: true
+    t.index ["template"], name: "index_registered_elements_on_template"
     t.index ["vocabulary_id"], name: "index_registered_elements_on_vocabulary_id"
   end
 
@@ -827,7 +829,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_26_142510) do
   add_foreign_key "institution_administrators", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "institutions", "registered_elements", column: "author_element_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "institutions", "registered_elements", column: "date_approved_element_id", on_update: :cascade, on_delete: :restrict
-  add_foreign_key "institutions", "registered_elements", column: "date_published_element_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "institutions", "registered_elements", column: "date_submitted_element_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "institutions", "registered_elements", column: "handle_uri_element_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "institutions", "registered_elements", column: "title_element_id", on_update: :cascade, on_delete: :restrict
@@ -837,7 +838,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_26_142510) do
   add_foreign_key "items", "users", column: "submitter_id", on_update: :cascade, on_delete: :nullify
   add_foreign_key "local_identities", "invitees", on_update: :cascade, on_delete: :cascade
   add_foreign_key "logins", "users", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "messages", "bitstreams", on_update: :cascade, on_delete: :nullify
   add_foreign_key "messages", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "metadata_profile_elements", "metadata_profiles", on_update: :cascade, on_delete: :cascade
   add_foreign_key "metadata_profile_elements", "registered_elements", on_update: :cascade, on_delete: :cascade

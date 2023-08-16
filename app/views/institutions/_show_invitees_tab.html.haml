@@ -1,0 +1,26 @@
+-# N.B.: this template must be kept aligned with invitees/index
+
+- if policy(User).invite?
+  .btn-group.float-end.mb-3{role: "group"}
+    -# Invite button
+    %button.btn.btn-light{"data-bs-target": "#invite-user-modal",
+                          "data-bs-toggle": "modal",
+                          type:             "button"}
+      %i.fa.fa-plus
+      Invite User
+
+.clearfix
+
+= render partial: "invitees/filter_form"
+
+#invitees-xhr-content
+  = render partial: "invitees/invitees",
+           locals: { count:            @count,
+                     current_page:     @current_page,
+                     invitees:         @invitees,
+                     permitted_params: @permitted_params,
+                     window:           @window }
+
+= render partial: "invitees/add_modal", locals: { invitee: @new_invitee }
+= render partial: "shared/xhr_modal",
+         locals: { id: "reject-modal", title: "Reject Invitee" }

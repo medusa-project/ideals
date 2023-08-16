@@ -11,10 +11,11 @@
 
 %h1 Submit an Item
 
-.alert.alert-light
+.alert.alert-info
   = icon_for(:info)
-  Changes are saved automatically. You can leave this page at any time and
-  return to it later.
+  Once approved, this item's permanent URL (for use in citations) will be:
+  %strong{style: "white-space: nowrap"}
+    = @item.handle.url
 
 %ul.nav.nav-pills.nav-justified{role: "tablist"}
   %li.nav-item

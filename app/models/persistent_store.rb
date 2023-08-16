@@ -21,6 +21,8 @@ class PersistentStore
   #                         ACL attached to it.
   #
   def copy_object(source_key:, target_key:, public: false)
+    raise ArgumentError, "Source key is blank" if source_key.blank?
+    raise ArgumentError, "Target key is blank" if target_key.blank?
     client = S3Client.instance
     client.copy_object(copy_source: "/#{BUCKET}/#{CGI.escape(source_key)}", # source bucket+key
                        bucket:      BUCKET,                     # destination bucket

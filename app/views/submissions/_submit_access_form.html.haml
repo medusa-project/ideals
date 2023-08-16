@@ -29,7 +29,7 @@
                              f.object.temp_embargo_type == "closed",
                              class: "form-check-input")
           = label_tag("item_temp_embargo_type_closed",
-                      "Closed access (not recommended)",
+                      "Restricted access (not recommended)",
                       class: "form-check-label")
         .form-check.mb-1{style: "display: none"}
           = hidden_field_tag("item[temp_embargo_kind]", Embargo::Kind::DOWNLOAD)

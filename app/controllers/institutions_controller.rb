@@ -243,18 +243,31 @@ class InstitutionsController < ApplicationController
   end
 
   ##
-  # Responds to `PATCH /institutions/:id/refresh-federation-metadata`
+  # Handles input from both the "Refresh Configuration Metadata" menu item and
+  # "Supply SAML Configuration" modal form.
   #
-  def refresh_federation_metadata
-    RefreshFederationMetadataJob.perform_later(institution: @institution,
-                                               user:        current_user)
+  # Responds to `PATCH /institutions/:id/refresh-saml-config-metadata`
+  #
+  def refresh_saml_config_metadata
+    if params[:configuration_file].present?
+      RefreshSamlConfigMetadataJob.perform_later(institution:        @institution,
+                                                 configuration_file: params[:configuration_file],
+                                                 user:               current_user)
+    elsif params[:configuration_url].present?
+      RefreshSamlConfigMetadataJob.perform_later(institution:       @institution,
+                                                 configuration_url: params[:configuration_url],
+                                                 user:              current_user)
+    else
+      RefreshSamlConfigMetadataJob.perform_later(institution: @institution,
+                                                 user:        current_user)
+    end
   rescue => e
     flash['error'] = "#{e}"
   else
     toast!(title: "Refreshing metadata",
-           message: "This institution's federation metadata is being "\
-                    "refreshed in the background. Please wait a moment and "\
-                    "then reload the page.")
+           message: "This institution's SAML metadata is being refreshed in "\
+                    "the background. Please wait a moment and then reload "\
+                    "the page.")
   ensure
     redirect_back fallback_location: @institution
   end
@@ -319,6 +332,8 @@ class InstitutionsController < ApplicationController
   # Responds to `GET /institutions/:key`
   #
   def show
+    @review_count                  = review_items(0, 0).count
+    @submissions_in_progress_count = submissions_in_progress(0, 0).count
   end
 
   ##
@@ -392,6 +407,30 @@ class InstitutionsController < ApplicationController
   end
 
   ##
+  # Renders HTML for the invitees tab in show-institution view.
+  #
+  # Responds to `GET /institutions/:key/invitees` (XHR only)
+  #
+  def show_invitees
+    @permitted_params = params.permit(Search::RESULTS_PARAMS +
+                                        Search::SIMPLE_SEARCH_PARAMS +
+                                        [:approval_state, :institution_id])
+    @start            = [@permitted_params[:start].to_i.abs, MAX_START].min
+    @window           = window_size
+    @invitees         = Invitee.
+      where(institution: @institution).
+      where("LOWER(email) LIKE ?", "%#{@permitted_params[:q]&.downcase}%").
+      where(approval_state: @permitted_params[:approval_state] || Invitee::ApprovalState::PENDING).
+      order(:created_at)
+    @count            = @invitees.count
+    @invitees         = @invitees.limit(@window).offset(@start)
+    @current_page     = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
+    @new_invitee      = Invitee.new
+
+    render partial: "show_invitees_tab"
+  end
+
+  ##
   # Renders HTML for the sysadmin-only metadata profiles tab in
   # show-institution view.
   #
@@ -433,6 +472,21 @@ class InstitutionsController < ApplicationController
   end
 
   ##
+  # Renders HTML for the review submissions tab in show-show view.
+  #
+  # Responds to `GET /units/:id/review-submissions`
+  #
+  def show_review_submissions
+    @review_permitted_params = params.permit(Search::RESULTS_PARAMS)
+    @review_start            = @review_permitted_params[:start].to_i
+    @review_window           = window_size
+    @review_items            = review_items(@review_start, @review_window)
+    @review_count            = @review_items.count
+    @review_current_page     = @review_items.page
+    render partial: "collections/show_review_submissions_tab"
+  end
+
+  ##
   # Renders HTML for the settings tab in show-institution view.
   #
   # Responds to `GET /institutions/:key/settings` (XHR only)
@@ -459,6 +513,21 @@ class InstitutionsController < ApplicationController
   def show_submission_profiles
     @profiles = @institution.submission_profiles.order(:name)
     render partial: "show_submission_profiles_tab"
+  end
+
+  ##
+  # Renders HTML for the submissions-in-progress tab in show-unit view.
+  #
+  # Responds to `GET /units/:id/submissions-in-progress`
+  #
+  def show_submissions_in_progress
+    @permitted_params = params.permit(Search::RESULTS_PARAMS)
+    @start            = [@permitted_params[:start].to_i.abs, MAX_START].min
+    @window           = window_size
+    @items            = submissions_in_progress(@start, @window)
+    @count            = @items.count
+    @current_page     = @items.page
+    render partial: "collections/show_submissions_in_progress_tab"
   end
 
   ##
@@ -504,6 +573,16 @@ class InstitutionsController < ApplicationController
       count
     @user_count       = @institution.users.count
     render partial: "show_usage_tab"
+  end
+
+  ##
+  # Renders HTML for the user groups tab in show-institution view.
+  #
+  # Responds to `GET /institutions/:key/user-groups` (XHR only)
+  #
+  def show_user_groups
+    @user_groups = UserGroup.where(institution: @institution).order(:name)
+    render partial: "show_user_groups_tab"
   end
 
   ##
@@ -587,6 +666,14 @@ class InstitutionsController < ApplicationController
                   filename: "#{@institution.key}_statistics.csv"
       end
     end
+  end
+
+  ##
+  # Responds to `GET /institutions/:key/supply-saml-configuration`
+  #
+  def supply_saml_configuration
+    render partial: "saml_configuration_form",
+           locals: { institution: @institution }
   end
 
   ##
@@ -739,6 +826,17 @@ class InstitutionsController < ApplicationController
                                         :service_name)
   end
 
+  def review_items(start, limit)
+    Item.search.
+      institution(@institution).
+      aggregations(false).
+      filter(Item::IndexFields::STAGE, Item::Stages::SUBMITTED).
+      filter(Item::IndexFields::INSTITUTION_KEY, @institution.key).
+      order(Item::IndexFields::CREATED).
+      start(start).
+      limit(limit)
+  end
+
   def settings_params
     params.require(:institution).permit(# Settings tab
                                         :about_html, :about_url,
@@ -749,7 +847,6 @@ class InstitutionsController < ApplicationController
                                         # Element Mappings tab
                                         :author_element_id,
                                         :date_approved_element_id,
-                                        :date_published_element_id,
                                         :date_submitted_element_id,
                                         :google_analytics_measurement_id,
                                         :handle_uri_element_id,
@@ -780,6 +877,17 @@ class InstitutionsController < ApplicationController
                                         :header_background_color, :link_color,
                                         :link_hover_color, :primary_color,
                                         :primary_hover_color)
+  end
+
+  def submissions_in_progress(start, limit)
+    Item.search.
+      institution(@institution).
+      aggregations(false).
+      filter(Item::IndexFields::STAGE, Item::Stages::SUBMITTING).
+      filter(Item::IndexFields::INSTITUTION_KEY, @institution.key).
+      order(Item::IndexFields::CREATED).
+      start(start).
+      limit(limit)
   end
 
   def upload_images

@@ -62,7 +62,7 @@ class ItemPolicy < ApplicationPolicy
         # non-sysadmins can submit to collections for which they have submitter
         # privileges
         return AUTHORIZED_RESULT if (@role_limit >= Role::COLLECTION_SUBMITTER) &&
-          @user&.effective_submitter?(collection)
+          @user&.effective_collection_submitter?(collection)
       end
     end
     { authorized: false,
@@ -155,8 +155,11 @@ class ItemPolicy < ApplicationPolicy
     @item.current_embargoes.each do |embargo|
       if !@user || !embargo.exempt?(@user) || (@role_limit && @role_limit <= Role::LOGGED_OUT)
         if embargo.user_groups.length > 1
-          reason = "This item's files can only be accessed by the "\
-                   "following groups: " + embargo.user_groups.map(&:name).join(", ")
+          reason = embargo.public_reason
+          if reason.blank?
+            reason = "This item's files can only be accessed by the "\
+                     "following groups: " + embargo.user_groups.map(&:name).join(", ")
+          end
         elsif embargo.user_groups.length == 1
           if embargo.user_groups.first.key == "uiuc"
             # This is a special UIUC exception from IR-242
@@ -169,8 +172,11 @@ class ItemPolicy < ApplicationPolicy
                      "Inter-Library Loan office or purchase a copy directly "\
                      "from ProQuest."
           else
-            reason = "This item's files can only be accessed by the "\
-                   "#{embargo.user_groups.first.name} group."
+            reason = embargo.public_reason
+            if reason.blank?
+              reason = "This item's files can only be accessed by the "\
+                       "#{embargo.user_groups.first.name} group."
+            end
           end
         else
           # Verbiage also from IR-242

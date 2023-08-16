@@ -26,24 +26,38 @@ class InstitutionTest < ActiveSupport::TestCase
     assert_equal "favicon-128x128.png", Institution.favicon_filename(size: 128)
   end
 
-  # fetch_federation_metadata()
+  # fetch_saml_config_metadata()
 
-  test "fetch_federation_metadata() raises an error when the federation is not
-  recognized" do
-    assert_raises do
-      Institution.fetch_federation_metadata(52)
+  test "fetch_saml_config_metadata() raises an error when both arguments are provided" do
+    assert_raises ArgumentError do
+      Institution.fetch_saml_config_metadata(federation: 99,
+                                             url: "https://example.org/")
     end
   end
 
-  test "fetch_federation_metadata() downloads an iTrust XML file" do
-    file = Institution.fetch_federation_metadata(Institution::SSOFederation::ITRUST)
+  test "fetch_saml_config_metadata() raises an error for an unrecognized
+  federation" do
+    assert_raises ArgumentError do
+      Institution.fetch_saml_config_metadata(federation: 52)
+    end
+  end
+
+  test "fetch_saml_config_metadata() downloads an iTrust XML file" do
+    file = Institution.fetch_saml_config_metadata(federation: Institution::SSOFederation::ITRUST)
     assert file.size > 0
   ensure
     File.delete(file)
   end
 
-  test "fetch_federation_metadata() downloads an OpenAthens XML file" do
-    file = Institution.fetch_federation_metadata(Institution::SSOFederation::OPENATHENS)
+  test "fetch_saml_config_metadata() downloads an OpenAthens XML file" do
+    file = Institution.fetch_saml_config_metadata(federation: Institution::SSOFederation::OPENATHENS)
+    assert file.size > 0
+  ensure
+    File.delete(file)
+  end
+
+  test "fetch_saml_config_metadata() downloads a non-federation XML file" do
+    file = Institution.fetch_saml_config_metadata(url: "https://www.library.illinois.edu/")
     assert file.size > 0
   ensure
     File.delete(file)
@@ -127,7 +141,8 @@ class InstitutionTest < ActiveSupport::TestCase
                                       key:              "new",
                                       fqdn:             "example.net",
                                       main_website_url: "https://example.net")
-    assert_equal 29, institution.registered_elements.count
+    assert_equal RegisteredElement.where(template: true).count,
+                 institution.registered_elements.count
   end
 
   test "create() adds default element mappings" do
@@ -140,13 +155,11 @@ class InstitutionTest < ActiveSupport::TestCase
                  institution.title_element
     assert_equal institution.registered_elements.find_by_name("dc:creator"),
                  institution.author_element
-    assert_equal institution.registered_elements.find_by_name("ideals:date:submitted"),
+    assert_equal institution.registered_elements.find_by_name("dcterms:dateSubmitted"),
                  institution.date_submitted_element
-    assert_equal institution.registered_elements.find_by_name("ideals:date:approved"),
+    assert_equal institution.registered_elements.find_by_name("dcterms:dateAccepted"),
                  institution.date_approved_element
-    assert_equal institution.registered_elements.find_by_name("ideals:date:published"),
-                 institution.date_published_element
-    assert_equal institution.registered_elements.find_by_name("ideals:handleURI"),
+    assert_equal institution.registered_elements.find_by_name("dc:identifier"),
                  institution.handle_uri_element
   end
 
@@ -156,7 +169,7 @@ class InstitutionTest < ActiveSupport::TestCase
                                       key:              "new",
                                       fqdn:             "example.net",
                                       main_website_url: "https://example.net")
-    assert_equal 4, institution.element_namespaces.count
+    assert_equal 3, institution.element_namespaces.count
   end
 
   test "create() adds a default index page" do
@@ -751,7 +764,7 @@ class InstitutionTest < ActiveSupport::TestCase
 
   test "registered_element_prefixes() returns all registered element
   prefixes" do
-    assert_equal %w[dc dcterms ideals thesis],
+    assert_equal %w[dc dcterms thesis],
                  @instance.registered_element_prefixes
   end
 
@@ -799,25 +812,25 @@ class InstitutionTest < ActiveSupport::TestCase
     assert_equal %w(dogs cats foxes), @instance.shibboleth_extra_attributes
   end
 
-  # update_from_federation_metadata()
+  # update_from_saml_config_metadata()
 
-  test "update_from_federation_metadata() raises an error if there is no
+  test "update_from_saml_config_metadata() raises an error if there is no
   matching entityID in the XML file" do
     @instance.fqdn = "bogus.org"
     xml_file = file_fixture("oaf_metadata.xml")
 
     assert_raises do
-      @instance.update_from_federation_metadata(xml_file)
+      @instance.update_from_saml_config_metadata(xml_file)
     end
   end
 
-  test "update_from_federation_metadata() updates properties from OAF
+  test "update_from_saml_config_metadata() updates properties from OAF
   metadata" do
     @instance.saml_idp_sso_service_url = nil
     @instance.saml_idp_cert            = nil
     xml_file = file_fixture("oaf_metadata.xml")
 
-    @instance.update_from_federation_metadata(xml_file)
+    @instance.update_from_saml_config_metadata(xml_file)
     assert_equal "https://login.openathens.net/saml/2/sso/southwest.edu",
                  @instance.saml_idp_sso_service_url
     assert @instance.saml_idp_cert.starts_with?("-----BEGIN CERTIFICATE-----\n")

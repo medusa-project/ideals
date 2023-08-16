@@ -1,3 +1,20 @@
+const UserGroups = {
+    AddUserGroupClickHandler: function() {
+        const ROOT_URL      = $('input[name="root_url"]').val();
+        const institutionID = $("input[name=institution_id]").val();
+        const url           = ROOT_URL + "/user-groups/new?" +
+            "user_group%5Binstitution_id%5D=" + institutionID;
+        $.get(url, function(data) {
+            const modalBody = $("#add-user-group-modal .modal-body");
+            modalBody.html(data);
+            if (window.location.href.match(/global-user-groups/)) {
+                modalBody.find("input[name='user_group[institution_id]']").val("");
+            }
+            UserGroupForm.attachEventListeners();
+        });
+    }
+};
+
 const UserGroupForm = {
     attachEventListeners: function() {
         $('button.remove').on('click', function () {
@@ -26,19 +43,8 @@ const UserGroupForm = {
  * @constructor
  */
 const UserGroupsView = function() {
-    const ROOT_URL = $('input[name="root_url"]').val();
-
-    $("#add-user-group-modal").on("show.bs.modal", function() {
-        const url = ROOT_URL + "/user-groups/new";
-        $.get(url, function(data) {
-            const modalBody = $("#add-user-group-modal .modal-body");
-            modalBody.html(data);
-            if (window.location.href.match(/global-user-groups/)) {
-                modalBody.find("input[name='user_group[institution_id]']").val("");
-            }
-            UserGroupForm.attachEventListeners();
-        });
-    });
+    $("#add-user-group-modal").on("show.bs.modal",
+        UserGroups.AddUserGroupClickHandler);
 };
 
 /**
@@ -81,12 +87,14 @@ const UserGroupView = function() {
         });
     });
     $("button.edit-users").on("click", function() {
-        const id = $(this).data("user-group-id");
-        const url = ROOT_URL + "/user-groups/" + id + "/edit-users";
+        const id     = $(this).data("user-group-id");
+        const scoped = !$(this).data("user-group-global");
+        const url    = ROOT_URL + "/user-groups/" + id + "/edit-users";
         $.get(url, function(data) {
             $("#edit-users-modal .modal-body").html(data);
             UserGroupForm.attachEventListeners();
-            new IDEALS.UIUtils.UserAutocompleter($("input[name='user_group[users][]']"));
+            new IDEALS.UIUtils.UserAutocompleter($("input[name='user_group[users][]']"),
+                                                 scoped);
         });
     });
     $("button.edit-hosts").on("click", function() {

@@ -23,9 +23,6 @@
 # * `date_approved_element_id`  Foreign key to {RegisteredElement} designating
 #                               an element to treat as the date-approved
 #                               element.
-# * `date_published_element_id` Foreign key to {RegisteredElement} designating
-#                               an element to treat as the date-approved
-#                               element.
 # * `date_submitted_element_id` Foreign key to {RegisteredElement} designating
 #                               an element to treat as the date-submitted
 #                               element.
@@ -74,6 +71,12 @@
 # * `primary_color`             Theme primary color.
 # * `primary_hover_color`       Theme hover-over primary color.
 # * `saml_auth_enabled`         Whether SAML authentication is enabled.
+# * `saml_config_metadata_url`  SAML configuration metadata XML URL. This may
+#                               be used for institutions that are not a member
+#                               of a recognized federation (for which this URL
+#                               is already known and hard-coded into the app)
+#                               to assist in populating the other required SAML
+#                               properties.
 # * `saml_email_attribute`      Name of the SAML attribute containing the email
 #                               address. Used only when `saml_email_location`
 #                               is set to
@@ -170,8 +173,6 @@ class Institution < ApplicationRecord
              foreign_key: :author_element_id, optional: true
   belongs_to :date_approved_element, class_name: "RegisteredElement",
              foreign_key: :date_approved_element_id, optional: true
-  belongs_to :date_published_element, class_name: "RegisteredElement",
-             foreign_key: :date_published_element_id, optional: true
   belongs_to :date_submitted_element, class_name: "RegisteredElement",
              foreign_key: :date_submitted_element_id, optional: true
   belongs_to :handle_uri_element, class_name: "RegisteredElement",
@@ -272,19 +273,26 @@ class Institution < ApplicationRecord
 
   ##
   # @param federation [Integer] One of the {SSOFederation} constant values.
-  # @return [File] SSO federation metadata XML file.
+  #                             Required if `url` is not supplied.
+  # @param url [String]         Required if `federation` is not supplied.
+  # @return [File]              SSO federation metadata XML file.
   #
-  def self.fetch_federation_metadata(federation)
-    case federation
-    when SSOFederation::ITRUST
-      uri = ITRUST_METADATA_URL
-    when SSOFederation::OPENATHENS
-      uri = OPENATHENS_METADATA_URL
-    else
-      raise "Unrecognized federation"
+  def self.fetch_saml_config_metadata(federation: nil, url: nil)
+    if federation.present? && url.present?
+      raise ArgumentError, "federation and url cannot both be provided"
+    end
+    if federation
+      case federation
+      when SSOFederation::ITRUST
+        url = ITRUST_METADATA_URL
+      when SSOFederation::OPENATHENS
+        url = OPENATHENS_METADATA_URL
+      else
+        raise ArgumentError, "Unrecognized federation"
+      end
     end
     path = "/tmp/metadata-#{SecureRandom.hex}.xml"
-    `curl -o #{path} #{uri}`
+    `curl -sSo #{path} #{url}`
     return File.new(path)
   end
 
@@ -693,12 +701,12 @@ class Institution < ApplicationRecord
   ##
   # @param metadata_xml_file [File]
   #
-  def update_from_federation_metadata(metadata_xml_file)
+  def update_from_saml_config_metadata(metadata_xml_file)
     File.open(metadata_xml_file) do |file|
       doc        = Nokogiri::XML(file)
-      sp_entity  = doc.xpath("/md:EntitiesDescriptor/md:EntityDescriptor[@entityID = '#{self.saml_sp_entity_id}']",
+      sp_entity  = doc.xpath("//md:EntityDescriptor[@entityID = '#{self.saml_sp_entity_id}']",
                              md: SAML_METADATA_NS).first
-      idp_entity = doc.xpath("/md:EntitiesDescriptor/md:EntityDescriptor[@entityID = '#{self.saml_idp_entity_id}']",
+      idp_entity = doc.xpath("//md:EntityDescriptor[@entityID = '#{self.saml_idp_entity_id}']",
                              md: SAML_METADATA_NS).first
       if sp_entity
         # IdP SSO service URL
@@ -818,132 +826,15 @@ class Institution < ApplicationRecord
   end
 
   def add_default_elements
-    # These elements are used by default metadata mappings (see
-    # add_default_metadata_mappings()) as Dublin Core does not have good
-    # equivalents.
-    self.registered_elements.build(name:                "ideals:date:submitted",
-                                   label:               "Date Submitted",
-                                   dublin_core_mapping: "date",
-                                   input_type:          RegisteredElement::InputType::TEXT_FIELD)
-    self.registered_elements.build(name:                "ideals:date:approved",
-                                   label:               "Date Approved",
-                                   dublin_core_mapping: "date",
-                                   input_type:          RegisteredElement::InputType::TEXT_FIELD)
-    self.registered_elements.build(name:                "ideals:date:published",
-                                   label:               "Date Published",
-                                   dublin_core_mapping: "date",
-                                   input_type:          RegisteredElement::InputType::TEXT_FIELD)
-    self.registered_elements.build(name:                "ideals:handleURI",
-                                   label:               "Handle URI",
-                                   dublin_core_mapping: "identifier",
-                                   input_type:          RegisteredElement::InputType::TEXT_FIELD)
-    self.registered_elements.build(name:                "dc:contributor",
-                                   label:               "Contributor",
-                                   dublin_core_mapping: "contributor",
-                                   input_type:          RegisteredElement::InputType::TEXT_FIELD)
-    self.registered_elements.build(name:                "dc:contributor:advisor",
-                                   input_type:          RegisteredElement::InputType::TEXT_FIELD,
-                                   dublin_core_mapping: "contributor",
-                                   label:               "Dissertation Director of Research or Thesis Advisor")
-    self.registered_elements.build(name:                "dc:contributor:committeeChair",
-                                   input_type:          RegisteredElement::InputType::TEXT_FIELD,
-                                   dublin_core_mapping: "contributor",
-                                   label:               "Dissertation Chair")
-    self.registered_elements.build(name:                "dc:contributor:committeeMember",
-                                   input_type:          RegisteredElement::InputType::TEXT_FIELD,
-                                   dublin_core_mapping: "contributor",
-                                   label:               "Dissertation Committee Member")
-    self.registered_elements.build(name:                "dc:coverage:spatial",
-                                   input_type:          RegisteredElement::InputType::TEXT_FIELD,
-                                   dublin_core_mapping: "coverage",
-                                   label:               "Geographic Coverage")
-    self.registered_elements.build(name:                "dc:creator",
-                                   input_type:          RegisteredElement::InputType::TEXT_FIELD,
-                                   dublin_core_mapping: "creator",
-                                   label:               "Creator",
-                                   highwire_mapping:    "citation_author")
-    self.registered_elements.build(name:                "dc:date:issued",
-                                   input_type:          RegisteredElement::InputType::DATE,
-                                   dublin_core_mapping: "date",
-                                   label:               "Date of Publication",
-                                   highwire_mapping:    "citation_publication_date")
-    self.registered_elements.build(name:                "dc:date:submitted",
-                                   input_type:          RegisteredElement::InputType::DATE,
-                                   dublin_core_mapping: "date",
-                                   label:               "Date Deposited")
-    self.registered_elements.build(name:                "dc:description",
-                                   input_type:          RegisteredElement::InputType::TEXT_AREA,
-                                   dublin_core_mapping: "description",
-                                   label:               "Description")
-    self.registered_elements.build(name:                "dc:description:abstract",
-                                   input_type:          RegisteredElement::InputType::TEXT_AREA,
-                                   dublin_core_mapping: "description",
-                                   label:               "Abstract")
-    self.registered_elements.build(name:                "dc:description:sponsorship",
-                                   input_type:          RegisteredElement::InputType::TEXT_FIELD,
-                                   dublin_core_mapping: "description",
-                                   label:               "Sponsor/Grant No.")
-    self.registered_elements.build(name:                "dc:identifier",
-                                   label:               "Identifier",
-                                   dublin_core_mapping: "identifier",
-                                   vocabulary:          Vocabulary.find_by_name("Degree Names"),
-                                   highwire_mapping:    "citation_id")
-    self.registered_elements.build(name:                "dc:identifier:bibliographicCitation",
-                                   input_type:          RegisteredElement::InputType::TEXT_FIELD,
-                                   dublin_core_mapping: "identifier",
-                                   label:               "Complete Citation For This Item")
-    self.registered_elements.build(name:                "dc:identifier:uri",
-                                   dublin_core_mapping: "identifier",
-                                   label:               "Identifiers: URI or URL")
-    self.registered_elements.build(name:                "dc:language",
-                                   label:               "Language",
-                                   dublin_core_mapping: "language",
-                                   vocabulary:          Vocabulary.find_by_name("Common ISO Languages"),
-                                   highwire_mapping:    "citation_language")
-    self.registered_elements.build(name:                "dc:publisher",
-                                   input_type:          RegisteredElement::InputType::TEXT_FIELD,
-                                   dublin_core_mapping: "publisher",
-                                   label:               "Publisher",
-                                   highwire_mapping:    "citation_publisher")
-    self.registered_elements.build(name:                "dc:relation:ispartof",
-                                   input_type:          RegisteredElement::InputType::TEXT_FIELD,
-                                   dublin_core_mapping: "relation",
-                                   label:               "Series Name/Report No.")
-    self.registered_elements.build(name:                "dc:rights",
-                                   input_type:          RegisteredElement::InputType::TEXT_FIELD,
-                                   dublin_core_mapping: "rights",
-                                   label:               "Copyright Statement")
-    self.registered_elements.build(name:                "dc:subject",
-                                   input_type:          RegisteredElement::InputType::TEXT_FIELD,
-                                   dublin_core_mapping: "subject",
-                                   label:               "Keyword",
-                                   highwire_mapping:    "citation_keywords")
-    self.registered_elements.build(name:                "dcterms:available",
-                                   input_type:          RegisteredElement::InputType::TEXT_FIELD,
-                                   dublin_core_mapping: "date",
-                                   label:               "Available")
-    self.registered_elements.build(name:                "dcterms:identifier",
-                                   input_type:          RegisteredElement::InputType::TEXT_FIELD,
-                                   dublin_core_mapping: "identifier",
-                                   label:               "Handle URI")
-    self.registered_elements.build(name:                "dc:title",
-                                   input_type:          RegisteredElement::InputType::TEXT_FIELD,
-                                   dublin_core_mapping: "title",
-                                   label:               "Title",
-                                   highwire_mapping:    "citation_title")
-    self.registered_elements.build(name:                "dc:type",
-                                   label:               "Type of Resource",
-                                   dublin_core_mapping: "type",
-                                   vocabulary:          Vocabulary.find_by_name("Common Types"))
-    self.registered_elements.build(name:                "dc:type:genre",
-                                   label:               "Genre of Resource",
-                                   dublin_core_mapping: "type",
-                                   vocabulary:          Vocabulary.find_by_name("Common Genres"))
-    self.registered_elements.build(name:                "orcid:identifier",
-                                   label:               "ORCID Identifier",
-                                   dublin_core_mapping: "identifier",
-                                   input_type:          RegisteredElement::InputType::TEXT_FIELD)
-    self.save!
+    RegisteredElement.where(template: true).each do |tpl_e|
+      dup             = tpl_e.dup
+      dup.institution = self
+      dup.template    = false
+      dup.scope_note  = "Default element added upon creation of the institution."
+      dup.created_at  = Time.now
+      dup.updated_at  = Time.now
+      dup.save!
+    end
   end
 
   ##
@@ -960,10 +851,9 @@ class Institution < ApplicationRecord
   def add_default_element_mappings
     self.update!(title_element:          self.registered_elements.find_by_name("dc:title"),
                  author_element:         self.registered_elements.find_by_name("dc:creator"),
-                 date_submitted_element: self.registered_elements.find_by_name("ideals:date:submitted"),
-                 date_approved_element:  self.registered_elements.find_by_name("ideals:date:approved"),
-                 date_published_element: self.registered_elements.find_by_name("ideals:date:published"),
-                 handle_uri_element:     self.registered_elements.find_by_name("ideals:handleURI"))
+                 date_submitted_element: self.registered_elements.find_by_name("dcterms:dateSubmitted"),
+                 date_approved_element:  self.registered_elements.find_by_name("dcterms:dateAccepted"),
+                 handle_uri_element:     self.registered_elements.find_by_name("dcterms:identifier"))
   end
 
   def add_default_element_namespaces
@@ -971,8 +861,6 @@ class Institution < ApplicationRecord
                                   uri:    "http://purl.org/dc/elements/1.1/")
     self.element_namespaces.build(prefix: "dcterms",
                                   uri:    "http://purl.org/dc/terms/")
-    self.element_namespaces.build(prefix: "ideals",
-                                  uri:    "https://www.ideals.illinois.edu/ns/")
     self.element_namespaces.build(prefix: "orcid",
                                   uri:    "http://dbpedia.org/ontology/orcidId")
     self.save!

@@ -176,7 +176,7 @@ const ImportsView = function() {
             body.html(data);
             body.find("[name=unit_id]").on("change", function() {
                 const unitID = $(this).val();
-                new IDEALS.Client().fetchUnitCollections(unitID, function(data) {
+                new IDEALS.Client().fetchUnitCollections(unitID, false, function(data) {
                     const collectionMenu = body.find("[name='import[collection_id]']");
                     collectionMenu.children().remove();
                     if (data.length > 0) {

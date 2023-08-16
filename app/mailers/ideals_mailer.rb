@@ -88,7 +88,15 @@ class IdealsMailer < ApplicationMailer
   # @param invitee [Invitee]
   #
   def account_request_action_required(invitee)
+    # The feedback email may not be set yet for new institutions that haven't
+    # been set up properly. In that case it would be better to provide a
+    # more helpful error than "SMTP To address not set."
     @institution = invitee.institution
+    if !@institution
+      raise "This invitee is not associated with an institution."
+    elsif @institution.feedback_email.blank?
+      raise "This institution's feedback email is not set."
+    end
     @invitee     = invitee
     @invitee_url = "https://#{@institution.fqdn}/invitees/#{invitee.id}"
     mail(to:      @institution.feedback_email,

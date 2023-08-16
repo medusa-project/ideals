@@ -1,0 +1,21 @@
+-# N.B.: this template must be kept aligned with user_groups/index
+
+.btn-group.float-end{role: "group"}
+  -# Add User Group button
+  %button.btn.btn-light.add-user-group{"data-bs-target": "#add-user-group-modal",
+                                       "data-bs-toggle": "modal",
+                                       type:             "button"}
+    %i.fa.fa-plus
+    Add User Group
+
+.clearfix
+
+- if @user_groups.any?
+  %ul
+    - @user_groups.each do |group|
+      %li= link_to(group.name, group)
+- else
+  %p This institution has no user groups.
+
+= render partial: "shared/xhr_modal",
+         locals: { id: "add-user-group-modal", title: "Add User Group" }

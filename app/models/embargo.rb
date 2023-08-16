@@ -4,16 +4,18 @@
 #
 # # Attributes
 #
-# * `created_at`  Managed by ActiveRecord.
-# * `expires_at`  Date/time at which the embargo expires. For embargoes that
-#                 never expire, {perpetual} is `true` and the value of this
-#                 attribute is irrelevant.
-# * `kind`        Value of one of the {Embargo::Kind} constants.
-# * `item_id`     References the owning {Item}.
-# * `perpetual`   Whether the embargo ever expires. If `true`, the embargo
-#                 never expires and the value of {expires_at} is irrelevant.
-# * `reason`      Reason for the embargo.
-# * `updated_at`  Managed by ActiveRecord.
+# * `created_at`    Managed by ActiveRecord.
+# * `expires_at`    Date/time at which the embargo expires. For embargoes that
+#                   never expire, {perpetual} is `true` and the value of this
+#                   attribute is irrelevant.
+# * `kind`          Value of one of the {Embargo::Kind} constants.
+# * `item_id`       References the owning {Item}.
+# * `perpetual`     Whether the embargo ever expires. If `true`, the embargo
+#                   never expires and the value of {expires_at} is irrelevant.
+# * `public_reason` Reason for the embargo which will be displayed in public.
+# * `reason`        Reason for the embargo which will not be displayed in
+#                   public.
+# * `updated_at`    Managed by ActiveRecord.
 #
 # # Relationships
 #

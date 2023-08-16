@@ -108,8 +108,7 @@ class UserGroupsController < ApplicationController
   #
   def index
     authorize UserGroup
-    @user_groups    = UserGroup.where(institution: current_institution).order(:name)
-    @new_user_group = UserGroup.new
+    @user_groups = UserGroup.where(institution: current_institution).order(:name)
   end
 
   ##
@@ -121,16 +120,20 @@ class UserGroupsController < ApplicationController
   #
   def index_global
     authorize UserGroup
-    @user_groups    = UserGroup.where(institution: nil).order(:name)
-    @new_user_group = UserGroup.new
+    @user_groups = UserGroup.where(institution: nil).order(:name)
   end
 
   ##
   # Responds to `GET /user-groups/new` (XHR only)
   #
   def new
+    authorize UserGroup
+    if params.dig(:user_group, :institution_id).blank?
+      render plain: "Missing institution ID", status: :bad_request
+      return
+    end
     render partial: "user_groups/form",
-           locals: { user_group: UserGroup.new }
+           locals: { user_group: UserGroup.new(user_group_params) }
   end
 
   ##

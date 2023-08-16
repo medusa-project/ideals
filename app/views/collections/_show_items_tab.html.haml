@@ -1,10 +1,11 @@
 .btn-group.float-end{role: "group"}
   - if policy(@collection).submit_item?
-    = link_to(collection_submit_path(@collection), class: "btn btn-light", role: "button") do
-      %i.fas.fa-plus
-      Submit Item To This Collection
+    .btn-group{role: "group"}
+      = link_to(collection_submit_path(@collection), class: "btn btn-light", role: "button") do
+        %i.fas.fa-plus
+        Submit Item To This Collection
   - if @items.count > 0 && policy(@collection).export_items?
-    .dropdown
+    .btn-group{role: "group"}
       %button#export-button.btn.btn-light.dropdown-toggle{type:             "button",
                                                           "data-bs-toggle": "dropdown",
                                                           "aria-expanded":  "false"}

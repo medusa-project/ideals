@@ -48,19 +48,18 @@
                                tabindex:          "0"}
     .btn-group.float-end{role: "group"}
       - if policy(@institution).edit_saml_authentication?
-        .dropdown
-          %a.btn.btn-light.dropdown-toggle{href:             "#",
-                                           role:             "button",
-                                           "data-bs-toggle": "dropdown",
-                                           "aria-expanded":  "false"}
+        .btn-group{role: "group"}
+          %button.btn.btn-light.dropdown-toggle{type:             "button",
+                                                "data-bs-toggle": "dropdown",
+                                                "aria-expanded":  false}
             Actions
           .dropdown-menu
             - if @institution.sso_federation.present? && @institution.sso_federation != Institution::SSOFederation::NONE
-              -# Refresh Federation Metadata button
-              = link_to(institution_refresh_federation_metadata_path(@institution),
+              -# Refresh Configuration Metadata button
+              = link_to(institution_refresh_saml_config_metadata_path(@institution),
                         class: "dropdown-item", method: :patch) do
                 %i.fa.fa-sync
-                Refresh Federation Metadata
+                Refresh Configuration Metadata
             -# Generate Certificates button
             = link_to(institution_generate_saml_certs_path(@institution),
                       class: "dropdown-item", method: :patch,
@@ -68,13 +67,25 @@
               %i.fa.fa-key
               Generate SP Certificates
 
-        -# Edit button
-        %button.btn.btn-light.edit-saml-authentication{"data-bs-target":       "#edit-saml-authentication-modal",
-                                                       "data-bs-toggle":       "modal",
-                                                       type:                   "button",
-                                                       "data-institution-key": @institution.key }
-          %i.fa.fa-pencil-alt
-          Edit
+        .btn-group{role: "group"}
+          %button.btn.btn-light.dropdown-toggle{type:             "button",
+                                                "data-bs-toggle": "dropdown",
+                                                "aria-expanded":  false}
+            %i.fa.fa-pencil-alt
+            Edit
+          .dropdown-menu
+            %button.dropdown-item.supply-saml-configuration{"data-bs-target":       "#supply-saml-configuration-modal",
+                                                            "data-bs-toggle":       "modal",
+                                                            type:                   "button",
+                                                            "data-institution-key": @institution.key }
+              %i.fa.fa-cog
+              Supply Configuration&hellip;
+            %button.dropdown-item.edit-saml-authentication{"data-bs-target":       "#edit-saml-authentication-modal",
+                                                           "data-bs-toggle":       "modal",
+                                                           type:                   "button",
+                                                           "data-institution-key": @institution.key }
+              %i.fa.fa-pencil-alt
+              Edit Manually&hellip;
 
     .clearfix.mb-3
 
@@ -252,5 +263,7 @@
          locals: { id: "edit-local-authentication-modal", title: "Edit Local Authentication" }
 = render partial: "shared/xhr_modal",
          locals: { id: "edit-saml-authentication-modal", title: "Edit SAML Authentication" }
+= render partial: "shared/xhr_modal",
+         locals: { id: "supply-saml-configuration-modal", title: "Supply SAML Configuration" }
 = render partial: "shared/xhr_modal",
          locals: { id: "edit-shibboleth-authentication-modal", title: "Edit Shibboleth Authentication" }

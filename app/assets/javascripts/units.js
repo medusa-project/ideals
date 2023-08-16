@@ -14,7 +14,8 @@ const Units = {
     UnitsView: function() {
         new IDEALS.UIUtils.ExpandableResourceList();
         new IDEALS.UIUtils.UserAutocompleter(
-            $("input[name=primary_administrator], input[name='administering_users[]']"));
+            $("input[name=primary_administrator], input[name='administering_users[]']"),
+            true);
         new IDEALS.UIUtils.MultiElementList();
 
         $(".add-unit").on("click", Units.AddUnitClickHandler);
@@ -223,10 +224,38 @@ const Units = {
                     $.get(url, function (data) {
                         $("#edit-administering-users-modal .modal-body").html(data);
                         new IDEALS.UIUtils.UserAutocompleter(
-                            $("input[name=primary_administrator], input[name='administering_users[]']"));
+                            $("input[name=primary_administrator], input[name='administering_users[]']"), true);
                         new IDEALS.UIUtils.MultiElementList();
                     });
                 });
+            });
+        });
+
+        $("#review-submissions-tab").on("show.bs.tab", function() {
+            const url = ROOT_URL + "/units/" + unitID + "/review-submissions";
+            $.get(url, function (data) {
+                $("#review-submissions-tab-content").html(data);
+
+                new IDEALS.UIUtils.CheckAllButton($('.check-all'),
+                    $('#review-form input[type=checkbox]'));
+
+                const form = $('form#review-form');
+                const verb = form.find("[name=verb]");
+                $('.approve-checked').on('click', function() {
+                    verb.val("approve");
+                    form.submit();
+                });
+                $('.reject-checked').on('click', function() {
+                    verb.val("reject");
+                    form.submit();
+                });
+            });
+        });
+
+        $("#submissions-in-progress-tab").on("show.bs.tab", function() {
+            const url = ROOT_URL + "/units/" + unitID + "/submissions-in-progress";
+            $.get(url, function(data) {
+                $("#submissions-in-progress-tab-content").html(data);
             });
         });
     }

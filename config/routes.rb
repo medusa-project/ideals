@@ -112,6 +112,8 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/index-pages", to: "institutions#show_index_pages", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/invitees", to: "institutions#show_invitees", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/metadata-profiles", to: "institutions#show_metadata_profiles", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/prebuilt-searches", to: "institutions#show_prebuilt_searches", via: :get,
@@ -120,11 +122,17 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/properties", to: "institutions#show_properties", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/review-submissions", to: "institutions#show_review_submissions", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/settings", to: "institutions#show_settings", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/statistics", to: "institutions#show_statistics", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/submission-profiles", to: "institutions#show_submission_profiles", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/submissions-in-progress", to: "institutions#show_submissions_in_progress", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/supply-saml-configuration", to: "institutions#supply_saml_configuration", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/theme", to: "institutions#show_theme", via: :get,
           constraints: lambda { |request| request.xhr? }
@@ -133,6 +141,8 @@ Rails.application.routes.draw do
     match "/usage", to: "institutions#show_usage", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/users", to: "institutions#show_users", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/user-groups", to: "institutions#show_user_groups", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/vocabularies", to: "institutions#show_vocabularies", via: :get,
           constraints: lambda { |request| request.xhr? }
@@ -147,7 +157,7 @@ Rails.application.routes.draw do
     match "/item-download-counts", to: "institutions#item_download_counts", via: :get
     match "/preservation", to: "institutions#update_preservation", via: [:patch, :post]
     match "/properties", to: "institutions#update_properties", via: [:patch, :post]
-    match "/refresh-federation-metadata", to: "institutions#refresh_federation_metadata", via: :patch
+    match "/refresh-saml-config-metadata", to: "institutions#refresh_saml_config_metadata", via: :patch
     match "/settings", to: "institutions#update_settings", via: [:patch, :post]
     match "/statistics-by-range", to: "institutions#statistics_by_range", via: :get
   end
@@ -229,6 +239,7 @@ Rails.application.routes.draw do
   end
   match "/submit", to: "submissions#new", via: :get
   resources :tasks, only: [:index, :show]
+  match "/template-elements", to: "registered_elements#index_template", via: :get
   resources :units, except: [:destroy, :edit] do
     match "/about", to: "units#show_about", via: :get,
           constraints: lambda { |request| request.xhr? }
@@ -254,7 +265,11 @@ Rails.application.routes.draw do
     match "/item-results", to: "units#item_results", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/item-download-counts", to: "units#item_download_counts", via: :get
+    match "/review-submissions", to: "units#show_review_submissions", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/statistics-by-range", to: "units#statistics_by_range", via: :get
+    match "/submissions-in-progress", to: "units#show_submissions_in_progress", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/undelete", to: "units#undelete", via: :post
   end
   match "/usage", to: "usage#index", via: :get

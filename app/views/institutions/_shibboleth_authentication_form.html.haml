@@ -15,13 +15,13 @@
         Enabled
 
   .mb-3
-    = f.label :shibboleth_org_dn, "Organization DN"
+    = f.label :shibboleth_org_dn, "Organization DN", class: "required"
     = f.text_field :shibboleth_org_dn, class: "form-control"
   .mb-3
-    = f.label :shibboleth_email_attribute, "Email Attribute"
+    = f.label :shibboleth_email_attribute, "Email Attribute", class: "required"
     = f.text_field :shibboleth_email_attribute, class: "form-control"
   .mb-3
-    = f.label :shibboleth_name_attribute, "Name Attribute"
+    = f.label :shibboleth_name_attribute, "Name Attribute", class: "required"
     = f.text_field :shibboleth_name_attribute, class: "form-control"
   .mb-3
     = f.label :shibboleth_extra_attributes, "Extra Attributes"

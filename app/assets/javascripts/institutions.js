@@ -113,6 +113,13 @@ const InstitutionView = function() {
                     onEmailLocationChanged(emailLocationMenu);
                 });
             });
+            $("button.supply-saml-configuration").on("click", function() {
+                const url = ROOT_URL + "/institutions/" + institutionKey + "/supply-saml-configuration";
+                $.get(url, function (data) {
+                    const modalBody = $("#supply-saml-configuration-modal .modal-body");
+                    modalBody.html(data);
+                });
+            });
             $("button.edit-shibboleth-authentication").on("click", function() {
                 const url = ROOT_URL + "/institutions/" + institutionKey + "/edit-shibboleth-authentication";
                 $.get(url, function(data) {
@@ -215,6 +222,14 @@ const InstitutionView = function() {
         });
     });
 
+    $("#invitees-tab").on("show.bs.tab", function() {
+        const url = ROOT_URL + "/institutions/" + institutionKey + "/invitees";
+        $.get(url, function (data) {
+            $("#invitees-tab-content").html(data);
+            new Invitees.InviteeFilterForm();
+        });
+    });
+
     $("#metadata-profiles-tab").on("show.bs.tab", function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/metadata-profiles";
         $.get(url, function (data) {
@@ -260,6 +275,20 @@ const InstitutionView = function() {
         });
     });
 
+    $("#review-submissions-tab").on("show.bs.tab", function() {
+        const url = ROOT_URL + "/institutions/" + institutionKey + "/review-submissions";
+        $.get(url, function (data) {
+            $("#review-submissions-tab-content").html(data);
+        });
+    });
+
+    $("#submissions-in-progress-tab").on("show.bs.tab", function() {
+        const url = ROOT_URL + "/institutions/" + institutionKey + "/submissions-in-progress";
+        $.get(url, function (data) {
+            $("#submissions-in-progress-tab-content").html(data);
+        });
+    });
+
     $("#theme-tab").on("show.bs.tab", function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/theme";
         $.get(url, function (data) {
@@ -285,6 +314,15 @@ const InstitutionView = function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/usage";
         $.get(url, function (data) {
             $("#usage-tab-content").html(data);
+        });
+    });
+
+    $("#user-groups-tab").on("show.bs.tab", function() {
+        const url = ROOT_URL + "/institutions/" + institutionKey + "/user-groups";
+        $.get(url, function (data) {
+            $("#user-groups-tab-content").html(data);
+            $("button.add-user-group").on("click",
+                UserGroups.AddUserGroupClickHandler);
         });
     });
 
@@ -373,7 +411,7 @@ const InstitutionView = function() {
                 $.get(url, function (data) {
                     $("#edit-administering-users-modal .modal-body").html(data);
                     new IDEALS.UIUtils.UserAutocompleter(
-                        $("input[name=primary_administrator], input[name='administering_users[]']"));
+                        $("input[name=primary_administrator], input[name='administering_users[]']"), true);
                     new IDEALS.UIUtils.MultiElementList();
                 });
             });

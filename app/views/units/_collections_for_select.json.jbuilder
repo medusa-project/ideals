@@ -1,7 +1,1 @@
-#
-# Requires the following locals:
-#
-# unit [Unit]
-#
-
-json.array! collection_tree_options(unit: @unit)
+json.array! @collections.map{ |c| [c.title, c.id] }

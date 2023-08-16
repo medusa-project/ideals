@@ -27,13 +27,18 @@ IDEALS.Client = function() {
 
     /**
      * @param unitID {Number}
+     * @param onlySubmitterAccess {Boolean}
      * @param onSuccess {Function} Function accepting response data.
      */
-    this.fetchUnitCollections = function (unitID, onSuccess) {
+    this.fetchUnitCollections = function (unitID, onlySubmitterAccess, onSuccess) {
+        var url = ROOT_URL + "/units/" + unitID +
+            "/collections-tree-fragment?for-select=true";
+        if (onlySubmitterAccess) {
+            url += "&only-submitter-access=true"
+        }
         $.ajax({
             method: "GET",
-            url: ROOT_URL + "/units/" + unitID +
-                "/collections-tree-fragment?for-select=true",
+            url:    url,
             headers: {"X-CSRF-Token": CSRF_TOKEN},
             success: onSuccess
         });
@@ -41,13 +46,16 @@ IDEALS.Client = function() {
 
     /**
      * @param query {String}
+     * @param scoped {Boolean} Whether to scope the results to the current
+     *                         institution.
      * @param onSuccess {Function} Function accepting response data.
      * @return
      */
-    this.fetchUsers = function (query, onSuccess) {
+    this.fetchUsers = function(query, scoped, onSuccess) {
         const MAX_RESULTS = 8;
+        const PATH        = scoped ? "/users" : "/all-users";
         $.ajax({
-            url: ROOT_URL + "/users.json?window=" + MAX_RESULTS + "&q=" + query,
+            url: ROOT_URL + PATH + ".json?window=" + MAX_RESULTS + "&q=" + query,
             method: "get",
             success: function (data, status, xhr) {
                 if (onSuccess) {

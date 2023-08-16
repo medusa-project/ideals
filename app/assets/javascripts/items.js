@@ -134,6 +134,20 @@ const FileNavigator = function() {
 
         var currentBitstreamID;
         const attachEventListeners = function() {
+            const copyButton = $("button#copy-link");
+            copyButton.on("click", function() {
+                const temp = $("<input>");
+                $("body").append(temp);
+                temp.val(copyButton.data("bitstream-url")).select();
+                document.execCommand("copy");
+                temp.remove();
+
+                copyButton.html("<i class=\"fa fa-check\"></i> Copied!");
+                setTimeout(function() {
+                    copyButton.html("<i class=\"fa fa-link\"></i> Copy Link");
+                }, 3000);
+            });
+
             $("button#more-info").on("click", function() {
                 const infoDiv = $("#file-navigator-viewer-info");
                 if (infoDiv.is(":visible")) {

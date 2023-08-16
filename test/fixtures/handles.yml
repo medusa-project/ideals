@@ -42,18 +42,22 @@ uiuc_undescribed:
   item:   uiuc_undescribed
   suffix: 5008
 
+uiuc_submitting:
+  item:   uiuc_submitting
+  suffix: 5009
+
 uiuc_withdrawn:
   item:   uiuc_withdrawn
-  suffix: 5009
+  suffix: 5010
 
 uiuc_buried:
   item:   uiuc_buried
-  suffix: 5010
+  suffix: 5011
 
 uiuc_multiple_bitstreams:
   item:   uiuc_multiple_bitstreams
-  suffix: 5011
+  suffix: 5012
 
 uiuc_collection1_collection1_item1:
   item:   uiuc_collection1_collection1_item1
-  suffix: 5012
+  suffix: 5013

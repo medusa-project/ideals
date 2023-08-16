@@ -1,0 +1,46 @@
+-# @param institution [Institution]
+
+= form_tag(institution_refresh_saml_config_metadata_path(institution), method: :patch) do |f|
+  .error-messages
+    -# populated via ajax by shared/_validation_messages.js.erb
+
+  - if institution.sso_federation.present? && institution.sso_federation != Institution::SSOFederation::NONE
+    %p
+      This institution is set to use an SSO federation. Its SAML configuration
+      can be set from federation metadata by closing this dialog and selecting
+      "Refresh Configuration Metadata" from the "Actions" menu.
+    %p
+      If this institution does not belong to an SSO federation, change its
+      federation to "None" and then reopen this dialog.
+  - else
+    %ul.nav.nav-tabs{role: "tablist"}
+      %li.nav-item{role: "presentation"}
+        %button#file-tab.nav-link.active{"data-bs-toggle": "tab",
+                                         "data-bs-target": "#file-tab-pane",
+                                         type:             "button",
+                                         role:             "tab",
+                                         "aria-controls":  "file-tab-pane",
+                                         "aria-selected":  true} File
+      %li.nav-item{role: "presentation"}
+        %button#url-tab.nav-link{"data-bs-toggle": "tab",
+                                 "data-bs-target": "#url-tab-pane",
+                                 type:             "button",
+                                 role:             "tab",
+                                 "aria-controls":  "url-tab-pane",
+                                 "aria-selected":  false} URL
+    .tab-content
+      #file-tab-pane.tab-pane.fade.show.active{role:              "tabpanel",
+                                               "aria-labelledby": "file-tab",
+                                               tabindex:          0}
+        .mb-3
+          = file_field_tag :configuration_file, directory: false, class: "form-control"
+      #url-tab-pane.tab-pane.fade{role:              "tabpanel",
+                                  "aria-labelledby": "url-tab",
+                                  tabindex:          0}
+        .mb-3
+          = text_field_tag :configuration_url, nil, class: "form-control"
+
+    .clearfix
+      .float-end
+        %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel
+        = submit_tag("Submit", class: "btn btn-primary")

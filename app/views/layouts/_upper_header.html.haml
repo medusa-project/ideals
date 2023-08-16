@@ -33,151 +33,178 @@
         - if current_user.effective_institution_admin?(current_institution)
           -# Role-play menu
           .btn-group{role: "group"}
-            %button#role-play-dropdown.btn.btn-sm.btn-default.dropdown-toggle{"aria-expanded": "false",
-                                                                              "aria-haspopup": "true",
+            %button#role-play-dropdown.btn.btn-sm.btn-default.dropdown-toggle{"aria-expanded":  "false",
                                                                               "data-bs-toggle": "dropdown",
-                                                                              type: "button"}
+                                                                              type:             "button"}
               %i.far.fa-eye
               = Role.label(session[:role_limit])
-            .dropdown-menu{"aria-labelledby": "role-play-dropdown"}
+            %ul.dropdown-menu{"aria-labelledby": "role-play-dropdown"}
               - Role.all.sort.reverse.each do |role|
                 - next if role != Role::NO_LIMIT && (role > Role::INSTITUTION_ADMINISTRATOR && !current_user.sysadmin?)
-                = link_to Role.label(role),
-                          url_for(role: role),
-                          class: "dropdown-item"
+                %li
+                  = link_to Role.label(role),
+                            url_for(role: role),
+                            class: "dropdown-item"
         - if current_user.sysadmin?
           -# Global Administration menu
           .btn-group{role: "group"}
-            %button#administration-dropdown.btn.btn-sm.btn-default.dropdown-toggle{"aria-expanded": "false",
-                                                                                   "aria-haspopup": "true",
+            %button#administration-dropdown.btn.btn-sm.btn-default.dropdown-toggle{"aria-expanded":  "false",
                                                                                    "data-bs-toggle": "dropdown",
-                                                                                   type: "button"}
+                                                                                   type:             "button"}
               %i.fa.fa-globe
               Global Administration
-            .dropdown-menu{"aria-labelledby": "administration-dropdown"}
-              = link_to(institutions_path, class: "dropdown-item") do
-                = icon_for(Institution)
-                All Institutions
+            %ul.dropdown-menu{"aria-labelledby": "administration-dropdown"}
+              %li
+                = link_to(institutions_path, class: "dropdown-item") do
+                  = icon_for(Institution)
+                  All Institutions
               %li
                 %hr.dropdown-divider
-              = link_to(MetadataProfile.find_by(institution_id: nil), class: "dropdown-item") do
-                = icon_for(MetadataProfile)
-                Global Metadata Profile
+              %li
+                = link_to(template_elements_path, class: "dropdown-item") do
+                  = icon_for(RegisteredElement)
+                  Template Elements
+              %li
+                = link_to(MetadataProfile.find_by(institution_id: nil), class: "dropdown-item") do
+                  = icon_for(MetadataProfile)
+                  Global Metadata Profile
               %li
                 %hr.dropdown-divider
-              = link_to(all_invitees_path, class: "dropdown-item") do
-                %i.fa.fa-user-plus
-                All Invitees
-              = link_to(all_users_path, class: "dropdown-item") do
-                %i.fa.fa-user
-                All Users
-              = link_to(global_user_groups_path, class: "dropdown-item") do
-                %i.fa.fa-users
-                Global User Groups
+              %li
+                = link_to(all_invitees_path, class: "dropdown-item") do
+                  %i.fa.fa-user-plus
+                  All Invitees
+              %li
+                = link_to(all_users_path, class: "dropdown-item") do
+                  %i.fa.fa-user
+                  All Users
+              %li
+                = link_to(global_user_groups_path, class: "dropdown-item") do
+                  %i.fa.fa-users
+                  Global User Groups
               %li
                 %hr.dropdown-divider
-              = link_to(settings_path, class: "dropdown-item") do
-                = icon_for(Setting)
-                Settings
+              %li
+                = link_to(settings_path, class: "dropdown-item") do
+                  = icon_for(Setting)
+                  Settings
               %li
                 %hr.dropdown-divider
-              = link_to(all_tasks_path, class: "dropdown-item") do
-                = icon_for(Task)
-                All Tasks
-              = link_to(usage_path, class: "dropdown-item") do
-                %i.fa.fa-chart-bar
-                Usage
-              = link_to(file_formats_path, class: "dropdown-item") do
-                = icon_for(FileFormat)
-                File Formats
-              = link_to(messages_path, class: "dropdown-item") do
-                = icon_for(Message)
-                Medusa Messages
+              %li
+                = link_to(all_tasks_path, class: "dropdown-item") do
+                  = icon_for(Task)
+                  All Tasks
+              %li
+                = link_to(usage_path, class: "dropdown-item") do
+                  %i.fa.fa-chart-bar
+                  Usage
+              %li
+                = link_to(file_formats_path, class: "dropdown-item") do
+                  = icon_for(FileFormat)
+                  File Formats
+              %li
+                = link_to(messages_path, class: "dropdown-item") do
+                  = icon_for(Message)
+                  Medusa Messages
 
         - if current_user.effective_institution_admin?(current_institution)
           - scope_match = current_institution == current_user.institution
           -# Institution Administration menu
           .btn-group{role: "group"}
             %button#institution-dropdown.btn.btn-sm.btn-default.dropdown-toggle{"aria-expanded":  "false",
-                                                                                "aria-haspopup":  "true",
                                                                                 "data-bs-toggle": "dropdown",
                                                                                 type:             "button"}
               = icon_for(Institution)
               = scope_match ? "My Institution" : "This Institution"
-            .dropdown-menu{"aria-labelledby": "administration-dropdown"}
-              = link_to(institution_path(current_institution),
-                        class: "dropdown-item") do
-                = icon_for(Institution)
-                = scope_match ? "My Institution" : "This Institution"
+            %ul.dropdown-menu{"aria-labelledby": "administration-dropdown"}
+              %li
+                = link_to(institution_path(current_institution),
+                          class: "dropdown-item") do
+                  = icon_for(Institution)
+                  = scope_match ? "My Institution" : "This Institution"
               %li
                 %hr.dropdown-divider
-              = link_to(items_review_path, class: "dropdown-item") do
-                %i.fa.fa-tasks
-                Review Submissions
+              %li
+                = link_to(items_review_path, class: "dropdown-item") do
+                  %i.fa.fa-tasks
+                  Review Submissions
               %li
                 %hr.dropdown-divider
-              = link_to(registered_elements_path, class: "dropdown-item") do
-                = icon_for(RegisteredElement)
-                Element Registry
-              = link_to(element_namespaces_path, class: "dropdown-item") do
-                = icon_for(ElementNamespace)
-                Element Namespaces
-              = link_to(metadata_profiles_path, class: "dropdown-item") do
-                = icon_for(MetadataProfile)
-                Metadata Profiles
-              = link_to(submission_profiles_path, class: "dropdown-item") do
-                = icon_for(SubmissionProfile)
-                Submission Profiles
-              = link_to(vocabularies_path, class: "dropdown-item") do
-                = icon_for(Vocabulary)
-                Vocabularies
-              = link_to(prebuilt_searches_path, class: "dropdown-item") do
-                = icon_for(PrebuiltSearch)
-                Prebuilt Searches
-              = link_to(index_pages_path, class: "dropdown-item") do
-                = icon_for(IndexPage)
-                Index Pages
+              %li
+                = link_to(registered_elements_path, class: "dropdown-item") do
+                  = icon_for(RegisteredElement)
+                  Element Registry
+              %li
+                = link_to(element_namespaces_path, class: "dropdown-item") do
+                  = icon_for(ElementNamespace)
+                  Element Namespaces
+              %li
+                = link_to(metadata_profiles_path, class: "dropdown-item") do
+                  = icon_for(MetadataProfile)
+                  Metadata Profiles
+              %li
+                = link_to(submission_profiles_path, class: "dropdown-item") do
+                  = icon_for(SubmissionProfile)
+                  Submission Profiles
+              %li
+                = link_to(vocabularies_path, class: "dropdown-item") do
+                  = icon_for(Vocabulary)
+                  Vocabularies
+              %li
+                = link_to(prebuilt_searches_path, class: "dropdown-item") do
+                  = icon_for(PrebuiltSearch)
+                  Prebuilt Searches
+              %li
+                = link_to(index_pages_path, class: "dropdown-item") do
+                  = icon_for(IndexPage)
+                  Index Pages
               %li
                 %hr.dropdown-divider
-              = link_to(imports_path, class: "dropdown-item") do
-                = icon_for(Import)
-                Import Items
-              = link_to(items_export_path, class: "dropdown-item") do
-                %i.fa.fa-download
-                Export Items
+              %li
+                = link_to(imports_path, class: "dropdown-item") do
+                  = icon_for(Import)
+                  Import Items
+              %li
+                = link_to(items_export_path, class: "dropdown-item") do
+                  %i.fa.fa-download
+                  Export Items
               %li
                 %hr.dropdown-divider
-              = link_to(invitees_path, class: "dropdown-item") do
-                = icon_for(Invitee)
-                Invitees
-              = link_to(users_path, class: "dropdown-item") do
-                %i.fa.fa-user
-                Users
-              = link_to(user_groups_path, class: "dropdown-item") do
-                %i.fa.fa-users
-                User Groups
+              %li
+                = link_to(invitees_path, class: "dropdown-item") do
+                  = icon_for(Invitee)
+                  Invitees
+              %li
+                = link_to(users_path, class: "dropdown-item") do
+                  %i.fa.fa-user
+                  Users
+              %li
+                = link_to(user_groups_path, class: "dropdown-item") do
+                  %i.fa.fa-users
+                  User Groups
               %li
                 %hr.dropdown-divider
-              = link_to(tasks_path, class: "dropdown-item") do
-                = icon_for(Task)
-                Tasks
+              %li
+                = link_to(tasks_path, class: "dropdown-item") do
+                  = icon_for(Task)
+                  Tasks
               %li
                 %hr.dropdown-divider
-              = link_to(oai_pmh_path(verb: "Identify"), class: "dropdown-item", target: "_blank") do
-                %i.fa.fa-exchange-alt
-                OAI-PMH Endpoint
+              %li
+                = link_to(oai_pmh_path(verb: "Identify"), class: "dropdown-item", target: "_blank") do
+                  %i.fa.fa-exchange-alt
+                  OAI-PMH Endpoint
 
         -# User menu
         .btn-group{role: "group"}
           %button#user-dropdown.btn.btn-sm.btn-default.dropdown-toggle{"aria-expanded":  "false",
-                                                                       "aria-haspopup":  "true",
                                                                        "data-bs-toggle": "dropdown",
                                                                        type:             "button"}
             = icon_for(current_user)
             = current_user.name
             - if to_do_list.total_items > 0
               %span.badge.rounded-pill.text-bg-danger= to_do_list.total_items
-          .dropdown-menu.dropdown-menu-right{"aria-labelledby": "user-dropdown"}
+          %ul.dropdown-menu.dropdown-menu-end{"aria-labelledby": "user-dropdown"}
             - if to_do_list.total_items > 0
               - to_do_list.items.each do |item|
                 %li
@@ -187,19 +214,23 @@
               %li
                 %hr.dropdown-divider
             - if current_user.effective_institution_admin?(current_user.institution)
-              = link_to(institution_path(current_user.institution), class: "dropdown-item") do
-                = icon_for(current_user.institution)
-                My Institution
-            = link_to(user_path(current_user), class: "dropdown-item") do
-              = icon_for(current_user)
-              My Account
+              %li
+                = link_to(institution_path(current_user.institution), class: "dropdown-item") do
+                  = icon_for(current_user.institution)
+                  My Institution
+            %li
+              = link_to(user_path(current_user), class: "dropdown-item") do
+                = icon_for(current_user)
+                My Account
             - unless Rails.env.production?
-              = link_to("https://docs.google.com/document/d/1r79TlQcDa0FPud_wXWbMqXk0v4SGVxiLFMtDXWpnwpc/edit?usp=sharing", class: "dropdown-item") do
-                = icon_for(:help)
-                Pilot Guide
-            = link_to(logout_path, method: :delete, class: "dropdown-item") do
-              %i.fa.fa-sign-out-alt
-              Log Out
+              %li
+                = link_to("https://docs.google.com/document/d/1r79TlQcDa0FPud_wXWbMqXk0v4SGVxiLFMtDXWpnwpc/edit?usp=sharing", class: "dropdown-item") do
+                  = icon_for(:help)
+                  Pilot Guide
+            %li
+              = link_to(logout_path, method: :delete, class: "dropdown-item") do
+                %i.fa.fa-sign-out-alt
+                Log Out
       - elsif current_institution&.auth_enabled?
         %button.btn.btn-sm.btn-link{"data-bs-target": "#login-modal",
                                     "data-bs-toggle": "modal",

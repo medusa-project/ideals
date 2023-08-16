@@ -2,7 +2,8 @@
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
-  = f.hidden_field :institution_id, value: f.object.institution.id
+  = f.hidden_field :institution_id, value: f.object.institution&.id
+  = f.hidden_field :template, value: f.object.template
 
   .mb-3
     = f.label :name, class: "required"
@@ -13,12 +14,13 @@
   .mb-3
     = f.label :label, class: "required"
     = f.text_field :label, class: "form-control"
-  .mb-3
-    = f.label :vocabulary_id, "Vocabulary"
-    = f.select(:vocabulary_id, options_for_select(Vocabulary.where(institution: current_institution).order(:name).map{ |v| [v.name, v.id] },
-                                                  f.object.vocabulary_id),
-               { include_blank: true },
-               class: "form-select")
+  - unless f.object.template
+    .mb-3
+      = f.label :vocabulary_id, "Vocabulary"
+      = f.select(:vocabulary_id, options_for_select(Vocabulary.where(institution: current_institution).order(:name).map{ |v| [v.name, v.id] },
+                                                    f.object.vocabulary_id),
+                 { include_blank: true },
+                 class: "form-select")
   .mb-3
     = f.label :input_type, "Input Type", class: "required"
     = f.select(:input_type, options_for_select(RegisteredElement::InputType.all.map{ |t| [t.split("_").map(&:capitalize).join(" "), t] }.sort.reverse,
@@ -33,9 +35,10 @@
     = f.label :highwire_mapping, "Highwire Press Mapping"
     = f.text_field :highwire_mapping,
                    class: "form-control"
-  .mb-3
-    = f.label :scope_note
-    = f.text_area :scope_note, class: "form-control"
+  - unless f.object.template
+    .mb-3
+      = f.label :scope_note
+      = f.text_area :scope_note, class: "form-control"
 
   .clearfix
     .float-end

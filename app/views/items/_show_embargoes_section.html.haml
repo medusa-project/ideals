@@ -35,7 +35,9 @@
               - else
                 None
             .col-sm-7
-              %h6 Reason
+              %h6 Private Reason
               %p= embargo.reason.present? ? embargo.reason : "None"
+              %h6 Public Reason
+              %p= embargo.public_reason.present? ? embargo.public_reason : "None"
   - else
     This item has no embargoes.

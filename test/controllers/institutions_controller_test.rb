@@ -591,47 +591,48 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  # refresh_federation_metadata()
+  # refresh_saml_config_metadata()
 
-  test "refresh_federation_metadata() returns HTTP 404 for unscoped requests" do
+  test "refresh_saml_config_metadata() returns HTTP 404 for unscoped requests" do
     host! ::Configuration.instance.main_host
-    patch institution_refresh_federation_metadata_path(@institution)
+    patch institution_refresh_saml_config_metadata_path(@institution)
     assert_response :not_found
   end
 
-  test "refresh_federation_metadata() redirects to root page for logged-out users" do
-    patch institution_refresh_federation_metadata_path(@institution)
+  test "refresh_saml_config_metadata() redirects to root page for logged-out
+  users" do
+    patch institution_refresh_saml_config_metadata_path(@institution)
     assert_redirected_to @institution.scope_url
   end
 
-  test "refresh_federation_metadata() returns HTTP 403 for unauthorized users" do
+  test "refresh_saml_config_metadata() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:southwest))
-    patch institution_refresh_federation_metadata_path(@institution)
+    patch institution_refresh_saml_config_metadata_path(@institution)
     assert_response :forbidden
   end
 
-  test "refresh_federation_metadata() updates an institution's OAF metadata" do
+  test "refresh_saml_config_metadata() updates an institution's SAML metadata" do
     skip # TODO: why isn't the job executing in the test environment?
     user = users(:southwest_admin)
     log_in_as(user)
     institution = user.institution
-    patch institution_refresh_federation_metadata_path(institution)
+    patch institution_refresh_saml_config_metadata_path(institution)
     institution.reload
     assert_not_nil institution.saml_idp_cert
   end
 
-  test "refresh_federation_metadata() returns HTTP 302" do
+  test "refresh_saml_config_metadata() returns HTTP 302" do
     user = users(:southwest_admin)
     log_in_as(user)
     institution = user.institution
-    patch institution_refresh_federation_metadata_path(institution)
+    patch institution_refresh_saml_config_metadata_path(institution)
     assert_redirected_to institution_path(institution)
   end
 
-  test "refresh_federation_metadata() returns HTTP 404 for nonexistent
+  test "refresh_saml_config_metadata() returns HTTP 404 for nonexistent
   institutions" do
     log_in_as(users(:southwest_admin))
-    patch "/institutions/bogus/refresh-federation-metadata"
+    patch "/institutions/bogus/refresh-saml-config-metadata"
     assert_response :not_found
   end
 
@@ -1027,6 +1028,31 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # show_invitees()
+
+  test "show_invitees() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_invitees_path(@institution), xhr: true
+    assert_response :not_found
+  end
+
+  test "show_invitees() returns HTTP 403 for logged-out users" do
+    get institution_invitees_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_invitees() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    get institution_invitees_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_invitees() returns HTTP 200 for authorized users" do
+    log_in_as(users(:southwest_admin))
+    get institution_invitees_path(@institution), xhr: true
+    assert_response :ok
+  end
+
   # show_metadata_profiles()
 
   test "show_metadata_profiles() returns HTTP 404 for unscoped requests" do
@@ -1127,6 +1153,31 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # show_review_submissions()
+
+  test "show_review_submissions() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_review_submissions_path(@institution), xhr: true
+    assert_response :not_found
+  end
+
+  test "show_review_submissions() returns HTTP 403 for logged-out users" do
+    get institution_review_submissions_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_review_submissions() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    get institution_review_submissions_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_review_submissions() returns HTTP 200 for authorized users" do
+    log_in_as(users(:southwest_admin))
+    get institution_review_submissions_path(@institution), xhr: true
+    assert_response :ok
+  end
+
   # show_settings()
 
   test "show_settings() returns HTTP 404 for unscoped requests" do
@@ -1202,6 +1253,31 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # show_submissions_in_progress()
+
+  test "show_submissions_in_progress() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_submissions_in_progress_path(@institution), xhr: true
+    assert_response :not_found
+  end
+
+  test "show_submissions_in_progress() returns HTTP 403 for logged-out users" do
+    get institution_submissions_in_progress_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_submissions_in_progress() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    get institution_submissions_in_progress_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_submissions_in_progress() returns HTTP 200 for authorized users" do
+    log_in_as(users(:southwest_admin))
+    get institution_submissions_in_progress_path(@institution), xhr: true
+    assert_response :ok
+  end
+
   # show_theme()
 
   test "show_theme() returns HTTP 404 for unscoped requests" do
@@ -1274,6 +1350,31 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   test "show_usage() returns HTTP 200 for authorized users" do
     log_in_as(users(:southwest_admin))
     get institution_usage_path(@institution), xhr: true
+    assert_response :ok
+  end
+
+  # show_user_groups()
+
+  test "show_user_groups() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_user_groups_path(@institution), xhr: true
+    assert_response :not_found
+  end
+
+  test "show_user_groups() returns HTTP 403 for logged-out users" do
+    get institution_user_groups_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_user_groups() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    get institution_user_groups_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_user_groups() returns HTTP 200 for authorized users" do
+    log_in_as(users(:southwest_admin))
+    get institution_user_groups_path(@institution), xhr: true
     assert_response :ok
   end
 
@@ -1366,6 +1467,31 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
       to_month:   1
     }
     assert_response :bad_request
+  end
+
+  # supply_saml_configuration()
+
+  test "supply_saml_configuration() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_supply_saml_configuration_path(@institution), xhr: true
+    assert_response :not_found
+  end
+
+  test "supply_saml_configuration() returns HTTP 403 for logged-out users" do
+    get institution_supply_saml_configuration_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "supply_saml_configuration() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    get institution_supply_saml_configuration_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "supply_saml_configuration() returns HTTP 200" do
+    log_in_as(users(:southwest_admin))
+    get institution_supply_saml_configuration_path(@institution), xhr: true
+    assert_response :ok
   end
 
   # update_deposit_agreement_questions()

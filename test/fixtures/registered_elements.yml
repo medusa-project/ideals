@@ -5,28 +5,39 @@
 global_dc_title:
   name:             dc:title
   label:            Title
-  uri:              http://purl.org/dc/title
+  uri:              http://purl.org/dc/elements/1.1/title
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
+  highwire_mapping:
+  scope_note:
+
+template_dc_title:
+  name:             dc:title
+  label:            Title
+  uri:              http://purl.org/dc/elements/1.1/title
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         true
+  highwire_mapping:
+  scope_note:
+
+template_dc_creator:
+  name:             dc:creator
+  label:            Creator
+  uri:              http://purl.org/dc/elements/1.1/creator
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         true
   highwire_mapping:
   scope_note:
 
 ################################# empty #################################
 
-empty_dc_title:
-  institution:      empty
-  name:             dc:title
-  label:            Title
-  uri:              http://purl.org/dc/title
-  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
-  highwire_mapping:
-  scope_note:
-
 empty_dc_creator:
   institution:      empty
   name:             dc:creator
   label:            Creator
-  uri:              http://purl.org/dc/creator
+  uri:              http://purl.org/dc/elements/1.1/creator
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -34,64 +45,61 @@ empty_dc_description:
   institution:      empty
   name:             dc:description
   label:            Description
-  uri:              http://purl.org/dc/description
+  uri:              http://purl.org/dc/elements/1.1/description
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
-empty_ideals_date_approved:
+empty_dc_identifier:
   institution:      empty
-  name:             ideals:date:approved
-  label:            Date Approved
-  uri:              http://www.ideals.illinois.edu/elements/dateApproved
-  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
-  highwire_mapping:
-  scope_note:
-
-empty_ideals_date_published:
-  institution:      empty
-  name:             ideals:date:published
-  label:            Date Published
-  uri:              http://www.ideals.illinois.edu/elements/datePublished
-  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
-  highwire_mapping:
-  scope_note:
-
-empty_ideals_date_submitted:
-  institution:      empty
-  name:             ideals:date:submitted
-  label:            Date Submitted
-  uri:              http://www.ideals.illinois.edu/elements/dateSubmitted
-  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
-  highwire_mapping:
-  scope_note:
-
-empty_ideals_handle_uri:
-  institution:      empty
-  name:             ideals:handleURI
+  name:             dc:identifier
   label:            Handle URI
-  uri:              http://www.ideals.illinois.edu/elements/handleURI
+  uri:              http://purl.org/dc/elements/1.1/identifier
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
+  highwire_mapping:
+  scope_note:
+
+empty_dc_title:
+  institution:      empty
+  name:             dc:title
+  label:            Title
+  uri:              http://purl.org/dc/elements/1.1/title
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
+  highwire_mapping:
+  scope_note:
+
+empty_dcterms_dateAccepted:
+  institution:      empty
+  name:             dcterms:dateAccepted
+  label:            Date Approved
+  uri:              http://purl.org/dc/terms/dateAccepted
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
+  highwire_mapping:
+  scope_note:
+
+empty_dcterms_dateSubmitted:
+  institution:      empty
+  name:             dcterms:dateSubmitted
+  label:            Date Submitted
+  uri:              http://purl.org/dc/terms/dateSubmitted
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
 ################################# example #################################
 
-example_dc_title:
-  institution:      example
-  name:             dc:title
-  label:            Title
-  uri:              http://purl.org/dc/title
-  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
-  highwire_mapping:
-  scope_note:
-
 example_dc_creator:
   institution:      example
   name:             dc:creator
   label:            Creator
-  uri:              http://purl.org/dc/creator
+  uri:              http://purl.org/dc/elements/1.1/creator
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -99,44 +107,49 @@ example_dc_description:
   institution:      example
   name:             dc:description
   label:            Description
-  uri:              http://purl.org/dc/description
+  uri:              http://purl.org/dc/elements/1.1/description
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
-example_ideals_date_approved:
+example_dc_identifier:
   institution:      example
-  name:             ideals:date:approved
-  label:            Date Approved
-  uri:              http://www.ideals.illinois.edu/elements/dateApproved
-  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
-  highwire_mapping:
-  scope_note:
-
-example_ideals_date_published:
-  institution:      example
-  name:             ideals:date:published
-  label:            Date Published
-  uri:              http://www.ideals.illinois.edu/elements/datePublished
-  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
-  highwire_mapping:
-  scope_note:
-
-example_ideals_date_submitted:
-  institution:      example
-  name:             ideals:date:submitted
-  label:            Date Submitted
-  uri:              http://www.ideals.illinois.edu/elements/dateSubmitted
-  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
-  highwire_mapping:
-  scope_note:
-
-example_ideals_handle_uri:
-  institution:      example
-  name:             ideals:handleURI
+  name:             dc:identifier
   label:            Handle URI
-  uri:              http://www.ideals.illinois.edu/elements/handleURI
+  uri:              http://purl.org/dc/elements/1.1/identifier
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
+  highwire_mapping:
+  scope_note:
+
+example_dc_title:
+  institution:      example
+  name:             dc:title
+  label:            Title
+  uri:              http://purl.org/dc/elements/1.1/title
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
+  highwire_mapping:
+  scope_note:
+
+example_dcterms_dateAccepted:
+  institution:      example
+  name:             dcterms:dateAccepted
+  label:            Date Accepted
+  uri:              http://purl.org/dc/terms/dateAccepted
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
+  highwire_mapping:
+  scope_note:
+
+example_dcterms_dateSubmitted:
+  institution:      example
+  name:             dcterms:dateSubmitted
+  label:            Date Submitted
+  uri:              http://purl.org/dc/terms/dateSubmitted
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -146,8 +159,9 @@ northeast_dc_title:
   institution:      northeast
   name:             dc:title
   label:            Title
-  uri:              http://purl.org/dc/title
+  uri:              http://purl.org/dc/elements/1.1/title
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -155,8 +169,9 @@ northeast_dc_creator:
   institution:      northeast
   name:             dc:creator
   label:            Creator
-  uri:              http://purl.org/dc/creator
+  uri:              http://purl.org/dc/elements/1.1/creator
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -164,44 +179,39 @@ northeast_dc_description:
   institution:      northeast
   name:             dc:description
   label:            Description
-  uri:              http://purl.org/dc/description
+  uri:              http://purl.org/dc/elements/1.1/description
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
-northeast_ideals_date_approved:
+northeast_dc_identifier:
   institution:      northeast
-  name:             ideals:date:approved
-  label:            Date Approved
-  uri:              http://www.ideals.illinois.edu/elements/dateApproved
-  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
-  highwire_mapping:
-  scope_note:
-
-northeast_ideals_date_published:
-  institution:      northeast
-  name:             ideals:date:published
-  label:            Date Published
-  uri:              http://www.ideals.illinois.edu/elements/datePublished
-  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
-  highwire_mapping:
-  scope_note:
-
-northeast_ideals_date_submitted:
-  institution:      northeast
-  name:             ideals:date:submitted
-  label:            Date Submitted
-  uri:              http://www.ideals.illinois.edu/elements/dateSubmitted
-  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
-  highwire_mapping:
-  scope_note:
-
-northeast_ideals_handle_uri:
-  institution:      northeast
-  name:             ideals:handleURI
+  name:             dc:identifier
   label:            Handle URI
-  uri:              http://www.ideals.illinois.edu/elements/handleURI
+  uri:              http://purl.org/dc/elements/1.1/identifier
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
+  highwire_mapping:
+  scope_note:
+
+northeast_dcterms_dateAccepted:
+  institution:      northeast
+  name:             dcterms:dateAccepted
+  label:            Date Approved
+  uri:              http://purl.org/dc/terms/dateAccepted
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
+  highwire_mapping:
+  scope_note:
+
+northeast_dcterms_dateSubmitted:
+  institution:      northeast
+  name:             dcterms:dateSubmitted
+  label:            Date Submitted
+  uri:              http://purl.org/dc/terms/dateSubmitted
+  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -213,6 +223,7 @@ southwest_unused:
   label:            Unused
   uri:              http://example.org/unused
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:       This element is not attached to any resources.
 
@@ -220,8 +231,9 @@ southwest_dc_contributor:
   institution:      southwest
   name:             dc:contributor
   label:            Contributor
-  uri:              http://purl.org/dc/contributor
+  uri:              http://purl.org/dc/elements/1.1/contributor
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -229,8 +241,9 @@ southwest_dc_contributor_advisor:
   institution:      southwest
   name:             dc:contributor:advisor
   label:            Advisor
-  uri:              http://purl.org/dc/advisor
+  uri:              http://purl.org/dc/elements/1.1/advisor
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -238,8 +251,9 @@ southwest_dc_contributor_committeeChair:
   institution:      southwest
   name:             dc:contributor:committeeChair
   label:            Committee Chair
-  uri:              http://purl.org/dc/committeeChair
+  uri:              http://purl.org/dc/elements/1.1/committeeChair
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -247,8 +261,9 @@ southwest_dc_coverage_spatial:
   institution:      southwest
   name:             dc:coverage:spatial
   label:            Spatial Coverage
-  uri:              http://purl.org/dc/coverageSpatial
+  uri:              http://purl.org/dc/elements/1.1/coverageSpatial
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -256,8 +271,9 @@ southwest_dc_creator:
   institution:      southwest
   name:             dc:creator
   label:            Creator
-  uri:              http://purl.org/dc/creator
+  uri:              http://purl.org/dc/elements/1.1/creator
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -265,8 +281,9 @@ southwest_dc_date_issued:
   institution:      southwest
   name:             dc:date:issued
   label:            Date Issued
-  uri:              http://purl.org/dc/dateIssued
+  uri:              http://purl.org/dc/elements/1.1/dateIssued
   input_type:       <%= RegisteredElement::InputType::DATE %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -274,8 +291,9 @@ southwest_dc_date_submitted:
   institution:      southwest
   name:             dc:date:submitted
   label:            Date Submitted
-  uri:              http://purl.org/dc/dateSubmitted
+  uri:              http://purl.org/dc/elements/1.1/dateSubmitted
   input_type:       <%= RegisteredElement::InputType::DATE %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -283,8 +301,9 @@ southwest_dc_description:
   institution:      southwest
   name:             dc:description
   label:            Description
-  uri:              http://purl.org/dc/description
+  uri:              http://purl.org/dc/elements/1.1/description
   input_type:       <%= RegisteredElement::InputType::TEXT_AREA %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -292,8 +311,9 @@ southwest_dc_description_abstract:
   institution:      southwest
   name:             dc:description:abstract
   label:            Abstract
-  uri:              http://purl.org/dc/abstract
+  uri:              http://purl.org/dc/elements/1.1/abstract
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -301,8 +321,9 @@ southwest_dc_description_sponsorship:
   institution:      southwest
   name:             dc:description:sponsorship
   label:            Sponsorship
-  uri:              http://purl.org/dc/sponsorship
+  uri:              http://purl.org/dc/elements/1.1/sponsorship
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -310,8 +331,9 @@ southwest_dc_identifier:
   institution:      southwest
   name:             dc:identifier
   label:            Identifier
-  uri:              http://purl.org/dc/identifier
+  uri:              http://purl.org/dc/elements/1.1/identifier
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -319,8 +341,9 @@ southwest_dc_identifier_bibliographicCitation:
   institution:      southwest
   name:             dc:identifier:bibliographicCitation
   label:            Bibliographic Citation
-  uri:              http://purl.org/dc/bibliographicCitation
+  uri:              http://purl.org/dc/elements/1.1/bibliographicCitation
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -328,8 +351,9 @@ southwest_dc_identifier_uri:
   institution:      southwest
   name:             dc:identifier:uri
   label:            URI
-  uri:              http://purl.org/dc/identifierURI
+  uri:              http://purl.org/dc/elements/1.1/identifierURI
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -337,8 +361,9 @@ southwest_dc_language:
   institution:      southwest
   name:             dc:language
   label:            Language
-  uri:              http://purl.org/dc/language
+  uri:              http://purl.org/dc/elements/1.1/language
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -346,8 +371,9 @@ southwest_dc_publisher:
   institution:      southwest
   name:             dc:publisher
   label:            Publisher
-  uri:              http://purl.org/dc/publisher
+  uri:              http://purl.org/dc/elements/1.1/publisher
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -355,8 +381,9 @@ southwest_dc_relation_ispartof:
   institution:      southwest
   name:             dc:relation:ispartof
   label:            Is Part Of
-  uri:              http://purl.org/dc/ispartof
+  uri:              http://purl.org/dc/elements/1.1/ispartof
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -364,8 +391,9 @@ southwest_dc_rights:
   institution:      southwest
   name:             dc:rights
   label:            Rights
-  uri:              http://purl.org/dc/rights
+  uri:              http://purl.org/dc/elements/1.1/rights
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -373,8 +401,9 @@ southwest_dc_subject:
   institution:      southwest
   name:             dc:subject
   label:            Subject
-  uri:              http://purl.org/dc/subject
+  uri:              http://purl.org/dc/elements/1.1/subject
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -382,8 +411,9 @@ southwest_dc_title:
   institution:      southwest
   name:             dc:title
   label:            Title
-  uri:              http://purl.org/dc/title
+  uri:              http://purl.org/dc/elements/1.1/title
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -391,8 +421,9 @@ southwest_dc_type:
   institution:      southwest
   name:             dc:type
   label:            Type
-  uri:              http://purl.org/dc/type
+  uri:              http://purl.org/dc/elements/1.1/type
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -400,8 +431,9 @@ southwest_dc_type_genre:
   institution:      southwest
   name:             dc:type:genre
   label:            Genre
-  uri:              http://purl.org/dc/typeGenre
+  uri:              http://purl.org/dc/elements/1.1/typeGenre
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -411,51 +443,27 @@ southwest_dcterms_available:
   label:            Date Available
   uri:              http://purl.org/dc/terms/available
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
-southwest_dcterms_identifier:
+southwest_dcterms_dateAccepted:
   institution:      southwest
-  name:             dcterms:identifier
-  label:            Identifier
-  uri:              http://purl.org/dc/terms/identifier
+  name:             dcterms:dateAccepted
+  label:            Date Accepted
+  uri:              http://purl.org/dc/terms/dateAccepted
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
-southwest_ideals_date_approved:
+southwest_dcterms_dateSubmitted:
   institution:      southwest
-  name:             ideals:date:approved
-  label:            Date Approved
-  uri:              http://www.ideals.illinois.edu/elements/dateApproved
-  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
-  highwire_mapping:
-  scope_note:
-
-southwest_ideals_date_published:
-  institution:      southwest
-  name:             ideals:date:published
-  label:            Date Published
-  uri:              http://www.ideals.illinois.edu/elements/datePublished
-  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
-  highwire_mapping:
-  scope_note:
-
-southwest_ideals_date_submitted:
-  institution:      southwest
-  name:             ideals:date:submitted
+  name:             dcterms:dateSubmitted
   label:            Date Submitted
-  uri:              http://www.ideals.illinois.edu/elements/dateSubmitted
+  uri:              http://purl.org/dc/terms/dateSubmitted
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
-  highwire_mapping:
-  scope_note:
-
-southwest_ideals_handle_uri:
-  institution:      southwest
-  name:             ideals:handleURI
-  label:            Handle URI
-  uri:              http://www.ideals.illinois.edu/elements/handleURI
-  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -465,6 +473,7 @@ southwest_thesis_degree_department:
   label:            Degree Department
   uri:              http://example.org/degree/department
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:       Used by SafImporterTest
 
@@ -474,6 +483,7 @@ southwest_thesis_degree_discipline:
   label:            Degree Discipline
   uri:              http://example.org/degree/discipline
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -483,6 +493,7 @@ southwest_thesis_degree_grantor:
   label:            Degree Grantor
   uri:              http://example.org/degree/grantor
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:       Used by SafImporterTest
 
@@ -492,6 +503,7 @@ southwest_thesis_degree_level:
   label:            Degree Level
   uri:              http://example.org/degree/level
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:       Used by SafImporterTest
 
@@ -501,6 +513,7 @@ southwest_thesis_degree_name:
   label:            Degree Name
   uri:              http://example.org/degree/name
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -510,6 +523,7 @@ southwest_thesis_degree_program:
   label:            Degree Program
   uri:              http://example.org/degree/program
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -521,6 +535,7 @@ uiuc_unused:
   label:            Unused
   uri:              http://example.org/unused
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:       This element is not attached to any resources.
 
@@ -528,8 +543,9 @@ uiuc_dc_contributor:
   institution:      uiuc
   name:             dc:contributor
   label:            Contributor
-  uri:              http://purl.org/dc/contributor
+  uri:              http://purl.org/dc/elements/1.1/contributor
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -537,8 +553,9 @@ uiuc_dc_contributor_advisor:
   institution:      uiuc
   name:             dc:contributor:advisor
   label:            Advisor
-  uri:              http://purl.org/dc/advisor
+  uri:              http://purl.org/dc/elements/1.1/advisor
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -546,8 +563,9 @@ uiuc_dc_contributor_committeeChair:
   institution:      uiuc
   name:             dc:contributor:committeeChair
   label:            Committee Chair
-  uri:              http://purl.org/dc/committeeChair
+  uri:              http://purl.org/dc/elements/1.1/committeeChair
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -555,8 +573,9 @@ uiuc_dc_coverage_spatial:
   institution:      uiuc
   name:             dc:coverage:spatial
   label:            Spatial Coverage
-  uri:              http://purl.org/dc/coverageSpatial
+  uri:              http://purl.org/dc/elements/1.1/coverageSpatial
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -564,8 +583,9 @@ uiuc_dc_creator:
   institution:      uiuc
   name:             dc:creator
   label:            Creator
-  uri:              http://purl.org/dc/creator
+  uri:              http://purl.org/dc/elements/1.1/creator
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -573,8 +593,9 @@ uiuc_dc_date_issued:
   institution:      uiuc
   name:             dc:date:issued
   label:            Date Issued
-  uri:              http://purl.org/dc/dateIssued
+  uri:              http://purl.org/dc/elements/1.1/dateIssued
   input_type:       <%= RegisteredElement::InputType::DATE %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -582,8 +603,9 @@ uiuc_dc_date_submitted:
   institution:      uiuc
   name:             dc:date:submitted
   label:            Date Submitted
-  uri:              http://purl.org/dc/dateSubmitted
+  uri:              http://purl.org/dc/elements/1.1/dateSubmitted
   input_type:       <%= RegisteredElement::InputType::DATE %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -591,8 +613,9 @@ uiuc_dc_description:
   institution:      uiuc
   name:             dc:description
   label:            Description
-  uri:              http://purl.org/dc/description
+  uri:              http://purl.org/dc/elements/1.1/description
   input_type:       <%= RegisteredElement::InputType::TEXT_AREA %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -600,8 +623,9 @@ uiuc_dc_description_abstract:
   institution:      uiuc
   name:             dc:description:abstract
   label:            Abstract
-  uri:              http://purl.org/dc/abstract
+  uri:              http://purl.org/dc/elements/1.1/abstract
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -609,8 +633,9 @@ uiuc_dc_description_sponsorship:
   institution:      uiuc
   name:             dc:description:sponsorship
   label:            Sponsorship
-  uri:              http://purl.org/dc/sponsorship
+  uri:              http://purl.org/dc/elements/1.1/sponsorship
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -618,8 +643,9 @@ uiuc_dc_identifier:
   institution:      uiuc
   name:             dc:identifier
   label:            Identifier
-  uri:              http://purl.org/dc/identifier
+  uri:              http://purl.org/dc/elements/1.1/identifier
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -627,8 +653,9 @@ uiuc_dc_identifier_bibliographicCitation:
   institution:      uiuc
   name:             dc:identifier:bibliographicCitation
   label:            Bibliographic Citation
-  uri:              http://purl.org/dc/bibliographicCitation
+  uri:              http://purl.org/dc/elements/1.1/bibliographicCitation
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -636,8 +663,9 @@ uiuc_dc_identifier_uri:
   institution:      uiuc
   name:             dc:identifier:uri
   label:            URI
-  uri:              http://purl.org/dc/identifierURI
+  uri:              http://purl.org/dc/elements/1.1/identifierURI
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -645,8 +673,9 @@ uiuc_dc_language:
   institution:      uiuc
   name:             dc:language
   label:            Language
-  uri:              http://purl.org/dc/language
+  uri:              http://purl.org/dc/elements/1.1/language
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -654,8 +683,9 @@ uiuc_dc_publisher:
   institution:      uiuc
   name:             dc:publisher
   label:            Publisher
-  uri:              http://purl.org/dc/publisher
+  uri:              http://purl.org/dc/elements/1.1/publisher
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -663,8 +693,9 @@ uiuc_dc_relation_ispartof:
   institution:      uiuc
   name:             dc:relation:ispartof
   label:            Is Part Of
-  uri:              http://purl.org/dc/ispartof
+  uri:              http://purl.org/dc/elements/1.1/ispartof
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -672,8 +703,9 @@ uiuc_dc_rights:
   institution:      uiuc
   name:             dc:rights
   label:            Rights
-  uri:              http://purl.org/dc/rights
+  uri:              http://purl.org/dc/elements/1.1/rights
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -681,8 +713,9 @@ uiuc_dc_subject:
   institution:      uiuc
   name:             dc:subject
   label:            Subject
-  uri:              http://purl.org/dc/subject
+  uri:              http://purl.org/dc/elements/1.1/subject
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -690,8 +723,9 @@ uiuc_dc_title:
   institution:      uiuc
   name:             dc:title
   label:            Title
-  uri:              http://purl.org/dc/title
+  uri:              http://purl.org/dc/elements/1.1/title
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -699,8 +733,9 @@ uiuc_dc_type:
   institution:      uiuc
   name:             dc:type
   label:            Type
-  uri:              http://purl.org/dc/type
+  uri:              http://purl.org/dc/elements/1.1/type
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -708,8 +743,9 @@ uiuc_dc_type_genre:
   institution:      uiuc
   name:             dc:type:genre
   label:            Genre
-  uri:              http://purl.org/dc/typeGenre
+  uri:              http://purl.org/dc/elements/1.1/typeGenre
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -719,51 +755,27 @@ uiuc_dcterms_available:
   label:            Date Available
   uri:              http://purl.org/dc/terms/available
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
-uiuc_dcterms_identifier:
+uiuc_dcterms_dateAccepted:
   institution:      uiuc
-  name:             dcterms:identifier
-  label:            Identifier
-  uri:              http://purl.org/dc/terms/identifier
+  name:             dcterms:dateAccepted
+  label:            Date Accepted
+  uri:              http://purl.org/dc/terms/dateAccepted
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
-uiuc_ideals_date_approved:
+uiuc_dcterms_dateSubmitted:
   institution:      uiuc
-  name:             ideals:date:approved
-  label:            Date Approved
-  uri:              http://www.ideals.illinois.edu/elements/dateApproved
-  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
-  highwire_mapping:
-  scope_note:
-
-uiuc_ideals_date_published:
-  institution:      uiuc
-  name:             ideals:date:published
-  label:            Date Published
-  uri:              http://www.ideals.illinois.edu/elements/datePublished
-  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
-  highwire_mapping:
-  scope_note:
-
-uiuc_ideals_date_submitted:
-  institution:      uiuc
-  name:             ideals:date:submitted
+  name:             dcterms:dateSubmitted
   label:            Date Submitted
-  uri:              http://www.ideals.illinois.edu/elements/dateSubmitted
+  uri:              http://purl.org/dc/terms/dateSubmitted
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
-  highwire_mapping:
-  scope_note:
-
-uiuc_ideals_handle_uri:
-  institution:      uiuc
-  name:             ideals:handleURI
-  label:            HandleURI
-  uri:              http://www.ideals.illinois.edu/elements/handleURI
-  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -773,6 +785,7 @@ uiuc_thesis_degree_department:
   label:            Degree Department
   uri:              http://example.org/degree/department
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:       Used by SafImporterTest
 
@@ -782,6 +795,7 @@ uiuc_thesis_degree_discipline:
   label:            Degree Discipline
   uri:              http://example.org/degree/discipline
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -791,6 +805,7 @@ uiuc_thesis_degree_grantor:
   label:            Degree Grantor
   uri:              http://example.org/degree/grantor
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:       Used by SafImporterTest
 
@@ -800,6 +815,7 @@ uiuc_thesis_degree_level:
   label:            Degree Level
   uri:              http://example.org/degree/level
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:       Used by SafImporterTest
 
@@ -809,6 +825,7 @@ uiuc_thesis_degree_name:
   label:            Degree Name
   uri:              http://example.org/degree/name
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:
 
@@ -818,5 +835,6 @@ uiuc_thesis_degree_program:
   label:            Degree Program
   uri:              http://example.org/degree/program
   input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
+  template:         false
   highwire_mapping:
   scope_note:

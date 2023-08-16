@@ -2,11 +2,26 @@ require 'rake'
 
 namespace :items do
 
+  desc "Add license.txt bitstreams to items that don't already have them"
+  task add_license_bitstreams: :environment do # TODO: remove this after running in demo & production
+    Item.uncached do
+      items    = Item.
+        where(stage: Item::Stages::APPROVED).
+        where("LENGTH(deposit_agreement) > 0").
+        order(:id)
+      count    = items.count
+      progress = Progress.new(count)
+      items.find_each.with_index do |item, index|
+        item.send(:create_license_bitstream)
+        progress.report(index, "Adding license.txt bitstreams")
+      end
+    end
+  end
+
   desc "Delete expired embargoes"
   task delete_expired_embargoes: :environment do
     Embargo.where("expires_at < NOW()").delete_all
   end
-
 
   desc "Import items from a SAF package"
   task :import_saf, [:package_path, :mapfile_path, :collection_id] => :environment do |task, args|
@@ -71,39 +86,6 @@ namespace :items do
     num_threads = args[:num_threads].to_i
     num_threads = 1 if num_threads == 0
     Item.reindex_all(num_threads: num_threads)
-  end
-
-  desc "Update deposit agreements" # TODO: remove this once it has been run in demo & production
-  task update_deposit_agreements: :environment do
-    Item.uncached do
-      items    = Item.where(deposit_agreement: nil).order(:id)
-      count    = items.count
-      progress = Progress.new(count)
-      items.find_each.with_index do |item, index|
-        Item.transaction do
-          license_bs = item.bitstreams.where("LOWER(original_filename) = ?", "license.txt").limit(1).first
-          if license_bs
-            if license_bs.permanent_key.blank? && item.institution
-              key = Bitstream.permanent_key(institution_key: item.institution.key,
-                                            item_id:         item.id,
-                                            filename:        license_bs.filename)
-              license_bs.update!(permanent_key: key)
-            end
-            begin
-              data = license_bs.data.read&.strip
-              if data.present?
-                item.update!(deposit_agreement: data)
-              end
-            rescue => e
-              "ERROR for bitstream #{license_bs.id}: #{e}"
-            end
-          elsif item.institution
-            item.update!(deposit_agreement: item.institution.deposit_agreement)
-          end
-          progress.report(index, "Updating deposit agreements")
-        end
-      end
-    end
   end
 
 end

@@ -128,7 +128,7 @@ IDEALS.UIUtils.CollectionSelectMenus = function() {
         } else {
             unitID = unitMenu.val();
         }
-        new IDEALS.Client().fetchUnitCollections(unitID, function(data) {
+        new IDEALS.Client().fetchUnitCollections(unitID, false, function(data) {
             const collectionMenu = unitMenu.parents(".unit-collection-combo").find(".collection-menu");
             collectionMenu.children().remove();
             if (data.length > 0) {
@@ -751,7 +751,7 @@ IDEALS.UIUtils.MultiElementList = function(minElements = 1) {
         $(this).before(clone);
         updateEventListeners();
         if (clone.hasClass("user")) {
-            new IDEALS.UIUtils.UserAutocompleter(clone.find("input"));
+            new IDEALS.UIUtils.UserAutocompleter(clone.find("input"), true);
         }
         e.preventDefault();
     });
@@ -845,9 +845,11 @@ IDEALS.UIUtils.Spinner = function() {
 
 /**
  * @param textField {jQuery} Text field element.
+ * @param scoped {Boolean} Whether to scope the results to the current
+ *                         institution.
  * @constructor
  */
-IDEALS.UIUtils.UserAutocompleter = function(textField) {
+IDEALS.UIUtils.UserAutocompleter = function(textField, scoped) {
     textField.on("keyup", function() {
         const textField = $(this);
         const menu      = textField.parent().find(".dropdown-menu");
@@ -859,7 +861,7 @@ IDEALS.UIUtils.UserAutocompleter = function(textField) {
         menu.css("top", $(this).position().top + $(this).height() + 14 + "px");
         menu.css("left", "14px");
 
-        new IDEALS.Client().fetchUsers(query, function(data) {
+        new IDEALS.Client().fetchUsers(query, scoped, function(data) {
             if (data['numResults'] > 0) {
                 menu.empty();
                 data['results'].forEach(function(result) {

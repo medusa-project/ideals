@@ -87,7 +87,7 @@ class InstitutionPolicy < ApplicationPolicy
     effective_sysadmin(@user, @role_limit)
   end
 
-  def refresh_federation_metadata
+  def refresh_saml_config_metadata
     edit_saml_authentication
   end
 
@@ -153,6 +153,10 @@ class InstitutionPolicy < ApplicationPolicy
     show_metadata_profiles
   end
 
+  def show_invitees
+    show
+  end
+
   def show_metadata_profiles
     effective_sysadmin(@user, @role_limit)
   end
@@ -169,6 +173,10 @@ class InstitutionPolicy < ApplicationPolicy
     show
   end
 
+  def show_review_submissions
+    show_submissions_in_progress
+  end
+
   def show_settings
     show
   end
@@ -179,6 +187,10 @@ class InstitutionPolicy < ApplicationPolicy
 
   def show_submission_profiles
     show_metadata_profiles
+  end
+
+  def show_submissions_in_progress
+    show
   end
 
   def show_theme
@@ -193,6 +205,10 @@ class InstitutionPolicy < ApplicationPolicy
     show
   end
 
+  def show_user_groups
+    show
+  end
+
   def show_users
     show
   end
@@ -203,6 +219,10 @@ class InstitutionPolicy < ApplicationPolicy
 
   def statistics_by_range
     show_statistics
+  end
+
+  def supply_saml_configuration
+    edit_saml_authentication
   end
 
   def update_deposit_agreement_questions

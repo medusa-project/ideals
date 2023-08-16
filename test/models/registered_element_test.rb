@@ -107,6 +107,21 @@ class RegisteredElementTest < ActiveSupport::TestCase
     assert_equal RegisteredElement::InputType::TEXT_FIELD, @instance.input_type
   end
 
+  # institution
+
+  test "institution cannot be set on template elements" do
+    @instance.institution = institutions(:uiuc)
+    @instance.template    = true
+    assert !@instance.valid?
+
+    @instance.template = false
+    assert @instance.valid?
+
+    @instance.institution = nil
+    @instance.template    = true
+    assert @instance.valid?
+  end
+
   # label
 
   test "label must be present" do
@@ -133,11 +148,12 @@ class RegisteredElementTest < ActiveSupport::TestCase
     assert !@instance.valid?
   end
 
-  test "name must be unique" do
+  test "name must be unique within an institution" do
     element = RegisteredElement.all.first
-    assert_raises ActiveRecord::RecordInvalid do
-      RegisteredElement.create!(name: element.name,
-                                label: "new label")
+    assert_raises ActiveRecord::RecordNotUnique do
+      RegisteredElement.create!(name:        element.name,
+                                institution: element.institution,
+                                label:       "new label")
     end
   end
 

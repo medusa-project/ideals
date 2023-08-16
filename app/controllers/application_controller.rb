@@ -352,7 +352,7 @@ class ApplicationController < ActionController::Base
   # Sets the toast.
   # @see ApplicationHelper#toast!
   #
-  def toast!(title:, message:, icon: nil)
+  def toast!(title: nil, message:, icon: nil)
     helpers.toast!(title: title, message: message, icon: icon)
   end
 

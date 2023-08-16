@@ -126,6 +126,14 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to institution_path(element.institution)
   end
 
+  test "destroy() redirects to template elements view for template elements" do
+    log_in_as(users(:uiuc_sysadmin))
+    element = registered_elements(:uiuc_unused)
+    element.update!(institution: nil, template: true)
+    delete registered_element_path(element)
+    assert_redirected_to template_elements_path
+  end
+
   test "destroy() returns HTTP 404 for a missing element" do
     log_in_as(users(:uiuc_admin))
     delete "/elements/bogus"
@@ -188,6 +196,40 @@ class RegisteredElementsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
 
     get registered_elements_path(role: Role::LOGGED_OUT)
+    assert_response :forbidden
+  end
+
+  # index_template()
+
+  test "index_template() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get template_elements_path
+    assert_response :not_found
+  end
+
+  test "index_template() redirects to root page for logged-out users" do
+    get template_elements_path
+    assert_redirected_to @element.institution.scope_url
+  end
+
+  test "index_template() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:uiuc))
+    get template_elements_path
+    assert_response :forbidden
+  end
+
+  test "index_template() returns HTTP 200 for sysadmins" do
+    log_in_as(users(:uiuc_sysadmin))
+    get template_elements_path
+    assert_response :ok
+  end
+
+  test "index_template() respects role limits" do
+    log_in_as(users(:uiuc_sysadmin))
+    get template_elements_path
+    assert_response :ok
+
+    get template_elements_path(role: Role::LOGGED_OUT)
     assert_response :forbidden
   end
 

@@ -24,16 +24,14 @@ class UpdateItemCommand < Command
   # @return [void]
   #
   def execute(&block)
-    Item.transaction do
-      yield(@item)
-      @item.reload
-      Event.create!(event_type:     Event::Type::UPDATE,
-                    item:           @item,
-                    user:           @user,
-                    before_changes: @before_changes,
-                    after_changes:  @item.as_change_hash,
-                    description:    @description)
-    end
+    yield(@item)
+    @item.reload
+    Event.create!(event_type:     Event::Type::UPDATE,
+                  item:           @item,
+                  user:           @user,
+                  before_changes: @before_changes,
+                  after_changes:  @item.as_change_hash,
+                  description:    @description)
   end
 
 end

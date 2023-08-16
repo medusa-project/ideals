@@ -27,7 +27,7 @@
                                                                        role:             "button"}
                   %i.fas.fa-pencil-alt
                   Edit
-            %h5.card-title Direct Group Administrators
+            %h5.card-title Direct Administrators (Groups)
             - groups = @collection.administering_groups
             - if groups.any?
               %ul
@@ -37,7 +37,7 @@
               None
         .card
           .card-body
-            %h5.card-title Effective Group Administrators
+            %h5.card-title Effective Administrators (Groups)
             - groups = @collection.effective_administering_groups
             - if groups.any?
               %ul
@@ -55,7 +55,7 @@
                                                                       role:             "button"}
                   %i.fas.fa-pencil-alt
                   Edit
-            %h5.card-title Direct User Administrators
+            %h5.card-title Direct Administrators (Users)
             - users = @collection.administering_users
             - if users.any?
               %ul
@@ -65,7 +65,7 @@
               None
         .card
           .card-body
-            %h5.card-title Effective User Administrators
+            %h5.card-title Effective Administrators (Users)
             - users = @collection.effective_administering_users
             - if users.any?
               %ul
@@ -89,7 +89,7 @@
                                                                     role:             "button"}
                   %i.fas.fa-pencil-alt
                   Edit
-            %h5.card-title Direct Group Submitters
+            %h5.card-title Direct Submitters (Groups)
             - if @collection.submitting_groups.any?
               %ul
                 - @collection.submitting_groups.each do |group|
@@ -99,7 +99,7 @@
         .card
           .card-body
             %h5.card-title
-              Effective Group Submitters
+              Effective Submitters (Groups)
             - admins = @collection.effective_submitting_groups
             - if admins.any?
               %ul
@@ -117,7 +117,7 @@
                                                                    role:             "button"}
                   %i.fas.fa-pencil-alt
                   Edit
-            %h5.card-title Direct User Submitters
+            %h5.card-title Direct Submitters (Users)
             - if @collection.submitting_users.any?
               %ul
                 - @collection.submitting_users.each do |user|
@@ -127,7 +127,7 @@
         .card
           .card-body
             %h5.card-title
-              Effective User Submitters
+              Effective Submitters (Users)
             - admins = @collection.effective_submitting_users
             - if admins.any?
               %ul

@@ -65,20 +65,6 @@
         %td
           .badge.bg-warning
             Unmapped
-    %tr
-      %td Date Published
-      - if @institution.date_published_element
-        %td &rarr;
-        %td
-          = @institution.date_published_element.label
-          %br
-          %code
-            = @institution.date_published_element.name
-      - else
-        %td
-        %td
-          .badge.bg-warning
-            Unmapped
 
     %tr
       %td Handle URI

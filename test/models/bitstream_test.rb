@@ -722,6 +722,17 @@ class BitstreamTest < ActiveSupport::TestCase
 
   # move_into_permanent_storage()
 
+  test "move_into_permanent_storage() raises an error if staging_key is not
+  set" do
+    assert_raises do
+      @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
+                                           filename: SecureRandom.hex,
+                                           length:   File.size(fixture))
+      @instance.staging_key = nil
+      @instance.move_into_permanent_storage
+    end
+  end
+
   test "move_into_permanent_storage() raises an error if no object exists in
   staging" do
     @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
