@@ -216,7 +216,7 @@ class SubmissionsController < ApplicationController
   end
 
   def item_params
-    params.require(:item).permit(:submitter_id, :temp_embargo_expires_at,
+    params.require(:item).permit(:stage, :temp_embargo_expires_at,
                                  :temp_embargo_kind, :temp_embargo_reason,
                                  :temp_embargo_type)
   end

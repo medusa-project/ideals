@@ -8,7 +8,7 @@
     -# populated via ajax by shared/_validation_messages.js.erb
 
   -# Include this only because `item` is required in the params.
-  = f.hidden_field :submitter_id, value: current_user.id
+  = f.hidden_field :stage, value: Item::Stages::SUBMITTING
 
   - @submission_profile.elements.each do |profile_element|
     - registered_element = profile_element.registered_element

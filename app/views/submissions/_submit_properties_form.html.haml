@@ -5,7 +5,8 @@
   #properties-messages.error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
-  = f.hidden_field :submitter_id, value: current_user.id
+  -# Include this only because `item` is required in the params.
+  = f.hidden_field :stage, value: Item::Stages::SUBMITTING
   = f.hidden_field :initial_primary_collection_unit_id, value: f.object&.primary_collection&.primary_unit&.id
   = f.hidden_field :initial_primary_collection_id, value: f.object.primary_collection&.id
 
