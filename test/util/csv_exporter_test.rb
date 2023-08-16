@@ -47,6 +47,15 @@ class CsvExporterTest < ActiveSupport::TestCase
                  rows[0]
   end
 
+  test "export() returns only a header row when there is nothing to export" do
+    unit       = units(:uiuc_empty)
+    csv        = @instance.export(units: [unit])
+    rows       = CSV.parse(csv)
+    assert_equal 1, rows.length
+    assert_equal CsvImporter::REQUIRED_COLUMNS + %w[dc:title dc:description dc:subject],
+                 rows[0]
+  end
+
   # export_collection()
 
   test "export_collection() includes child collections in the CSV" do

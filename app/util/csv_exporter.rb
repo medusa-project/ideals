@@ -42,11 +42,15 @@ class CsvExporter
       elements = profile.elements.map(&:name)
     end
 
-    # SQL is used for efficiency here--using ActiveRecord would be super slow.
+    where_clause = collection_ids.any? ?
+                     "WHERE cim.collection_id IN (#{collection_ids.join(", ")}) " :
+                     "WHERE 1 = 2 "
+
+    # SQL is used for efficiency here--ActiveRecord would be super slow.
     sql = select_clause(elements) +
       from_clause +
       "LEFT JOIN collection_item_memberships cim ON cim.item_id = i.id " +
-      "WHERE cim.collection_id IN (#{collection_ids.join(", ")}) " +
+      where_clause +
       order_clause
     results = ActiveRecord::Base.connection.exec_query(sql)
     to_csv(elements, results)
