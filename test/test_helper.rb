@@ -4,6 +4,10 @@ ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
 
+# The default reporter prints skipped & failing tests at the end of the output,
+# so we don't have to scroll.
+Minitest::Reporters.use! unless ENV['RM_INFO'].present?
+
 class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all
@@ -26,7 +30,6 @@ class ActiveSupport::TestCase
   # these properties.
   #
   def fix_bitstream_keys(bitstream)
-    submitted_for_ingest = bitstream.submitted_for_ingest?
     if bitstream.staging_key.present?
       staging_key = Bitstream.staging_key(
         institution_key: bitstream.institution.key,

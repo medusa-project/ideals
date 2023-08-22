@@ -73,3 +73,7 @@ group :development do
   gem "capistrano-rbenv"
   gem 'yard'
 end
+
+group :test do
+  gem "minitest-reporters"
+end
