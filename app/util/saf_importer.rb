@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # SAF is a DSpace package format containing a batch of things to import.
 #
@@ -83,11 +85,13 @@
 class SafImporter
 
   ##
-  # @param pathname [String] Pathname of the root package directory.
+  # @param pathname [String]               Pathname of the package directory
+  #                                        root.
   # @param primary_collection [Collection] Collection to import the items into.
-  # @param mapfile_path [String] Pathname of the mapfile.
-  # @param print_progress [Boolean] Whether to print progress updates to
-  #                                 stdout.
+  # @param mapfile_path [String]           Pathname of the mapfile.
+  # @param print_progress [Boolean]        Whether to print progress updates to
+  #                                        stdout.
+  # @param task [Task]                     Supply to receive status updates.
   # @return [void]
   # @raises [StandardError] Various error types depending on all of the things
   #                         that can go wrong. If this occurs, refer to the
@@ -97,22 +101,28 @@ class SafImporter
   def import_from_path(pathname:,
                        primary_collection:,
                        mapfile_path:,
-                       print_progress: false)
-    item_dirs = Dir.entries(pathname).reject{ |d| %w(. ..).include?(d) }.sort
+                       print_progress: false,
+                       task:           nil)
+    item_dirs = Dir.glob(pathname + "/*").select{ |n| File.directory?(n) }.sort
 
-    # Read the list of items in the mapfile, if one exists. These will be
-    # skipped during the import.
+    # Read the list of items in the mapfile, if one exists, in order to skip
+    # them during the import.
     if File.exist?(mapfile_path)
       imported_item_dirs = mapfile_items(File.read(mapfile_path))
-      item_dirs         -= imported_item_dirs
+      imported_item_dirs.each do |imported_dir|
+        item_dirs = item_dirs.reject{ |d| d.end_with?("/" + imported_dir) }
+      end
     end
-
     progress = print_progress ? Progress.new(item_dirs.length) : nil
 
     File.open(mapfile_path, "wb") do |mapfile|
       # Iterate through each item directory.
       item_dirs.each_with_index do |item_dir, index|
-        progress&.report(index, "Importing #{item_dirs.length} items from SAF package")
+        status_text = "Importing #{item_dirs.length} items from SAF package"
+        progress&.report(index, status_text)
+        task&.progress(index / item_dirs.length.to_f,
+                       status_text: status_text)
+
         # Work inside a transaction to avoid any incompletely created items.
         ActiveRecord::Base.transaction do
           item = ImportItemCommand.new(primary_collection: primary_collection).execute
@@ -120,19 +130,18 @@ class SafImporter
             item.assign_handle
 
             # Add bitstreams corresponding to each line in the content file.
-            item_dir_path     = File.join(pathname, item_dir)
-            content_file_path = File.join(item_dir_path, "content")
+            content_file_path = File.join(item_dir, "content")
             unless File.exist?(content_file_path)
-              content_file_path = File.join(item_dir_path, "contents")
+              content_file_path = File.join(item_dir, "contents")
               unless File.exist?(content_file_path)
                 raise IOError, "Missing content file for item #{item_dir}"
               end
             end
-            add_bitstreams_from_file(item:              item,
-                                     content_file_path: content_file_path)
+            add_bitstreams(item:              item,
+                           content_file_path: content_file_path)
 
             # Add metadata corresponding to the Dublin Core metadata file.
-            dc_path = File.join(item_dir_path, "dublin_core.xml")
+            dc_path = File.join(item_dir, "dublin_core.xml")
             unless File.exist?(dc_path)
               raise IOError, "Missing dublin_core.xml file for item #{item_dir}"
             end
@@ -141,7 +150,7 @@ class SafImporter
                          metadata_file_content:  File.read(dc_path))
 
             # Add metadata corresponding to any other metadata files.
-            Dir.glob(File.join(item_dir_path, "metadata*.xml")) do |metadata_file_path|
+            Dir.glob(File.join(item_dir, "metadata*.xml")) do |metadata_file_path|
               add_metadata(item:                   item,
                            metadata_relative_path: metadata_file_path,
                            metadata_file_content:  File.read(metadata_file_path))
@@ -151,101 +160,17 @@ class SafImporter
             item.save!
           rescue => e
             item.handle&.delete_from_server
+            task&.fail(detail:    e.message,
+                       backtrace: e.backtrace)
             raise e
           else
-            mapfile.write("#{item_dir}\t#{item.handle.handle}\n")
-            progress&.report(index, "Importing #{item_dirs.length} items from SAF package")
+            item_rel_path = item_dir.gsub(pathname + "/", "")
+            mapfile.write("#{item_rel_path}\t#{item.handle.handle}\n")
           end
         end
       end
     end
-  end
-
-  ##
-  # @param import [Import]
-  # @return [void]
-  # @raises [StandardError] Various error types depending on all of the things
-  #                         that can go wrong. If this occurs, the
-  #                         {Import#imported_items} attribute will be updated
-  #                         with an inventory of items that were imported
-  #                         successfully prior to the error occurring.
-  #
-  def import_from_s3(import)
-    store             = PersistentStore.instance
-    item_key_prefixes = import.item_key_prefixes
-    imported_items    = import.imported_items || []
-    item_key_prefixes.reject!{ |k| imported_items.select{ |i| k.end_with?(i['item_id']) }.any? }
-
-    import.update!(format: Import::Format::SAF,
-                   files:  import.object_keys)
-    import.task&.update!(status: Task::Status::RUNNING)
-
-    # Iterate through each item pseudo-directory.
-    item = nil
-    item_key_prefixes.each_with_index do |item_dir, index|
-      # Work inside a transaction to avoid any incompletely created items.
-      Import.transaction do
-        item = ImportItemCommand.new(primary_collection: import.collection).execute
-        begin
-          item.assign_handle
-
-          # Add bitstreams corresponding to each line in the content file.
-          content_file_key = item_dir + "/content"
-          unless store.object_exists?(key: content_file_key)
-            content_file_key = item_dir + "/contents"
-            unless store.object_exists?(key: content_file_key)
-              raise IOError, "Missing content file for item #{item_dir}"
-            end
-          end
-          content = store.get_object(key: content_file_key).read
-          add_bitstreams_from_s3(item:                 item,
-                                 item_key_prefix:      item_dir,
-                                 content_file_key:     content_file_key,
-                                 content_file_content: content)
-
-          # Add metadata corresponding to the Dublin Core metadata file.
-          dc_key = item_dir + "/dublin_core.xml"
-          unless store.object_exists?(key: dc_key)
-            raise IOError, "Missing dublin_core.xml file for item #{item_dir}"
-          end
-          content = store.get_object(key: dc_key).read
-          add_metadata(item:                   item,
-                       metadata_relative_path: dc_key,
-                       metadata_file_content:  content)
-
-          # Add metadata corresponding to any other metadata files.
-          item_object_keys = store.objects(key_prefix: item_dir)
-          item_object_keys.map(&:key).select{ |k| k.match(/\/metadata_.+.xml\z/) }.each do |metadata_key|
-            content = store.get_object(key: metadata_key).read
-            add_metadata(item:                   item,
-                         metadata_relative_path: metadata_key,
-                         metadata_file_content:  content)
-          end
-
-          item.approve
-          item.save!
-        rescue => e
-          item.handle&.delete_from_server
-          raise e
-        else
-          imported_items << {
-            item_id: item_dir.split("/").last,
-            handle:  item.handle.handle
-          }
-          import.progress(index / item_key_prefixes.length.to_f,
-                          imported_items)
-          import.task&.progress(index / item_key_prefixes.length.to_f,
-                                status_text: "Importing #{item_key_prefixes.length} items from SAF package")
-        end
-      end
-    end
-  rescue => e
-    item&.destroy!
-    import.task&.fail(backtrace: e.backtrace,
-                      detail:    e.message)
-    raise e
-  else
-    import.task&.succeed
+    task&.succeed
   end
 
 
@@ -255,7 +180,7 @@ class SafImporter
   # @param item [Item]
   # @param content_file_path [String] Full path of the `content` file.
   #
-  def add_bitstreams_from_file(item:, content_file_path:)
+  def add_bitstreams(item:, content_file_path:)
     File.open(content_file_path, "r").each_with_index do |line, line_index|
       line.strip!
       next if line.blank?
@@ -292,78 +217,14 @@ class SafImporter
       permanent_key = Bitstream.permanent_key(institution_key: item.institution.key,
                                               item_id:         item.id,
                                               filename:        filename)
-      bs = Bitstream.create(item:              item,
-                            permanent_key:     permanent_key,
-                            filename:          filename,
-                            bundle:            bundle,
-                            primary:           primary,
-                            description:       description,
-                            length:            File.size(file_path))
+      bs = Bitstream.create(item:          item,
+                            permanent_key: permanent_key,
+                            filename:      filename,
+                            bundle:        bundle,
+                            primary:       primary,
+                            description:   description,
+                            length:        File.size(file_path))
       bs.upload_to_permanent(file_path)
-    end
-  end
-
-  ##
-  # @param item [Item]
-  # @param item_key_prefix [String]
-  # @param content_file_key [String]
-  # @param content_file_content [String] Contents of the content file.
-  #
-  def add_bitstreams_from_s3(item:,
-                             item_key_prefix:,
-                             content_file_key:,
-                             content_file_content:)
-    store  = PersistentStore.instance
-    client = S3Client.instance
-    bucket = Configuration.instance.storage[:bucket]
-    content_file_content.split("\n").each_with_index do |line, line_index|
-      line.strip!
-      next if line.blank?
-      file_key = filename = description = nil
-      primary  = false
-      bundle   = Bitstream::Bundle::CONTENT
-      line.split("\t").each do |part|
-        lc_part = part.downcase
-        if lc_part.start_with?("bundle:")
-          bundle = Bitstream::Bundle.for_string(part.split(":").last.upcase)
-        elsif lc_part.start_with?("description:")
-          description = part[12..]
-        elsif lc_part.start_with?("primary:")
-          primary = part[8..] == "true"
-        elsif lc_part.start_with?("permission:")
-          # we are ignoring this
-        elsif part.match?(/.*[:].*/)
-          raise IOError, "Unrecognized flag (#{part}) in "\
-                         "#{content_file_key}"
-        else
-          filename = part
-          file_key = [item_key_prefix, filename].join("/")
-        end
-      end
-      unless file_key
-        raise IOError, "No file on line #{line_index + 1} of "\
-                       "#{content_file_key}"
-      end
-      unless store.object_exists?(key: file_key)
-        raise IOError, "File on line #{line_index + 1} of "\
-                       "#{content_file_key} does not exist: "\
-                       "#{file_key}"
-      end
-
-      length        = client.head_object(bucket: bucket,
-                                         key:    file_key).content_length
-      permanent_key = Bitstream.permanent_key(institution_key: item.institution.key,
-                                              item_id:         item.id,
-                                              filename:        filename)
-      bs = Bitstream.create(item:              item,
-                            permanent_key:     permanent_key,
-                            filename:          filename,
-                            bundle:            bundle,
-                            primary:           primary,
-                            description:       description,
-                            length:            length)
-      store.copy_object(source_key: file_key,
-                        target_key: bs.permanent_key)
     end
   end
 
@@ -385,8 +246,8 @@ class SafImporter
       qualifier = node["qualifier"]
       name      = "#{schema}:#{element}"
       name     += ":#{qualifier}" if qualifier && qualifier != "none"
-      position = 1 if name != tmp_name
-      tmp_name = name
+      position  = 1 if name != tmp_name
+      tmp_name  = name
 
       re = RegisteredElement.where(name:        name,
                                    institution: item.institution).limit(1).first

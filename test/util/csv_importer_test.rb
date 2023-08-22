@@ -3,13 +3,8 @@ require 'test_helper'
 class CsvImporterTest < ActiveSupport::TestCase
 
   setup do
-    setup_s3
     setup_opensearch
     @instance = CsvImporter.new
-  end
-
-  teardown do
-    teardown_s3
   end
 
   # import()
@@ -124,6 +119,7 @@ class CsvImporterTest < ActiveSupport::TestCase
       row << ["+", nil, nil, nil, nil, nil, nil, "Title", "Bob||Susan||Chris"]
     end
     @instance.import(csv:                csv,
+                     file_paths:         [],
                      submitter:          users(:example_sysadmin),
                      primary_collection: collections(:uiuc_empty))
     item     = Item.order(created_at: :desc).limit(1).first
@@ -139,6 +135,7 @@ class CsvImporterTest < ActiveSupport::TestCase
       row << ["+", nil, nil, nil, nil, nil, nil, "Title", "Bob||Susan||Chris"]
     end
     @instance.import(csv:                csv,
+                     file_paths:         [],
                      submitter:          users(:uiuc_admin),
                      primary_collection: collections(:uiuc_empty))
     item     = Item.order(created_at: :desc).limit(1).first
@@ -158,6 +155,7 @@ class CsvImporterTest < ActiveSupport::TestCase
       row << ["+", nil, nil, nil, nil, nil, nil, "New Item"]
     end
     @instance.import(csv:                csv,
+                     file_paths:         [],
                      submitter:          users(:example_sysadmin),
                      primary_collection: collections(:uiuc_empty))
     item = Item.order(created_at: :desc).limit(1).first
@@ -168,10 +166,10 @@ class CsvImporterTest < ActiveSupport::TestCase
   test "import() raises an error for a missing file" do
     package_path = File.join(file_fixture_path, "packages", "csv", "missing_file")
     csv          = File.read(File.join(package_path, "package.csv"))
-    keys         = []
+    files        = []
     assert_raises do
       @instance.import(csv:                csv,
-                       object_keys:        keys,
+                       file_paths:         files,
                        submitter:          users(:southwest_admin),
                        primary_collection: collections(:southwest_unit1_empty))
     end
@@ -180,13 +178,10 @@ class CsvImporterTest < ActiveSupport::TestCase
   test "import() attaches Bitstreams to new items" do
     package_path = File.join(file_fixture_path, "packages", "csv", "valid_items")
     csv          = File.read(File.join(package_path, "package.csv"))
-    keys         = []
-    PersistentStore.instance.upload_path(root_path:     package_path,
-                                         key_prefix:    "tmp",
-                                         uploaded_keys: keys)
+    files        = Dir.glob(package_path + "/**/*").select{ |n| File.file?(n) }
 
     @instance.import(csv:                csv,
-                     object_keys:        keys,
+                     file_paths:         files,
                      submitter:          users(:southwest_admin),
                      primary_collection: collections(:southwest_unit1_empty))
     item       = Item.order(created_at: :desc).limit(1).first
@@ -207,17 +202,13 @@ class CsvImporterTest < ActiveSupport::TestCase
     item = items(:southwest_unit1_collection1_item1)
     csv  = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title]
-      row << [item.id, "tmp/escher_lego.png", nil, nil, nil, nil, nil, "Title"]
+      row << [item.id, "escher_lego.png", nil, nil, nil, nil, nil, "Title"]
     end
-
-    file = file_fixture("escher_lego.png")
-    S3Client.instance.put_object(bucket: PersistentStore::BUCKET,
-                                 key:    "tmp/escher_lego.png",
-                                 body:   File.new(file))
+    files = [file_fixture("escher_lego.png").to_s]
 
     assert_difference "Bitstream.count", 1 do
       @instance.import(csv:                csv,
-                       object_keys:        ["tmp/escher_lego.png"],
+                       file_paths:         files,
                        submitter:          users(:southwest_admin),
                        primary_collection: collections(:southwest_unit1_empty))
     end
@@ -229,19 +220,13 @@ class CsvImporterTest < ActiveSupport::TestCase
     files = %w[gull.jpg pooh.jpg]
     csv   = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title]
-      row << [item.id, files.map{ |f| "tmp/#{f}" }.join("||"), nil, nil, nil,
+      row << [item.id, files.join("||"), nil, nil, nil,
               nil, nil, "Title"]
     end
-
-    files.each do |file|
-      fixture = file_fixture(file)
-      S3Client.instance.put_object(bucket: PersistentStore::BUCKET,
-                                   key:    "tmp/#{file}",
-                                   body:   File.new(fixture))
-    end
+    files = files.map{ |f| file_fixture(f).to_s }
 
     @instance.import(csv:                csv,
-                     object_keys:        files.map{ |f| "tmp/#{f}" },
+                     file_paths:         files,
                      submitter:          users(:southwest_admin),
                      primary_collection: collections(:southwest_unit1_empty))
 
@@ -258,19 +243,13 @@ class CsvImporterTest < ActiveSupport::TestCase
     files = %w[gull.jpg pooh.jpg]
     csv   = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title]
-      row << [item.id, files.map{ |f| "tmp/#{f}" }.join("||"), nil, nil, nil,
+      row << [item.id, files.join("||"), nil, nil, nil,
               nil, nil, "Title"]
     end
-
-    files.each do |file|
-      fixture = file_fixture(file)
-      S3Client.instance.put_object(bucket: PersistentStore::BUCKET,
-                                   key:    "tmp/#{file}",
-                                   body:   File.new(fixture))
-    end
+    files = files.map{ |f| file_fixture(f).to_s }
 
     @instance.import(csv:                csv,
-                     object_keys:        files.map{ |f| "tmp/#{f}" },
+                     file_paths:         files,
                      submitter:          users(:southwest_admin),
                      primary_collection: collections(:southwest_unit1_empty))
 
@@ -288,7 +267,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     end
     assert_no_difference "Bitstream.count" do
       @instance.import(csv:                csv,
-                       object_keys:        ["this shouldn't be used"],
+                       file_paths:         ["this shouldn't be used"],
                        submitter:          users(:southwest_admin),
                        primary_collection: collections(:southwest_unit1_empty))
     end
@@ -299,9 +278,10 @@ class CsvImporterTest < ActiveSupport::TestCase
     csv          = File.read(File.join(package_path, "package.csv"))
 
     @instance.import(csv:                csv,
+                     file_paths:         [],
                      submitter:          users(:southwest_admin),
                      primary_collection: collections(:southwest_unit1_empty))
-    item       = Item.order(created_at: :desc).limit(1).first
+    item = Item.order(created_at: :desc).limit(1).first
 
     assert_equal 2, item.embargoes.count
     e = item.embargoes.find{ |e| e.kind == Embargo::Kind::ALL_ACCESS }
@@ -321,6 +301,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     end
     imported_items = []
     @instance.import(csv:                csv,
+                     file_paths:         [],
                      submitter:          users(:example_sysadmin),
                      primary_collection: collections(:uiuc_empty),
                      imported_items:     imported_items)
@@ -348,6 +329,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     end
     assert_raises ActiveRecord::RecordNotFound do
       @instance.import(csv:                csv,
+                       file_paths:         [],
                        submitter:          users(:example_sysadmin),
                        primary_collection: collections(:uiuc_empty))
     end
@@ -372,6 +354,7 @@ class CsvImporterTest < ActiveSupport::TestCase
       row << [item.id, nil, nil, nil, nil, nil, nil, "New Title"]
     end
     @instance.import(csv:                csv,
+                     file_paths:         [],
                      submitter:          users(:example_sysadmin),
                      primary_collection: collections(:uiuc_empty))
     item.reload
@@ -385,6 +368,7 @@ class CsvImporterTest < ActiveSupport::TestCase
       row << [item.id, nil, nil, nil, nil, nil, nil, "Title", ""]
     end
     @instance.import(csv:                csv,
+                     file_paths:         [],
                      submitter:          users(:example_sysadmin),
                      primary_collection: collections(:uiuc_empty))
     item.reload
@@ -399,6 +383,7 @@ class CsvImporterTest < ActiveSupport::TestCase
       row << [item.id, nil, nil, nil, nil, nil, nil, "New Title"]
     end
     @instance.import(csv:                csv,
+                     file_paths:         [],
                      submitter:          users(:example_sysadmin),
                      primary_collection: collections(:uiuc_empty))
     item.reload
@@ -414,6 +399,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     end
     task = Task.create!(name: "TestImport", status_text: "Lorem Ipsum")
     @instance.import(csv:                csv,
+                     file_paths:         [],
                      submitter:          users(:example_sysadmin),
                      primary_collection: collections(:uiuc_empty),
                      task:               task)
@@ -436,64 +422,6 @@ class CsvImporterTest < ActiveSupport::TestCase
     end
     assert_equal Task::Status::FAILED, task.status
     assert_equal 0, task.percent_complete
-  end
-
-  # import_from_s3()
-
-  test "import_from_s3() sets the import format" do
-    csv    = file_fixture("csv/new.csv")
-    import = imports(:uiuc_csv_file_new)
-    upload_to_s3(csv, import)
-    @instance.import_from_s3(import, users(:example_sysadmin))
-
-    assert_equal Import::Format::CSV_FILE, import.format
-  end
-
-  test "import_from_s3() creates correct items" do
-    csv    = file_fixture("csv/new.csv")
-    import = imports(:uiuc_csv_file_new)
-    upload_to_s3(csv, import)
-    @instance.import_from_s3(import, users(:example_sysadmin))
-
-    # Test the created item's immediate properties
-    item = Item.order(created_at: :desc).limit(1).first
-    assert_not_nil item.handle
-    assert_equal Item::Stages::APPROVED, item.stage
-
-    # Test metadata
-    assert_equal 4, item.elements.length
-    assert_not_nil item.element(item.institution.handle_uri_element.name) # added automatically when the handle is assigned
-    assert_equal "New CSV Item", item.element("dc:title").string
-  end
-
-  test "import_from_s3() fails the import's task upon error" do
-    csv    = file_fixture("csv/illegal_element.csv")
-    import = imports(:uiuc_csv_file_new)
-    upload_to_s3(csv, import)
-
-    assert_raises do
-      @instance.import_from_s3(import, users(:example_sysadmin))
-    end
-
-    assert_equal Task::Status::FAILED, import.task.status
-  end
-
-  test "import_from_s3() succeeds the import's task upon success" do
-    csv    = file_fixture("csv/new.csv")
-    import = imports(:uiuc_csv_file_new)
-    upload_to_s3(csv, import)
-
-    @instance.import_from_s3(import, users(:example_sysadmin))
-
-    assert_equal Task::Status::SUCCEEDED, import.task.status
-  end
-
-
-  private
-
-  def upload_to_s3(file, import)
-    PersistentStore.instance.put_object(key:  import.root_key_prefix + file.basename.to_s,
-                                        file: file)
   end
 
 end

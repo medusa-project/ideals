@@ -59,35 +59,25 @@ class Import < ApplicationRecord
   before_destroy :delete_all_files
 
   def delete_all_files
-    PersistentStore.instance.delete_objects(key_prefix: self.root_key_prefix)
+    fs_root = self.filesystem_root
+    FileUtils.rm_r(fs_root) if File.exist?(fs_root)
   end
 
   ##
-  # @return [Enumerable<String>] Key prefix of every item in the package.
+  # @return [Enumerable<String>] Enumerable of file pathnames. In general there
+  #                              will always be either zero or one.
   #
-  def item_key_prefixes
-    object_keys.map{ |k| k.split("/")[0..-2].join("/") }.uniq
+  def files
+    Dir.glob(File.join(self.filesystem_root, '**', '*')).select{ |f| File.file?(f) }
   end
 
   ##
-  # Returns an object key within the application bucket for the file with the
-  # given name. This file is used by the {SafImporter} and should be deleted
-  # following the import.
+  # @return [String]
   #
-  # @param relative_path [String] Pathname of a file contained within an SAF
-  #                               package relative to the package root.
-  # @return [String] Name of the object key for the given file within the
-  #                  application S3 bucket.
-  #
-  def object_key(relative_path)
-    root_key_prefix + relative_path.reverse.chomp("/").reverse
-  end
-
-  ##
-  # @return [Enumerable<String>] All object keys in the package.
-  #
-  def object_keys
-    PersistentStore.instance.objects(key_prefix: root_key_prefix).map(&:key)
+  def filesystem_root
+    raise "Instance not persisted" if self.id.blank?
+    tmpdir = Dir.tmpdir
+    File.join(tmpdir, "ideals_imports", self.institution.key, self.id.to_s)
   end
 
   ##
@@ -112,16 +102,20 @@ class Import < ApplicationRecord
   end
 
   ##
-  # @param io [IO]
-  # @param relative_path [String] Path of a file within an import package
-  #                               relative to the root of the package.
+  # Saves an uploaded file to a temporary location.
   #
-  def upload_io(io:, relative_path:)
-    store = PersistentStore.instance
-    key   = object_key(relative_path)
-    store.put_object(key:             key,
-                     institution_key: self.institution.key,
-                     io:              io)
+  # @param file [File]
+  # @param filename [String]
+  #
+  def save_file(file:, filename:)
+    import_root = filesystem_root
+    FileUtils.mkdir_p(import_root)
+    path = File.join(import_root, filename)
+    if file.kind_of?(File)
+      FileUtils.cp(file.path, path)
+    elsif file.kind_of?(StringIO)
+      File.copy_stream(file, path)
+    end
   end
 
 

@@ -35,38 +35,46 @@ const ImportsView = function() {
         }
 
         /**
-         * @param entry {FileSystemFileEntry}
-         * @parma onUploadedCallback {Function}
+         * @param entry {File,FileSystemFileEntry} This will be either a {File}
+         *        from a file-type input, or a {FileSystemFileEntry} from a
+         *        drop zone.
+         * @parma onUploaded {Function}
          */
-        function addFile(entry, onUploadedCallback) {
-            console.debug("addFile(): " + entry.name);
-            entry.file(function(file) {
+        function addFile(entry, onUploaded) {
+            console.debug("addFile(): adding a " + entry.constructor.name +
+                ": " + entry.name);
+
+            const onError = function(e) {
+                console.error(e);
+                alert(e);
+            };
+            const uploadFile = function(file, onSuccess, onError) {
                 const uri = $("input[name=import_uri]").val() + "/upload-file";
                 const xhr = new XMLHttpRequest();
                 xhr.open("POST", uri, true);
-                //xhr.upload.addEventListener("progress", function (e) {
-                //    console.log("onUploadProgressChanged(): " +
-                //        Math.round(e.loaded / e.total * 100));
-                //});
-                // For packages, this header value will be relative to the
-                // package root, so we will have to trim off the package dir
-                // itself. But we may also be dealing with individual files
-                // that are not packages, like CSVs, for which this will simply
-                // be the filename.
-                let relativePath = entry.fullPath.split("/").slice(2).join("/");
-                if (relativePath === "") { // root-level files
-                    const parts  = entry.fullPath.split("/");
-                    relativePath = parts[parts.length - 1];
-                }
-                xhr.setRequestHeader("X-Relative-Path", relativePath);
+                xhr.upload.addEventListener("progress", function (e) {
+                    const progressBar = $("#progress-bar");
+                    const progress    = e.loaded / e.total * 100;
+                    progressBar.attr("aria-valuenow", progress);
+                    progressBar.children(":first").css("width", progress + "%");
+                });
+                xhr.setRequestHeader("X-Filename", entry.name);
                 xhr.setRequestHeader("X-CSRF-Token", CSRF_TOKEN);
-                xhr.onloadend = onUploadedCallback;
-                xhr.onerror   = function(e) { console.error(e); };
+                xhr.onloadend = onSuccess;
+                xhr.onerror   = onError;
                 console.debug("POST " + uri);
                 xhr.send(file);
-            }, function(e) {
-                console.error(e);
-            });
+            };
+
+            if (entry.constructor.name === "File") { // File from file input
+                uploadFile(entry, completeUpload, onError);
+            } else { // FileSystemFileEntry from drop zone
+                entry.file(
+                    function(file) {
+                        uploadFile(file, onUploaded, onError);
+                    },
+                    onError);
+            }
         }
 
         function completeUpload() {

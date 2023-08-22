@@ -7,14 +7,15 @@
 # the import. The import is associated with a {Collection} into which files
 # are being imported.
 #
-# In the UI, there is a file upload "drop zone" that enables upload of some
-# kind of file or package, such as a CSV file, CSV package, or SAF package.
-# The {upload_file} method receives these files and stores them in the
-# application bucket.
+# In the UI, there is a file upload "drop zone" into which either a compressed
+# file (for packages) or a CSV file can be dropped. {upload_file} receives the
+# file and stores it on the file system.
 #
 # After all files have been uploaded, {complete} is called which invokes an
 # {ImportJob} to work asynchronously on the import using whatever importer it
 # deems necessary (e.g. {CsvImporter}, {SafImporter}, etc.)
+#
+# After the import has succeeded, the import package is deleted.
 #
 class ImportsController < ApplicationController
 
@@ -111,24 +112,24 @@ class ImportsController < ApplicationController
 
   ##
   # Receives a file uploaded via the "Edit Import" a.k.a. "Upload Package"
-  # form, writing it to the application S3 bucket.
+  # form, writing it to a temporary location on the file system. (It may be
+  # a compressed file that will need to get unzipped).
   #
-  # The request must include an `X-Relative-Path` header containing the path of
-  # the uploaded file relative to the package root.
+  # The request must include an `X-Filename` header containing the filename of
+  # the uploaded file.
   #
-  # Responds to `POST /imports/:id/upload-file`
+  # Responds to `POST /imports/:id/upload-file`.
   #
   def upload_file
-    relative_path = request.headers['X-Relative-Path']
-    if relative_path.blank?
-      render plain:  "X-Relative-Path header not provided",
+    filename = request.headers['X-Filename']
+    if filename.blank?
+      render plain:  "X-Filename header not provided",
              status: :bad_request and return
     end
     input = request.env['rack.input']
     input.rewind
     input.set_encoding(Encoding::UTF_8)
-    @import.upload_io(io:            input,
-                      relative_path: relative_path)
+    @import.save_file(file: input, filename: filename)
     head :no_content
   end
 

@@ -122,26 +122,27 @@ class CsvImporter
   # Imports items from a CSV string.
   #
   # @param csv [String] CSV string.
-  # @param object_keys [Enumerable<String>] Keys of objects in the application
-  #                                         bucket that are referenced in the
-  #                                         CSV's `files` column.
+  # @param file_paths [Enumerable<String>] Absolute paths of files that are
+  #                                        referenced in the CSV's `files`
+  #                                        column.
   # @param submitter [User]
   # @param primary_collection [Collection] Collection to import new items into.
-  # @param imported_items [Array<Hash>] For each imported item, whether created
-  #                                     or updated, a hash containing
-  #                                     `:item_id` and `:handle` keys will be
-  #                                     added.
-  # @param print_progress [Boolean] Whether to print progress updates to
-  #                                 stdout.
+  # @param imported_items [Array<Hash>]    For each imported item, whether
+  #                                        created or updated, a hash
+  #                                        containing `:item_id` and `:handle`
+  #                                        keys will be added.
+  # @param print_progress [Boolean]        Whether to print progress updates to
+  #                                        stdout.
+  # @param task [Task]                     Supply to receive status updates.
   # @return [void]
   #
   def import(csv:,
-             object_keys: [],
+             file_paths:         [],
              submitter:,
              primary_collection:,
-             imported_items: [],
-             print_progress: false,
-             task:           nil)
+             imported_items:     [],
+             print_progress:     false,
+             task:               nil)
     rows     = CSV.parse(csv)
     num_rows = rows.length - 1 # exclude header
     progress = print_progress ? Progress.new(num_rows) : nil
@@ -149,13 +150,9 @@ class CsvImporter
     # any items fail, we want the whole import to fail.
     Import.transaction do
       begin
-        validate_header(row: rows[0],
+        validate_header(row:                rows[0],
                         submission_profile: primary_collection.effective_submission_profile)
         rows[1..].each_with_index do |row, row_index|
-          status_text = "Importing #{num_rows} items from CSV"
-          progress&.report(row_index, status_text)
-          task&.progress(row_index / (rows.length - 1).to_f,
-                         status_text: status_text)
           # Create or update the item.
           item_id = row[REQUIRED_COLUMNS.index("id")]&.strip
           raise ArgumentError, "Missing item ID" if item_id.blank?
@@ -164,63 +161,31 @@ class CsvImporter
                                primary_collection: primary_collection,
                                element_names:      rows[0][REQUIRED_COLUMNS.length..],
                                row:                row,
-                               import_object_keys: object_keys)
+                               file_paths:         file_paths)
           else
             item = Item.find(item_id)
-            item = update_item(item:               item,
-                               submitter:          submitter,
-                               element_names:      rows[0][REQUIRED_COLUMNS.length..],
-                               row:                row,
-                               import_object_keys: object_keys)
+            item = update_item(item:          item,
+                               submitter:     submitter,
+                               element_names: rows[0][REQUIRED_COLUMNS.length..],
+                               row:           row,
+                               file_paths:    file_paths)
           end
           imported_items << {
             item_id: item.id,
             handle:  item.handle&.handle
           }
+          status_text = "Importing #{num_rows} items from CSV"
+          progress&.report(row_index + 1, status_text)
+          task&.progress(row_index + 1 / (num_rows - 1).to_f,
+                         status_text: status_text)
         end
       rescue => e
-        task&.fail(backtrace: e.backtrace,
-                   detail:    e.message)
+        task&.fail(detail:    e.message,
+                   backtrace: e.backtrace)
         raise e
-      else
-        task&.succeed
       end
     end
-  end
-
-  ##
-  # Imports from an {Import} instance corresponding to either a CSV file or CSV
-  # package in the application S3 bucket.
-  #
-  # @param import [Import]
-  # @param submitter [User]
-  # @return [void]
-  #
-  def import_from_s3(import, submitter)
-    # Find the CSV file.
-    object_keys      = import.object_keys
-    root_object_keys = object_keys.select{ |k| k.split("/").length == object_keys.map{ |kl| kl.split("/").length }.sort.first }
-    csv_object_key   = root_object_keys.find{ |k| k.downcase.end_with?(".csv") }
-    imported_items   = []
-    import.update!(format:         Import::Format::CSV_FILE,
-                   files:          [csv_object_key],
-                   imported_items: imported_items)
-    import.task&.update!(status: Task::Status::RUNNING)
-
-    csv = PersistentStore.instance.get_object(key: csv_object_key).read
-    import(csv:                csv,
-           object_keys:        object_keys,
-           submitter:          submitter,
-           primary_collection: import.collection,
-           imported_items:     imported_items,
-           task:               import.task)
-  rescue => e
-    import.task&.fail(detail:    e.message,
-                      backtrace: e.backtrace)
-    raise e
-  else
-    import.update!(imported_items: imported_items)
-    import.task&.succeed
+    task&.succeed
   end
 
 
@@ -230,16 +195,16 @@ class CsvImporter
                   primary_collection:,
                   element_names:,
                   row:,
-                  import_object_keys:)
+                  file_paths:         nil)
     item = CreateItemCommand.new(submitter:          submitter,
                                  institution:        primary_collection.institution,
                                  primary_collection: primary_collection,
                                  stage:              Item::Stages::APPROVED,
                                  event_description:  "Item imported from CSV.").execute
     item.assign_handle
-    associate_bitstreams(item:               item,
-                         row:                row,
-                         import_object_keys: import_object_keys)
+    associate_bitstreams(item:       item,
+                         row:        row,
+                         file_paths: file_paths) if file_paths
     ascribe_metadata(item:               item,
                      submission_profile: primary_collection.effective_submission_profile,
                      column_names:       element_names,
@@ -253,13 +218,13 @@ class CsvImporter
                   submitter:,
                   element_names:,
                   row:,
-                  import_object_keys:)
+                  file_paths:    nil)
     UpdateItemCommand.new(item:        item,
                           user:        submitter,
                           description: "Updated via CSV").execute do
-      associate_bitstreams(item:               item,
-                           row:                row,
-                           import_object_keys: import_object_keys)
+      associate_bitstreams(item:       item,
+                           row:        row,
+                           file_paths: file_paths)
       ascribe_metadata(item:               item,
                        submission_profile: item.effective_primary_collection.effective_submission_profile,
                        column_names:       element_names,
@@ -298,26 +263,16 @@ class CsvImporter
                              "the submission profile."
       end
     end
-    # TODO: remove this when confident
-    item.reload
-    if !item.element(required_elements.first)
-      raise "Missing a #{required_elements.first} element. This is a bug "\
-            "that the developer thought was fixed, but apparently not. Please "\
-            "report this bug, and also, retry your import. (It only fails "\
-            "sporadically.)"
-    end
-    # end remove
   end
 
   ##
   # @param item [Item]
   # @param row [Array<String>]
-  # @param import_object_keys [Array<String>] Keys of files to import,
-  #                                           corresponding to `files`.
+  # @param file_paths [Array<String>] Files to import.
   #
   def associate_bitstreams(item:,
                            row:,
-                           import_object_keys:)
+                           file_paths:)
     file_rel_paths    = row[REQUIRED_COLUMNS.index("files")]&.split(MULTI_VALUE_DELIMITER)
     file_descriptions = row[REQUIRED_COLUMNS.index("file_descriptions")]&.split(MULTI_VALUE_DELIMITER)
     primary           = true
@@ -327,12 +282,11 @@ class CsvImporter
       # Does the item already have a file with this name? If so, we will
       # skip it.
       unless item.bitstreams.find{ |b| b.filename == filename }
-        # Was this file actually uploaded, i.e. does it exist in the bucket?
+        # Was this file actually uploaded, i.e. does it exist on the filesystem?
         # If so, we will copy it into its permanent location within the bucket,
         # and create a Bitstream to represent it. If not, we will skip it.
-        upload_key = import_object_keys.find{ |k| k.end_with?(rel_path) }
-        if upload_key
-          store         = PersistentStore.instance
+        upload_file = file_paths.find{ |f| f.end_with?(rel_path) }
+        if upload_file
           permanent_key = Bitstream.permanent_key(institution_key: item.institution.key,
                                                   item_id:         item.id,
                                                   filename:        filename)
@@ -343,9 +297,10 @@ class CsvImporter
                             bundle_position: bundle_position,
                             primary:         primary,
                             description:     file_descriptions ? file_descriptions[file_index] : nil,
-                            length:          store.object_length(key: upload_key))
-          store.copy_object(source_key: upload_key,
-                            target_key: permanent_key)
+                            length:          File.size(upload_file))
+          PersistentStore.instance.put_object(key:             permanent_key,
+                                              institution_key: item.institution.key,
+                                              path:            upload_file)
           primary          = false
           bundle_position += 1
         end
@@ -362,8 +317,8 @@ class CsvImporter
       reasons&.any?
     if types.length != expirations.length ||
       expirations.length != reasons.length
-      raise ArgumentError, "Missing an embargo column value. Ensure that " +
-        "there are equal numbers of values (separated by " +
+      raise ArgumentError, "Missing an embargo column value. Ensure that "\
+        "there are equal numbers of values (separated by "\
         "#{MULTI_VALUE_DELIMITER}) in all embargo-related columns."
     end
     item.embargoes.destroy_all

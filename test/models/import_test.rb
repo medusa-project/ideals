@@ -16,6 +16,7 @@ class ImportTest < ActiveSupport::TestCase
   setup do
     setup_s3
     @instance = imports(:uiuc_saf_new)
+    @instance.delete_all_files
   end
 
   teardown do
@@ -32,80 +33,59 @@ class ImportTest < ActiveSupport::TestCase
 
   # delete_all_files()
 
-  test "delete_all_files() deletes all corresponding files from the application
-  S3 bucket" do
+  test "delete_all_files() deletes all corresponding files" do
     File.open(file_fixture("escher_lego.png"), "r") do |file|
-      @instance.upload_io(io:            file,
-                          relative_path: "item1/escher_lego.png")
+      @instance.save_file(file:     file,
+                          filename: File.basename(file.path))
     end
-    assert_equal 1, @instance.object_keys.length
+    assert_equal 1, @instance.files.length
 
     @instance.delete_all_files
-    assert_equal 0, @instance.object_keys.length
+    assert_equal 0, @instance.files.length
   end
 
   # destroy()
 
-  test "destroy() deletes all corresponding uploads from the application S3
-  bucket" do
+  test "destroy() deletes all corresponding uploads " do
     fixture = file_fixture("escher_lego.png")
     File.open(fixture, "r") do |file|
-      @instance.upload_io(io:            file,
-                          relative_path: "item1/escher_lego1.jpg")
+      @instance.save_file(file:     file,
+                          filename: File.basename(file.path))
     end
-    assert_equal 1, @instance.object_keys.length
+
+    assert_equal 1, @instance.files.length
 
     @instance.destroy
-    assert_empty @instance.object_keys
+    assert_equal 0, @instance.files.length
   end
 
-  # item_key_prefixes()
+  # files()
 
-  test "item_key_prefixes() returns all item key prefixes" do
+  test "files() returns a correct list of files" do
     fixture = file_fixture("escher_lego.png")
     File.open(fixture, "r") do |file|
-      @instance.upload_io(io:            file,
-                          relative_path: "item1/escher_lego1.jpg")
+      @instance.save_file(file:     file,
+                          filename: File.basename(file.path))
     end
-    File.open(fixture, "r") do |file|
-      @instance.upload_io(io:            file,
-                          relative_path: "item1/escher_lego2.jpg")
-    end
-    File.open(fixture, "r") do |file|
-      @instance.upload_io(io:            file,
-                          relative_path: "item2/escher_lego1.jpg")
-    end
-    prefixes = @instance.item_key_prefixes
-    assert_equal 2, prefixes.count
-    assert_equal "institutions/#{@instance.institution.key}/imports/#{@instance.id}/item1",
-                 prefixes[0]
-    assert_equal "institutions/#{@instance.institution.key}/imports/#{@instance.id}/item2",
-                 prefixes[1]
+
+    assert_equal 1, @instance.files.length
+    assert_equal File.join(@instance.filesystem_root, fixture.basename),
+                 @instance.files.first
   end
 
-  # object_key()
+  # filesystem_root()
 
-  test "object_key() returns a correct value" do
-    assert_equal "institutions/#{@instance.institution.key}/imports/#{@instance.id}/item1/cats.jpg",
-                 @instance.object_key("/item1/cats.jpg")
+  test "filesystem_root() raises an error for an instance that has not been
+  persisted yet" do
+    import = Import.new
+    assert_raises do
+      import.filesystem_root
+    end
   end
 
-  # object_keys()
-
-  test "object_keys() returns all object keys" do
-    fixture = file_fixture("escher_lego.png")
-    File.open(fixture, "r") do |file|
-      @instance.upload_io(io:            file,
-                          relative_path: "item1/escher_lego1.jpg")
-    end
-    File.open(fixture, "r") do |file|
-      @instance.upload_io(io:            file,
-                          relative_path: "item1/escher_lego2.jpg")
-    end
-    keys = @instance.object_keys
-    assert_equal 2, keys.count
-    assert_equal @instance.object_key("item1/escher_lego1.jpg"), keys[0]
-    assert_equal @instance.object_key("item1/escher_lego2.jpg"), keys[1]
+  test "filesystem_root() returns the instance's filesystem root" do
+    assert_equal File.join(Dir.tmpdir, "ideals_imports", @instance.institution.key, @instance.id.to_s),
+                 @instance.filesystem_root
   end
 
   # progress()
@@ -135,24 +115,21 @@ class ImportTest < ActiveSupport::TestCase
 
   test "save() deletes all uploaded files when the task is succeeded" do
     File.open(file_fixture("escher_lego.png"), "r") do |file|
-      @instance.upload_io(io:            file,
-                          relative_path: "item1/escher_lego.png")
+      @instance.save_file(file:     file,
+                          filename: File.basename(file.path))
     end
-    assert_equal 1, @instance.object_keys.length
+    assert_equal 1, @instance.files.length
     @instance.task.succeed
     @instance.save!
-    assert_equal 0, @instance.object_keys.length
+    assert_equal 0, @instance.files.length
   end
 
-  # upload_io()
+  # save_file()
 
-  test "upload_io() uploads an IO" do
-    File.open(file_fixture("escher_lego.png"), "r") do |file|
-      @instance.upload_io(io:            file,
-                          relative_path: "item1/escher_lego.png")
-    end
-    expected_key = @instance.object_key("item1/escher_lego.png")
-    assert PersistentStore.instance.object_exists?(key: expected_key)
+  test "save_file() saves a file to a temporary location" do
+    @instance.save_file(file:     File.new(file_fixture("pooh.jpg")),
+                        filename: "pooh.jpg")
+    assert File.exist?(File.join(@instance.filesystem_root, "pooh.jpg"))
   end
 
 end

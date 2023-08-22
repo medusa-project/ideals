@@ -154,15 +154,13 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
   test "delete_all_files() deletes all files associated with the import" do
     user = users(:southwest_admin)
     log_in_as(user)
+    @import.save_file(file:     File.new(file_fixture("escher_lego.png")),
+                      filename: "image.jpg")
 
-    File.open(file_fixture("escher_lego.png"), "r") do |file|
-      @import.upload_io(io:            file,
-                        relative_path: "item1/image.jpg")
-    end
-    assert_equal 1, @import.object_keys.length
+    assert_equal 1, @import.files.length
 
     post import_delete_all_files_path(@import)
-    assert_equal 0, @import.object_keys.length
+    assert_equal 0, @import.files.length
   end
 
   # edit()
@@ -306,13 +304,13 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
   test "upload_file() returns HTTP 204 for authorized users" do
     log_in_as(users(:southwest_admin))
     post import_upload_file_path(@import),
-         headers: { "X-Relative-Path": "/item1/image.jpg" },
+         headers: { "X-Filename": "image.jpg" },
          params:  { bulkfile: @bulkfile }
 
     assert_response :no_content
   end
 
-  test "upload_file() returns HTTP 400 for a missing X-Relative-Path header" do
+  test "upload_file() returns HTTP 400 for a missing X-Filename header" do
     log_in_as(users(:southwest_admin))
     post import_upload_file_path(@import),
          xhr: true,
@@ -326,13 +324,13 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
     user = users(:southwest_admin)
     log_in_as(user)
 
-    assert_equal 0, @import.object_keys.length
+    assert_equal 0, @import.files.length
 
     post import_upload_file_path(@import),
-         headers: { "X-Relative-Path": "/item1/image.jpg" },
+         headers: { "X-Filename": "image.jpg" },
          params:  { bulkfile: @bulkfile }
 
-    assert_equal 1, @import.object_keys.length
+    assert_equal 1, @import.files.length
   end
 
 end
