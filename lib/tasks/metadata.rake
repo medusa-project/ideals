@@ -1,5 +1,3 @@
-#
-
 namespace :metadata do
   desc "Changes the name of a registered element"
   task :rename_element, [:registered_element_id, :new_element_name] => :environment do |task, args|
@@ -12,14 +10,8 @@ namespace :metadata do
 end
 
 def migrate_ascribed_element(previous_registered_element_id, new_registered_element_id)
-  asc_elements=AscribedElement.where(registered_element_id: previous_registered_element_id)
-  registered=RegisteredElement.where(id: new_registered_element_id)
-  puts registered.inspect
-  asc_elements.each do |asc_element|
-    puts "\n###########  Processing: #{asc_element.inspect}"
-    asc_element.update(registered_element_id: new_registered_element_id)
-    puts "\n###########  Migrated: #{asc_element.inspect}"
-  end
+  AscribedElement.where(registered_element_id: previous_registered_element_id).
+    update_all(registered_element_id: new_registered_element_id)
 end
 
 def rename_registered_element(registered_element_id, new_element_name)
