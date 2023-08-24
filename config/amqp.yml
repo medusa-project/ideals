@@ -19,6 +19,7 @@ default: &default
   :verify:               verify_none
   :verify_peer:          false
   :fail_if_no_peer_cert: false
+  :tls_silence_warnings: true
   :heartbeat:            10
 
 development:
