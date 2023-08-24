@@ -216,6 +216,7 @@ class Institution < ApplicationRecord
             numericality: { only_integer: true }
 
   validates :active_link_color, presence: true
+  validates_presence_of :deposit_form_disagreement_help
   validates :footer_background_color, presence: true
   validates :header_background_color, presence: true
   validates_format_of :key, with: /\A[A-Za-z0-9]+\Z/, allow_blank: false

@@ -140,6 +140,12 @@ const InstitutionView = function() {
                     $("#edit-deposit-agreement-modal .modal-body").html(data);
                 });
             });
+            $("button.edit-deposit-help").on("click", function() {
+                const url = ROOT_URL + "/institutions/" + institutionKey + "/edit-deposit-help";
+                $.get(url, function(data) {
+                    $("#edit-deposit-help-modal .modal-body").html(data);
+                });
+            });
             $("button.edit-deposit-questions").on("click", function() {
                 const url = ROOT_URL + "/institutions/" + institutionKey + "/edit-deposit-questions";
                 $.get(url, function(data) {

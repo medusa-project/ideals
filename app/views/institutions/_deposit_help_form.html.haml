@@ -1,0 +1,30 @@
+= form_for(institution, url: institution_settings_path(institution), remote: true) do |f|
+  .error-messages
+    -# populated via ajax by shared/_validation_messages.js.erb
+
+  .mb-3
+    = f.label :deposit_form_disagreement_help, "Disagreement Help"
+    = f.text_area :deposit_form_disagreement_help, class: "form-control", rows: 3
+    %p.form-text
+      = icon_for(:info)
+      This text will appear when any unsatisfactory answers are supplied in
+      response to the deposit agreement questions.
+
+  .mb-3
+    = f.label :deposit_form_collection_help, "Collection Help"
+    = f.text_area :deposit_form_collection_help, class: "form-control", rows: 3
+    %p.form-text
+      = icon_for(:info)
+      This text will appear inside the collection section of the submission form.
+
+  .mb-3
+    = f.label :deposit_form_access_help, "Access Help"
+    = f.text_area :deposit_form_access_help, class: "form-control", rows: 3
+    %p.form-text
+      = icon_for(:info)
+      This text will appear inside the access section of the submission form.
+
+  .clearfix
+    .float-end
+      %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel
+      = f.submit("Save Changes", class: "btn btn-primary")

@@ -380,6 +380,17 @@ class InstitutionTest < ActiveSupport::TestCase
     @instance.delete_header_image
   end
 
+  # deposit_form_disagreement_help
+
+  test "deposit_form_disagreement_help must be present" do
+    @instance.deposit_form_disagreement_help = "Test"
+    assert @instance.valid?
+    @instance.deposit_form_disagreement_help = nil
+    assert !@instance.valid?
+    @instance.deposit_form_disagreement_help = ""
+    assert !@instance.valid?
+  end
+
   # download_count_by_month()
 
   test "download_count_by_month() raises an error if start_time > end_time" do

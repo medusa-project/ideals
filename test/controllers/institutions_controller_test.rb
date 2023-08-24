@@ -216,6 +216,31 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # edit_deposit_help()
+
+  test "edit_deposit_help() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_edit_deposit_help_path(@institution), xhr: true
+    assert_response :not_found
+  end
+
+  test "edit_deposit_help() returns HTTP 403 for logged-out users" do
+    get institution_edit_deposit_help_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_deposit_help() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    get institution_edit_deposit_help_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_deposit_help() returns HTTP 200" do
+    log_in_as(users(:southwest_admin))
+    get institution_edit_deposit_help_path(@institution), xhr: true
+    assert_response :ok
+  end
+
   # edit_deposit_questions()
 
   test "edit_deposit_questions() returns HTTP 404 for unscoped requests" do

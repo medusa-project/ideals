@@ -31,6 +31,10 @@ class InstitutionPolicy < ApplicationPolicy
     edit_settings
   end
 
+  def edit_deposit_help
+    edit_deposit_agreement
+  end
+
   def edit_deposit_questions
     edit_deposit_agreement
   end

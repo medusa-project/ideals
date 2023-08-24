@@ -82,5 +82,8 @@
       .col-sm-9
         #feedback.text-danger.ms-2
           = icon_for(:warning)
-          The selections you have made indicate that you are not ready to deposit your dataset.
-          Our curators are available to discuss your dataset with you. Please contact us!
+          - if current_institution.deposit_form_disagreement_help.present?
+            = current_institution.deposit_form_disagreement_help
+          - else
+            The selections you have made indicate that you are not ready to deposit your dataset.
+            Our curators are available to discuss your dataset with you. Please contact us!

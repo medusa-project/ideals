@@ -13,7 +13,13 @@
                                    role:             "tab",
                                    "aria-controls":  "questions-tab-pane",
                                    "aria-selected":  "false"} Questions
-
+  %li.nav-item{role: "presentation"}
+    %button#help-tab.nav-link{"data-bs-toggle": "tab",
+                              "data-bs-target": "#help-tab-pane",
+                              type:             "button",
+                              role:             "tab",
+                              "aria-controls":  "help-tab-pane",
+                              "aria-selected":  "false"} Help
 
 .tab-content
   #agreement-tab-pane.tab-pane.fade.show.active{role:              "tabpanel",
@@ -62,3 +68,35 @@
                 = response.text
             - else
               = response.text
+
+  #help-tab-pane.tab-pane.fade{role:              "tabpanel",
+                               "aria-labelledby": "help-tab",
+                               tabindex:          0}
+    .btn-group.float-end{role: "group"}
+      - if policy(@institution).edit_deposit_help?
+        -# Edit button
+        %button.btn.btn-light.edit-deposit-help{"data-bs-target": "#edit-deposit-help-modal",
+                                                "data-bs-toggle": "modal",
+                                                type:             "button"}
+          %i.fa.fa-pencil-alt
+          Edit
+    .clearfix.mb-3
+
+    %dl
+      %dt Disagreement Help
+      %dd= @institution.deposit_form_disagreement_help
+      %dt Collection Help
+      %dd= @institution.deposit_form_collection_help
+      %dt Access Help
+      %dd
+        - if @institution.deposit_form_access_help.present?
+          = @institution.deposit_form_access_help
+        - else
+          None
+
+= render partial: "shared/xhr_modal",
+         locals: { id: "edit-deposit-agreement-modal", title: "Edit Deposit Agreement" }
+= render partial: "shared/xhr_modal",
+         locals: { id: "edit-deposit-help-modal", title: "Edit Deposit Form Help" }
+= render partial: "shared/xhr_modal",
+         locals: { id: "edit-deposit-questions-modal", title: "Edit Deposit Questions", size: :lg }

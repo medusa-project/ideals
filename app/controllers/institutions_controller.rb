@@ -77,6 +77,16 @@ class InstitutionsController < ApplicationController
   end
 
   ##
+  # Used for editing the deposit form help text.
+  #
+  # Responds to `GET /institutions/:key/edit-deposit-help` (XHR only)
+  #
+  def edit_deposit_help
+    render partial: "deposit_help_form",
+           locals: { institution: @institution }
+  end
+
+  ##
   # Used for editing the deposit questions.
   #
   # Responds to `GET /institutions/:key/edit-deposit-questions` (XHR only)
@@ -848,6 +858,9 @@ class InstitutionsController < ApplicationController
                                         :author_element_id,
                                         :date_approved_element_id,
                                         :date_submitted_element_id,
+                                        :deposit_form_access_help,
+                                        :deposit_form_collection_help,
+                                        :deposit_form_disagreement_help,
                                         :google_analytics_measurement_id,
                                         :handle_uri_element_id,
                                         :title_element_id,

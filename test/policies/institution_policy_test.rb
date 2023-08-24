@@ -235,6 +235,59 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.edit_deposit_agreement?
   end
 
+  # edit_deposit_help?()
+
+  test "edit_deposit_help?() returns false with a nil user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @institution)
+    policy = InstitutionPolicy.new(context, @institution)
+    assert !policy.edit_deposit_help?
+  end
+
+  test "edit_deposit_help?() is restrictive by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.edit_deposit_help?
+  end
+
+  test "edit_deposit_help?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.edit_deposit_help?
+  end
+
+  test "edit_deposit_help?() authorizes administrators of the same
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, user.institution)
+    assert policy.edit_deposit_help?
+  end
+
+  test "edit_deposit_help?() does not authorize administrators of different
+  institutions" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.edit_deposit_help?
+  end
+
+  test "edit_deposit_help?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.edit_deposit_help?
+  end
+
   # edit_deposit_questions?()
 
   test "edit_deposit_questions?() returns false with a nil user" do

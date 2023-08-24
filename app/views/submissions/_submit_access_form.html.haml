@@ -7,6 +7,11 @@
   #access-messages.error-messages
     -# populated via ajax
 
+  - if current_institution.deposit_form_access_help.present?
+    .alert.alert-light
+      = icon_for(:info)
+      = current_institution.deposit_form_access_help
+
   %section#type-section
     .row.mb-3
       .col-sm-10

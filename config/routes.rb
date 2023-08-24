@@ -88,6 +88,8 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/edit-deposit-agreement", to: "institutions#edit_deposit_agreement", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/edit-deposit-help", to: "institutions#edit_deposit_help", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/edit-deposit-questions", to: "institutions#edit_deposit_questions", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-local-authentication", to: "institutions#edit_local_authentication", via: :get,

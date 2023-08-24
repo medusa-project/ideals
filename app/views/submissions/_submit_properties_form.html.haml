@@ -10,14 +10,10 @@
   = f.hidden_field :initial_primary_collection_unit_id, value: f.object&.primary_collection&.primary_unit&.id
   = f.hidden_field :initial_primary_collection_id, value: f.object.primary_collection&.id
 
-  - if current_institution.key == "uiuc"
+  - if current_institution.deposit_form_collection_help.present?
     .alert.alert-light
       = icon_for(:info)
-      = current_institution.service_name
-      items are organized by academic unit and collection.
-      If you are depositing your own research and unsure which collection to
-      deposit into, the Illinois Research and Scholarship (Open Collection)
-      can be used.
+      = current_institution.deposit_form_collection_help
 
   %section#unit-section
     %p Select the unit into which you would like to deposit the item.
