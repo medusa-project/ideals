@@ -35,6 +35,25 @@ class AscribedElement < ApplicationRecord
   validate :registered_element_and_item_are_of_same_institution
 
   ##
+  # Generates a two-column report with distinct element value (string) in the
+  # first column and number of uses of string by items in the second column, in
+  # descending order by the second column.
+  #
+  # @param element [RegisteredElement]
+  # @return [Enumerable<Hash<String,Integer>>]
+  #
+  def self.usage_frequencies(element)
+    sql = "SELECT ae.string AS string, COUNT(i.id) AS item_count
+      FROM ascribed_elements ae
+      LEFT JOIN items i ON ae.item_id = i.id
+      LEFT JOIN registered_elements re ON ae.registered_element_id = re.id
+      WHERE re.id = #{element.id}
+      GROUP BY string
+      ORDER BY item_count DESC, string ASC;"
+    ActiveRecord::Base.connection.exec_query(sql)
+  end
+
+  ##
   # @return [Date, nil] Instance corresponding to the string value if it can be
   #                     parsed; otherwise `nil`.
   #
