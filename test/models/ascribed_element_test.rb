@@ -16,6 +16,16 @@ class AscribedElementTest < ActiveSupport::TestCase
     assert !@instance.valid?
   end
 
+  # usage_frequencies()
+
+  test "usage_frequencies() returns a value" do
+    # Fully testing this won't be worthwhile, so we will just test that it
+    # returns the expected type.
+    reg_e  = registered_elements(:southwest_dc_subject)
+    result = AscribedElement.usage_frequencies(reg_e)
+    assert_equal 0, result.length
+  end
+
   # date()
 
   test "date() returns a valid instance with a string containing ISO 8601" do

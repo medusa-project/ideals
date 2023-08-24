@@ -1,5 +1,20 @@
 namespace :elements do
 
+  desc "Reports the number of uses by items"
+  task :report_item_frequencies, [:institution_key, :element_name] => :environment do |task, args|
+    institution = Institution.find_by_key(args[:institution_key])
+    reg_e       = RegisteredElement.find_by(institution: institution,
+                                            name:        args[:element_name])
+    results     = AscribedElement.usage_frequencies(reg_e)
+
+    output_string = CSV.generate do |csv|
+      results.each do |row|
+        csv << [row['string'], row['item_count']]
+      end
+    end
+    puts output_string
+  end
+
   desc "Changes the name of a registered element"
   task :rename_element, [:registered_element_id, :new_element_name] => :environment do |task, args|
     rename_registered_element(args[:registered_element_id], args[:new_element_name])
