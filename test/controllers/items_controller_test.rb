@@ -146,6 +146,17 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  test "download_counts() returns HTTP 400 for illegal arguments" do
+    log_in_as(users(:uiuc_admin))
+    get item_download_counts_path(items(:uiuc_item1),
+                                  from_year:  2023,
+                                  from_month: 2,
+                                  to_year:    2022,
+                                  to_month:   2,
+                                  format:     :csv)
+    assert_response :bad_request
+  end
+
   test "download_counts() returns HTTP 200 for CSV" do
     log_in_as(users(:uiuc_admin))
     get item_download_counts_path(items(:uiuc_item1),

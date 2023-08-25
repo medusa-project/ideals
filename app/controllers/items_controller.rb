@@ -59,11 +59,16 @@ class ItemsController < ApplicationController
   # Responds to `GET /items/:id/download-counts`
   #
   def download_counts
-    results = MonthlyItemDownloadCount.for_item(item:        @item,
-                                                start_year:  params[:from_year].to_i,
-                                                start_month: params[:from_month].to_i,
-                                                end_year:    params[:to_year].to_i,
-                                                end_month:   params[:to_month].to_i)
+    begin
+      results = MonthlyItemDownloadCount.for_item(item:        @item,
+                                                  start_year:  params[:from_year].to_i,
+                                                  start_month: params[:from_month].to_i,
+                                                  end_year:    params[:to_year].to_i,
+                                                  end_month:   params[:to_month].to_i)
+    rescue ArgumentError => e
+      render plain: "#{e}", status: :bad_request
+      return
+    end
     respond_to do |format|
       format.html do
         @counts_by_month = results
