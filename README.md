@@ -19,6 +19,7 @@ This is a getting-started guide and brief technical manual for developers.
     * [Dependencies](#Dependencies)
     * [InstallationWithDocker](#InstallationWithDocker)
     * [InstallationWithoutDocker](#InstallationWithoutDocker)
+    * [CronTasks](#CronTasks)
 * [DesignConcepts](#DesignConcepts)
     * [Authentication](#Authentication)
     * [Authorization](#Authorization) 
@@ -173,6 +174,15 @@ identity authentication:
 ```sh
 rails users:create_local_sysadmin[email,password,name,institution_key]
 ```
+
+## CronTasks
+
+These tasks are run via cron in the demo and production environments:
+
+* `medusa:messages:fetch` (every 5 minutes)
+* `downloads:cleanup` (daily)
+* `db:sessions:trim` (daily)
+* `institutions:update_auth_metadata` (daily)
 
 # DesignConcepts
 
