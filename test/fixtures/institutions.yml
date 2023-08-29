@@ -24,6 +24,8 @@ example:
   fqdn:                           example.edu
   name:                           Example University
   service_name:                   Example IR
+  local_auth_enabled:             true
+  saml_auth_enabled:              true
   sso_federation:                 <%= Institution::SSOFederation::OPENATHENS %>
   saml_idp_entity_id:             https://idp.example.edu
   saml_email_attribute:           emailAddress

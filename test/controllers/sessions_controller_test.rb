@@ -13,7 +13,8 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
   # create()
 
-  test "create() with invalid credentials redirects to failure route" do
+  test "create() with identity strategy with invalid credentials redirects to
+  failure route" do
     post "/auth/identity/callback", params: {
         auth_key: "bogus@example.edu",
         password: "WRONG"
@@ -21,7 +22,8 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to @institution.scope_url + "/auth/failure?message=invalid_credentials&strategy=identity"
   end
 
-  test "create() with a disabled user redirects to the return URL" do
+  test "create() with identity strategy with a disabled user redirects to the
+  return URL" do
     user = users(:example)
     user.update!(enabled: false)
     post "/auth/identity/callback", params: {
@@ -31,7 +33,8 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to @institution.scope_url
   end
 
-  test "create() via XHR with a disabled user returns HTTP 403" do
+  test "create() with identity strategy via XHR with a disabled user returns
+  HTTP 403" do
     user = users(:example)
     user.update!(enabled: false)
     post "/auth/identity/callback", params: {
@@ -41,8 +44,8 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test "create() via XHR with non-sysadmin user of different institution
-  returns HTTP 403" do
+  test "create() with identity strategy via XHR with non-sysadmin user of
+  different institution returns HTTP 403" do
     user = users(:northeast)
     post "/auth/identity/callback", params: {
       auth_key: user.email,
@@ -51,8 +54,8 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test "create() via XHR with sysadmin user of different institution redirects
-  to the return URL" do
+  test "create() with identity strategy via XHR with sysadmin user of different
+  institution redirects to the return URL" do
     user = users(:southwest_sysadmin)
     post "/auth/identity/callback", params: {
       auth_key: user.email,
@@ -61,7 +64,8 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to @institution.scope_url
   end
 
-  test "create() with valid credentials redirects to the institution root URL" do
+  test "create() with identity strategy with valid credentials redirects to the
+  institution root URL" do
     user = users(:example)
     post "/auth/identity/callback", params: {
         auth_key: user.email,
@@ -70,8 +74,8 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to @institution.scope_url
   end
 
-  test "create() via XHR with valid credentials redirects to the institution
-  root URL" do
+  test "create() with identity strategy via XHR with valid credentials
+  redirects to the institution root URL" do
     user = users(:example)
     post "/auth/identity/callback", params: {
       auth_key: user.email,
@@ -80,7 +84,8 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to @institution.scope_url
   end
 
-  test "create() with valid credentials ascribes a correct Login object" do
+  test "create() with identity strategy with valid credentials ascribes a
+  correct Login object" do
     user = users(:example)
     user.logins.destroy_all
     post "/auth/identity/callback", params: {
@@ -95,6 +100,25 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_not_nil login.ip_address
     assert_not_nil login.auth_hash
     assert_not_nil login.provider
+  end
+
+  test "create() with saml strategy with a disabled user redirects to the
+  return URL" do
+    skip # TODO: figure out how to write this
+  end
+
+  test "create() with saml strategy with sysadmin user of different institution
+  redirects to the return URL" do
+    skip # TODO: figure out how to write this
+  end
+
+  test "create() with saml strategy redirects to the institution root URL" do
+    skip # TODO: figure out how to write this
+  end
+
+  test "create() with saml strategy with valid credentials ascribes a correct
+  Login object" do
+    skip # TODO: figure out how to write this
   end
 
   # destroy()
