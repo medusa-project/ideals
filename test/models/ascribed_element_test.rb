@@ -22,7 +22,9 @@ class AscribedElementTest < ActiveSupport::TestCase
     # Fully testing this won't be worthwhile, so we will just test that it
     # returns the expected type.
     reg_e  = registered_elements(:southwest_dc_subject)
-    result = AscribedElement.usage_frequencies(reg_e)
+    result = AscribedElement.usage_frequencies(element:    reg_e,
+                                               start_time: Time.new(2022, 3, 5),
+                                               end_time:   Time.now)
     assert_equal 0, result.length
   end
 
