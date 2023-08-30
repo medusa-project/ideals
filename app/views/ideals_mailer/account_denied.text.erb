@@ -1,7 +1,7 @@
 Thank you for your interest in <%= @invitee.institution.service_name %>.
 
 <% if @invitee.rejection_reason.present? %>
-We have denied your account request:
+We have denied your account request for the following reason:
 
 <%= word_wrap(@invitee.rejection_reason) %>
 <% else %>

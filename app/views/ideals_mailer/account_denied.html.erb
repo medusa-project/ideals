@@ -1,7 +1,8 @@
 <p>Thank you for your interest in <%= @institution.service_name %>.</p>
 
 <% if @invitee.rejection_reason.present? %>
-  <p>We have denied your account request: <%= @invitee.rejection_reason %></p>
+  <p>We have denied your account request for the following reason:</p>
+  <p><%= @invitee.rejection_reason %></p>
 <% else %>
   <p>We have denied your account request.</p>
 <% end %>
