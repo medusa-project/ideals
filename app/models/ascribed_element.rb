@@ -40,15 +40,23 @@ class AscribedElement < ApplicationRecord
   # descending order by the second column.
   #
   # @param element [RegisteredElement]
+  # @param start_time [Time]
+  # @param end_time [Time]
   # @return [Enumerable<Hash<String,Integer>>]
   #
-  def self.usage_frequencies(element)
+  def self.usage_frequencies(element:, start_time: nil, end_time: nil)
     sql = "SELECT ae.string AS string, COUNT(i.id) AS item_count
       FROM ascribed_elements ae
       LEFT JOIN items i ON ae.item_id = i.id
       LEFT JOIN registered_elements re ON ae.registered_element_id = re.id
-      WHERE re.id = #{element.id}
-      GROUP BY string
+      WHERE re.id = #{element.id} "
+    if start_time
+      sql += "AND i.created_at >= '#{start_time.strftime("%Y-%m-%d")}' "
+    end
+    if end_time
+      sql += "AND i.created_at < '#{end_time.strftime("%Y-%m-%d")}' "
+    end
+    sql += "GROUP BY string
       ORDER BY item_count DESC, string ASC;"
     ActiveRecord::Base.connection.exec_query(sql)
   end
