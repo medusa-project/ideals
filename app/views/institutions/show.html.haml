@@ -217,6 +217,16 @@
                                        "aria-selected":  "false"}
         = icon_for(UserGroup)
         User Groups
+    - if policy(@institution).show_access?
+      %button#access-tab.nav-link{"data-bs-target":       "#access-tab-content",
+                                  "data-bs-toggle":       "pill",
+                                  role:                   "tab",
+                                  type:                   "button",
+                                  "aria-controls":        "access-tab-content",
+                                  "aria-selected":        "false",
+                                  "data-institution-key": @institution.key}
+        %i.fa.fa-users
+        Access
     - if policy(@institution).show_statistics?
       %button#statistics-tab.nav-link{"data-bs-target":       "#statistics-tab-content",
                                       "data-bs-toggle":       "pill",
@@ -237,16 +247,6 @@
                                  "data-institution-key": @institution.key}
         %i.fa.fa-chart-bar
         Usage
-    - if policy(@institution).show_access?
-      %button#access-tab.nav-link{"data-bs-target":       "#access-tab-content",
-                                  "data-bs-toggle":       "pill",
-                                  role:                   "tab",
-                                  type:                   "button",
-                                  "aria-controls":        "access-tab-content",
-                                  "aria-selected":        "false",
-                                  "data-institution-key": @institution.key}
-        %i.fa.fa-users
-        Access
 
   .tab-content.w-100
     - if policy(@institution).show_properties?
