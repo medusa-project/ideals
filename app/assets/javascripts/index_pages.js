@@ -1,27 +1,28 @@
-const IndexPages = {
+/**
+ * Handles index pages view (/index-pages).
+ */
+const IndexPagesView = {
 
-    AddIndexPageClickHandler: function() {
-        const ROOT_URL      = $('input[name="root_url"]').val();
-        const institutionID = $("input[name=institution_id]").val();
-        const url           = ROOT_URL + "/index-pages/new?" +
-            "index_page%5Binstitution_id%5D=" + institutionID;
-        $.get(url, function(data) {
-            $("#add-index-page-modal .modal-body").html(data);
+    initialize: function () {
+        $("button.add-index-page").on("click", function () {
+            const ROOT_URL = $('input[name="root_url"]').val();
+            const institutionID = $("input[name=institution_id]").val();
+            const url = ROOT_URL + "/index-pages/new?" +
+                "index_page%5Binstitution_id%5D=" + institutionID;
+            $.get(url, function (data) {
+                $("#add-index-page-modal .modal-body").html(data);
+            });
         });
-    },
+    }
 
-    /**
-     * Handles index pages view (/index-pages).
-     */
-    IndexPagesView: function() {
-        $("button.add-index-page").on("click",
-            IndexPages.AddIndexPageClickHandler);
-    },
+};
 
-    /**
-     * Handles show-index-page view (/index-pages/:id).
-     */
-    IndexPageView: function() {
+/**
+ * Handles show-index-page view (/index-pages/:id).
+ */
+const IndexPageView = {
+
+    initialize: function() {
         const ROOT_URL = $('input[name="root_url"]').val();
         $("button.edit-index-page").on("click", function() {
             const url = ROOT_URL + "/index-pages/" + $(this).data("id") + "/edit";
@@ -35,8 +36,8 @@ const IndexPages = {
 
 $(document).ready(function() {
     if ($("body#index_pages").length) {
-        new IndexPages.IndexPagesView();
+        IndexPagesView.initialize();
     } else if ($("body#show_index_page").length) {
-        new IndexPages.IndexPageView();
+        IndexPageView.initialize();
     }
 });

@@ -1,30 +1,34 @@
-const Units = {
+/**
+ * Handles list-units view.
+ */
+const UnitsView = {
 
-    AddUnitClickHandler: function() {
+    AddUnitClickHandler: function () {
         const institutionID = $("[name=institution_id]").val();
-        const url           = "/units/new?unit%5Binstitution_id%5D=" + institutionID;
-        $.get(url, function(data) {
+        const url = "/units/new?unit%5Binstitution_id%5D=" + institutionID;
+        $.get(url, function (data) {
             $("#add-unit-modal .modal-body").html(data);
         });
     },
 
-    /**
-     * Handles list-units view.
-     */
-    UnitsView: function() {
+    initialize: function () {
         new IDEALS.UIUtils.ExpandableResourceList();
         new IDEALS.UIUtils.UserAutocompleter(
             $("input[name=primary_administrator], input[name='administering_users[]']"),
             true);
         new IDEALS.UIUtils.MultiElementList();
 
-        $(".add-unit").on("click", Units.AddUnitClickHandler);
-    },
+        $(".add-unit").on("click", UnitsView.AddUnitClickHandler);
+    }
 
-    /**
-     * Handles show-unit view.
-     */
-    UnitView: function() {
+}
+
+/**
+ * Handles show-unit view.
+ */
+const UnitView = {
+
+    initialize: function() {
         const ROOT_URL      = $('input[name="root_url"]').val();
         const institutionID = $("[name=institution_id]").val();
         const unitID        = $("[name=unit_id]").val();
@@ -236,16 +240,16 @@ const Units = {
             $.get(url, function (data) {
                 $("#review-submissions-tab-content").html(data);
 
-                new IDEALS.UIUtils.CheckAllButton($('.check-all'),
+                new IDEALS.UIUtils.CheckAllButton($(".check-all"),
                     $('#review-form input[type=checkbox]'));
 
-                const form = $('form#review-form');
+                const form = $("form#review-form");
                 const verb = form.find("[name=verb]");
-                $('.approve-checked').on('click', function() {
+                $(".approve-checked").on('click', function() {
                     verb.val("approve");
                     form.submit();
                 });
-                $('.reject-checked').on('click', function() {
+                $(".reject-checked").on('click', function() {
                     verb.val("reject");
                     form.submit();
                 });
@@ -264,8 +268,8 @@ const Units = {
 
 $(document).ready(function() {
     if ($("body#list_units").length) {
-        new Units.UnitsView();
+        UnitsView.initialize();
     } else if ($("body#show_unit").length) {
-        new Units.UnitView();
+        UnitView.initialize();
     }
 });

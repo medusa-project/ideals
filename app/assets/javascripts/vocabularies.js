@@ -1,39 +1,37 @@
-const Vocabularies = {
+/**
+ * Handles list-vocabularies view (/vocabularies).
+ */
+const VocabulariesView = {
 
-    AddVocabularyClickHandler: function() {
-        const ROOT_URL      = $('input[name="root_url"]').val();
-        const institutionID = $("[name=institution_id]").val();
-        const url           = ROOT_URL + "/vocabularies/new?" +
-            "vocabulary%5Binstitution_id%5D=" + institutionID;
-        $.get(url, function(data) {
-            $("#add-vocabulary-modal .modal-body").html(data);
+    initialize: function () {
+        $('button.add-vocabulary').on("click", function () {
+            const ROOT_URL      = $('input[name="root_url"]').val();
+            const institutionID = $("[name=institution_id]").val();
+            const url           = ROOT_URL + "/vocabularies/new?" +
+                "vocabulary%5Binstitution_id%5D=" + institutionID;
+            $.get(url, function (data) {
+                $("#add-vocabulary-modal .modal-body").html(data);
+            });
         });
-    },
-
-    EditVocabularyClickHandler: function() {
-        const ROOT_URL     = $('input[name="root_url"]').val();
-        const vocabularyID = $(this).data("vocabulary-id");
-        const url          = ROOT_URL + "/vocabularies/" + vocabularyID +
-            "/edit";
-        $.get(url, function(data) {
-            $("#edit-vocabulary-modal .modal-body").html(data);
+        $('button.edit-vocabulary').on("click", function () {
+            const ROOT_URL     = $('input[name="root_url"]').val();
+            const vocabularyID = $(this).data("vocabulary-id");
+            const url          = ROOT_URL + "/vocabularies/" + vocabularyID +
+                "/edit";
+            $.get(url, function (data) {
+                $("#edit-vocabulary-modal .modal-body").html(data);
+            });
         });
-    },
+    }
 
-    /**
-     * Handles list-vocabularies view (/vocabularies).
-     */
-    VocabulariesView: function() {
-        $('button.add-vocabulary').on("click",
-            Vocabularies.AddVocabularyClickHandler);
-        $('button.edit-vocabulary').on("click",
-            Vocabularies.EditVocabularyClickHandler);
-    },
+};
 
-    /**
-     * Handles show-vocabulary view (/vocabularies/:id).
-     */
-    VocabularyView: function() {
+/**
+ * Handles show-vocabulary view (/vocabularies/:id).
+ */
+const VocabularyView = {
+
+    initialize: function() {
         const ROOT_URL = $('input[name="root_url"]').val();
 
         $('button.edit-vocabulary').on("click",
@@ -89,9 +87,9 @@ const Vocabularies = {
 };
 
 $(document).ready(function() {
-    if ($('body#vocabularies').length) {
-        new Vocabularies.VocabulariesView();
+    if ($("body#vocabularies").length) {
+        VocabulariesView.initialize();
     } else if ($("body#show_vocabulary").length) {
-        new Vocabularies.VocabularyView();
+        VocabularyView.initialize();
     }
 });

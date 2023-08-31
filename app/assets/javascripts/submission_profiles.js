@@ -1,45 +1,49 @@
-const SubmissionProfiles = {
+/**
+ * Handles list-submission-profiles view (/submission-profiles).
+ */
+const SubmissionProfilesView = {
 
-    AddSubmissionProfileClickHandler: function() {
-        const ROOT_URL      = $("input[name=root_url]").val();
+    AddSubmissionProfileClickHandler: function () {
+        const ROOT_URL = $("input[name=root_url]").val();
         const institutionID = $("input[name=institution_id]").val();
-        const url           = ROOT_URL + "/submission-profiles/new?" +
+        const url = ROOT_URL + "/submission-profiles/new?" +
             "submission_profile%5Binstitution_id%5D=" + institutionID;
-        $.get(url, function(data) {
+        $.get(url, function (data) {
             $("#add-submission-profile-modal .modal-body").html(data);
             new IDEALS.UIUtils.CheckAllButton($('.check-all'),
                 $("input[name='elements[]'][data-required=false]"));
         });
     },
 
-    EditSubmissionProfileClickHandler: function() {
-        const ROOT_URL   = $("input[name=root_url]").val();
+    EditSubmissionProfileClickHandler: function () {
+        const ROOT_URL = $("input[name=root_url]").val();
         const profile_id = $(this).data("submission-profile-id");
-        const url        = ROOT_URL + "/submission-profiles/" + profile_id +
+        const url = ROOT_URL + "/submission-profiles/" + profile_id +
             "/edit";
-        $.get(url, function(data) {
+        $.get(url, function (data) {
             $("#edit-submission-profile-modal .modal-body").html(data);
         });
     },
 
-    /**
-     * Handles list-metadata-profiles view (/metadata-profiles).
-     */
-    SubmissionProfilesView: function() {
+    initialize: function () {
         $('button.add-submission-profile').on("click",
-            SubmissionProfiles.AddSubmissionProfileClickHandler);
+            SubmissionProfilesView.AddSubmissionProfileClickHandler);
         $('button.edit-submission-profile').on("click",
-            SubmissionProfiles.EditSubmissionProfileClickHandler);
-    },
+            SubmissionProfilesView.EditSubmissionProfileClickHandler);
+    }
 
-    /**
-     * Handles show-submission-profile view (/submission-profiles/:id).
-     */
-    SubmissionProfileView: function() {
+}
+
+/**
+ * Handles show-submission-profile view (/submission-profiles/:id).
+ */
+const SubmissionProfileView = {
+
+    initialize: function() {
         const ROOT_URL = $('input[name="root_url"]').val();
 
         $('button.edit-submission-profile').on("click",
-            SubmissionProfiles.EditSubmissionProfileClickHandler);
+            SubmissionProfilesView.EditSubmissionProfileClickHandler);
         $("button.add-element").on("click", function() {
             const profile_id = $(this).data("submission-profile-id");
             const url        = ROOT_URL + "/submission-profiles/" + profile_id +
@@ -65,8 +69,8 @@ const SubmissionProfiles = {
 
 $(document).ready(function() {
     if ($("body#submission_profiles").length) {
-        new SubmissionProfiles.SubmissionProfilesView();
+        SubmissionProfilesView.initialize();
     } else if ($("body#show_submission_profile").length) {
-        new SubmissionProfiles.SubmissionProfileView();
+        SubmissionProfileView.initialize();
     }
 });

@@ -1,4 +1,7 @@
-const RegisteredElements = {
+/**
+ * Handles list-registered-elements view (/registered-elements).
+ */
+const RegisteredElementsView = {
 
     AddRegisteredElementClickHandler: function() {
         const ROOT_URL = $("input[name=root_url]").val();
@@ -32,10 +35,7 @@ const RegisteredElements = {
         });
     },
 
-    /**
-     * @constructor
-     */
-    RegisteredElementsView: function() {
+    initialize: function() {
         // Implement a simple client-side search.
         $("[name=q]").on("keyup", function(e) {
             if (e.which === 13) { // disable submission on enter
@@ -58,15 +58,15 @@ const RegisteredElements = {
             }
         });
         $("button.add-element").on("click",
-            RegisteredElements.AddRegisteredElementClickHandler);
+            RegisteredElementsView.AddRegisteredElementClickHandler);
         $('button.edit-element').on('click',
-            RegisteredElements.EditRegisteredElementClickHandler);
+            RegisteredElementsView.EditRegisteredElementClickHandler);
     }
 
 }
 
 $(document).ready(function() {
     if ($("body#registered_elements, body#template_elements").length) {
-        new RegisteredElements.RegisteredElementsView();
+        new RegisteredElementsView.initialize();
     }
 });

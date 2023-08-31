@@ -1,7 +1,5 @@
 /**
  * Handles list-imports view (/imports).
- *
- * @constructor
  */
 const ImportsView = {
 
