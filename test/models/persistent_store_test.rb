@@ -12,7 +12,7 @@ class PersistentStoreTest < ActiveSupport::TestCase
 
   teardown do
     bucket = ::Configuration.instance.storage[:bucket]
-    S3Client.instance.delete_objects(bucket: bucket, key_prefix: "/")
+    S3Client.instance.delete_objects(bucket: bucket, key_prefix: "")
   end
 
   # copy_object()
@@ -263,19 +263,6 @@ class PersistentStoreTest < ActiveSupport::TestCase
   test "put_object() does not set the ACL of the uploaded object if the public
   argument is false" do
     skip # we can't test this because MinIO doesn't support ACLs
-  end
-
-  test "put_object() sets tags on the uploaded object" do
-    store = PersistentStore.instance
-    file  = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")
-    key   = "institutions/ins1/test"
-    store.put_object(key: key, path: file)
-
-    bucket   = ::Configuration.instance.storage[:bucket]
-    response = S3Client.instance.get_object_tagging(bucket: bucket, key: key)
-    tag      = response.to_h[:tag_set][0]
-    assert_equal "institution_key", tag[:key]
-    assert_equal "ins1", tag[:value]
   end
 
   # upload_path()

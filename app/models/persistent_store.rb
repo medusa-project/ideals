@@ -157,25 +157,13 @@ class PersistentStore
   #                                        public-read ACL assigned to it.
   #
   def put_object(key:,
-                 institution_key: nil,
-                 data:            nil,
-                 path:            nil,
-                 file:            nil,
-                 io:              nil,
-                 public:          false)
+                 data:   nil,
+                 path:   nil,
+                 file:   nil,
+                 io:     nil,
+                 public: false)
     if !data && !path && !file && !io
       raise ArgumentError, "One of the source arguments must be provided."
-    end
-    unless institution_key
-      result = key.match(/\Ainstitutions\/(\w+)/i)
-      institution_key = result.captures[0] if result
-    end
-    if institution_key
-      tags = {}
-      tags[INSTITUTION_KEY_TAG] = institution_key
-      tagging = tags.map{ |k,v| "#{CGI.escape(k)}=#{CGI.escape(v)}" }.join("&")
-    else
-      tagging = nil
     end
 
     if path || file
@@ -187,18 +175,11 @@ class PersistentStore
         object(key).
         upload_file(path || file)
       attach_public_acl(key) if public
-      if institution_key
-        S3Client.instance.set_tag(bucket:    BUCKET,
-                                  key:       key,
-                                  tag_key:   INSTITUTION_KEY_TAG,
-                                  tag_value: institution_key)
-      end
     else
       S3Client.instance.put_object(bucket:  BUCKET,
                                    key:     key,
                                    acl:     public ? "public-read" : "private",
-                                   body:    data || io,
-                                   tagging: tagging)
+                                   body:    data || io)
     end
   end
 

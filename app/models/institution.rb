@@ -610,10 +610,9 @@ class Institution < ApplicationRecord
           size       = "#{icon[:size]}x#{icon[:size]}"
           `convert #{master_path} -background none -resize #{size} -gravity center -extent #{size} #{deriv_path}`
           dest_key   = "#{key_prefix}favicon-#{icon[:size]}x#{icon[:size]}.png"
-          PersistentStore.instance.put_object(key:             dest_key,
-                                              institution_key: self.key,
-                                              path:            deriv_path,
-                                              public:          true)
+          PersistentStore.instance.put_object(key:    dest_key,
+                                              path:   deriv_path,
+                                              public: true)
           task&.progress(index / InstitutionsHelper::FAVICONS.length.to_f)
         end
       end
@@ -771,10 +770,9 @@ class Institution < ApplicationRecord
       # Upload the "master favicon"
       key_prefix = self.class.image_key_prefix(self.key)
       dest_key   = key_prefix + "favicons/favicon-original.png"
-      PersistentStore.instance.put_object(key:             dest_key,
-                                          institution_key: self.key,
-                                          path:            tempfile.path,
-                                          public:          true)
+      PersistentStore.instance.put_object(key:    dest_key,
+                                          path:   tempfile.path,
+                                          public: true)
       self.update!(has_favicon: true)
       regenerate_favicons(task: task)
       task&.succeed

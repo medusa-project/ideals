@@ -257,9 +257,8 @@ class Item < ApplicationRecord
 
           # Upload the zip file into the application S3 bucket.
           File.open(zip_pathname, "r") do |file|
-            PersistentStore.instance.put_object(key:             dest_key,
-                                                institution_key: institution.key,
-                                                file:            file)
+            PersistentStore.instance.put_object(key:  dest_key,
+                                                file: file)
           end
         end
       end

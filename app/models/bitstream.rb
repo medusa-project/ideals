@@ -254,9 +254,8 @@ class Bitstream < ApplicationRecord
 
       # Upload the zip file into the application S3 bucket.
       File.open(zip_pathname, "r") do |file|
-        PersistentStore.instance.put_object(key:             dest_key,
-                                            institution_key: bitstreams.first.institution.key,
-                                            file:            file)
+        PersistentStore.instance.put_object(key:  dest_key,
+                                            file: file)
       end
     end
   end
@@ -679,9 +678,8 @@ class Bitstream < ApplicationRecord
   # @param file [String]
   #
   def upload_to_permanent(file)
-    PersistentStore.instance.put_object(key:             self.permanent_key,
-                                        institution_key: self.institution.key,
-                                        path:            file)
+    PersistentStore.instance.put_object(key:  self.permanent_key,
+                                        path: file)
     self.update!(length: File.size(file))
   end
 
@@ -696,9 +694,8 @@ class Bitstream < ApplicationRecord
   # @param io [IO]
   #
   def upload_to_staging(io)
-    PersistentStore.instance.put_object(key:             self.staging_key,
-                                        institution_key: self.institution.key,
-                                        io:              io)
+    PersistentStore.instance.put_object(key: self.staging_key,
+                                        io:  io)
     self.update!(length: io.size)
   end
 
@@ -753,9 +750,8 @@ class Bitstream < ApplicationRecord
         status     = $?.exitstatus
         raise "Command returned status code #{status}: #{command}" unless result
         File.open(deriv_path, "rb") do |file|
-          PersistentStore.instance.put_object(key:             target_key,
-                                              institution_key: self.institution.key,
-                                              file:            file)
+          PersistentStore.instance.put_object(key:  target_key,
+                                              file: file)
         end
       end
     rescue => e
