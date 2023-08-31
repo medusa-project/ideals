@@ -181,6 +181,15 @@
                                        "aria-selected":  "false"}
         = icon_for(IndexPage)
         Index Pages
+    - if policy(@institution).show_imports?
+      %button#imports-tab.nav-link{"data-bs-target": "#imports-tab-content",
+                                   "data-bs-toggle": "pill",
+                                   role:             "tab",
+                                   type:             "button",
+                                   "aria-controls":  "imports-tab-content",
+                                   "aria-selected":  "false"}
+        = icon_for(Import)
+        Imports
     - if policy(@institution).show_invitees?
       %button#invitees-tab.nav-link{"data-bs-target": "#invitees-tab-content",
                                     "data-bs-toggle": "pill",
@@ -323,6 +332,11 @@
     - if policy(@institution).show_submissions_in_progress?
       #submissions-in-progress-tab-content.tab-pane.fade{role:              "tabpanel",
                                                          "aria-labelledby": "submissions-in-progress-tab"}
+        = spinner
+
+    - if policy(@institution).show_imports?
+      #imports-tab-content.tab-pane.fade{role:              "tabpanel",
+                                         "aria-labelledby": "imports-tab"}
         = spinner
 
     - if policy(@institution).show_invitees?

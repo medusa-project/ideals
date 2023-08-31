@@ -228,6 +228,14 @@ const InstitutionView = function() {
         });
     });
 
+    $("#imports-tab").on("show.bs.tab", function() {
+        const url = ROOT_URL + "/institutions/" + institutionKey + "/imports";
+        $.get(url, function (data) {
+            $("#imports-tab-content").html(data);
+            ImportsView.initialize();
+        });
+    });
+
     $("#invitees-tab").on("show.bs.tab", function() {
         const url = ROOT_URL + "/institutions/" + institutionKey + "/invitees";
         $.get(url, function (data) {

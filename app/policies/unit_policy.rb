@@ -97,7 +97,9 @@ class UnitPolicy < ApplicationPolicy
   end
 
   def index
-    if @unit.kind_of?(Unit) && @ctx_institution != @unit.institution
+    if effective_sysadmin?(@user, @role_limit)
+      return AUTHORIZED_RESULT
+    elsif @unit.kind_of?(Unit) && @ctx_institution != @unit.institution
       return WRONG_SCOPE_RESULT
     end
     AUTHORIZED_RESULT

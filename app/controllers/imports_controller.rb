@@ -39,10 +39,9 @@ class ImportsController < ApplicationController
   # Responds to `POST /imports`
   #
   def create
-    authorize Import
-    @import             = Import.new(sanitized_params)
-    @import.user        = current_user
-    @import.institution = current_institution
+    @import      = Import.new(sanitized_params)
+    @import.user = current_user
+    authorize @import
     begin
       @import.save!
     rescue => e
@@ -94,12 +93,19 @@ class ImportsController < ApplicationController
 
   ##
   # Returns content for the create-import form.
+  # Responds to `GET /imports/new` (XHR only).
   #
-  # Responds to `GET /imports/new` (XHR only)
+  # The following query arguments are required:
+  #
+  # * `institution_id`: ID of the owning institution.
   #
   def new
     authorize Import
-    @import = Import.new
+    if params.dig(:import, :institution_id).blank?
+      render plain: "Missing institution ID", status: :bad_request
+      return
+    end
+    @import = Import.new(sanitized_params)
     render partial: "imports/import_form"
   end
 
@@ -137,7 +143,7 @@ class ImportsController < ApplicationController
   private
 
   def sanitized_params
-    params.require(:import).permit(:collection_id, :user_id)
+    params.require(:import).permit(:collection_id, :institution_id, :user_id)
   end
 
   def set_import

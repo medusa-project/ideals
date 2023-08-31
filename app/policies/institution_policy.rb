@@ -152,6 +152,10 @@ class InstitutionPolicy < ApplicationPolicy
     show_metadata_profiles
   end
 
+  def show_imports
+    show_metadata_profiles
+  end
+
   def show_index_pages
     show_metadata_profiles
   end

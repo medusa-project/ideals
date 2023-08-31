@@ -464,11 +464,18 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert policy.index?
   end
 
-  test "index?() does not authorize an incorrect scope" do
+  test "index?() does not authorize non-sysadmins to an incorrect scope" do
     context = RequestContext.new(user:        users(:southwest_admin),
                                  institution: institutions(:northeast))
     policy  = UnitPolicy.new(context, @unit)
     assert !policy.index?
+  end
+
+  test "index?() authorizes non-sysadmins to an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_sysadmin),
+                                 institution: institutions(:northeast))
+    policy  = UnitPolicy.new(context, @unit)
+    assert policy.index?
   end
 
   test "index?() authorizes everyone" do

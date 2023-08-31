@@ -1469,6 +1469,41 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.show_element_registry?
   end
 
+  # show_imports?()
+
+  test "show_imports?() returns false with a nil request context" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @institution)
+    policy = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_imports?
+  end
+
+  test "show_imports?() is restrictive by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_imports?
+  end
+
+  test "show_imports?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.show_imports?
+  end
+
+  test "show_imports?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_imports?
+  end
+
   # show_index_pages?()
 
   test "show_index_pages?() returns false with a nil request context" do

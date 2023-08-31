@@ -17,7 +17,11 @@ class ImportPolicy < ApplicationPolicy
   end
 
   def complete
-    if @ctx_institution != @import.institution
+    if !@user
+      return LOGGED_OUT_RESULT
+    elsif effective_sysadmin?(@user, @role_limit)
+      return AUTHORIZED_RESULT
+    elsif @ctx_institution != @import.institution
       return WRONG_SCOPE_RESULT
     elsif @user != @import.user
       return {
@@ -51,7 +55,11 @@ class ImportPolicy < ApplicationPolicy
   end
 
   def show
-    if @ctx_institution != @import.institution
+    if !@user
+      return LOGGED_OUT_RESULT
+    elsif effective_sysadmin?(@user, @role_limit)
+      return AUTHORIZED_RESULT
+    elsif @ctx_institution != @import.institution
       return WRONG_SCOPE_RESULT
     end
     effective_institution_admin(@user, @import.institution, @role_limit)

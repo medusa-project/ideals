@@ -4,8 +4,7 @@
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
-  -# Ensure that `import` is present in the params
-  = hidden_field_tag "import[bogus]", nil
+  = f.hidden_field :institution_id, value: f.object.institution_id
 
   .alert.alert-light
     = icon_for(:info)
@@ -15,7 +14,7 @@
   .mb-3
     = f.label :unit_id, "Unit"
     = select_tag(:unit_id,
-                 options_for_select(unit_tree_options(include_blank: true), f.object&.collection&.primary_unit&.id),
+                 options_for_select(unit_tree_options(institution: f.object.institution, include_blank: true), f.object&.collection&.primary_unit&.id),
                  class: "form-select")
   .mb-3
     = f.label :collection_id, "Collection"

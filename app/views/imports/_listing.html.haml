@@ -1,0 +1,43 @@
+- if @imports.any?
+  %table.table
+    %thead
+      %tr
+        %th User
+        %th Collection
+        %th Status
+        %th Progress
+        %th Created
+        %th
+    %tbody
+      - @imports.each do |import|
+        %tr
+          %td
+            - if import.user
+              = link_to(import.user) do
+                = icon_for(import.user)
+                = import.user.name
+          %td= link_to(import.collection.title, import.collection)
+          %td
+            - if import.task
+              = task_status_badge(import.task)
+            - else
+              = task_status_badge(Task::Status::PENDING)
+          %td= "#{((import.task&.percent_complete || 0) * 100).round(1)}%"
+          %td= local_time(import.created_at)
+          %td
+            .btn-group{role: "group"}
+              %button.btn.btn-sm.btn-light.show-import{"data-import-id": import.id,
+                                                       "data-bs-target": "#show-import-modal",
+                                                       "data-bs-toggle": "modal",
+                                                       role:             "button"}
+                %i.fa.fa-search
+                Details&hellip;
+              - if (!import.task || [Task::Status::PENDING, Task::Status::FAILED].include?(import.task&.status)) && policy(import).edit?
+                %button.btn.btn-sm.btn-light.edit-import{"data-import-id": import.id,
+                                                         "data-bs-target": "#edit-import-modal",
+                                                         "data-bs-toggle": "modal",
+                                                         role:             "button"}
+                  %i.fa.fa-upload
+                  Upload&hellip;
+- else
+  %p No imports to show.

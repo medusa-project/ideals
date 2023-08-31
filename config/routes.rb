@@ -112,6 +112,8 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/elements", to: "institutions#show_element_registry", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/imports", to: "institutions#show_imports", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/index-pages", to: "institutions#show_index_pages", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/invitees", to: "institutions#show_invitees", via: :get,

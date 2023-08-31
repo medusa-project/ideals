@@ -22,7 +22,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
     assert !policy.complete?
   end
 
-  test "complete?() is restrictive by default" do
+  test "complete?() does not authorize non-privileged users" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -30,9 +30,26 @@ class ImportPolicyTest < ActiveSupport::TestCase
     assert !policy.complete?
   end
 
+  test "complete?() authorizes administrators of the same institution" do
+    user = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ImportPolicy.new(context, @import)
+    assert policy.complete?
+  end
+
+  test "complete?() does not authorize administrators of a different
+  institution than in the request context" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = ImportPolicy.new(context, @import)
+    assert !policy.complete?
+  end
+
   test "complete?() does not authorize users other than the one who created the
   instance" do
-    user    = users(:southwest_sysadmin) # instance was created by uiuc_admin
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
@@ -44,18 +61,6 @@ class ImportPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
-    assert policy.complete?
-  end
-
-  test "complete?() authorizes administrators of the same institution" do
-    user    = users(:southwest_admin)
-    import  = Import.new(user:        user,
-                         institution: user.institution,
-                         collection:  collections(:uiuc_collection1),
-                         format:      Import::Format::CSV_FILE)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = ImportPolicy.new(context, import)
     assert policy.complete?
   end
 
@@ -221,7 +226,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
     assert !policy.edit?
   end
 
-  test "edit?() is restrictive by default" do
+  test "edit?() does not authorize non-privileged users" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -231,19 +236,11 @@ class ImportPolicyTest < ActiveSupport::TestCase
 
   test "edit?() does not authorize users other than the one who created the
   instance" do
-    user    = users(:southwest_sysadmin) # instance was created by uiuc_admin
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
     assert !policy.edit?
-  end
-
-  test "edit?() authorizes sysadmins" do
-    user    = make_sysadmin(@import.user)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = ImportPolicy.new(context, @import)
-    assert policy.edit?
   end
 
   test "edit?() authorizes administrators of the same institution" do
@@ -259,12 +256,29 @@ class ImportPolicyTest < ActiveSupport::TestCase
   end
 
   test "edit?() does not authorize administrators of a different
-  institution" do
+  institution than in the request context" do
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
     policy  = ImportPolicy.new(context, @import)
     assert !policy.edit?
+  end
+
+  test "edit?() does not authorize administrators of a different
+  institution than the import" do
+    user    = users(:northeast_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = ImportPolicy.new(context, @import)
+    assert !policy.edit?
+  end
+
+  test "edit?() authorizes sysadmins" do
+    user    = make_sysadmin(@import.user)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ImportPolicy.new(context, @import)
+    assert policy.edit?
   end
 
   test "edit?() respects role limits" do
@@ -420,36 +434,24 @@ class ImportPolicyTest < ActiveSupport::TestCase
     assert !policy.show?
   end
 
-  test "show?() is restrictive by default" do
+  test "show?() does not authorize non-privileged users" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = ImportPolicy.new(context, @import)
+    policy = ImportPolicy.new(context, @import)
     assert !policy.show?
   end
 
-  test "show?() authorizes sysadmins" do
-    user    = users(:southwest_sysadmin)
+  test "show?() authorizes administrators of the same institution" do
+    user = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
     assert policy.show?
   end
 
-  test "show?() authorizes administrators of the same institution" do
-    user    = users(:southwest_admin)
-    import  = Import.new(user:        user,
-                         institution: user.institution,
-                         collection:  collections(:uiuc_collection1),
-                         format:      Import::Format::CSV_FILE)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = ImportPolicy.new(context, import)
-    assert policy.show?
-  end
-
-  test "show?() does not authorize administrators of a different institution
-  than in the request context" do
+  test "show?() does not authorize administrators of a different
+  institution than in the request context" do
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
@@ -457,11 +459,11 @@ class ImportPolicyTest < ActiveSupport::TestCase
     assert !policy.show?
   end
 
-  test "show?() does not authorize administrators of a different institution
-  than the import" do
+  test "show?() does not authorize administrators of a different
+  institution than the metadata profile" do
     user    = users(:northeast_admin)
     context = RequestContext.new(user:        user,
-                                 institution: @import.institution)
+                                 institution: institutions(:northeast))
     policy  = ImportPolicy.new(context, @import)
     assert !policy.show?
   end
@@ -481,11 +483,18 @@ class ImportPolicyTest < ActiveSupport::TestCase
   test "upload_file?() returns false with a nil user" do
     context = RequestContext.new(user:        nil,
                                  institution: @import.institution)
-    policy = ImportPolicy.new(context, @import)
+    policy  = ImportPolicy.new(context, @import)
     assert !policy.upload_file?
   end
 
-  test "upload_file?() is restrictive by default" do
+  test "upload_file?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = ImportPolicy.new(context, @import)
+    assert !policy.upload_file?
+  end
+
+  test "upload_file?() does not authorize non-privileged users" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -493,9 +502,17 @@ class ImportPolicyTest < ActiveSupport::TestCase
     assert !policy.upload_file?
   end
 
+  test "upload_file?() authorizes administrators of the same institution" do
+    user = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ImportPolicy.new(context, @import)
+    assert policy.upload_file?
+  end
+
   test "upload_file?() does not authorize users other than the creator of the
   instance" do
-    user    = users(:southwest_sysadmin)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
@@ -510,21 +527,18 @@ class ImportPolicyTest < ActiveSupport::TestCase
     assert policy.upload_file?
   end
 
-  test "upload_file?() authorizes administrators of the same institution" do
+  test "upload_file?() does not authorize administrators of a different
+  institution than in the request context" do
     user    = users(:southwest_admin)
-    import  = Import.new(user:        user,
-                         institution: user.institution,
-                         collection:  collections(:uiuc_collection1),
-                         format:      Import::Format::CSV_FILE)
     context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = ImportPolicy.new(context, import)
-    assert policy.upload_file?
+                                 institution: institutions(:northeast))
+    policy  = ImportPolicy.new(context, @import)
+    assert !policy.upload_file?
   end
 
   test "upload_file?() does not authorize administrators of a different
-  institution" do
-    user    = users(:southwest_admin)
+  institution than the instance" do
+    user    = users(:northeast_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
     policy  = ImportPolicy.new(context, @import)

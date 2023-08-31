@@ -1,7 +1,4 @@
-- provide :body_id, "imports"
-- provide :title, "Imports"
-
-= hidden_field_tag :institution_id, current_institution.id
+-# N.B.: this template must be kept aligned with imports/index
 
 .btn-group.float-end{role: "group"}
   - if policy(Import).new?
@@ -11,10 +8,9 @@
       %i.fa.fa-plus
       New Import&hellip;
 
-%h1 Import Items
+.clearfix
 
-#import-list
-  = render partial: "listing"
+= render partial: "imports/listing"
 
 = render partial: "shared/xhr_modal",
          locals: { id: "new-import-modal",

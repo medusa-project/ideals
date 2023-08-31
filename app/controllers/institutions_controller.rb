@@ -407,6 +407,20 @@ class InstitutionsController < ApplicationController
   end
 
   ##
+  # Renders HTML for the imports tab in show-institution view.
+  #
+  # Responds to `GET /institutions/:key/imports` (XHR only)
+  #
+  def show_imports
+    authorize Import
+    @imports = Import.
+      where(institution: @institution).
+      where("created_at > ?", 6.months.ago).
+      order(created_at: :desc)
+    render partial: "show_imports_tab"
+  end
+
+  ##
   # Renders HTML for the sysadmin-only index pages tab in show-institution view.
   #
   # Responds to `GET /institutions/:key/index-pages` (XHR only)
