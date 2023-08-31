@@ -1,42 +1,51 @@
-%h1= @task.status_text
+-#
+-# Requires the following locals:
+-#
+-# task [Task]
+-#
+
 %dl
+  %dt Description
+  %dd= task.status_text
   %dt Class
-  %dd= @task.name
-  %dt Task ID
-  %dd= @task.id
+  %dd= task.name
+  %dt Database ID
+  %dd= task.id
   %dt Status
-  %dd= task_status_badge(@task)
+  %dd= task_status_badge(task)
   %dt Progress
   %dd
-    = (@task.indeterminate and @task.percent_complete < 1) ? 'Indeterminate' : (@task.percent_complete * 100).round(1).to_s + '%'
+    = (task.indeterminate && task.percent_complete < 1) ? "Indeterminate" : (task.percent_complete * 100).round(1).to_s + "%"
   %dt User
   %dd
-    - if @task.user
-      = link_to(@task.user&.name, @task.user)
+    - if task.user
+      = link_to(task.user) do
+        = icon_for(task.user)
+        = task.user.name
     - else
       Anonymous or Automated
   %dt Started
   %dd
-    = @task.started_at ? local_time(@task.started_at) : ''
-  - if @task.stopped_at
+    = task.started_at ? local_time(task.started_at) : ""
+  - if task.stopped_at
     %dt Stopped
     %dd
-      = local_time(@task.stopped_at)
+      = local_time(task.stopped_at)
   - else
     %dt ETA
     %dd
-      - if @task.estimated_completion
-        = time_ago_in_words(@task.estimated_completion)
+      - if task.estimated_completion
+        = time_ago_in_words(task.estimated_completion)
       - else
         Unknown
   %dt Run Time
   %dd
-    - if (@task.running? || @task.stopped?) && @task.started_at
-      = distance_of_time_in_words(@task.started_at,
-                                  (@task.stopped_at || Time.now),
+    - if (task.running? || task.stopped?) && task.started_at
+      = distance_of_time_in_words(task.started_at,
+                                  (task.stopped_at || Time.now),
                                   include_seconds: true)
-- if @task.detail.present?
-  %p.text-danger= h(@task.detail)
-- if @task.failed? && @task.backtrace.present?
+- if task.detail.present?
+  %p.text-danger= h(task.detail)
+- if task.failed? && task.backtrace.present?
   %h2 Stack Trace
-  %pre= raw(@task.backtrace.split('", "').join('",<br>"'))
+  %pre= raw(task.backtrace.split('", "').join('",<br>"'))
