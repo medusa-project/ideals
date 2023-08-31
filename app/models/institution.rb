@@ -164,6 +164,8 @@ class Institution < ApplicationRecord
     end
   end
 
+  MIN_KEY_LENGTH          = 2
+  MAX_KEY_LENGTH          = 30
   ITRUST_METADATA_URL     = "https://md.itrust.illinois.edu/itrust-metadata/itrust-metadata.xml"
   OPENATHENS_METADATA_URL = "http://fed.openathens.net/oafed/metadata"
   SAML_METADATA_NS        = "urn:oasis:names:tc:SAML:2.0:metadata"
@@ -219,6 +221,7 @@ class Institution < ApplicationRecord
   validates_presence_of :deposit_form_disagreement_help
   validates :footer_background_color, presence: true
   validates :header_background_color, presence: true
+  validates :key, length: { minimum: MIN_KEY_LENGTH, maximum: MAX_KEY_LENGTH }
   validates_format_of :key, with: /\A[A-Za-z0-9]+\Z/, allow_blank: false
   validates :latitude_degrees,
             numericality: { greater_than: 36, less_than: 43 }, # Illinois state bounds

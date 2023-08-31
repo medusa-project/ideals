@@ -590,6 +590,38 @@ class InstitutionTest < ActiveSupport::TestCase
                         service_name: "Valid")
   end
 
+  test "key cannot be as short as 2 characters" do
+    Institution.create!(key:          "aa",
+                        name:         "Valid",
+                        fqdn:         "example.net",
+                        service_name: "Valid")
+  end
+
+  test "key cannot be shorter than 2 characters" do
+    assert_raises ActiveRecord::RecordInvalid do
+      Institution.create!(key:          "a",
+                          name:         "Invalid",
+                          fqdn:         "example.org",
+                          service_name: "Invalid")
+    end
+  end
+
+  test "key can be as long as 30 characters" do
+    Institution.create!(key:          "a" * 30,
+                        name:         "Valid",
+                        fqdn:         "example.net",
+                        service_name: "Valid")
+  end
+
+  test "key cannot be longer than 30 characters" do
+    assert_raises ActiveRecord::RecordInvalid do
+      Institution.create!(key:          "a" * 31,
+                          name:         "Invalid",
+                          fqdn:         "example.org",
+                          service_name: "Invalid")
+    end
+  end
+
   test "key cannot be changed" do
     assert_raises ActiveRecord::RecordInvalid do
       @instance.update!(key: "newvalue")
