@@ -79,7 +79,12 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
 
   test "create() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:southwest))
-    post imports_path, xhr: true
+    post imports_path, xhr: true,
+         params: {
+           import: {
+             collection_id: ""
+           }
+         }
     assert_response :forbidden
   end
 
@@ -102,7 +107,8 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
          xhr: true,
          params: {
            import: {
-             collection_id: collections(:southwest_unit1_collection1).id
+             institution_id: institutions(:southwest).id,
+             collection_id:  collections(:southwest_unit1_collection1).id
            }
          }
     assert_response :ok
@@ -116,7 +122,8 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
            xhr: true,
            params: {
              import: {
-               collection_id: collections(:southwest_unit1_collection1).id
+               institution_id: institutions(:southwest).id,
+               collection_id:  collections(:southwest_unit1_collection1).id
              }
            }
     end
@@ -243,7 +250,11 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
 
   test "new() returns HTTP 200 for authorized users" do
     log_in_as(users(:southwest_admin))
-    get new_import_path
+    get new_import_path, params: {
+      import: {
+        institution_id: institutions(:southwest).id
+      }
+    }
     assert_response :ok
   end
 

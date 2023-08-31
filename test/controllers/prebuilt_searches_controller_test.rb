@@ -198,24 +198,24 @@ class PrebuiltSearchesControllerTest < ActionDispatch::IntegrationTest
 
   test "new() returns HTTP 404 for unscoped requests" do
     host! ::Configuration.instance.main_host
-    get new_import_path
+    get new_prebuilt_search_path
     assert_response :not_found
   end
 
   test "new() redirects to root page for logged-out users" do
-    get new_import_path
+    get new_prebuilt_search_path
     assert_redirected_to @institution.scope_url
   end
 
   test "new() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:southwest))
-    get new_import_path
+    get new_prebuilt_search_path
     assert_response :forbidden
   end
 
   test "new() returns HTTP 200 for authorized users" do
     log_in_as(users(:southwest_admin))
-    get new_import_path,
+    get new_prebuilt_search_path,
         params: {
           prebuilt_search: {
             institution_id: @institution.id
