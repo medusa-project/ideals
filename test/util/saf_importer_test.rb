@@ -5,6 +5,7 @@ class SafImporterTest < ActiveSupport::TestCase
   PACKAGES_PATH = File.join(file_fixture_path, "packages", "saf")
 
   setup do
+    setup_s3
     setup_opensearch
     @instance = SafImporter.new
   end
