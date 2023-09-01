@@ -40,7 +40,8 @@ class EventsController < ApplicationController
   # Responds to `GET /events/:id` (XHR only)
   #
   def show
-    render partial: "show"
+    render plain: "Not Implemented"
+    #render partial: "show"
   end
 
 

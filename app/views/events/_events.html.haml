@@ -23,9 +23,10 @@
         %tr{"data-id": event.id}
           - if action_name == "index_all"
             %td
-              = link_to(event.institution) do
-                = icon_for(event.institution)
-                = event.institution.name
+              - if event.institution
+                = link_to(event.institution) do
+                  = icon_for(event.institution)
+                  = event.institution.name
           %td
             %span.badge.text-bg-primary
               = Event::Type.label(event.event_type)
