@@ -191,6 +191,7 @@ class Institution < ApplicationRecord
   has_many :deposit_agreement_questions
   has_many :downloads
   has_many :element_namespaces
+  has_many :events
   has_many :imports
   has_many :index_pages
   has_many :invitees

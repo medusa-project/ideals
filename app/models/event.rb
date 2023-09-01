@@ -16,6 +16,8 @@
 # * `happened_at`    Time that the event happened. Often this will be equal to
 #                    `created_at` but not always (as in the case of e.g.
 #                    imported data).
+# * `institution_id` References the {Institution} within which the event
+#                    happened (optional).
 # * `item_id`        References the {Item} to which the instance relates
 #                    (optional).
 # * `login_id`       References the {Login} to which the instance relates
@@ -62,6 +64,7 @@ class Event < ApplicationRecord
   end
 
   belongs_to :bitstream, optional: true
+  belongs_to :institution, optional: true
   belongs_to :item, optional: true
   belongs_to :login, optional: true
   belongs_to :user, optional: true

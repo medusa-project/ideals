@@ -1,10 +1,19 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-uiuc_item1_create:
-  event_type: <%= Event::Type::CREATE %>
-  item: uiuc_item1
-  user: uiuc_sysadmin
+southwest_item1_create:
+  event_type:     <%= Event::Type::CREATE %>
+  item:           southwest_unit1_collection1_item1
+  user:           southwest_sysadmin
   description:
   before_changes:
   after_changes:
-  happened_at: <%= Time.now %>
+  happened_at:    <%= Time.now %>
+
+uiuc_item1_create:
+  event_type:     <%= Event::Type::CREATE %>
+  item:           uiuc_item1
+  user:           uiuc_sysadmin
+  description:
+  before_changes:
+  after_changes:
+  happened_at:    <%= Time.now %>

@@ -1,0 +1,7 @@
+.card.mb-3
+  #event-filter.card-body
+    = form_tag(request.path, method: :get, class: "form-inline") do
+      .row
+        .col
+          = label_tag("q", "TODO: fix this", class: "form-label")
+          = filter_field

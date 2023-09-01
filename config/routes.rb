@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   match "/netid-login", to: "sessions#new_netid", as: :netid_login, via: [:get, :post]
 
   match "/about", to: "welcome#about", via: :get, as: "about"
+  match '/all-events', to: "events#index_all", via: :get, as: "all_events"
   match '/all-invitees', to: "invitees#index_all", via: :get, as: "all_invitees"
   match '/all-tasks', to: "tasks#index_all", via: :get, as: "all_tasks"
   match '/all-users', to: "users#index_all", via: :get, as: "all_users"
@@ -61,6 +62,7 @@ Rails.application.routes.draw do
     match "/file", to: "downloads#file", via: :get, as: "file"
   end
   resources :element_namespaces, path: "element-namespaces", except: :show
+  resources :events, only: [:index, :show]
   resources :file_formats, path: "file-formats", only: :index
   match '/global-user-groups', to: "user_groups#index_global", via: :get,
         as: "global_user_groups"

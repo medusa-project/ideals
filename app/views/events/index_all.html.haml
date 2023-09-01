@@ -1,0 +1,13 @@
+- provide :title, "All Events"
+- provide :body_id, "events"
+
+%h1 All Events
+
+= hidden_field_tag(:limit, @limit)
+
+#events-list
+  = render partial: "events"
+
+= render partial: "shared/xhr_modal",
+         locals: { id: "show-event-modal",
+                   title: "Event" }

@@ -32,6 +32,7 @@
 // View-specific files
 //= require collections
 //= require element_namespaces
+//= require events
 //= require imports
 //= require index_pages
 //= require institutions

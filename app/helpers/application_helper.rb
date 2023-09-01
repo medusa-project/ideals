@@ -465,6 +465,8 @@ module ApplicationHelper
       icon = "far fa-folder-open"
     when "ElementNamespace"
       icon = "fa fa-code"
+    when "Event"
+      icon = "fa fa-calendar-alt"
     when "FileFormat"
       icon = "fa fa-file"
     when "Import"

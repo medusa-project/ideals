@@ -95,6 +95,10 @@
                   = icon_for(Task)
                   All Tasks
               %li
+                = link_to(all_events_path, class: "dropdown-item") do
+                  = icon_for(Event)
+                  All Events
+              %li
                 = link_to(usage_path, class: "dropdown-item") do
                   %i.fa.fa-chart-bar
                   Usage
@@ -188,6 +192,10 @@
                 = link_to(tasks_path, class: "dropdown-item") do
                   = icon_for(Task)
                   Tasks
+              %li
+                = link_to(events_path, class: "dropdown-item") do
+                  = icon_for(Event)
+                  Events
               %li
                 %hr.dropdown-divider
               %li
