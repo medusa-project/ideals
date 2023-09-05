@@ -24,6 +24,27 @@ class OpenSearchClient
   end
 
   ##
+  # Bulk-indexes documents using the
+  # [Bulk API](https://opensearch.org/docs/1.2/opensearch/rest-api/document-apis/bulk/).
+  #
+  # @param index [String]  Index name.
+  # @param ndjson [String] ND-JSON request.
+  # @return [void]
+  # @raises [IOError]      If OpenSearch returns an error response.
+  #
+  def bulk_index(index, ndjson)
+    LOGGER.debug("bulk_index(): %s", index)
+    url = sprintf("%s/%s/_bulk",
+                  Configuration.instance.opensearch[:endpoint],
+                  index)
+    response = @http_client.post(url, ndjson,
+                                 'Content-Type': CONTENT_TYPE)
+    if response.status >= 400
+      raise IOError, response.body
+    end
+  end
+
+  ##
   # @param index_name [String]
   # @return [Boolean]
   # @raises [IOError]

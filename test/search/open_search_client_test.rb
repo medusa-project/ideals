@@ -12,6 +12,30 @@ class OpenSearchClientTest < ActiveSupport::TestCase
     @instance.delete_index(@test_index) rescue nil
   end
 
+  # bulk_index()
+
+  test "bulk_index() bulk-indexes entities" do
+    @instance.create_index(@test_index)
+
+    items = [
+      items(:southwest_unit1_collection1_item1),
+             items(:southwest_unit1_collection1_withdrawn)
+    ]
+    lines = []
+    items.each do |item|
+      lines << JSON.generate({ index: { "_id": item.index_id }})
+      lines << JSON.generate(item.as_indexed_json)
+    end
+    lines << ""
+    ndjson = lines.join("\n")
+
+    @instance.bulk_index(@test_index, ndjson)
+
+    items.each do |item|
+      assert_not_nil @instance.get_document(@test_index, item.index_id)
+    end
+  end
+
   # create_index()
 
   test "create_index() creates an index" do
