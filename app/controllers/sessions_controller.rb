@@ -50,9 +50,10 @@ class SessionsController < ApplicationController
     rescue Resolv::ResolvError
       hostname = nil
     end
-    user.logins.build(ip_address: request.remote_ip,
-                      hostname:   hostname,
-                      auth_hash:  auth).save!
+    user.logins.build(ip_address:  request.remote_ip,
+                      hostname:    hostname,
+                      institution: current_institution,
+                      auth_hash:   auth).save!
     return_url_ = return_url
     # Protect against session fixation:
     # https://guides.rubyonrails.org/security.html#session-fixation-countermeasures
