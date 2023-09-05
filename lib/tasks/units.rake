@@ -14,11 +14,9 @@ namespace :units do
   end
 
   desc "Reindex all units"
-  task :reindex, [:num_threads] => :environment do |task, args|
+  task reindex: :environment do
     # N.B.: orphaned documents are not deleted.
-    num_threads = args[:num_threads].to_i
-    num_threads = 1 if num_threads == 0
-    Unit.reindex_all(num_threads: num_threads)
+    Unit.bulk_reindex
   end
 
 end

@@ -65,11 +65,9 @@ namespace :items do
   end
 
   desc "Reindex all items"
-  task :reindex, [:num_threads] => :environment do |task, args|
+  task reindex: :environment do
     # N.B.: orphaned documents are not deleted.
-    num_threads = args[:num_threads].to_i
-    num_threads = 1 if num_threads == 0
-    Item.reindex_all(num_threads: num_threads)
+    Item.bulk_reindex
   end
 
 end

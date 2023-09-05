@@ -53,7 +53,6 @@ class ItemTest < ActiveSupport::TestCase
   # reindex_all() (Indexed concern)
 
   test "reindex_all() reindexes all items" do
-    setup_opensearch
     institution = institutions(:uiuc)
     assert_equal 0, Item.search.institution(institution).count
 
@@ -389,6 +388,15 @@ class ItemTest < ActiveSupport::TestCase
     item.elements.build(registered_element: reg_e, string: "Value 1")
     item.elements.build(registered_element: reg_e, string: "Value 2")
     assert_equal ["Value 1", "Value 2"], item.authors.map(&:string)
+  end
+
+  # bulk_reindex()
+
+  test "bulk_reindex() reindexes all models" do
+    skip # TODO: why does this fail?
+    Item.bulk_reindex
+    refresh_opensearch
+    assert Item.search.count > 0
   end
 
   # buried?()

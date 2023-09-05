@@ -71,6 +71,44 @@ module Indexed
 
   class_methods do
     ##
+    # Indexes all of the class' models using the
+    # [Bulk API](https://opensearch.org/docs/1.2/opensearch/rest-api/document-apis/bulk/).
+    # This is faster than indexing them all individually using {reindex_all}.
+    #
+    # Orphaned documents are not deleted; for that, use
+    # {delete_orphaned_documents}.
+    #
+    # @return [void]
+    # @see reindex_all
+    #
+    def bulk_reindex
+      batch_size  = 500 # play around to find an ideal size
+      offset      = 0
+      count       = all.count
+      client      = OpenSearchClient.instance
+      index_name  = Configuration.instance.opensearch[:index]
+      progress    = Progress.new(count)
+      num_indexed = 0
+
+      uncached do
+        while offset + batch_size < count + batch_size do
+          progress.report(offset, "Bulk-indexing #{count} #{to_s} documents")
+          models = all.order(:id).limit(batch_size).offset(offset)
+          lines = []
+          models.each do |model|
+            lines << JSON.generate({ index: { "_id": model.index_id }})
+            lines << model.as_indexed_json
+            num_indexed += 1
+          end
+          lines << ""
+          ndjson = lines.join("\n")
+          client.bulk_index(index_name, ndjson)
+          offset += batch_size
+        end
+      end
+    end
+
+    ##
     # Normally this method should not be used except to delete "orphaned"
     # documents with no database counterpart, which theoretically should never
     # exist.
@@ -150,10 +188,10 @@ module Indexed
     end
 
     ##
-    # Reindexes all of the class' indexed documents. Multi-threaded indexing is
-    # supported to potentially make this go faster, but care must be taken not
-    # to overwhelm the OpenSearch cluster, which will knock it into a read-only
-    # mode.
+    # Individually reindexes all of the class' indexed documents.
+    # Multi-threaded indexing is supported to potentially make this go faster,
+    # but care must be taken not to overwhelm the OpenSearch cluster, which
+    # will knock it into a read-only mode.
     #
     # N.B. 1: Cursory testing suggests that benefit diminishes rapidly beyond 2
     # threads.
@@ -166,6 +204,7 @@ module Indexed
     # @param num_threads [Integer]
     # @param rescue_errors [Boolean]
     # @return [void]
+    # @see bulk_reindex
     #
     def reindex_all(es_index: nil, num_threads: 1, rescue_errors: false)
       ThreadUtils.process_in_parallel(all.order(:id),

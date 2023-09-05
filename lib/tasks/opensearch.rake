@@ -103,13 +103,11 @@ namespace :opensearch do
   end
 
   desc 'Reindex all database entities'
-  task :reindex, [:num_threads] => :environment do |task, args|
+  task :reindex => :environment do |task, args|
     # N.B.: orphaned documents are not deleted.
-    num_threads = args[:num_threads].to_i
-    num_threads = 1 if num_threads == 0
-    Unit.reindex_all(num_threads: num_threads)
-    Collection.reindex_all(num_threads: num_threads)
-    Item.reindex_all(num_threads: num_threads)
+    Unit.bulk_reindex
+    Collection.bulk_reindex
+    Item.bulk_reindex
   end
 
 end

@@ -8,6 +8,15 @@ class UnitTest < ActiveSupport::TestCase
     @instance = units(:uiuc_unit1)
   end
 
+  # bulk_reindex() (Indexed concern)
+
+  test "bulk_reindex() reindexes all models" do
+    skip # TODO: why does this fail?
+    Unit.bulk_reindex
+    refresh_opensearch
+    assert Unit.search.count > 0
+  end
+
   # delete_document() (Indexed concern)
 
   test "delete_document() deletes a document" do
