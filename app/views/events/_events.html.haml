@@ -49,9 +49,10 @@
                                                         'bs-target': "#show-event-modal",
                                                         'event-id':  event.id })
           %td
-            = link_to(event.user) do
-              = icon_for(event.user)
-              = event.user.name
+            - if event.user
+              = link_to(event.user) do
+                = icon_for(event.user)
+                = event.user.name
           %td
             = local_time_ago(event.happened_at)
 
