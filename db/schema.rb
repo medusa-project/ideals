@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_23_145217) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_05_202902) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -461,7 +461,9 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_23_145217) do
     t.datetime "updated_at", null: false
     t.string "hostname"
     t.integer "provider"
+    t.bigint "institution_id", null: false
     t.index ["created_at"], name: "index_logins_on_created_at"
+    t.index ["institution_id"], name: "index_logins_on_institution_id"
     t.index ["user_id"], name: "index_logins_on_user_id"
   end
 
@@ -844,6 +846,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_23_145217) do
   add_foreign_key "items", "institutions", on_update: :cascade, on_delete: :restrict
   add_foreign_key "items", "users", column: "submitter_id", on_update: :cascade, on_delete: :nullify
   add_foreign_key "local_identities", "invitees", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "logins", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "logins", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "messages", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "metadata_profile_elements", "metadata_profiles", on_update: :cascade, on_delete: :cascade

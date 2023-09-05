@@ -10,8 +10,9 @@ class LoginTest < ActiveSupport::TestCase
 
   test "create() creates an associated Event" do
     assert_difference "Event.count" do
-      login = Login.create!(provider: Login::Provider::LOCAL,
-                            user:     users(:southwest))
+      login = Login.create!(provider:    Login::Provider::LOCAL,
+                            institution: institutions(:southwest),
+                            user:        users(:southwest))
       event = Event.all.order(created_at: :desc).limit(1).first
       assert_equal event.login, login
     end

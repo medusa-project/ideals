@@ -195,6 +195,7 @@ class Institution < ApplicationRecord
   has_many :imports
   has_many :index_pages
   has_many :invitees
+  has_many :logins
   has_many :messages
   has_many :metadata_profiles
   has_many :prebuilt_searches

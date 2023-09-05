@@ -5,13 +5,15 @@
 #
 # # Attributes
 #
-# * `auth_hash`  Serialized OmniAuth hash.
-# * `created_at` Represents the login time. Managed by ActiveRecord.
-# * `hostname`   Client hostname.
-# * `ip_address` Client IP address.
-# * `provider`   One of the {Login::Provider} constant values, extracted from
-#                {auth_hash}.
-# * `updated_at` Managed by ActiveRecord.
+# * `auth_hash`      Serialized OmniAuth hash.
+# * `created_at`     Represents the login time. Managed by ActiveRecord.
+# * `hostname`       Client hostname.
+# * `institution_id` Foreign key to {Institution} representing the
+#                    institutional context within which the login occurred.
+# * `ip_address`     Client IP address.
+# * `provider`       One of the {Login::Provider} constant values, extracted
+#                    from {auth_hash}.
+# * `updated_at`     Managed by ActiveRecord.
 #
 class Login < ApplicationRecord
 
@@ -42,6 +44,7 @@ class Login < ApplicationRecord
   end
 
   has_one :event
+  belongs_to :institution
   belongs_to :user
 
   serialize :auth_hash, JSON
@@ -84,6 +87,7 @@ class Login < ApplicationRecord
   def create_event
     Event.create!(login:       self,
                   event_type:  Event::Type::LOGIN,
+                  institution: self.institution,
                   user:        user,
                   happened_at: Time.now)
   end
