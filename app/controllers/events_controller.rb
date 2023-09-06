@@ -65,7 +65,9 @@ class EventsController < ApplicationController
                                         [:status_text, :status])
     @start            = [@permitted_params[:start].to_i.abs, MAX_START].min
     @window           = window_size
-    @events           = Event.all.order(created_at: :desc)
+    @events           = Event.
+      where.not(event_type: Event::Type::DOWNLOAD).
+      order(created_at: :desc)
     if institution
       @events = @events.where(institution: institution)
     end
