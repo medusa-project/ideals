@@ -76,9 +76,8 @@ class UnitsController < ApplicationController
     @unit = Unit.new(unit_params)
     authorize @unit
     begin
-      ActiveRecord::Base.transaction do
-        @unit.save!
-      end
+      CreateUnitCommand.new(user: current_user,
+                            unit: @unit).execute
     rescue => e
       render partial: "shared/validation_messages",
              locals: { object: @unit.errors.any? ? @unit : e },
@@ -420,8 +419,11 @@ class UnitsController < ApplicationController
     end
     begin
       ActiveRecord::Base.transaction do
-        assign_administrators
-        @unit.update!(unit_params)
+        UpdateUnitCommand.new(user: current_user,
+                              unit: @unit).execute do
+          assign_administrators
+          @unit.update!(unit_params)
+        end
       end
     rescue => e
       render partial: "shared/validation_messages",

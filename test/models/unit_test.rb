@@ -197,6 +197,12 @@ class UnitTest < ActiveSupport::TestCase
     assert units(:uiuc_unit1_unit2).child?
   end
 
+  # create_event() (Auditable concern)
+
+  test "create_event() returns the first create-type event" do
+    assert_equal Event::Type::CREATE, @instance.create_event.event_type
+  end
+
   # destroy()
 
   test "destroy() raises an error when there are dependent units" do
@@ -310,6 +316,12 @@ class UnitTest < ActiveSupport::TestCase
 
   test "exhume!() does nothing to a non-buried unit" do
     @instance.exhume!
+  end
+
+  # last_update_event() (Auditable concern)
+
+  test "last_update_event() returns the last update-type event" do
+    assert_equal Event::Type::UPDATE, @instance.last_update_event.event_type
   end
 
   # move_to()

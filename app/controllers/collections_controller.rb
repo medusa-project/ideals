@@ -72,9 +72,9 @@ class CollectionsController < ApplicationController
         # We need to save now in order to assign the collection an ID which
         # many of the authorization methods will need. If authorization fails,
         # the transaction will roll back.
-        @collection.save!
+        CreateCollectionCommand.new(user:       current_user,
+                                    collection: @collection).execute
         authorize @collection
-        @collection.save!
       end
     rescue NotAuthorizedError => e
       raise e
@@ -86,7 +86,7 @@ class CollectionsController < ApplicationController
       RefreshOpensearchJob.perform_later
       toast!(title:   "Collection created",
              message: "The collection \"#{@collection.title}\" has been created.")
-      render 'shared/reload'
+      render "shared/reload"
     end
   end
 
@@ -470,10 +470,13 @@ class CollectionsController < ApplicationController
     end
     begin
       ActiveRecord::Base.transaction do
-        assign_users
-        assign_user_groups
-        assign_primary_unit
-        @collection.update!(collection_params)
+        UpdateCollectionCommand.new(user:       current_user,
+                                    collection: @collection).execute do
+          assign_users
+          assign_user_groups
+          assign_primary_unit
+          @collection.update!(collection_params)
+        end
       end
     rescue => e
       render partial: "shared/validation_messages",

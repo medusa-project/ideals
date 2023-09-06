@@ -216,6 +216,12 @@ class CollectionTest < ActiveSupport::TestCase
     assert @instance.buried
   end
 
+  # create_event() (Auditable concern)
+
+  test "create_event() returns the first create-type event" do
+    assert_equal Event::Type::CREATE, @instance.create_event.event_type
+  end
+
   # destroy()
 
   test "destroy() raises an error when there are dependent collections" do
@@ -454,6 +460,12 @@ class CollectionTest < ActiveSupport::TestCase
 
   test "exhume!() does nothing to a non-buried collection" do
     @instance.exhume!
+  end
+
+  # last_update_event() (Auditable concern)
+
+  test "last_update_event() returns the last update-type event" do
+    assert_equal Event::Type::UPDATE, @instance.last_update_event.event_type
   end
 
   # parent_id

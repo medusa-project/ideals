@@ -38,6 +38,7 @@
 #
 class Unit < ApplicationRecord
 
+  include Auditable
   include Breadcrumb
   include Handled
   include Indexed
@@ -71,6 +72,7 @@ class Unit < ApplicationRecord
   has_many :administrator_groups, class_name: "UnitAdministratorGroup"
   has_many :administering_groups, through: :administrator_groups,
            class_name: "UserGroup", source: :user_group
+  has_many :events
   has_many :unit_collection_memberships
   has_many :collections, through: :unit_collection_memberships
   has_many :items, through: :collections

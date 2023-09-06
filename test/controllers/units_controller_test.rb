@@ -116,6 +116,21 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "create() creates an Event" do
+    user = users(:uiuc_admin)
+    log_in_as(user)
+    assert_difference "Event.count" do
+      post units_path,
+           xhr: true,
+           params: {
+             unit: {
+               institution_id: user.institution.id,
+               title:          "New Unit"
+             }
+           }
+    end
+  end
+
   test "create() returns HTTP 400 for illegal arguments" do
     user = users(:uiuc_admin)
     log_in_as(user)
@@ -875,6 +890,20 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
           }
     unit.reload
     assert_equal "cats", unit.title
+  end
+
+  test "update() creates an Event" do
+    log_in_as(users(:uiuc_admin))
+    unit = units(:uiuc_unit1)
+    assert_difference "Event.count" do
+      patch unit_path(unit),
+            xhr: true,
+            params: {
+              unit: {
+                title: "cats"
+              }
+            }
+    end
   end
 
   test "update() returns HTTP 200" do

@@ -36,9 +36,23 @@
     %dt Items Awaiting Review
     %dd= number_with_delimiter(@num_submitted_items)
     %dt Created
-    %dd= local_time @unit.created_at
-    %dt Updated
-    %dd= local_time @unit.updated_at
+    %dd
+      = local_time @unit.created_at
+      - create_event = @unit.create_event
+      - if create_event
+        by
+        = link_to(create_event.user) do
+          = icon_for(create_event.user)
+          = create_event.user.name
+    %dt Last Updated
+    %dd
+      = local_time @unit.updated_at
+      - update_event = @unit.last_update_event
+      - if update_event
+        by
+        = link_to(update_event.user) do
+          = icon_for(update_event.user)
+          = update_event.user.name
 
 %hr
 

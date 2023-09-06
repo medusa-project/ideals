@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_09_05_202902) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_06_151311) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -243,13 +243,17 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_05_202902) do
     t.datetime "happened_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.bigint "login_id"
     t.bigint "institution_id"
+    t.bigint "unit_id"
+    t.bigint "collection_id"
     t.index ["bitstream_id"], name: "index_events_on_bitstream_id"
+    t.index ["collection_id"], name: "index_events_on_collection_id"
     t.index ["created_at"], name: "index_events_on_created_at"
     t.index ["event_type"], name: "index_events_on_event_type"
     t.index ["happened_at"], name: "index_events_on_happened_at"
     t.index ["institution_id"], name: "index_events_on_institution_id"
     t.index ["item_id"], name: "index_events_on_item_id"
     t.index ["login_id"], name: "index_events_on_login_id"
+    t.index ["unit_id"], name: "index_events_on_unit_id"
     t.index ["user_id"], name: "index_events_on_user_id"
   end
 
@@ -821,9 +825,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_05_202902) do
   add_foreign_key "embargoes_user_groups", "embargoes", on_update: :cascade, on_delete: :cascade
   add_foreign_key "embargoes_user_groups", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "events", "bitstreams", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "events", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "events", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "events", "items", on_update: :cascade, on_delete: :cascade
   add_foreign_key "events", "logins", on_update: :cascade, on_delete: :nullify
+  add_foreign_key "events", "units", on_update: :cascade, on_delete: :cascade
   add_foreign_key "events", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "full_texts", "bitstreams", on_update: :cascade, on_delete: :cascade
   add_foreign_key "handles", "collections", on_update: :cascade, on_delete: :cascade

@@ -9,6 +9,8 @@
 # * `before_changes` JSON serialization of the associated {Item} after changes.
 # * `bitstream_id`   References the {Bitstream} to which the instance relates
 #                    (optional).
+# * `collection_id`  References the {Collection} to which the instance relates
+#                    (optional).
 # * `created_at`     The time the event was created--not necessarily when it
 #                    happened (see `happened_at`). Managed by ActiveRecord.
 # * `description`    English description of the event in past tense.
@@ -21,6 +23,8 @@
 # * `item_id`        References the {Item} to which the instance relates
 #                    (optional).
 # * `login_id`       References the {Login} to which the instance relates
+#                    (optional).
+# * `unit_id`        References the {Unit} to which the instance relates
 #                    (optional).
 # * `updated_at`     Managed by ActiveRecord.
 # * `user_id`        References the {User} who triggered the event. This may be
@@ -64,9 +68,11 @@ class Event < ApplicationRecord
   end
 
   belongs_to :bitstream, optional: true
+  belongs_to :collection, optional: true
   belongs_to :institution, optional: true
   belongs_to :item, optional: true
   belongs_to :login, optional: true
+  belongs_to :unit, optional: true
   belongs_to :user, optional: true
 
   validates :event_type, inclusion: { in: Type.all }
@@ -106,8 +112,9 @@ class Event < ApplicationRecord
   # Ensures that the instance is associated with an object.
   #
   def validate_associated_object
-    if bitstream_id.nil? && item_id.nil? && login_id.nil?
-      errors.add(:base, "is not associated with an entity")
+    if bitstream_id.nil? && collection_id.nil? && item_id.nil? &&
+      login_id.nil? && unit_id.nil?
+      errors.add(:base, "Event is not associated with an entity")
     end
   end
 

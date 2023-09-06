@@ -54,10 +54,23 @@
     %dd= number_with_delimiter(@num_downloads)
     %dt Items Awaiting Review
     %dd= number_with_delimiter(@num_submitted_items)
-  %dt Created
-  %dd= local_time @collection.created_at
-  %dt Last Updated
-  %dd= local_time @collection.updated_at
+    %dd
+      = local_time @collection.created_at
+      - create_event = @collection.create_event
+      - if create_event
+        by
+        = link_to(create_event.user) do
+          = icon_for(create_event.user)
+          = create_event.user.name
+    %dt Last Updated
+    %dd
+      = local_time @collection.updated_at
+      - update_event = @collection.last_update_event
+      - if update_event
+        by
+        = link_to(update_event.user) do
+          = icon_for(update_event.user)
+          = update_event.user.name
 
 %hr
 

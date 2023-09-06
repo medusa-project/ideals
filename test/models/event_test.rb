@@ -50,24 +50,37 @@ class EventTest < ActiveSupport::TestCase
   # instance-level tests
 
   test "instance must be associated with an object" do
-    @instance.bitstream = nil
-    @instance.item      = nil
-    @instance.login     = nil
+    @instance.bitstream  = nil
+    @instance.collection = nil
+    @instance.item       = nil
+    @instance.login      = nil
+    @instance.unit       = nil
     assert !@instance.valid?
 
-    @instance.item = items(:uiuc_item1)
-    assert @instance.valid?
-
+    # Bitstream
     @instance.bitstream = bitstreams(:uiuc_item1_in_staging)
-    @instance.item      = nil
-    @instance.login     = nil
     assert @instance.valid?
 
+    # Collection
+    @instance.bitstream  = nil
+    @instance.collection = collections(:southwest_unit1_collection1)
+    assert @instance.valid?
+
+    # Item
+    @instance.collection = nil
+    @instance.item       = items(:uiuc_item1)
+    assert @instance.valid?
+
+    # Login
     @instance.bitstream = nil
-    @instance.item      = nil
     @instance.login     = Login.create!(user:        users(:uiuc),
                                         institution: institutions(:uiuc),
                                         provider:    Login::Provider::LOCAL)
+    assert @instance.valid?
+
+    # Unit
+    @instance.login = nil
+    @instance.unit  = units(:southwest_unit1)
     assert @instance.valid?
   end
 

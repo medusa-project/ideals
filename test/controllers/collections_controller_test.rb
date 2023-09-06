@@ -145,6 +145,24 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "create() creates an Event" do
+    log_in_as(users(:uiuc_admin))
+    assert_difference "Event.count" do
+      post collections_path,
+           xhr: true,
+           params: {
+             primary_unit_id: units(:uiuc_unit1).id,
+             collection: {
+               institution_id:   @institution.id,
+               administrator_id: users(:example_sysadmin).id
+             },
+             elements: {
+               title: "New Collection"
+             }
+           }
+    end
+  end
+
   test "create() returns HTTP 400 for illegal arguments" do
     log_in_as(users(:uiuc_admin))
     post collections_path,
@@ -1031,6 +1049,21 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
           }
     collection.reload
     assert_equal "New description", collection.description
+  end
+
+  test "update() creates an Event" do
+    log_in_as(users(:uiuc_admin))
+    collection = collections(:uiuc_collection1)
+    assert_difference "Event.count" do
+      patch collection_path(collection),
+            xhr: true,
+            params: {
+              collection: {
+                description: "New description",
+                metadata_profile_id: metadata_profiles(:uiuc_empty).id
+              }
+            }
+    end
   end
 
   test "update() returns HTTP 200" do

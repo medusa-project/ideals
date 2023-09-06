@@ -80,6 +80,7 @@
 #
 class Collection < ApplicationRecord
 
+  include Auditable
   include Breadcrumb
   include Indexed
   include Handled
@@ -125,6 +126,7 @@ class Collection < ApplicationRecord
   has_many :collections, foreign_key: "parent_id",
            dependent: :restrict_with_exception
   has_many :collection_item_memberships
+  has_many :events
   has_many :imports
   has_many :items, through: :collection_item_memberships
   has_many :administering_groups, through: :administrator_groups,
