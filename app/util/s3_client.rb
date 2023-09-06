@@ -78,25 +78,6 @@ class S3Client
     bucket.objects(prefix: key_prefix)
   end
 
-  ##
-  # Places the given tag key/value on an object, replacing any tags that
-  # already exist.
-  #
-  def set_tag(bucket:, key:, tag_key:, tag_value:)
-    put_object_tagging(
-      bucket: bucket,
-      key:    key,
-      tagging: {
-        tag_set: [
-          {
-            key:   tag_key,
-            value: tag_value,
-          }
-        ]
-      }
-    )
-  end
-
 
   private
 

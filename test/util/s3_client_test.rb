@@ -105,25 +105,4 @@ class S3ClientTest < ActiveSupport::TestCase
     assert_equal 2, client.objects(bucket: bucket, key_prefix: "cats").count
   end
 
-  # set_tag()
-
-  test "set_tag() sets the given tag on an object" do
-    bucket = ::Configuration.instance.storage[:bucket]
-    key    = "cats/siamese"
-    client = S3Client.instance
-    file   = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")
-    client.put_object(bucket: bucket,
-                      key:    key,
-                      body:   file)
-    client.set_tag(bucket:    bucket,
-                   key:       key,
-                   tag_key:   "test",
-                   tag_value: "value")
-
-    response = client.get_object_tagging(bucket: bucket, key: key)
-    tag      = response.to_h[:tag_set][0]
-    assert_equal "test", tag[:key]
-    assert_equal "value", tag[:value]
-  end
-
 end
