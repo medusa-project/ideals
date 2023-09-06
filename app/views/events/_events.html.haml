@@ -13,10 +13,10 @@
       %tr
         - if action_name == "index_all"
           %th Institution
+        %th User
         %th Type
         %th Entity
         %th Description
-        %th User
         %th Occurred
     %tbody
       - @events.each do |event|
@@ -27,6 +27,11 @@
                 = link_to(event.institution) do
                   = icon_for(event.institution)
                   = event.institution.name
+          %td
+            - if event.user
+              = link_to(event.user) do
+                = icon_for(event.user)
+                = event.user.name
           %td
             %span.badge.text-bg-primary
               = Event::Type.label(event.event_type)
@@ -56,11 +61,6 @@
               = link_to(event.description, "#", data: { 'bs-toggle': "modal",
                                                         'bs-target': "#show-event-modal",
                                                         'event-id':  event.id })
-          %td
-            - if event.user
-              = link_to(event.user) do
-                = icon_for(event.user)
-                = event.user.name
           %td
             = local_time_ago(event.happened_at)
 
