@@ -65,8 +65,9 @@ class EventTest < ActiveSupport::TestCase
 
     @instance.bitstream = nil
     @instance.item      = nil
-    @instance.login     = Login.create!(user:     users(:uiuc),
-                                        provider: Login::Provider::LOCAL)
+    @instance.login     = Login.create!(user:        users(:uiuc),
+                                        institution: institutions(:uiuc),
+                                        provider:    Login::Provider::LOCAL)
     assert @instance.valid?
   end
 
