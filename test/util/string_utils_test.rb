@@ -10,6 +10,12 @@ class StringUtilsTest < ActiveSupport::TestCase
     assert_equal expected, StringUtils.rot18(str)
   end
 
+  # sanitize_filename()
+
+  test "sanitize_filename() sanitizes a filename" do
+    assert_equal "cats_dogs.jpg", StringUtils.sanitize_filename("cats/dogs.jpg")
+  end
+
   # url_encode()
 
   test "url_encode() returns a URL-encoded string" do

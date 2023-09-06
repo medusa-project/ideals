@@ -135,7 +135,8 @@ class ImportsController < ApplicationController
     input = request.env['rack.input']
     input.rewind
     input.set_encoding(Encoding::UTF_8)
-    @import.save_file(file: input, filename: filename)
+    @import.save_file(file:     input,
+                      filename: StringUtils.sanitize_filename(filename))
     head :no_content
   end
 

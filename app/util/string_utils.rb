@@ -14,6 +14,14 @@ class StringUtils
   end
 
   ##
+  # @param filename [String]
+  # @return [String]
+  #
+  def self.sanitize_filename(filename)
+    filename.gsub(/[\/\\]/, "_")
+  end
+
+  ##
   # @param string [String] String to encode.
   # @return [String] URL-encoded string.
   #

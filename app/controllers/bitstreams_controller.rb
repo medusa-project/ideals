@@ -69,7 +69,7 @@ class BitstreamsController < ApplicationController
                               user:        current_user,
                               description: "Added an associated bitstream.").execute do
           bs = Bitstream.new_in_staging(item:     @item,
-                                        filename: bitstream_params[:filename].gsub(/[\/\\]/, "_"),
+                                        filename: StringUtils.sanitize_filename(bitstream_params[:filename]),
                                         length:   bitstream_params[:length])
           bs.save!
         end
@@ -255,8 +255,8 @@ class BitstreamsController < ApplicationController
   #
   def update
     begin
-      UpdateItemCommand.new(item: @bitstream.item,
-                            user: current_user,
+      UpdateItemCommand.new(item:        @bitstream.item,
+                            user:        current_user,
                             description: "Updated an associated bitstream.").execute do
         @bitstream.update!(bitstream_params)
       end
