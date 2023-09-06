@@ -367,7 +367,11 @@ module ApplicationHelper
   # @return [String]
   #
   def google_analytics_tags
-    id = current_institution&.google_analytics_measurement_id
+    # Most routes on which these tags would be displayed are scoped to an
+    # institution. But for e.g. global pages which aren't scoped, use UIUC's
+    # tag.
+    institution = current_institution || Institution.find_by_key("uiuc")
+    id          = institution.google_analytics_measurement_id
     if id.present?
       return raw("<script async src=\"https://www.googletagmanager.com/gtag/js?id=#{id}\"></script>
       <script>
