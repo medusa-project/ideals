@@ -31,7 +31,11 @@
             %span.badge.text-bg-primary
               = Event::Type.label(event.event_type)
           %td
-            - if event.item_id
+            - if event.collection_id
+              = link_to(event.collection) do
+                = icon_for(event.collection)
+                = event.collection.title
+            - elsif event.item_id
               = link_to(event.item) do
                 = icon_for(event.item)
                 = event.item.title
@@ -43,6 +47,10 @@
               = link_to(event.login.user) do
                 = icon_for(event.login.user)
                 = event.login.user.name
+            - elsif event.unit_id
+              = link_to(event.unit) do
+                = icon_for(event.unit)
+                = event.unit.title
           %td
             - if event.description.present?
               = link_to(event.description, "#", data: { 'bs-toggle': "modal",
