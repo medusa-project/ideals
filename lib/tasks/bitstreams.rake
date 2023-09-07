@@ -11,7 +11,7 @@ namespace :bitstreams do
     url = "https://www.ideals.illinois.edu/items/#{bs.item_id}/bitstreams/#{bs.id}/object"
     Dir.mktmpdir do |dir|
       path = File.join(dir, bs.filename)
-      `curl -LsSo #{path} "#{url}"`
+      `curl -LsSo "#{path}" "#{url}"`
       Bitstream.transaction do
         bs.update!(permanent_key: Bitstream.permanent_key(institution_key: bs.institution.key,
                                                           item_id:         bs.item_id,
