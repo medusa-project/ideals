@@ -3,29 +3,29 @@
 #
 # Properties
 #
-# * `category`:                `archive`, `audio`, `binary`, `code`,
-#                              `document`, `font`, `image`, or `video`
-# * `extensions`:              Extensions that files of this type may have, in
-#                              order of likelihood/preference.
-# * `icon`:                    One of the files (minus extension) in
-#                              `app/assets/images/fontawesome`
-# * `long_name`:               Long name.
-# * `media_types`:             IANA media types, in order of preference.
-# * `readable_by_imagemagick`: Whether this type is supported by our image
-#                              processing tool (ImageMagick) in order to
-#                              generate representative images.
-# * `short_name`:              Short name.
-# * `viewer_method`:           Name of a {BitstreamsHelper} method that will
-#                              render a viewer for the format.
+# * `category`:             `archive`, `audio`, `binary`, `code`, `document`,
+#                           `font`, `image`, or `video`
+# * `extensions`:           Extensions that files of this type may have, in
+#                           order of likelihood/preference.
+# * `icon`:                 One of the files (minus extension) in
+#                           `app/assets/images/fontawesome`
+# * `long_name`:            Long name.
+# * `media_types`:          IANA media types, in order of preference.
+# * `derivative_generator`: Name of the tool used to generate derivative/
+#                           representative images for the format. Supported
+#                           values are `imagemagick` and `libreoffice`.
+# * `short_name`:           Short name.
+# * `viewer_method`:        Name of a {BitstreamsHelper} method that will
+#                           render a viewer for the format.
 #
 class FileFormat
 
-  attr_reader :category, :extensions, :icon, :long_name, :media_types,
-              :readable_by_imagemagick, :short_name, :viewer_method
+  attr_reader :category, :derivative_generator, :extensions, :icon, :long_name,
+              :media_types, :short_name, :viewer_method
 
   KNOWN_FORMATS   = YAML.load_file(File.join(Rails.root, "config", "formats.yml")).deep_symbolize_keys
-  YAML_PROPERTIES = %w(category extensions icon long_name media_types
-                       readable_by_imagemagick short_name viewer_method)
+  YAML_PROPERTIES = %w(category derivative_generator extensions icon long_name
+                       media_types short_name viewer_method)
 
   ##
   # @param ext [String]

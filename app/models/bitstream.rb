@@ -514,8 +514,7 @@ class Bitstream < ApplicationRecord
   # @return [Boolean]
   #
   def has_representative_image?
-    format = self.format
-    format ? (format.readable_by_imagemagick == true) : false
+    self.format&.derivative_generator&.present? || false
   end
 
   ##
@@ -738,7 +737,8 @@ class Bitstream < ApplicationRecord
     deriv_path      = nil
     begin
       source_tempfile = download_to_temp_file
-      if source_tempfile
+      case self.format.derivative_generator
+      when "imagemagick"
         crop       = (region == :square) ? "-gravity center -crop 1:1" : ""
         deriv_path = File.join(File.dirname(source_tempfile.path),
                                "#{File.basename(source_tempfile.path)}-#{region}-#{size}.#{format}")
@@ -754,6 +754,8 @@ class Bitstream < ApplicationRecord
           PersistentStore.instance.put_object(key:  target_key,
                                               file: file)
         end
+      else
+        raise "No derivative generator for this format."
       end
     rescue => e
       LOGGER.warn("generate_derivative(): #{e}")
