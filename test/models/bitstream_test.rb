@@ -445,7 +445,7 @@ class BitstreamTest < ActiveSupport::TestCase
     end
   end
 
-  test "derivative_url() generates a correct URL" do
+  test "derivative_url() generates a correct URL using ImageMagick" do
     # upload the source image to the staging area of the application S3 bucket
     File.open(file_fixture("escher_lego.png"), "r") do |file|
       @instance.upload_to_staging(file)
@@ -457,6 +457,21 @@ class BitstreamTest < ActiveSupport::TestCase
     response = client.get(url)
     assert_equal 200, response.code
     assert response.headers['Content-Length'].to_i > 1000
+  end
+
+  test "derivative_url() generates a correct URL using LibreOffice" do
+    @instance.update!(filename: "IDEALS_Charter.doc")
+    # upload the source image to the staging area of the application S3 bucket
+    File.open(file_fixture("IDEALS_Charter.doc"), "r") do |file|
+      @instance.upload_to_staging(file)
+    end
+
+    url = @instance.derivative_url(size: 45)
+
+    client   = HTTPClient.new
+    response = client.get(url)
+    assert_equal 200, response.code
+    assert response.headers['Content-Length'].to_i > 800
   end
 
   # destroy()

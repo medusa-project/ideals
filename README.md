@@ -44,7 +44,9 @@ This is a getting-started guide and brief technical manual for developers.
 * PostgreSQL >= 9.x
 * OpenSearch >= 1.x with the `analysis-icu` plugin installed
 * An S3 storage service, such as AWS S3 or [Minio Server](https://min.io)
+* curl
 * ImageMagick
+* LibreOffice (for the `soffice` tool)
 * Poppler or xpdf (for the `pdftotext` tool)
 * RabbitMQ
 * A Handle.net server (see the

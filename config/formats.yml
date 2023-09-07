@@ -180,6 +180,7 @@ doc:
     - application/msword
   category: document
   icon: file-word-o
+  derivative_generator: libreoffice
 docx:
   short_name: Word
   long_name: Word Document
@@ -190,6 +191,7 @@ docx:
     - application/vnd.openxmlformats-officedocument.wordprocessingml.document
   category: document
   icon: file-word-o
+  derivative_generator: libreoffice
 dvi:
   short_name: DVI
   long_name: Device Independent Format
@@ -612,6 +614,7 @@ odg:
     - application/vnd.oasis.opendocument.graphics
   category: document
   icon: file-image-o
+  derivative_generator: libreoffice
 odi:
   short_name: ODI
   long_name: OpenDocument Image
@@ -630,6 +633,7 @@ odm:
     - application/vnd.oasis.opendocument.text-master
   category: document
   icon: file-o
+  derivative_generator: libreoffice
 odp:
   short_name: ODP
   long_name: OpenDocument Presentation
@@ -639,6 +643,7 @@ odp:
     - application/vnd.oasis.opendocument.presentation
   category: document
   icon: file-o
+  derivative_generator: libreoffice
 ods:
   short_name: ODS
   long_name: OpenDocument Spreadsheet
@@ -658,6 +663,7 @@ odt:
     - application/vnd.oasis.opendocument.text
   category: document
   icon: file-text-o
+  derivative_generator: libreoffice
 ogg:
   short_name: Ogg
   long_name: Ogg Vorbis
@@ -788,6 +794,7 @@ ppt:
     - application/x-mspowerpoint
   category: document
   icon: file-powerpoint-o
+  derivative_generator: libreoffice
 pptx:
   short_name: PowerPoint
   long_name: PowerPoint
@@ -798,6 +805,7 @@ pptx:
     - application/vnd.openxmlformats-officedocument.presentationml.presentation
   category: document
   icon: file-powerpoint-o
+  derivative_generator: libreoffice
 ps:
   short_name: PostScript
   long_name: PostScript
@@ -921,6 +929,7 @@ sdd:
     - application/vnd.stardivision.impress
   category: document
   icon: file-o
+  derivative_generator: libreoffice
 sdm:
   short_name: StarMail
   long_name: StarMail
@@ -939,6 +948,7 @@ sda:
     - application/vnd.stardivision.draw
   category: document
   icon: file-o
+  derivative_generator: libreoffice
 sdc:
   short_name: StarCalc
   long_name: StarCalc
@@ -957,6 +967,7 @@ sdp:
     - application/vnd.stardivision.impress-packed
   category: document
   icon: file-o
+  derivative_generator: libreoffice
 sds:
   short_name: StarChart
   long_name: StarChart
@@ -975,6 +986,7 @@ sdw:
     - application/vnd.stardivision.writer
   category: binary
   icon: file-o
+  derivative_generator: libreoffice
 sgl:
   short_name: StarWriter
   long_name: StarWriter Global
@@ -1177,6 +1189,7 @@ vsd:
     - application/x-vsd
   category: document
   icon: file-o
+  derivative_generator: libreoffice
 warc:
   short_name: WARC
   long_name: Web ARChive

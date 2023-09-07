@@ -736,26 +736,50 @@ class Bitstream < ApplicationRecord
     source_tempfile = nil
     deriv_path      = nil
     begin
-      source_tempfile = download_to_temp_file
-      case self.format.derivative_generator
-      when "imagemagick"
-        crop       = (region == :square) ? "-gravity center -crop 1:1" : ""
-        deriv_path = File.join(File.dirname(source_tempfile.path),
-                               "#{File.basename(source_tempfile.path)}-#{region}-#{size}.#{format}")
-        command    = "convert #{source_tempfile.path}[0] "\
-                     "#{crop} "\
-                     "-resize #{size}x#{size} "\
-                     "-alpha remove "\
-                     "#{deriv_path}"
-        result     = system(command)
-        status     = $?.exitstatus
-        raise "Command returned status code #{status}: #{command}" unless result
-        File.open(deriv_path, "rb") do |file|
-          PersistentStore.instance.put_object(key:  target_key,
-                                              file: file)
+      Dir.mktmpdir do |tmpdir|
+        source_tempfile = download_to_temp_file
+        deriv_path      = File.join(tmpdir,
+                                    "#{File.basename(source_tempfile.path)}-#{region}-#{size}.#{format}")
+        # N.B.: each case must write a file to deriv_path.
+        case self.format.derivative_generator
+        when "imagemagick"
+          crop       = (region == :square) ? "-gravity center -crop 1:1" : ""
+          command    = "convert #{source_tempfile.path}[0] "\
+                       "#{crop} "\
+                       "-resize #{size}x#{size} "\
+                       "-alpha remove "\
+                       "#{deriv_path}"
+          result     = system(command)
+          status     = $?.exitstatus
+          raise "Command returned status code #{status}: #{command}" unless result
+        when "libreoffice"
+          # LibreOffice can convert to images itself, but it doesn't offer very
+          # much control over cropping, DPI, etc. Therefore we use it to convert
+          # to PDF and then convert that to our desired image using ImageMagick.
+          command  = "soffice --headless --convert-to pdf "\
+                     "#{source_tempfile.path} "\
+                     "--outdir #{tmpdir}"
+          result   = system(command)
+          status   = $?.exitstatus
+          raise "Command returned status code #{status}: #{command}" unless result
+
+          pdf_path = File.join(tmpdir,
+                               File.basename(source_tempfile.path).gsub(/#{File.extname(source_tempfile.path)}\z/, ".pdf"))
+          command = "convert #{pdf_path}[0] "\
+                    "#{crop} "\
+                    "-resize #{size}x#{size} "\
+                    "-background white "\
+                    "-alpha remove "\
+                    "#{deriv_path}"
+          result  = system(command)
+          status  = $?.exitstatus
+          raise "Command returned status code #{status}: #{command}" unless result
+        else
+          raise "No derivative generator for this format."
         end
-      else
-        raise "No derivative generator for this format."
+        File.open(deriv_path, "rb") do |file|
+          PersistentStore.instance.put_object(key: target_key, file: file)
+        end
       end
     rescue => e
       LOGGER.warn("generate_derivative(): #{e}")
