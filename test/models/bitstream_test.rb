@@ -541,6 +541,15 @@ class BitstreamTest < ActiveSupport::TestCase
 
   # download_to_temp_file()
 
+  test "download_to_temp_file() raises an error if the instance has no
+  effective key" do
+    @instance.staging_key   = nil
+    @instance.permanent_key = nil
+    assert_raises do
+      @instance.download_to_temp_file
+    end
+  end
+
   test "download_to_temp_file() works" do
     file = @instance.download_to_temp_file
     assert File.exist?(file.path)
