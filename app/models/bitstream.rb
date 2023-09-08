@@ -150,8 +150,7 @@ class Bitstream < ApplicationRecord
     can_read_full_text? &&
     full_text_checked_at.blank? &&
     effective_key.present? &&
-    (defined?(ActiveSupport::TestCase) != "constant" ||
-      (ActiveSupport::TestCase.respond_to?(:seeding) && !ActiveSupport::TestCase.seeding?))
+    (defined?(ActiveSupport::TestCase) != "constant")
   }
   before_destroy :delete_derivatives, :delete_from_staging,
                  :delete_from_permanent_storage

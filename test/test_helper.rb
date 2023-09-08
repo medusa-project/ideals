@@ -12,10 +12,6 @@ class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all
 
-  def self.seeding?
-    @@seeding
-  end
-
   def clear_message_queues
     Institution.
       where.not(outgoing_message_queue: nil).
@@ -142,7 +138,6 @@ class ActiveSupport::TestCase
     client.create_bucket(bucket: bucket) unless client.bucket_exists?(bucket)
     client.delete_objects(bucket: bucket)
 
-    @@seeding = true
     Bitstream.where("staging_key IS NOT NULL OR permanent_key IS NOT NULL").each do |bs|
       fix_bitstream_keys(bs)
       File.open(file_fixture(bs.original_filename), "r") do |file|
@@ -150,7 +145,6 @@ class ActiveSupport::TestCase
                                             file: file)
       end
     end
-    @@seeding = false
   end
 
   def teardown_s3
