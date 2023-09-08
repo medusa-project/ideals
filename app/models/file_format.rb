@@ -45,4 +45,11 @@ class FileFormat
     format
   end
 
+  ##
+  # @return [String] The {media_types first media type}.
+  #
+  def media_type
+    media_types.first
+  end
+
 end
