@@ -11,7 +11,7 @@
 
 southwest_unit1_collection1_submitting_1:
   item:              southwest_unit1_collection1_submitting
-  staging_key:       <%= SecureRandom.hex %>
+  staging_key:       <%= SecureRandom.hex %> <-- will be updated by fix_bitstream_keys() 
   permanent_key:
   length:            <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
   original_filename: escher_lego.png
@@ -26,7 +26,7 @@ southwest_unit1_collection1_submitting_1:
 southwest_unit1_collection1_item1_approved:
   item:              southwest_unit1_collection1_item1
   staging_key:
-  permanent_key:     <%= SecureRandom.hex %>
+  permanent_key:     <%= SecureRandom.hex %> <-- will be updated by fix_bitstream_keys() 
   length:            <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
   original_filename: escher_lego.png
   filename:          approved.png
@@ -40,7 +40,7 @@ southwest_unit1_collection1_item1_approved:
 southwest_unit1_collection1_item1_license:
   item:              southwest_unit1_collection1_item1
   staging_key:
-  permanent_key:     <%= SecureRandom.hex %>
+  permanent_key:     <%= SecureRandom.hex %> <-- will be updated by fix_bitstream_keys() 
   length:            <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "pdf.pdf")) %>
   original_filename: pdf.pdf
   filename:          license.pdf
@@ -54,7 +54,7 @@ southwest_unit1_collection1_item1_license:
 southwest_unit1_collection1_item1_role_limited:
   item:              southwest_unit1_collection1_item1
   staging_key:
-  permanent_key:     <%= SecureRandom.hex %>
+  permanent_key:     <%= SecureRandom.hex %> <-- will be updated by fix_bitstream_keys() 
   length:            <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "crane.jpg")) %>
   original_filename: crane.jpg
   filename:          crane.jpg
@@ -68,7 +68,7 @@ southwest_unit1_collection1_item1_role_limited:
 southwest_unit1_collection1_embargoed_1:
   item:              southwest_unit1_collection1_embargoed
   staging_key:
-  permanent_key:     <%= SecureRandom.hex %>
+  permanent_key:     <%= SecureRandom.hex %> <-- will be updated by fix_bitstream_keys() 
   length:            <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
   original_filename: escher_lego.png
   filename:          escher_lego.png
@@ -82,7 +82,7 @@ southwest_unit1_collection1_embargoed_1:
 southwest_unit1_collection1_withdrawn_1:
   item:              southwest_unit1_collection1_withdrawn
   staging_key:
-  permanent_key:     <%= SecureRandom.hex %>
+  permanent_key:     <%= SecureRandom.hex %> <-- will be updated by fix_bitstream_keys() 
   length:            <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
   original_filename: escher_lego.png
   filename:          escher_lego.png
@@ -97,7 +97,7 @@ southwest_unit1_collection1_withdrawn_1:
 
 uiuc_item1_in_staging:
   item:              uiuc_item1
-  staging_key:       <%= SecureRandom.hex %>
+  staging_key:       <%= SecureRandom.hex %> <-- will be updated by fix_bitstream_keys() 
   permanent_key:
   length:            <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
   original_filename: escher_lego.png
@@ -111,7 +111,7 @@ uiuc_item1_in_staging:
 
 uiuc_submitting_in_staging:
   item:              uiuc_submitting
-  staging_key:       <%= SecureRandom.hex %>
+  staging_key:       <%= SecureRandom.hex %> <-- will be updated by fix_bitstream_keys() 
   permanent_key:
   length:            <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
   original_filename: escher_lego.png
@@ -125,7 +125,7 @@ uiuc_submitting_in_staging:
 
 uiuc_submitted_in_staging:
   item:              uiuc_submitted
-  staging_key:       <%= SecureRandom.hex %>
+  staging_key:       <%= SecureRandom.hex %> <-- will be updated by fix_bitstream_keys() 
   permanent_key:
   length:            <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
   original_filename: escher_lego.png
@@ -140,7 +140,7 @@ uiuc_submitted_in_staging:
 uiuc_awaiting_ingest_into_medusa:
   item:              uiuc_awaiting_ingest_into_medusa
   staging_key:
-  permanent_key:     <%= SecureRandom.hex %>
+  permanent_key:     <%= SecureRandom.hex %> <-- will be updated by fix_bitstream_keys() 
   length:            <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
   original_filename: escher_lego.png
   filename:          escher_lego.png
@@ -154,7 +154,7 @@ uiuc_awaiting_ingest_into_medusa:
 uiuc_approved_in_permanent:
   item:              uiuc_approved
   staging_key:
-  permanent_key:     <%= SecureRandom.hex %>
+  permanent_key:     <%= SecureRandom.hex %> <-- will be updated by fix_bitstream_keys() 
   length:            <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "pdf.pdf")) %>
   original_filename: pdf.pdf
   filename:          pdf.pdf
@@ -168,7 +168,7 @@ uiuc_approved_in_permanent:
 uiuc_in_medusa:
   item:              uiuc_in_medusa
   staging_key:
-  permanent_key:     <%= SecureRandom.hex %>
+  permanent_key:     <%= SecureRandom.hex %> <-- will be updated by fix_bitstream_keys() 
   length:            <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
   original_filename: escher_lego.png
   filename:          escher_lego.png
@@ -181,7 +181,7 @@ uiuc_in_medusa:
 
 uiuc_item1_license_bundle:
   item:              uiuc_item1
-  staging_key:       <%= SecureRandom.hex %>
+  staging_key:       <%= SecureRandom.hex %> <-- will be updated by fix_bitstream_keys() 
   permanent_key:
   length:            <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "pooh.jpg")) %>
   original_filename: pooh.jpg
@@ -195,7 +195,7 @@ uiuc_item1_license_bundle:
 
 uiuc_item1_role_limited:
   item:              uiuc_item1
-  staging_key:       <%= SecureRandom.hex %>
+  staging_key:       <%= SecureRandom.hex %> <-- will be updated by fix_bitstream_keys() 
   permanent_key:
   length:            <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "crane.jpg")) %>
   original_filename: crane.jpg
@@ -209,7 +209,7 @@ uiuc_item1_role_limited:
 
 uiuc_embargoed_in_staging:
   item:              uiuc_embargoed
-  staging_key:       <%= SecureRandom.hex %>
+  staging_key:       <%= SecureRandom.hex %> <-- will be updated by fix_bitstream_keys() 
   permanent_key:
   length:            <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
   original_filename: escher_lego.png
@@ -223,7 +223,7 @@ uiuc_embargoed_in_staging:
 
 uiuc_withdrawn_in_staging:
   item:              uiuc_withdrawn
-  staging_key:       <%= SecureRandom.hex %>
+  staging_key:       <%= SecureRandom.hex %> <-- will be updated by fix_bitstream_keys() 
   permanent_key:
   length:            <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
   original_filename: escher_lego.png
@@ -237,7 +237,7 @@ uiuc_withdrawn_in_staging:
 
 uiuc_multiple_bitstreams_1:
   item:              uiuc_multiple_bitstreams
-  staging_key:       <%= SecureRandom.hex %>
+  staging_key:       <%= SecureRandom.hex %> <-- will be updated by fix_bitstream_keys() 
   permanent_key:
   length:            <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")) %>
   original_filename: escher_lego.png
@@ -251,7 +251,7 @@ uiuc_multiple_bitstreams_1:
 
 uiuc_multiple_bitstreams_2:
   item:              uiuc_multiple_bitstreams
-  staging_key:       <%= SecureRandom.hex %>
+  staging_key:       <%= SecureRandom.hex %> <-- will be updated by fix_bitstream_keys() 
   permanent_key:
   length:            <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "pooh.jpg")) %>
   original_filename: pooh.jpg
@@ -265,7 +265,7 @@ uiuc_multiple_bitstreams_2:
 
 uiuc_multiple_bitstreams_3:
   item:              uiuc_multiple_bitstreams
-  staging_key:       <%= SecureRandom.hex %>
+  staging_key:       <%= SecureRandom.hex %> <-- will be updated by fix_bitstream_keys() 
   permanent_key:
   length:            <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "crane.jpg")) %>
   original_filename: crane.jpg
