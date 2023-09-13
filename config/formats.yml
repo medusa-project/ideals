@@ -181,6 +181,7 @@ doc:
   category: document
   icon: file-word-o
   derivative_generator: libreoffice
+  viewer_method: pdfjs_viewer_for
 docx:
   short_name: Word
   long_name: Word Document
@@ -192,6 +193,7 @@ docx:
   category: document
   icon: file-word-o
   derivative_generator: libreoffice
+  viewer_method: pdfjs_viewer_for
 dvi:
   short_name: DVI
   long_name: Device Independent Format
@@ -615,6 +617,7 @@ odg:
   category: document
   icon: file-image-o
   derivative_generator: libreoffice
+  viewer_method: pdfjs_viewer_for
 odi:
   short_name: ODI
   long_name: OpenDocument Image
@@ -634,6 +637,7 @@ odm:
   category: document
   icon: file-o
   derivative_generator: libreoffice
+  viewer_method: pdfjs_viewer_for
 odp:
   short_name: ODP
   long_name: OpenDocument Presentation
@@ -644,6 +648,7 @@ odp:
   category: document
   icon: file-o
   derivative_generator: libreoffice
+  viewer_method: pdfjs_viewer_for
 ods:
   short_name: ODS
   long_name: OpenDocument Spreadsheet
@@ -664,6 +669,7 @@ odt:
   category: document
   icon: file-text-o
   derivative_generator: libreoffice
+  viewer_method: pdfjs_viewer_for
 ogg:
   short_name: Ogg
   long_name: Ogg Vorbis
@@ -795,6 +801,7 @@ ppt:
   category: document
   icon: file-powerpoint-o
   derivative_generator: libreoffice
+  viewer_method: pdfjs_viewer_for
 pptx:
   short_name: PowerPoint
   long_name: PowerPoint
@@ -806,6 +813,7 @@ pptx:
   category: document
   icon: file-powerpoint-o
   derivative_generator: libreoffice
+  viewer_method: pdfjs_viewer_for
 ps:
   short_name: PostScript
   long_name: PostScript
@@ -930,6 +938,7 @@ sdd:
   category: document
   icon: file-o
   derivative_generator: libreoffice
+  viewer_method: pdfjs_viewer_for
 sdm:
   short_name: StarMail
   long_name: StarMail
@@ -949,6 +958,7 @@ sda:
   category: document
   icon: file-o
   derivative_generator: libreoffice
+  viewer_method: pdfjs_viewer_for
 sdc:
   short_name: StarCalc
   long_name: StarCalc
@@ -968,6 +978,7 @@ sdp:
   category: document
   icon: file-o
   derivative_generator: libreoffice
+  viewer_method: pdfjs_viewer_for
 sds:
   short_name: StarChart
   long_name: StarChart
@@ -987,6 +998,7 @@ sdw:
   category: binary
   icon: file-o
   derivative_generator: libreoffice
+  viewer_method: pdfjs_viewer_for
 sgl:
   short_name: StarWriter
   long_name: StarWriter Global
@@ -1190,6 +1202,7 @@ vsd:
   category: document
   icon: file-o
   derivative_generator: libreoffice
+  viewer_method: pdfjs_viewer_for
 warc:
   short_name: WARC
   long_name: Web ARChive

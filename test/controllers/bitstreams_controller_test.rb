@@ -109,7 +109,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     fixture = file_fixture("pdf.pdf")
     item    = items(:southwest_unit1_collection1_item1)
     bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: File.basename(fixture),
+                                       filename: "new_pdf.pdf",
                                        length:   File.size(fixture))
     bs.save!
     begin
@@ -128,7 +128,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     fixture = file_fixture("pdf.pdf")
     item    = items(:southwest_unit1_collection1_item1)
     bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: File.basename(fixture),
+                                       filename: "new_pdf.pdf",
                                        length:   File.size(fixture))
     bs.save!
     begin
@@ -232,7 +232,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     fixture = file_fixture("pdf.pdf")
     item    = items(:southwest_unit1_collection1_item1)
     bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: File.basename(fixture),
+                                       filename: "new_pdf.pdf",
                                        length:   File.size(fixture))
     bs.save!
     begin
@@ -462,7 +462,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     fixture = file_fixture("pdf.pdf")
     item    = items(:southwest_unit1_collection1_item1)
     bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: File.basename(fixture),
+                                       filename: "new_pdf.pdf",
                                        length:   File.size(fixture))
     bs.save!
     begin
@@ -481,7 +481,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     fixture = file_fixture("pdf.pdf")
     item    = items(:southwest_unit1_collection1_item1)
     bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: File.basename(fixture),
+                                       filename: "new_pdf.pdf",
                                        length:   File.size(fixture))
     bs.staging_key = nil
     bs.save!
@@ -494,7 +494,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     fixture = file_fixture("pdf.pdf")
     item    = items(:southwest_unit1_collection1_item1)
     bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: File.basename(fixture),
+                                       filename: "new_pdf.pdf",
                                        length:   File.size(fixture))
     bs.save!
     begin
@@ -514,7 +514,7 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     fixture = file_fixture("pdf.pdf")
     item    = items(:southwest_unit1_collection1_item1)
     bs      = Bitstream.new_in_staging(item:     item,
-                                       filename: File.basename(fixture),
+                                       filename: "new_pdf.pdf",
                                        length:   File.size(fixture))
     bs.save!
     begin
@@ -645,6 +645,26 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     ensure
       bs.delete_from_staging
     end
+  end
+
+  test "show() with pdf format returns HTTP 200 for a native PDF" do
+    bs = bitstreams(:southwest_unit1_collection1_item1_pdf)
+    get item_bitstream_path(bs.item, bs, format: :pdf)
+    assert_response :ok
+  end
+
+  test "show() with pdf format redirects for a bitstream that can be converted
+  into PDF" do
+    bs = bitstreams(:southwest_unit1_collection1_item1_doc)
+    get item_bitstream_path(bs.item, bs, format: :pdf)
+    assert_response :found
+  end
+
+  test "show() with pdf format returns HTTP 404 for a bitstream that cannot be
+  represented as PDF" do
+    bs = bitstreams(:southwest_unit1_collection1_item1_approved)
+    get item_bitstream_path(bs.item, bs, format: :pdf)
+    assert_response :not_found
   end
 
   test "show() respects role limits" do

@@ -881,9 +881,9 @@ module ApplicationHelper
     if item.kind_of?(Item)
       bs = item.representative_bitstream
       if bs&.has_representative_image?
-        url = bs.derivative_url(region:         :square,
-                                size:           512,
-                                generate_async: true)
+        url = bs.derivative_image_url(region:         :square,
+                                      size:           512,
+                                      generate_async: true)
         if url
           return raw("<img src=\"#{url}\" alt=\"Thumbnail for #{item.title}\"/>")
         end

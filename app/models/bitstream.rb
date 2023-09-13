@@ -57,9 +57,9 @@
 # # Derivative images
 #
 # The application supports image previews for some file types. If the return
-# value of {has_representative_image?} is `true`, {derivative_url} can be used
-# to obtain the URL of a derivative image with the given characteristics. The
-# URL points to an image in the application S3 bucket, which is generated
+# value of {has_representative_image?} is `true`, {derivative_image_url} can be
+# used to obtain the URL of a derivative image with the given characteristics.
+# The URL points to an image in the application S3 bucket, which is generated
 # on-the-fly and cached.
 #
 # # Full text
@@ -431,23 +431,43 @@ class Bitstream < ApplicationRecord
   # @return [String] Public URL for a derivative image with the given
   #                  characteristics. If no such image exists, it is generated
   #                  automatically.
-  # @raises [Aws::S3::Errors::NotFound]
   #
-  def derivative_url(region: :full, size:, generate_async: false)
+  def derivative_image_url(region: :full, size:, generate_async: false)
     unless has_representative_image?
       raise "Derivatives are not supported for this format."
     end
     store = PersistentStore.instance
-    key   = derivative_key(region: region, size: size, format: :jpg)
+    key   = derivative_image_key(region: region, size: size, format: :jpg)
     unless store.object_exists?(key: key)
       if generate_async
         GenerateDerivativeImageJob.perform_later(self, region, size, :jpg)
         return nil
       else
-        generate_derivative(region: region, size: size, format: :jpg)
+        generate_image_derivative(region: region, size: size, format: :jpg)
       end
     end
     store.presigned_download_url(key: key, expires_in: 1.hour.to_i)
+  end
+
+  ##
+  # @return [String] Public URL for a derivative PDF with the given
+  #                  characteristics. If no such image exists, it is generated
+  #                  automatically.
+  #
+  def derivative_pdf_url
+    store  = PersistentStore.instance
+    expiry = 1.hour.to_i
+    format = self.format
+    if format.media_type == "application/pdf"
+      return store.presigned_download_url(key:        self.effective_key,
+                                          expires_in: expiry)
+    elsif format.derivative_generator != "libreoffice"
+      raise "This instance cannot be converted to PDF."
+    end
+
+    key = derivative_pdf_key
+    generate_pdf_derivative unless store.object_exists?(key: key)
+    store.presigned_download_url(key: key, expires_in: expiry)
   end
 
   ##
@@ -474,8 +494,9 @@ class Bitstream < ApplicationRecord
     rescue => e
       tempfile.unlink
       raise e
+    else
+      tempfile
     end
-    tempfile
   end
 
   ##
@@ -708,9 +729,16 @@ class Bitstream < ApplicationRecord
   # @param format [Symbol] Format extension with no leading dot.
   # @return [String]
   #
-  def derivative_key(region:, size:, format:)
+  def derivative_image_key(region:, size:, format:)
     [derivative_key_prefix, region.to_s, size.to_s,
      "default.#{format}"].join("/")
+  end
+
+  ##
+  # @return [String]
+  #
+  def derivative_pdf_key
+    [derivative_key_prefix, "pdf", "pdf.pdf"].join("/")
   end
 
   def derivative_key_prefix
@@ -719,7 +747,9 @@ class Bitstream < ApplicationRecord
 
   def ensure_primary_uniqueness
     if self.primary
-      self.item.bitstreams.where.not(id: self.id).update_all(primary: false)
+      self.item.bitstreams.
+        where.not(id: self.id).
+        update_all(primary: false)
     end
   end
 
@@ -731,46 +761,41 @@ class Bitstream < ApplicationRecord
   # @param size [Integer]
   # @param format [Symbol]
   #
-  def generate_derivative(region:, size:, format:)
-    target_key      = derivative_key(region: region, size: size, format: format)
+  def generate_image_derivative(region:, size:, format:)
+    target_key      = derivative_image_key(region: region,
+                                           size:   size,
+                                           format: format)
     source_tempfile = nil
     deriv_path      = nil
     begin
       Dir.mktmpdir do |tmpdir|
-        source_tempfile = download_to_temp_file
-        deriv_path      = File.join(tmpdir,
-                                    "#{File.basename(source_tempfile.path)}-#{region}-#{size}.#{format}")
         # N.B.: each case must write a file to deriv_path.
         case self.format.derivative_generator
         when "imagemagick"
-          crop       = (region == :square) ? "-gravity center -crop 1:1" : ""
-          command    = "convert #{source_tempfile.path}[0] "\
-                       "#{crop} "\
-                       "-resize #{size}x#{size} "\
-                       "-alpha remove "\
-                       "#{deriv_path}"
-          result     = system(command)
-          status     = $?.exitstatus
+          source_tempfile = download_to_temp_file
+          deriv_path      = File.join(tmpdir,
+                                      "#{File.basename(source_tempfile.path)}-#{region}-#{size}.#{format}")
+          crop            = (region == :square) ? "-gravity center -crop 1:1" : ""
+          command         = "convert #{source_tempfile.path}[0] "\
+                            "#{crop} "\
+                            "-resize #{size}x#{size} "\
+                            "-alpha remove "\
+                            "#{deriv_path}"
+          result          = system(command)
+          status          = $?.exitstatus
           raise "Command returned status code #{status}: #{command}" unless result
         when "libreoffice"
           # LibreOffice can convert to images itself, but it doesn't offer very
-          # much control over cropping, DPI, etc. Therefore we use it to convert
-          # to PDF and then convert that to our desired image using ImageMagick.
-          command  = "soffice --headless --convert-to pdf "\
-                     "#{source_tempfile.path} "\
-                     "--outdir #{tmpdir}"
-          result   = system(command)
-          status   = $?.exitstatus
-          raise "Command returned status code #{status}: #{command}" unless result
-
-          pdf_path = File.join(tmpdir,
-                               File.basename(source_tempfile.path).gsub(/#{File.extname(source_tempfile.path)}\z/, ".pdf"))
-          command = "convert #{pdf_path}[0] "\
-                    "#{crop} "\
-                    "-resize #{size}x#{size} "\
-                    "-background white "\
-                    "-alpha remove "\
-                    "#{deriv_path}"
+          # much control over cropping, DPI, etc. Therefore we use it to
+          # convert to PDF and then go from there with ImageMagick.
+          pdf_path   = generate_pdf_derivative(as_file: true)
+          deriv_path = "#{File.dirname(pdf_path)}/#{File.basename(pdf_path)}-#{region}-#{size}.#{format}"
+          command    = "convert #{pdf_path}[0] "\
+                       "#{crop} "\
+                       "-resize #{size}x#{size} "\
+                       "-background white "\
+                       "-alpha remove "\
+                       "#{deriv_path}"
           result  = system(command)
           status  = $?.exitstatus
           raise "Command returned status code #{status}: #{command}" unless result
@@ -782,11 +807,48 @@ class Bitstream < ApplicationRecord
         end
       end
     rescue => e
-      LOGGER.warn("generate_derivative(): #{e}")
+      LOGGER.warn("generate_image_derivative(): #{e}")
       raise e
     ensure
       source_tempfile&.unlink
       FileUtils.rm(deriv_path) rescue nil
+    end
+  end
+
+  ##
+  # Downloads the object into a temp file, writes a derivative PDF into another
+  # temp file, and saves it to the application S3 bucket. This is used for
+  # converting PDF-like formats (e.g. Microsoft Office) formats into PDFs.
+  #
+  # param as_file [Boolean] If true, the PDF is returned as a file path.
+  # @see generate_image_derivative
+  #
+  def generate_pdf_derivative(as_file: false)
+    if self.format.derivative_generator != "libreoffice"
+      raise "This instance cannot be converted to PDF."
+    end
+    source_tempfile = download_to_temp_file
+    begin
+      tmpdir          = File.dirname(source_tempfile)
+      command         = "soffice --headless --convert-to pdf "\
+        "#{source_tempfile.path} "\
+        "--outdir #{tmpdir}"
+      result   = system(command)
+      status   = $?.exitstatus
+      raise "Command returned status code #{status}: #{command}" unless result
+
+      pdf_path = File.join(tmpdir,
+                           File.basename(source_tempfile).gsub(/#{File.extname(source_tempfile)}\z/, ".pdf"))
+      if as_file
+        return pdf_path
+      else
+        File.open(pdf_path, "rb") do |file|
+          PersistentStore.instance.put_object(key:  derivative_pdf_key,
+                                              file: file)
+        end
+      end
+    ensure
+      source_tempfile.unlink
     end
   end
 

@@ -9,10 +9,11 @@ module BitstreamsHelper
   # {FileFormat} registry.
   #
   # @param bitstream [Bitstream]
-  # @param region [Symbol] See {Bitstream#derivative_url}.
-  # @param size [Integer] See {Bitstream#derivative_url}. This is the literal
-  #                       size of the image; the `img` tag has no `width`/
-  #                       `height` attribute and must be sized via CSS.
+  # @param region [Symbol] See {Bitstream#derivative_image_url}.
+  # @param size [Integer] See {Bitstream#derivative_image_url}. This is the
+  #                       literal size of the image; the `img` tag has no
+  #                       `width` or `height` attribute and must be sized via
+  #                       CSS.
   # @param generate_async [Boolean]
   # @param attrs [Hash] Additional tag attributes.
   # @return [String] HTML `img` tag.
@@ -25,9 +26,9 @@ module BitstreamsHelper
     path = nil
     if bitstream.has_representative_image?
       begin
-        path = bitstream.derivative_url(region:         region,
-                                        size:           size,
-                                        generate_async: generate_async)
+        path = bitstream.derivative_image_url(region:         region,
+                                              size:           size,
+                                              generate_async: generate_async)
         svg  = false
       rescue
         # The object may not exist, or something else is wrong, but we can't
@@ -127,7 +128,11 @@ module BitstreamsHelper
     # cross-domain requests. See: https://stackoverflow.com/a/69342595
     # The commit history of public/pdfjs/web/viewer.js should reveal the
     # change.
-    bitstream_url = bitstream.presigned_download_url(content_disposition: "inline")
+    if bitstream.format.derivative_generator == "libreoffice"
+      bitstream_url = item_bitstream_url(bitstream.item, bitstream, format: :pdf)
+    else
+      bitstream_url = bitstream.presigned_download_url(content_disposition: "inline")
+    end
     viewer_url    = asset_path("/pdfjs/web/viewer.html?file=" + CGI.escape(bitstream_url))
     html          = "<iframe src=\"#{viewer_url}\" id=\"pdfjs-pdf-viewer\" "\
                             "height=\"100%\" width=\"100%\" "\

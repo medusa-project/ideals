@@ -37,6 +37,34 @@ southwest_unit1_collection1_item1_approved:
   bundle_position:   0
   description:       Sample description
 
+southwest_unit1_collection1_item1_doc:
+  item:              southwest_unit1_collection1_item1
+  staging_key:
+  permanent_key:     <%= SecureRandom.hex %> <-- will be updated by fix_bitstream_keys()
+  length:            <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "IDEALS_Charter.doc")) %>
+  original_filename: IDEALS_Charter.doc
+  filename:          IDEALS_Charter.doc
+  medusa_key:
+  medusa_uuid:
+  role:              <%= Role::LOGGED_OUT %>
+  bundle:            <%= Bitstream::Bundle::CONTENT %>
+  bundle_position:   0
+  description:       Sample description
+
+southwest_unit1_collection1_item1_pdf:
+  item:              southwest_unit1_collection1_item1
+  staging_key:
+  permanent_key:     <%= SecureRandom.hex %> <-- will be updated by fix_bitstream_keys()
+  length:            <%= File.size(File.join(Rails.root, "test", "fixtures", "files", "pdf.pdf")) %>
+  original_filename: pdf.pdf
+  filename:          pdf.pdf
+  medusa_key:
+  medusa_uuid:
+  role:              <%= Role::LOGGED_OUT %>
+  bundle:            <%= Bitstream::Bundle::CONTENT %>
+  bundle_position:   0
+  description:       Sample description
+
 southwest_unit1_collection1_item1_license:
   item:              southwest_unit1_collection1_item1
   staging_key:

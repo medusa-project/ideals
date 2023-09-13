@@ -6,7 +6,7 @@ class GenerateDerivativeImageJob < ApplicationJob
   # @param args [Array] Four-element array with [Bitstream] at position 0 and
   #                     region, size, and format elements in the remaining
   #                     positions in the same format as the arguments to
-  #                     {Bitstream#generate_derivative}.
+  #                     {Bitstream#generate_image_derivative}.
   #
   def perform(*args)
     bs     = args[0]
@@ -22,7 +22,8 @@ class GenerateDerivativeImageJob < ApplicationJob
                                        "derivative image for #{bs.filename} "\
                                        "(item ID #{bs.item_id})")
     begin
-      bs.send(:generate_derivative, region: region, size: size, format: format)
+      bs.send(:generate_image_derivative,
+              region: region, size: size, format: format)
     rescue => e
       task.fail(detail:    e.message,
                 backtrace: e.backtrace)

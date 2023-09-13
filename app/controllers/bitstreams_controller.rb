@@ -19,6 +19,9 @@
 #    as it ties up a request connection.
 # 2. By redirecting to a presigned S3 URL using {object}.
 #
+# Also, for PDFs and PDF-like formats, PDF format can be requested by adding
+# a `.pdf` extension to the {show} URL.
+#
 # Bitstreams do not have public URLs because they do not have public-read ACLs.
 # (Some non-bitstream objects in the application bucket do have such ACLs, such
 # as the theme images.)
@@ -247,7 +250,22 @@ class BitstreamsController < ApplicationController
   # Responds to `GET /items/:item_id/bitstreams/:id`
   #
   def show
-    render formats: :json
+    respond_to do |format|
+      format.pdf do
+        format = @bitstream.format
+        if format.media_type == "application/pdf"
+          data
+        elsif format.derivative_generator == "libreoffice"
+          redirect_to @bitstream.derivative_pdf_url, allow_other_host: true
+        else
+          render plain: "Unable to provide a PDF representation of this bitstream.",
+                 status: :not_found
+        end
+      end
+      format.any do
+        render formats: :json
+      end
+    end
   end
 
   ##
@@ -309,10 +327,8 @@ class BitstreamsController < ApplicationController
   def download_content_disposition
     utf8_filename  = @bitstream.filename
     ascii_filename = utf8_filename.gsub(/[^[:ascii:]]*/, '_')
-    # N.B.: CGI.escape() inserts "+" instead of "%20" which Chrome interprets
-    # literally.
     "attachment; filename=\"#{ascii_filename.gsub('"', "'")}\"; "\
-      "filename*=UTF-8''#{ERB::Util.url_encode(utf8_filename)}"
+      "filename*=UTF-8''#{StringUtils.url_encode(utf8_filename)}"
   end
 
   def rescue_invalid_range
