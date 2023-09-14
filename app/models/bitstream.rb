@@ -769,39 +769,31 @@ class Bitstream < ApplicationRecord
     deriv_path      = nil
     begin
       Dir.mktmpdir do |tmpdir|
-        # N.B.: each case must write a file to deriv_path.
         case self.format.derivative_generator
         when "imagemagick"
-          source_tempfile = download_to_temp_file
-          deriv_path      = File.join(tmpdir,
-                                      "#{File.basename(source_tempfile.path)}-#{region}-#{size}.#{format}")
-          crop            = (region == :square) ? "-gravity center -crop 1:1" : ""
-          command         = "convert #{source_tempfile.path}[0] "\
-                            "#{crop} "\
-                            "-resize #{size}x#{size} "\
-                            "-alpha remove "\
-                            "#{deriv_path}"
-          result          = system(command)
-          status          = $?.exitstatus
-          raise "Command returned status code #{status}: #{command}" unless result
+          source_tempfile = download_to_temp_file.path
         when "libreoffice"
           # LibreOffice can convert to images itself, but it doesn't offer very
           # much control over cropping, DPI, etc. Therefore we use it to
           # convert to PDF and then go from there with ImageMagick.
-          pdf_path   = generate_pdf_derivative(as_file: true)
-          deriv_path = "#{File.dirname(pdf_path)}/#{File.basename(pdf_path)}-#{region}-#{size}.#{format}"
-          command    = "convert #{pdf_path}[0] "\
-                       "#{crop} "\
-                       "-resize #{size}x#{size} "\
-                       "-background white "\
-                       "-alpha remove "\
-                       "#{deriv_path}"
-          result  = system(command)
-          status  = $?.exitstatus
-          raise "Command returned status code #{status}: #{command}" unless result
+          source_tempfile = generate_pdf_derivative(as_file: true)
         else
           raise "No derivative generator for this format."
         end
+
+        deriv_path = File.join(tmpdir,
+                               "#{File.basename(source_tempfile)}-#{region}-#{size}.#{format}")
+        crop       = (region == :square) ? "-gravity center -crop 1:1" : ""
+        command    = "convert #{source_tempfile}[0] "\
+                     "#{crop} "\
+                     "-resize #{size}x#{size} "\
+                     "-background white "\
+                     "-alpha remove "\
+                     "#{deriv_path}"
+        result     = system(command)
+        status     = $?.exitstatus
+        raise "Command returned status code #{status}: #{command}" unless result
+
         File.open(deriv_path, "rb") do |file|
           PersistentStore.instance.put_object(key: target_key, file: file)
         end
@@ -810,7 +802,7 @@ class Bitstream < ApplicationRecord
       LOGGER.warn("generate_image_derivative(): #{e}")
       raise e
     ensure
-      source_tempfile&.unlink
+      FileUtils.rm(source_tempfile)
       FileUtils.rm(deriv_path) rescue nil
     end
   end

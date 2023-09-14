@@ -486,7 +486,8 @@ class BitstreamTest < ActiveSupport::TestCase
     @instance = bitstreams(:southwest_unit1_collection1_item1_pdf)
     url      = @instance.derivative_pdf_url
     response = HTTPClient.new.get(url)
-    assert response.body.length > 0
+    assert_equal 200, response.code
+    assert response.headers['Content-Length'].to_i > 800
   end
 
   test "derivative_pdf_url() returns the URL of a PDF for a bitstream that can
@@ -494,7 +495,8 @@ class BitstreamTest < ActiveSupport::TestCase
     @instance = bitstreams(:southwest_unit1_collection1_item1_doc)
     url      = @instance.derivative_pdf_url
     response = HTTPClient.new.get(url)
-    assert response.body.length > 0
+    assert_equal 200, response.code
+    assert response.headers['Content-Length'].to_i > 800
   end
 
   # destroy()
