@@ -452,6 +452,16 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "object() supports a response-content-disposition argument" do
+    bs = bitstreams(:southwest_unit1_collection1_item1_approved)
+
+    get item_bitstream_object_path(bs.item, bs,
+                                   dl: 0,
+                                   "response-content-disposition": "inline")
+    follow_redirect!
+    assert request.url.include?("response-content-disposition=inline")
+  end
+
   test "object() respects role limits" do
     item = items(:southwest_unit1_collection1_withdrawn) # (an item that only sysadmins have access to)
     bs   = item.bitstreams.first

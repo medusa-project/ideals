@@ -230,7 +230,8 @@ class BitstreamsController < ApplicationController
   # @see data
   #
   def object
-    url = @bitstream.presigned_download_url(content_disposition: download_content_disposition)
+    disposition = params[:'response-content-disposition'] || download_content_disposition
+    url         = @bitstream.presigned_download_url(content_disposition: disposition)
     if url
       @bitstream.add_download(user: current_user) if params[:dl] != "0"
       redirect_to url,
