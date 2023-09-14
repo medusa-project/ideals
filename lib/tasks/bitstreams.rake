@@ -5,18 +5,20 @@ namespace :bitstreams do
   # This works only for bitstreams that exist in both the production and local
   # environments with the same ID, such as ones that have been exported from
   # DSpace into both environments.
-  desc "Copy a bitstream's file from production into the local instance"
-  task :copy_from_prod, [:bitstream_id] => :environment do |task, args|
-    bs  = Bitstream.find(args[:bitstream_id])
-    url = "https://www.ideals.illinois.edu/items/#{bs.item_id}/bitstreams/#{bs.id}/object"
-    Dir.mktmpdir do |dir|
-      path = File.join(dir, bs.filename)
-      `curl -LsSo "#{path}" "#{url}"`
-      Bitstream.transaction do
-        bs.update!(permanent_key: Bitstream.permanent_key(institution_key: bs.institution.key,
-                                                          item_id:         bs.item_id,
-                                                          filename:        bs.filename))
-        bs.upload_to_permanent(File.new(path))
+  desc "Copy all of an item's bitstream files from production into the local instance"
+  task :copy_item_from_prod, [:item_id] => :environment do |task, args|
+    item = Item.find(args[:item_id])
+    item.bitstreams.each do |bs|
+      url = "https://www.ideals.illinois.edu/items/#{item.id}/bitstreams/#{bs.id}/object"
+      Dir.mktmpdir do |dir|
+        path = File.join(dir, bs.filename)
+        `curl -LsSo "#{path}" "#{url}"`
+        Bitstream.transaction do
+          bs.update!(permanent_key: Bitstream.permanent_key(institution_key: bs.institution.key,
+                                                            item_id:         bs.item_id,
+                                                            filename:        bs.filename))
+          bs.upload_to_permanent(File.new(path))
+        end
       end
     end
   end
