@@ -25,6 +25,16 @@ RUN apt-get update && apt-get install -y \
     zip \
     zlib1g-dev
 
+# ImageMagick 6 ships with support for PDF and similar formats disabled in
+# the security policy. Disable that.
+RUN sed -i '/disable ghostscript format types/d' /etc/ImageMagick-6/policy.xml \
+    && sed -i '/policy domain="coder" rights="none" pattern="PS"/d' /etc/ImageMagick-6/policy.xml \
+    && sed -i '/policy domain="coder" rights="none" pattern="PS2"/d' /etc/ImageMagick-6/policy.xml \
+    && sed -i '/policy domain="coder" rights="none" pattern="PS3"/d' /etc/ImageMagick-6/policy.xml \
+    && sed -i '/policy domain="coder" rights="none" pattern="EPS"/d' /etc/ImageMagick-6/policy.xml \
+    && sed -i '/policy domain="coder" rights="none" pattern="PDF"/d' /etc/ImageMagick-6/policy.xml \
+    && sed -i '/policy domain="coder" rights="none" pattern="XPS"/d' /etc/ImageMagick-6/policy.xml
+
 # Install Ruby
 RUN git clone https://github.com/rbenv/ruby-build.git \
     && PREFIX=/usr/local ./ruby-build/install.sh \
