@@ -93,133 +93,147 @@ const ItemsView = {
  */
 const ItemView = {
 
-    /**
-     * Controls the file navigator in item view.
-     *
-     * @constructor
-     */
-    initializeFileNavigator: function() {
-        const HEADER_HEIGHT = 50;
-        const FOOTER_HEIGHT = 50;
-        const ROOT_URL      = $('input[name=root_url]').val();
-        const ITEM_ID       = $("input[name=item_id]").val();
-        const navigator     = $("#file-navigator");
+    FileNavigator: function() {
+        const HEADER_HEIGHT    = 50;
+        const FOOTER_HEIGHT    = 50;
+        const ROOT_URL         = $('input[name=root_url]').val();
+        const ITEM_ID          = $("input[name=item_id]").val();
+        const CONTAINER        = $("#file-navigator");
+        const self             = this;
+        var currentBitstreamID;
+
+        this.container = function() {
+            return CONTAINER;
+        };
+
+        this.selectThumbnail = function(thumb) {
+            const viewerColumn = $("#file-navigator-viewer-column");
+            const item_id      = thumb.data("item-id");
+            const bitstream_id = thumb.data("bitstream-id");
+            if (bitstream_id === currentBitstreamID) {
+                return;
+            }
+            currentBitstreamID = bitstream_id;
+            viewerColumn.html(IDEALS.UIUtils.Spinner());
+            thumb.siblings().removeClass("selected");
+            thumb.addClass("selected");
+            thumb.focus();
+
+            const url = ROOT_URL + "/items/" + item_id + "/bitstreams/" +
+                bitstream_id + "/viewer";
+            $.ajax({
+                method: "GET",
+                url: url,
+                success: function(data) {
+                    viewerColumn.html(data);
+
+                    const copyButton = $("button#copy-link");
+                    copyButton.on("click", function() {
+                        const temp = $("<input>");
+                        $("body").append(temp);
+                        temp.val(copyButton.data("bitstream-url")).select();
+                        document.execCommand("copy");
+                        temp.remove();
+
+                        copyButton.html("<i class=\"fa fa-check\"></i> Copied!");
+                        setTimeout(function() {
+                            copyButton.html("<i class=\"fa fa-link\"></i> Copy Link");
+                        }, 3000);
+                    });
+
+                    $("button#more-info").on("click", function() {
+                        const infoDiv = $("#file-navigator-viewer-info");
+                        if (infoDiv.is(":visible")) {
+                            $(this).html("<i class=\"fa fa-info-circle\"></i> More Info");
+                            infoDiv.hide();
+                        } else {
+                            $(this).html("<i class=\"fa fa-times\"></i> Hide Info");
+                            infoDiv.css("display", "flex");
+                        }
+                    });
+
+                    updateHeight();
+
+                    CONTAINER.find("iframe").on("load", function() {
+                        $(this).contents().find("body a").on("click", function() {
+                            const href  = $(this).attr("href");
+                            const regex = /^[\w\d]+:/;
+                            if (href.startsWith("#")) {
+                                return;
+                            } else if (href.match(regex)) {
+                                $(this).attr("target", "_top");
+                            } else {
+                                const filename = href.split("/").reverse()[0];
+                                const thumb    = CONTAINER.find("#file-navigator-thumbnail-column .thumbnail[data-filename='" + filename + "']");
+                                self.selectThumbnail(thumb);
+                                return false;
+                            }
+                        });
+                    });
+
+                    CONTAINER.trigger("IDEALS.FileNavigator.fileChanged");
+                },
+                error: function(data, status, xhr) {
+                    $("#file-navigator-viewer-column .spinner-border").hide();
+                    viewerColumn.html("<div id='file-navigator-viewer-error'>" +
+                        "<p>There was an error retrieving this file.</p></div>");
+                }
+            });
+        };
+
+        const updateHeight = function() {
+            const thumbsColumn    = $("#file-navigator-thumbnail-column");
+            const viewerColumn    = $("#file-navigator-viewer-column");
+            const navigatorHeight = window.innerHeight - 100;
+            CONTAINER.css("height", navigatorHeight + "px");
+            const isFooterExisting = thumbsColumn.find("#file-navigator-thumbnail-column-footer").length > 0;
+            const footerHeight     = FOOTER_HEIGHT - (isFooterExisting ? 0 : FOOTER_HEIGHT);
+            thumbsColumn.find("#file-navigator-thumbnail-content").css("height", (navigatorHeight - footerHeight) + "px");
+            thumbsColumn.find("#file-navigator-thumbnail-column-footer").css("height", footerHeight + "px");
+            viewerColumn.find("#file-navigator-viewer-header").css("height", HEADER_HEIGHT + "px");
+            viewerColumn.find("#file-navigator-viewer-content").css("height", (navigatorHeight - HEADER_HEIGHT) + "px");
+            viewerColumn.find("#file-navigator-viewer-content img").css("max-height", (navigatorHeight - HEADER_HEIGHT) + "px");
+        };
 
         // Set the initial height of the viewer container.
         const navigatorHeight = window.innerHeight - 100;
-        navigator.css("height", navigatorHeight + "px");
+        CONTAINER.css("height", navigatorHeight + "px");
 
         // Load the navigator HTML.
         $.ajax({
             method: "GET",
             url:    ROOT_URL + "/items/" + ITEM_ID + "/file-navigator",
             success: function(data) {
-                navigator.css("display", "grid");
-                navigator.css("grid-template-columns", "30% 70%");
-                navigator.html(data);
-                navigator.trigger("IDEALS.FileNavigator.thumbsLoaded");
-            },
-            error: function(data, status, xhr) {
+                CONTAINER.css("display", "grid");
+                CONTAINER.css("grid-template-columns", "30% 70%");
+                CONTAINER.html(data);
+                CONTAINER.trigger("IDEALS.FileNavigator.thumbsLoaded");
             }
         });
 
-        navigator.on("IDEALS.FileNavigator.thumbsLoaded", function() {
-            const thumbsColumn  = $("#file-navigator-thumbnail-column");
-            const viewerColumn  = $("#file-navigator-viewer-column");
-
-            const updateHeight = function() {
-                const navigatorHeight = window.innerHeight - 100;
-                navigator.css("height", navigatorHeight + "px");
-                const isFooterExisting = thumbsColumn.find("#file-navigator-thumbnail-column-footer").length > 0;
-                const footerHeight     = FOOTER_HEIGHT - (isFooterExisting ? 0 : FOOTER_HEIGHT);
-                thumbsColumn.find("#file-navigator-thumbnail-content").css("height", (navigatorHeight - footerHeight) + "px");
-                thumbsColumn.find("#file-navigator-thumbnail-column-footer").css("height", footerHeight + "px");
-                viewerColumn.find("#file-navigator-viewer-header").css("height", HEADER_HEIGHT + "px");
-                viewerColumn.find("#file-navigator-viewer-content").css("height", (navigatorHeight - HEADER_HEIGHT) + "px");
-                viewerColumn.find("#file-navigator-viewer-content img").css("max-height", (navigatorHeight - HEADER_HEIGHT) + "px");
-            };
-
+        CONTAINER.on("IDEALS.FileNavigator.thumbsLoaded", function() {
             updateHeight();
 
             $(window).on("resize", function() {
                 updateHeight();
             });
 
-            var currentBitstreamID;
-            const attachEventListeners = function() {
-                const copyButton = $("button#copy-link");
-                copyButton.on("click", function() {
-                    const temp = $("<input>");
-                    $("body").append(temp);
-                    temp.val(copyButton.data("bitstream-url")).select();
-                    document.execCommand("copy");
-                    temp.remove();
-
-                    copyButton.html("<i class=\"fa fa-check\"></i> Copied!");
-                    setTimeout(function() {
-                        copyButton.html("<i class=\"fa fa-link\"></i> Copy Link");
-                    }, 3000);
-                });
-
-                $("button#more-info").on("click", function() {
-                    const infoDiv = $("#file-navigator-viewer-info");
-                    if (infoDiv.is(":visible")) {
-                        $(this).html("<i class=\"fa fa-info-circle\"></i> More Info");
-                        infoDiv.hide();
-                    } else {
-                        $(this).html("<i class=\"fa fa-times\"></i> Hide Info");
-                        infoDiv.css("display", "flex");
-                    }
-                });
-            };
-
-            const focus = function(thumb) {
-                const item_id      = thumb.data("item-id");
-                const bitstream_id = thumb.data("bitstream-id");
-                if (bitstream_id === currentBitstreamID) {
-                    return;
-                }
-                currentBitstreamID = bitstream_id;
-                viewerColumn.html(IDEALS.UIUtils.Spinner());
-                thumb.siblings().removeClass("selected");
-                thumb.addClass("selected");
-                thumb.focus();
-
-                const url = ROOT_URL + "/items/" + item_id + "/bitstreams/" +
-                    bitstream_id + "/viewer";
-                $.ajax({
-                    method: "GET",
-                    url: url,
-                    success: function(data) {
-                        viewerColumn.html(data);
-                        attachEventListeners();
-                        updateHeight();
-                        navigator.trigger("IDEALS.FileNavigator.fileChanged");
-                    },
-                    error: function(data, status, xhr) {
-                        $("#file-navigator-viewer-column .spinner-border").hide();
-                        viewerColumn.html("<div id='file-navigator-viewer-error'>" +
-                            "<p>There was an error retrieving this file.</p></div>");
-                    }
-                });
-            };
-
-            navigator.find("#file-navigator-thumbnail-column .thumbnail").on("keydown", function(e) {
+            const thumbs = CONTAINER.find("#file-navigator-thumbnail-column .thumbnail");
+            thumbs.on("keydown", function(e) {
                 const thumb = $(this);
                 switch (e.keyCode) {
                     case 37: // left arrow
-                        focus(thumb.prev());
+                        self.selectThumbnail(thumb.prev());
                         break;
                     case 39: // right arrow
-                        focus(thumb.next());
+                        self.selectThumbnail(thumb.next());
                         break;
                 }
             });
 
-            const thumbs = navigator.find("#file-navigator-thumbnail-column .thumbnail");
             thumbs.on("click", function() {
                 const thumb = $(this);
-                focus(thumb);
+                self.selectThumbnail(thumb);
             });
 
             // Select the primary bitstream, if one is set. Otherwise, select the
@@ -266,7 +280,6 @@ const ItemView = {
                 });
             });
         });
-
     },
 
     initialize: function() {
@@ -274,10 +287,10 @@ const ItemView = {
 
         new IDEALS.UIUtils.CopyButton($(".copy"), $(".permalink"));
 
-        ItemView.initializeFileNavigator();
-        const file_navigator = $("#file-navigator");
+        const fileNavigator          = new ItemView.FileNavigator();
+        const fileNavigatorContainer = fileNavigator.container();
 
-        file_navigator.on("IDEALS.FileNavigator.thumbsLoaded", function () {
+        fileNavigatorContainer.on("IDEALS.FileNavigator.thumbsLoaded", function () {
             const modal      = $("#download-all-files-modal");
             const modal_body = modal.find(".modal-body");
             // Clear any previous modal content when the modal is opened.
@@ -294,7 +307,7 @@ const ItemView = {
                 });
             });
         });
-        file_navigator.on("IDEALS.FileNavigator.fileChanged", function () {
+        fileNavigatorContainer.on("IDEALS.FileNavigator.fileChanged", function () {
             /* See BitstreamsHelper.pdf_object_viewer_for() for why this is commented out
             const pdfjsViewer     = $("#pdfjs-pdf-viewer");
             const nativePDFViewer = $("#native-pdf-viewer");

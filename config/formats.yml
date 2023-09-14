@@ -325,6 +325,7 @@ html:
     - text/html
   category: code
   icon: file-code-o
+  viewer_method: html_viewer_for
 iso:
   short_name: ISO
   long_name: ISO Image

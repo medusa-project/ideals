@@ -72,6 +72,20 @@ module BitstreamsHelper
     raw(html.string)
   end
 
+  ##
+  # @param bitstream [Bitstream]
+  #
+  def html_viewer_for(bitstream)
+    # We have to use /data rather than /object because of the Same Origin
+    # restriction (we will need to access the contents of the iframe using JS).
+    src = item_bitstream_data_path(bitstream.item, bitstream,
+                                   "response-content-disposition": "inline")
+    raw("<iframe src=\"#{src}\" "\
+          "title=\"Embedded HTML file: #{StringUtils.sanitize_filename(bitstream.filename)}\" "\
+          "style=\"background:white; border:none; height:100%; width:100%;\" "\
+          "sandbox=\"allow-same-origin allow-scripts allow-top-navigation\"></iframe>")
+  end
+
   def image_tag_for(bitstream)
     representative_image_tag(bitstream, size: 2048)
   end
