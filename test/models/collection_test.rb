@@ -17,6 +17,20 @@ class CollectionTest < ActiveSupport::TestCase
     assert Collection.search.count > 0
   end
 
+  # create()
+
+  test "create() inherits the value of submissions_reviewed from the owning
+  institution" do
+    institution = institutions(:southwest)
+    institution.submissions_reviewed = true
+    collection = Collection.create!(institution: institution)
+    assert collection.submissions_reviewed
+
+    institution.submissions_reviewed = false
+    collection = Collection.create!(institution: institution)
+    assert !collection.submissions_reviewed
+  end
+
   # delete_document() (Indexed concern)
 
   test "delete_document() deletes a document" do

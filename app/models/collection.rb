@@ -10,7 +10,7 @@
 #
 # # Indexing
 #
-# See the documentation of [Indexed] for a detailed explanation of how indexing
+# See the documentation of {Indexed} for a detailed explanation of how indexing
 # works.
 #
 # # Attributes
@@ -48,7 +48,10 @@
 #                           used instead of accessing this directly.
 # * `submissions_reviewed`  If true, items submitted to the collection are
 #                           subject to administrator review. Otherwise, they
-#                           are immediately approved.
+#                           are immediately approved. The initial value of
+#                           this property (for new instances) is copied from
+#                           {Institution#submissions_reviewed} by a
+#                           `before_create` callback.
 # * `title`                 Title.
 # * `updated_at`            Managed by ActiveRecord.
 #
@@ -145,6 +148,7 @@ class Collection < ApplicationRecord
   validate :validate_buried, if: -> { buried }
   validate :validate_exhumed, if: -> { !buried }
 
+  before_create :inherit_properties
   before_destroy :validate_empty
 
   ##
@@ -479,6 +483,10 @@ class Collection < ApplicationRecord
 
 
   private
+
+  def inherit_properties
+    self.submissions_reviewed = self.institution.submissions_reviewed
+  end
 
   ##
   # Ensures that a buried collection does not contain any sub-collections or

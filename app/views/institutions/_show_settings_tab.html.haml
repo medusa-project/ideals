@@ -59,3 +59,5 @@
         Not Set
   %dt Earliest Search Year
   %dd= @institution.earliest_search_year
+  %dt Submissions Reviewed
+  %dd= boolean(@institution.submissions_reviewed, style: :word, invert_color: true)

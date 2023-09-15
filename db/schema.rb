@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_09_06_151311) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_15_193711) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -400,6 +400,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_06_151311) do
     t.text "deposit_form_disagreement_help", default: "The selections you have made indicate that you are not ready to deposit your dataset. Our curators are available to discuss your dataset with you. Please contact us!", null: false
     t.text "deposit_form_collection_help", default: "Select the unit into which you would like to deposit the item."
     t.text "deposit_form_access_help"
+    t.boolean "submissions_reviewed", default: true, null: false
     t.index ["fqdn"], name: "index_institutions_on_fqdn", unique: true
     t.index ["incoming_message_queue"], name: "index_institutions_on_incoming_message_queue", unique: true
     t.index ["key"], name: "index_institutions_on_key", unique: true

@@ -116,6 +116,9 @@
 #                               authentication (currently only UIUC).
 # * `sso_federation`            Set to one of the {Institution::SSOFederation}
 #                               constant values.
+# * `submissions_reviewed`      When a new {Collection} is created, its
+#                               {Collection#submissions_reviewed} property is
+#                               set to this value.
 # * `title_element_id`          Foreign key to {RegisteredElement} designating
 #                               an element to treat as the title element.
 # * `updated_at`                Managed by ActiveRecord.

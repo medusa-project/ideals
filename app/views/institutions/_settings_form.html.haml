@@ -48,6 +48,20 @@
   .mb-3
     = f.label :earliest_search_year, "Earliest Search Year"
     = f.number_field :earliest_search_year, class: "form-control"
+    %p.form-text
+      = icon_for(:info)
+      The earliest year that can be chosen in advanced searches.
+
+  .mb-3
+    .form-check
+      = f.check_box :submissions_reviewed, class: "form-check-input"
+      = f.label :submissions_reviewed, "Submissions Reviewed", class: "form-check-label"
+    %p.form-text
+      = icon_for(:info)
+      Controls whether new collections are set, when they are first created, to
+      send items submitted to them through the review process. This is only an
+      initial setting for collections and does not directly control whether
+      submissions must be reviewed.
 
   .clearfix
     .float-end
