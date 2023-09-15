@@ -52,7 +52,7 @@ class BitstreamsController < ApplicationController
   before_action :ensure_logged_in, except: [:data, :index, :object, :show,
                                             :viewer]
 
-  before_action :set_item, only: [:create, :index]
+  before_action :set_item, only: [:create, :data, :index]
   before_action :set_bitstream, except: [:create, :index]
   before_action :authorize_item, only: :index
   before_action :authorize_bitstream, except: [:create, :index]
@@ -334,7 +334,12 @@ class BitstreamsController < ApplicationController
   end
 
   def set_bitstream
-    @bitstream = Bitstream.find(params[:id] || params[:bitstream_id])
+    @bitstream = Bitstream.find_by_id(params[:id] || params[:bitstream_id])
+    unless @bitstream
+      filename = [params[:filename], params[:format]].select(&:present?).join(".")
+      @bitstream = @item.bitstreams.find_by_filename(filename)
+    end
+    raise ActiveRecord::RecordNotFound unless @bitstream
   end
 
   def set_item

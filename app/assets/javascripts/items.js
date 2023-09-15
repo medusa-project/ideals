@@ -155,7 +155,26 @@ const ItemView = {
                     updateHeight();
 
                     CONTAINER.find("iframe").on("load", function() {
-                        $(this).contents().find("body a").on("click", function() {
+                        const head = $(this).contents().find("head");
+                        head.remove("base").append(
+                            '<base href="/items/' + item_id + '/files/">');
+                        head.find("link[rel=stylesheet]").each(function() {
+                            const href = $(this).attr("href");
+                            if (href) {
+                                // Why does appending a slash make this work?
+                                // Why doesn't it work without the slash?
+                                // Why why why?
+                                $(this).attr("href", href + "/");
+                            }
+                        });
+                        // N.B. modifying <script> tags has no effect, I think
+
+                        const body = $(this).contents().find("body");
+                        body.find("img").each(function() {
+                            const src = $(this).attr("src");
+                            $(this).attr("src", src + "/");
+                        });
+                        body.find("a").on("click", function() {
                             const href  = $(this).attr("href");
                             const regex = /^[\w\d]+:/;
                             if (href.startsWith("#")) {

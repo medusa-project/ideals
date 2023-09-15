@@ -202,6 +202,8 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/file-navigator", to: "items#file_navigator", via: :get,
           constraints: lambda { |request| request.xhr? }
+    # This supports links from file to file in HTML-format bitstreams within iframes.
+    match "/files/:filename", to: "bitstreams#data", via: :get
     match "/reject", to: "items#reject", via: :patch
     match "/statistics", to: "items#statistics", via: :get,
           constraints: lambda { |request| request.xhr? }

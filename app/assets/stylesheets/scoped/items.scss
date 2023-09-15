@@ -98,6 +98,7 @@ body#show_item {
       }
       #file-navigator-viewer-content {
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
         position: relative;

@@ -80,10 +80,17 @@ module BitstreamsHelper
     # restriction (we will need to access the contents of the iframe using JS).
     src = item_bitstream_data_path(bitstream.item, bitstream,
                                    "response-content-disposition": "inline")
-    raw("<iframe src=\"#{src}\" "\
+    html = StringIO.new
+    html << "<div class=\"alert alert-warning alert-dismissible fade show rounded-0\" style=\"margin: 0; padding-top: 0.5em; padding-bottom: 0.5em;\">"
+    html <<   "This is a limited preview. Some functionality may be broken. "\
+              "You might have more success by downloading all files and opening them locally."
+    html <<   "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>"
+    html << "</div>"
+    html << "<iframe src=\"#{src}\" "\
           "title=\"Embedded HTML file: #{StringUtils.sanitize_filename(bitstream.filename)}\" "\
           "style=\"background:white; border:none; height:100%; width:100%;\" "\
-          "sandbox=\"allow-same-origin allow-scripts allow-top-navigation\"></iframe>")
+          "sandbox=\"allow-same-origin allow-scripts allow-top-navigation\"></iframe>"
+    raw(html.string)
   end
 
   def image_tag_for(bitstream)
