@@ -344,6 +344,15 @@ iso:
     - application/octet-stream
   category: binary
   icon: file-o
+jmp:
+  short_name: JMP
+  long_name: JMP Data File
+  extensions:
+    - jmp
+  media_types:
+    - application/x-jmp-data
+  category: binary
+  icon: file-o
 jpeg:
   short_name: JPEG
   long_name: JPEG JFIF
@@ -472,6 +481,15 @@ mhtml:
     - application/x-mimearchive
   category: archive
   icon: file-archive-o
+mkv:
+  short_name: MKV
+  long_name: Matroska Video
+  extensions:
+    - mkv
+  media_types:
+    - video/x-matroska
+  category: video
+  icon: file-video-o
 mp1_audio:
   short_name: MP1
   long_name: MPEG Audio
@@ -1030,6 +1048,16 @@ sgml:
     - text/sgml
   category: code
   icon: file-code-o
+sh:
+  short_name: SH
+  long_name: Shell Script
+  extensions:
+    - sh
+  media_types:
+    - text/plain
+  category: code
+  icon: file-code-o
+  viewer_method: text_viewer_for
 stc:
   short_name: OpenOffice Calc
   long_name: OpenOffice Calc Template
@@ -1066,6 +1094,16 @@ stw:
     - application/vnd.sun.xml.writer.template
   category: document
   icon: file-o
+sty:
+  short_name: STY
+  long_name: LaTeX Style
+  extensions:
+    - sty
+  media_types:
+    - text/x-tex
+  category: code
+  icon: file-code-o
+  viewer_method: text_viewer_for
 svg:
   short_name: SVG
   long_name: Scalable Vector Graphics
@@ -1180,6 +1218,15 @@ ttf:
     - application/x-font-ttf
   category: font
   icon: file-o
+twbx:
+  short_name: TWBX
+  long_name: Tableau Packaged Workbook
+  extensions:
+    - twbx
+  media_types:
+    - application/twbx
+  category: binary
+  icon: file-archive-o
 txt:
   short_name: Text
   long_name: Plain Text
