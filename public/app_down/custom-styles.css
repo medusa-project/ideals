@@ -1,0 +1,69 @@
+
+
+
+.badge.bg-primary, .badge.text-bg-primary, .bg-primary .card-header, .bg-primary .card-body {
+    background-color: #23527c !important;
+    color: #ffffff !important;
+}
+.bg-primary code {
+    color: inherit;
+}
+.btn-primary, .btn-primary.disabled, .btn-primary:disabled {
+  background-color: #23527c;
+  border-color: transparent;
+  color: #ffffff !important;
+}
+.btn-outline-primary {
+    border-color: #23527c;
+}
+.btn-outline-primary.active {
+    border-color: #23527c !important;
+    background-color: #23527c !important;
+}
+.nav-pills .nav-link.active {
+    background-color: #23527c;
+    color: #ffffff;
+}
+.page-item.active .page-link {
+    background-color: #23527c;
+    border: 1px solid #23527c;
+    color: #ffffff;
+}
+.progress-bar {
+    background-color: #23527c;
+    color: #ffffff;
+}
+
+
+.btn-primary:hover, .btn-outline-primary:hover {
+  background-color: #05325b;
+  border-color: transparent;
+}
+
+
+a, a.page-link, .nav-link, .btn-outline-primary { color: #23527c; }
+
+
+a:hover, .nav-link:hover, a.page-link:hover { color: #23527c; }
+
+
+a:active { color: #23527c }
+a.dropdown-item:active {
+    background-color: #23527c !important;
+    color: #ffffff;
+}
+
+
+header > div:first-child {
+  background-color: #13294B;
+  color: #ffffff;
+}
+header > div:first-child .btn {
+  color: #ffffff;
+}
+
+
+footer .info-area {
+  background-color: #13294b;
+  color: #ffffff;
+}
