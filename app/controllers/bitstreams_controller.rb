@@ -334,12 +334,16 @@ class BitstreamsController < ApplicationController
   end
 
   def set_bitstream
-    @bitstream = Bitstream.find_by_id(params[:id] || params[:bitstream_id])
-    unless @bitstream
+    if params[:id].present?
+      @bitstream = Bitstream.find(params[:id])
+    elsif params[:bitstream_id].present?
+      @bitstream = Bitstream.find_by_id(params[:bitstream_id])
+      raise ActiveRecord::RecordNotFound unless @bitstream
+    else
       filename = [params[:filename], params[:format]].select(&:present?).join(".")
       @bitstream = @item.bitstreams.find_by_filename(filename)
+      raise ActiveRecord::RecordNotFound unless @bitstream
     end
-    raise ActiveRecord::RecordNotFound unless @bitstream
   end
 
   def set_item
