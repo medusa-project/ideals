@@ -365,6 +365,7 @@ js:
     - application/javascript
   category: code
   icon: file-code-o
+  viewer_method: text_viewer_for
 json:
   short_name: JSON
   long_name: JavaScript Object Notation
