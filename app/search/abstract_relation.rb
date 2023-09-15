@@ -811,7 +811,8 @@ class AbstractRelation
   # @return [String] String that is safe to pass to OpenSearch.
   #
   def sanitize(query)
-    query.gsub(/[\[\]\(\)]/, "").gsub("/", " ")
+    # Limit the length of the string to avoid a too_many_nested_clauses error.
+    query.gsub(/[\[\]\(\)]/, "").gsub("/", " ")[0..512]
   end
 
   def weighted_field(field)
