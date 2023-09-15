@@ -251,21 +251,18 @@ class BitstreamsController < ApplicationController
   # Responds to `GET /items/:item_id/bitstreams/:id`
   #
   def show
-    respond_to do |format|
-      format.pdf do
-        format = @bitstream.format
-        if format.media_type == "application/pdf"
-          data
-        elsif format.derivative_generator == "libreoffice"
-          redirect_to @bitstream.derivative_pdf_url, allow_other_host: true
-        else
-          render plain: "Unable to provide a PDF representation of this bitstream.",
-                 status: :not_found
-        end
+    if request.format == :pdf
+      format = @bitstream.format
+      if format.media_type == "application/pdf"
+        data
+      elsif format.derivative_generator == "libreoffice"
+        redirect_to @bitstream.derivative_pdf_url, allow_other_host: true
+      else
+        render plain: "Unable to provide a PDF representation of this bitstream.",
+               status: :not_found
       end
-      format.any do
-        render formats: :json
-      end
+    else
+      render formats: :json
     end
   end
 
