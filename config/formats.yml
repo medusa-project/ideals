@@ -203,6 +203,15 @@ dvi:
     - application/x-dvi
   category: binary
   icon: file-o
+eot:
+  short_name: EOT
+  long_name: Embedded OpenType
+  extensions:
+    - eot
+  media_types:
+    - application/vnd.ms-fontobject
+  category: font
+  icon: file-code-o
 eps:
   short_name: EPS
   long_name: Encapsulated PostScript
@@ -1244,6 +1253,24 @@ wmv:
   category: video
   icon: file-video-o
   viewer_method: video_tag_for
+woff:
+  short_name: WOFF
+  long_name: Web Open Font Format
+  extensions:
+    - woff
+  media_types:
+    - font/woff
+  category: font
+  icon: file-code-o
+woff2:
+  short_name: WOFF2
+  long_name: Web Open Font Format 2
+  extensions:
+    - woff2
+  media_types:
+    - font/woff2
+  category: font
+  icon: file-code-o
 wordperfect:
   short_name: WPD
   long_name: WordPerfect
