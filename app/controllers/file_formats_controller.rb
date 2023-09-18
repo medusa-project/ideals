@@ -24,7 +24,7 @@ class FileFormatsController < ApplicationController
         found = false
         @accounted_formats.each do |f|
           if f[:format] == format
-            f[:count] += 1
+            f[:count] += row['count']
             found = true
             break
           end
