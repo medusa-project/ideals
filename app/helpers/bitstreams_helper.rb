@@ -121,7 +121,7 @@ module BitstreamsHelper
               "You might have more success by downloading all files and opening them locally."
     html <<   "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>"
     html << "</div>"
-    html << "<iframe src=\"#{src}\" "\
+    html << "<iframe id=\"html-viewer\" src=\"#{src}\" "\
           "title=\"Embedded HTML file: #{StringUtils.sanitize_filename(bitstream.filename)}\" "\
           "style=\"background:white; border:none; height:100%; width:100%;\" "\
           "sandbox=\"allow-same-origin allow-scripts allow-top-navigation\"></iframe>"

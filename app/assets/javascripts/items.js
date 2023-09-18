@@ -154,7 +154,7 @@ const ItemView = {
 
                     updateHeight();
 
-                    CONTAINER.find("iframe").on("load", function() {
+                    CONTAINER.find("iframe#html-viewer").on("load", function() {
                         const head = $(this).contents().find("head");
                         head.remove("base").append(
                             '<base href="/items/' + item_id + '/files/">');
