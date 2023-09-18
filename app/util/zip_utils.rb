@@ -37,7 +37,8 @@ class ZipUtils
     # Transform the string dates into Time objects
     files.each do |f|
       parts    = f[:date].match(/(\d+)-(\d+)-(\d+) (\d+):(\d+)/)
-      f[:date] = Time.new(parts[3], parts[1], parts[2], parts[4], parts[5])
+      f[:date] = Time.new(parts[3].to_i, parts[1].to_i,
+                          parts[2].to_i, parts[4].to_i, parts[5].to_i)
     end
     files
   end
