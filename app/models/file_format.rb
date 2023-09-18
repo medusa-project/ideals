@@ -45,6 +45,10 @@ class FileFormat
     format
   end
 
+  def ==(obj)
+    obj.kind_of?(FileFormat) && self.short_name == obj.short_name
+  end
+
   ##
   # @return [String] The {media_types first media type}.
   #
