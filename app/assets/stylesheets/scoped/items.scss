@@ -100,8 +100,13 @@ body#show_item {
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
+        overflow-y: scroll;
         position: relative;
+        .alert {
+          margin-bottom: 0;
+          width: 100%;
+        }
         img {
           max-width: 100%;
         }
@@ -121,6 +126,9 @@ body#show_item {
           width: 100%;
           overflow: scroll;
         }
+        table {
+          overflow: scroll;
+        }
         .unsupported-format {
           text-align: center;
           .format-name {
@@ -137,7 +145,7 @@ body#show_item {
           height: 100%;
           align-items: center;
           justify-content: center;
-          background: rgba(0,0,0,0.7);
+          background: rgba(0,0,0,0.8);
           backdrop-filter: blur(3px);
           overflow-y: scroll;
           dl {

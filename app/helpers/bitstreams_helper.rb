@@ -63,6 +63,41 @@ module BitstreamsHelper
 
   private
 
+  ##
+  # @param bitstream [Bitstream]
+  #
+  def archive_viewer_for(bitstream)
+    html = StringIO.new
+    html << "<div class=\"alert alert-dark alert-dismissible fade show rounded-0\">"
+    html <<   "Below is an inventory of the file contents. You must download and extract the file in order to gain access to these files."
+    html <<   "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>"
+    html << "</div>"
+    html << "<table class=\"table table-dark table-striped\">"
+    html <<   "<thead>"
+    html <<     "<tr>"
+    html <<       "<th>Name</th>"
+    html <<       "<th style=\"min-width: 7em\">Size</th>"
+    html <<     "</tr>"
+    html <<   "</thead>"
+    html <<   "<tbody>"
+    bitstream.archived_files.each do |file|
+      html <<   "<tr>"
+      html <<     "<td style=\"word-break: break-all;\">"
+      html <<       file[:name]
+      html <<     "</td>"
+      html <<    "<td>"
+      html <<       number_to_human_size(file[:length])
+      html <<    "</td>"
+      html <<   "</tr>"
+    end
+    html <<   "</tbody>"
+    html << "</table>"
+    raw(html.string)
+  end
+
+  ##
+  # @param bitstream [Bitstream]
+  #
   def audio_tag_for(bitstream)
     html = StringIO.new
     html << "<audio controls>"
@@ -81,7 +116,7 @@ module BitstreamsHelper
     src = item_bitstream_data_path(bitstream.item, bitstream,
                                    "response-content-disposition": "inline")
     html = StringIO.new
-    html << "<div class=\"alert alert-warning alert-dismissible fade show rounded-0\" style=\"margin: 0; padding-top: 0.5em; padding-bottom: 0.5em;\">"
+    html << "<div class=\"alert alert-warning alert-dismissible fade show rounded-0\">"
     html <<   "This is a limited preview. Some functionality may be broken. "\
               "You might have more success by downloading all files and opening them locally."
     html <<   "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>"

@@ -187,6 +187,36 @@ class BitstreamTest < ActiveSupport::TestCase
     end
   end
 
+  # archived_files()
+
+  test "archived_files() returns an empty array for a non-zip file" do
+    @instance = bitstreams(:southwest_unit1_collection1_item1_doc)
+    assert_empty @instance.archived_files
+  end
+
+  test "archived_files() returns an array of archived files" do
+    @instance = bitstreams(:southwest_unit1_collection1_item1_zip)
+    files = @instance.archived_files
+    assert_equal 6, files.length
+    assert_equal "__MACOSX/._file1.txt", files[0][:name] # lovely
+    assert_equal Time.new(2023, 9, 15, 16, 29, 0), files[0][:date]
+    assert_equal 574, files[0][:length]
+  end
+
+  test "archived_files() caches its result" do
+    @instance = bitstreams(:southwest_unit1_collection1_item1_zip)
+    files = @instance.archived_files
+    assert_equal files, @instance.read_attribute(:archived_files).map{ |l| l.symbolize_keys }
+  end
+
+  test "archived_files() returns a cached result" do
+    @instance = bitstreams(:southwest_unit1_collection1_item1_zip)
+    files = @instance.archived_files # cache the result
+    PersistentStore.instance.delete_object(key: @instance.effective_key)
+    new_files = @instance.archived_files
+    assert_equal files, new_files
+  end
+
   # authorized_by?()
 
   test "authorized_by?() returns true when the bitstream is authorized by the

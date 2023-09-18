@@ -1389,3 +1389,4 @@ zip:
     - application/zip
   category: archive
   icon: file-archive-o
+  viewer_method: archive_viewer_for

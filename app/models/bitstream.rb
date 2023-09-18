@@ -68,6 +68,9 @@
 #
 # # Attributes
 #
+# * `archived_files`        Contains a serialized array of archived files
+#                           contained within zip-format bitstreams, in the
+#                           format returned by {#archived_files}.
 # * `bundle`                One of the {Bundle} constant values.
 # * `bundle_position`       Zero-based position (order) of the bitstream
 #                           relative to other bitstreams in the same bundle and
@@ -162,6 +165,8 @@ class Bitstream < ApplicationRecord
 
   validate :validate_original_filename_immutability
   validate :validate_unique_filename
+
+  serialize :archived_files, JSON
 
   LOGGER = CustomLogger.new(Bitstream)
 
@@ -339,6 +344,25 @@ class Bitstream < ApplicationRecord
     MonthlyCollectionItemDownloadCount.increment(collection_id)
     MonthlyUnitItemDownloadCount.increment(unit_id)
     MonthlyInstitutionItemDownloadCount.increment(institution_id)
+  end
+
+  ##
+  # N.B.: the result is cached.
+  #
+  # @return [Enumerable<Hash>] List of hashes with `:name`, `:length`, and
+  #                            `:date` keys, ordered by name.
+  #
+  def archived_files
+    return [] if self.format.media_type != "application/zip"
+    value = self.read_attribute(:archived_files)
+    return value.map{ |l| l.symbolize_keys } if value
+
+    tempfile = download_to_temp_file
+    files    = ZipUtils.archived_files(tempfile.path)
+    self.update_column(:archived_files, files)
+    files
+  ensure
+    tempfile&.unlink
   end
 
   ##
