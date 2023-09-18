@@ -22,6 +22,7 @@ RUN apt-get update && apt-get install -y \
     poppler-utils \
     python-is-python3 \
     shared-mime-info \
+    unzip \
     zip \
     zlib1g-dev
 

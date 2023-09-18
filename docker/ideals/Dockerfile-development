@@ -24,6 +24,7 @@ RUN apt-get update && apt-get install -y \
     libyaml-dev \
     poppler-utils \
     shared-mime-info \
+    unzip \
     zip \
     zlib1g-dev
 
