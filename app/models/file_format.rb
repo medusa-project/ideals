@@ -56,4 +56,8 @@ class FileFormat
     media_types.first
   end
 
+  def to_s
+    self.short_name
+  end
+
 end
