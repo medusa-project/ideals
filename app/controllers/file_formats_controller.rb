@@ -39,6 +39,7 @@ class FileFormatsController < ApplicationController
         @unaccounted_formats << row
       end
     end
+    @accounted_formats = @accounted_formats.sort_by{ |f| f[:count] }.reverse
   end
 
 
