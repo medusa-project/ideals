@@ -130,6 +130,8 @@ body#show_item {
           overflow: scroll;
         }
         .unsupported-format {
+          display: flex;
+          align-items: center;
           text-align: center;
           .format-name {
             color: $gray-600;
