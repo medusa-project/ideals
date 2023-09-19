@@ -147,8 +147,8 @@ module Indexed
       num_deleted = 0
 
       relation.each_id_in_batches do |id|
-        unless class_.exists?(id: to_model_id(id))
-          class_.delete_document(id)
+        unless class_.exists?(id: id)
+          class_.delete_document(to_index_id(name, id))
           num_deleted += 1
         end
         index += 1
@@ -227,7 +227,7 @@ module Indexed
     # @param class_name [String]
     # @param model_id [Integer]
     # @return [String]
-    # 
+    #
     def to_index_id(class_name, model_id)
       [class_name.downcase, model_id].join(":")
     end
