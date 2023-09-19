@@ -259,7 +259,7 @@ module Indexed
     # @return [String] ID of the instance's indexed document.
     #
     def index_id
-      to_index_id(self.class.name, self.id)
+      self.class.to_index_id(self.class.name, self.id)
     end
 
     ##
