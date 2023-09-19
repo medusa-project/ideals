@@ -224,6 +224,15 @@ module Indexed
     end
 
     ##
+    # @param class_name [String]
+    # @param model_id [Integer]
+    # @return [String]
+    # 
+    def to_index_id(class_name, model_id)
+      [class_name.downcase, model_id].join(":")
+    end
+
+    ##
     # @param index_id [String] Indexed document ID.
     # @return [Integer] ID of the instance in the database.
     #
@@ -250,7 +259,7 @@ module Indexed
     # @return [String] ID of the instance's indexed document.
     #
     def index_id
-      "#{self.class.name.downcase}:#{self.id}"
+      to_index_id(self.class.name, self.id)
     end
 
     ##
