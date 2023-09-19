@@ -911,7 +911,6 @@ class InstitutionsController < ApplicationController
       institution(@institution).
       aggregations(false).
       filter(Item::IndexFields::STAGE, Item::Stages::SUBMITTING).
-      filter(Item::IndexFields::INSTITUTION_KEY, @institution.key).
       order(Item::IndexFields::CREATED).
       start(start).
       limit(limit)
