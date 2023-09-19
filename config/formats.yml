@@ -335,6 +335,17 @@ html:
   category: code
   icon: file-code-o
   viewer_method: html_viewer_for
+ico:
+  short_name: ICO
+  long_name: ICO
+  extensions:
+    - ico
+  media_types:
+    - image/x-icon
+  category: image
+  icon: file-image-o
+  derivative_generator: imagemagick
+  viewer_method: image_tag_for
 iso:
   short_name: ISO
   long_name: ISO Image
