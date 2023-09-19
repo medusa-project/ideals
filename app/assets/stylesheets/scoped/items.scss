@@ -107,40 +107,42 @@ body#show_item {
           margin-bottom: 0;
           width: 100%;
         }
-        img {
-          max-width: 100%;
-        }
-        audio {
-          max-height: 50%;
-          max-width: 80%;
-        }
-        object, video {
-          height: 100%;
-          width: 100%;
-        }
-        .text-viewer {
-          background-color: white;
-          color: black;
-          padding: 1em;
-          height: 100%;
-          width: 100%;
-          overflow: scroll;
-        }
-        table {
-          overflow: scroll;
-        }
-        .unsupported-format {
+        /* all the various file-type-specific viewers */
+        #image-viewer, #audio-player, #generic-viewer, #video-player,
+        #text-viewer, #archive-viewer, #unsupported-format-viewer {
           height: 100%;
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
+          width: 100%;
+        }
+        #image-viewer {
+          img {
+            max-width: 100%;
+          }
+        }
+        #audio-player {
+          max-height: 50%;
+          max-width: 80%;
+        }
+        #text-viewer {
+          background-color: white;
+          color: black;
+          padding: 1em;
+          overflow: scroll;
+        }
+        #archive-viewer {
+          overflow: scroll;
+        }
+        #unsupported-format-viewer {
           text-align: center;
           .format-name {
             color: $gray-600;
             font-size: 2.5em;
           }
         }
+        /* file info translucent overlay */
         #file-navigator-viewer-info {
           display: none;
           position: absolute;

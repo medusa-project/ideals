@@ -72,7 +72,7 @@ module BitstreamsHelper
     html <<   "Below is an inventory of the file contents. You must download and extract the file in order to gain access to these files."
     html <<   "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>"
     html << "</div>"
-    html << "<table class=\"table table-dark table-striped\">"
+    html << "<table id=\"archive-viewer\" class=\"table table-dark table-striped\">"
     html <<   "<thead>"
     html <<     "<tr>"
     html <<       "<th>Name</th>"
@@ -100,7 +100,7 @@ module BitstreamsHelper
   #
   def audio_tag_for(bitstream)
     html = StringIO.new
-    html << "<audio controls>"
+    html << "<audio id=\"audio-player\" controls>"
     html <<   "<source src=\"#{bitstream.presigned_download_url}\" type=\"#{bitstream.media_type}\">"
     html <<   no_viewer_for(bitstream)
     html << "</audio>"
@@ -117,7 +117,7 @@ module BitstreamsHelper
                                    "response-content-disposition": "inline")
     html = StringIO.new
     html << "<div class=\"alert alert-warning alert-dismissible fade show rounded-0\">"
-    html <<   "This is a limited preview. Some functionality may be broken. "\
+    html <<   "This is a limited preview of a web page. Some functionality may be broken. "\
               "You might have more success by downloading all files and opening them locally."
     html <<   "<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"alert\" aria-label=\"Close\"></button>"
     html << "</div>"
@@ -129,13 +129,17 @@ module BitstreamsHelper
   end
 
   def image_tag_for(bitstream)
-    representative_image_tag(bitstream, size: 2048)
+    html = StringIO.new
+    html << "<div id=\"image-viewer\">"
+    html <<   representative_image_tag(bitstream, size: 2048)
+    html << "</div>"
+    raw(html.string)
   end
 
   def no_viewer_for(bitstream, message: nil)
     message ||= "No preview is available for this file type."
     html = StringIO.new
-    html << "<div class=\"unsupported-format\">"
+    html << "<div id=\"unsupported-format-viewer\">"
     html <<   "<p class=\"format-name\">"
     html <<     bitstream.format&.long_name || "Unknown File Format"
     html <<   "</p>"
@@ -145,7 +149,7 @@ module BitstreamsHelper
   end
 
   def object_tag_for(bitstream)
-    raw("<object data=\"#{bitstream.presigned_download_url(content_disposition: "inline")}\" "\
+    raw("<object id=\"generic-viewer\" data=\"#{bitstream.presigned_download_url(content_disposition: "inline")}\" "\
       "type=\"#{bitstream.media_type}\"></object>")
   end
 
@@ -211,7 +215,7 @@ module BitstreamsHelper
     # than putting it in an <object>.
     text = bitstream.kind_of?(Bitstream) ? bitstream.data.read : bitstream
     html = StringIO.new
-    html << "<div class=\"text-viewer\">"
+    html << "<div id=\"text-viewer\">"
     html <<   "<pre>"
     html <<     html_escape(text)
     html <<   "</pre>"
@@ -221,7 +225,7 @@ module BitstreamsHelper
 
   def video_tag_for(bitstream)
     html = StringIO.new
-    html << "<video controls>"
+    html << "<video id=\"video-player\" controls>"
     html <<   "<source src=\"#{bitstream.presigned_download_url}\" type=\"#{bitstream.media_type}\">"
     html <<   no_viewer_for(bitstream)
     html << "</video>"
