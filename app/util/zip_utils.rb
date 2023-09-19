@@ -38,9 +38,9 @@ class ZipUtils
     files.each do |f|
       parts = f[:date].match(/(\d+)-(\d+)-(\d+) (\d+):(\d+)/)
       if parts[3].to_s.length == 4 # assume MM-DD-YYYY
-        f[:date] = Time.new(parts[3], parts[1], parts[2], parts[4], parts[5])
+        f[:date] = Time.local(parts[3], parts[1], parts[2], parts[4], parts[5])
       else # assume YYYY-MM-DD
-        f[:date] = Time.new(parts[1], parts[2], parts[3], parts[4], parts[5])
+        f[:date] = Time.local(parts[1], parts[2], parts[3], parts[4], parts[5])
       end
     end
     files

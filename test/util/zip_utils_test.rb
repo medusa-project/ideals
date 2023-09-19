@@ -14,7 +14,7 @@ class ZipUtilsTest < ActiveSupport::TestCase
     files = ZipUtils.archived_files(file)
     assert_equal 6, files.length
     assert_equal "__MACOSX/._file1.txt", files[0][:name] # lovely
-    assert_equal Time.new(2023, 9, 15, 16, 29, 0), files[0][:date]
+    assert_equal Time.local(2023, 9, 15, 16, 29, 0), files[0][:date]
     assert_equal 574, files[0][:length]
   end
 
