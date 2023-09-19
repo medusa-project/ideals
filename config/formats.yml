@@ -452,6 +452,16 @@ maude:
     - text/plain
   category: code
   icon: file-code-o
+md:
+  short_name: Markdown
+  long_name: Markdown
+  extensions:
+    - md
+  media_types:
+    - text/markdown
+  category: document
+  icon: file-text-o
+  viewer_method: text_viewer_for
 mjpeg2000:
   short_name: MJPEG2000
   long_name: Motion JPEG2000
