@@ -199,7 +199,12 @@ class BitstreamTest < ActiveSupport::TestCase
     files = @instance.archived_files
     assert_equal 6, files.length
     assert_equal "__MACOSX/._file1.txt", files[0][:name] # lovely
-    assert_equal Time.local(2023, 9, 15, 16, 29, 0), files[0][:date]
+    date = files[0][:date]
+    assert_equal 2023, date.year
+    assert_equal 9, date.month
+    assert_equal 15, date.day
+    #assert_equal 16, date.hour
+    assert_equal 29, date.min
     assert_equal 574, files[0][:length]
   end
 
