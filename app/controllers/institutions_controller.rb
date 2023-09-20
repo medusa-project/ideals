@@ -169,8 +169,8 @@ class InstitutionsController < ApplicationController
   def generate_saml_certs
     key_pair = CryptUtils.generate_cert_pair(organization: @institution.name,
                                              common_name:  @institution.service_name)
-    @institution.update!(saml_sp_public_cert:  key_pair[:public],
-                         saml_sp_private_cert: key_pair[:private])
+    @institution.update!(saml_sp_private_key: key_pair[:private],
+                         saml_sp_public_cert: key_pair[:public])
   rescue => e
     flash['error'] = "#{e}"
   else
@@ -888,7 +888,7 @@ class InstitutionsController < ApplicationController
                                         :saml_idp_entity_id,
                                         :saml_idp_sso_service_url,
                                         :saml_last_name_attribute,
-                                        :saml_sp_private_cert,
+                                        :saml_sp_private_key,
                                         :saml_sp_public_cert,
                                         :shibboleth_auth_enabled,
                                         :shibboleth_email_attribute,

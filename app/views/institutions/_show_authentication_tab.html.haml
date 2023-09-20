@@ -157,11 +157,11 @@
           = boolean(false, style: :word, false_value: "NOT SET")
       %dt SP Private Certificate
       %dd
-        - if @institution.saml_sp_private_cert.present?
+        - if @institution.saml_sp_private_key.present?
           - begin
             - public_cert = OpenSSL::X509::Certificate.new(@institution.saml_sp_public_cert)
-            - private_cert = OpenSSL::PKey::RSA.new(@institution.saml_sp_private_cert)
-            - if public_cert.check_private_key(private_cert)
+            - private_key = OpenSSL::PKey::RSA.new(@institution.saml_sp_private_key)
+            - if public_cert.check_private_key(private_key)
               = boolean(true, style: :word, true_value: "VALID")
             - else
               - raise "Invalid signature algorithm"

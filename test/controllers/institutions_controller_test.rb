@@ -497,8 +497,8 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     institution = user.institution
     patch institution_generate_saml_certs_path(institution)
     institution.reload
+    assert_not_empty institution.saml_sp_private_key
     assert_not_empty institution.saml_sp_public_cert
-    assert_not_empty institution.saml_sp_private_cert
   end
 
   test "generate_saml_certs() returns HTTP 302" do

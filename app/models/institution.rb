@@ -96,7 +96,7 @@
 #                               authentication.
 # * `saml_idp_sso_service_url`  Required only by institutions that use SAML for
 #                               authentication.
-# * `saml_sp_private_cert`      May be required by institutions that use SAML
+# * `saml_sp_private_key`       May be required by institutions that use SAML
 #                               for authentication.
 # * `saml_sp_public_cert`       May be required by institutions that use SAML
 #                               for authentication.

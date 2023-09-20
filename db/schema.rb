@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_09_18_184810) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_20_154934) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -397,7 +397,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_18_184810) do
     t.string "shibboleth_name_attribute", default: "displayName"
     t.text "shibboleth_extra_attributes", default: "[]"
     t.text "saml_sp_public_cert"
-    t.text "saml_sp_private_cert"
+    t.text "saml_sp_private_key"
     t.text "deposit_form_disagreement_help", default: "The selections you have made indicate that you are not ready to deposit your dataset. Our curators are available to discuss your dataset with you. Please contact us!", null: false
     t.text "deposit_form_collection_help", default: "Select the unit into which you would like to deposit the item."
     t.text "deposit_form_access_help"
