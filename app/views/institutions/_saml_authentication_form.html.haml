@@ -4,12 +4,16 @@
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
+  %h5 SAML Authentication
+
   .mb-3
     .form-check
       = f.check_box(:saml_auth_enabled,
                     id:    "saml-auth-enabled",
                     class: "form-check-input")
       = f.label(:saml_auth_enabled, "Enabled", class: "form-check-label")
+
+  %hr
 
   %h5 SSO Federation
 
@@ -29,44 +33,50 @@
 
   %hr
 
-  .mb-3
-    = f.label :saml_idp_entity_id, "IdP Entity ID"
-    = f.text_field :saml_idp_entity_id, class: "form-control"
-    %p.form-text
-      = icon_for(:info)
-      After changing this value, you should refresh the configuration metadata
-      from the page beneath this panel.
-  .mb-3
-    = f.label :saml_idp_sso_service_url, "IdP SSO Service URL"
-    = f.text_field :saml_idp_sso_service_url, class: "form-control"
-  .mb-3
-    = f.label :saml_sp_private_key, "SP Private Key"
-    = f.text_area :saml_sp_private_key, rows: 10, class: "form-control"
-  .mb-3
-    = f.label :saml_sp_public_cert, "SP Public Certificate"
-    = f.text_area :saml_sp_public_cert, rows: 10, class: "form-control"
-  .mb-3
-    = f.label :saml_idp_cert, "IdP Public Certificate"
-    = f.text_area :saml_idp_cert, rows: 10, class: "form-control"
-  .mb-3
-    = f.label :saml_email_location, "Email Location"
-    = f.select :saml_email_location,
-               options_for_select(Institution::SAMLEmailLocation.all.map{ |v| [Institution::SAMLEmailLocation.label_for(v), v] },
-                                  f.object.saml_email_location),
-               {}, class: "form-select"
-  .mb-3
-    = f.label :saml_email_attribute, "Email Attribute"
-    = f.text_field :saml_email_attribute, class: "form-control"
-  .mb-3
-    = f.label :saml_first_name_attribute, "First Name Attribute"
-    = f.text_field :saml_first_name_attribute, class: "form-control"
-  .mb-3
-    = f.label :saml_last_name_attribute, "Last Name Attribute"
-    = f.text_field :saml_last_name_attribute, class: "form-control"
-    %p.form-text
-      = icon_for(:info)
-      If you don't have separate first and last name attributes, enter the full
-      name attribute here.
+  .row
+    .col-lg-6
+      %h5 Service Provider
+      .mb-3
+        = f.label :saml_sp_private_key, "Private Key"
+        = f.text_area :saml_sp_private_key, rows: 10, class: "form-control"
+      .mb-3
+        = f.label :saml_sp_public_cert, "Public Certificate"
+        = f.text_area :saml_sp_public_cert, rows: 10, class: "form-control"
+
+    .col-lg-6
+      %h5 Identity Provider
+      .mb-3
+        = f.label :saml_idp_entity_id, "Entity ID"
+        = f.text_field :saml_idp_entity_id, class: "form-control"
+        %p.form-text
+          = icon_for(:info)
+          After changing this value, you should refresh the configuration metadata
+          from the page beneath this panel.
+      .mb-3
+        = f.label :saml_idp_sso_service_url, "SSO Service URL"
+        = f.text_field :saml_idp_sso_service_url, class: "form-control"
+      .mb-3
+        = f.label :saml_idp_cert, "Public Certificate"
+        = f.text_area :saml_idp_cert, rows: 10, class: "form-control"
+      .mb-3
+        = f.label :saml_email_location, "Email Location"
+        = f.select :saml_email_location,
+                   options_for_select(Institution::SAMLEmailLocation.all.map{ |v| [Institution::SAMLEmailLocation.label_for(v), v] },
+                                      f.object.saml_email_location),
+                   {}, class: "form-select"
+      .mb-3
+        = f.label :saml_email_attribute, "Email Attribute"
+        = f.text_field :saml_email_attribute, class: "form-control"
+      .mb-3
+        = f.label :saml_first_name_attribute, "First Name Attribute"
+        = f.text_field :saml_first_name_attribute, class: "form-control"
+      .mb-3
+        = f.label :saml_last_name_attribute, "Last Name Attribute"
+        = f.text_field :saml_last_name_attribute, class: "form-control"
+        %p.form-text
+          = icon_for(:info)
+          If you don't have separate first and last name attributes, enter the full
+          name attribute here.
 
   .clearfix
     .float-end
