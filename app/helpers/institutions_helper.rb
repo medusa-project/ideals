@@ -32,13 +32,20 @@ module InstitutionsHelper
 
   ##
   # @param cert [String]
+  # @param key [String] Private key used to sign the certificate (optional).
   # @return [String] HTML <dl> element.
   #
-  def x509_cert_as_card(cert)
-    html = StringIO.new
-    cert = OpenSSL::X509::Certificate.new(cert)
-    html << "<div class=\"card\">"
+  def x509_cert_as_card(cert:, key: nil)
+    html    = StringIO.new
+    cert    = OpenSSL::X509::Certificate.new(cert)
+    invalid = key && !cert.check_private_key(OpenSSL::PKey::RSA.new(key))
+    html << "<div class=\"card #{invalid ? "border-danger" : ""}\">"
     html <<   "<div class=\"card-body\">"
+    if invalid
+      html << "<div class=\"alert alert-danger\">"
+      html <<   "This certificate was not signed by the current private key."
+      html << "</div>"
+    end
     html <<     "<dl>"
     html <<       "<dt>Signature Algorithm</dt>"
     html <<       "<dd>"

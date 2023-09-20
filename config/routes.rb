@@ -158,6 +158,7 @@ Rails.application.routes.draw do
     match "/favicon", to: "institutions#remove_favicon", via: :delete
     match "/footer-image", to: "institutions#remove_footer_image", via: :delete
     match "/generate-saml-certs", to: "institutions#generate_saml_certs", via: :patch
+    match "/generate-saml-key", to: "institutions#generate_saml_key", via: :patch
     match "/header-image", to: "institutions#remove_header_image", via: :delete
     match "/invite-administrator", to: "institutions#invite_administrator", via: :get
     match "/item-download-counts", to: "institutions#item_download_counts", via: :get

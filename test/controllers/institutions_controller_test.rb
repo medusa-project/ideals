@@ -491,13 +491,25 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test "generate_saml_certs() updates an institution's SAML certs" do
+  test "generate_saml_certs() does not update an institution's certs when the
+  institution does not have a private key set" do
     user = users(:southwest_admin)
     log_in_as(user)
     institution = user.institution
+    institution.update!(saml_sp_private_key: nil,
+                        saml_sp_public_cert: nil)
     patch institution_generate_saml_certs_path(institution)
     institution.reload
-    assert_not_empty institution.saml_sp_private_key
+    assert_nil institution.saml_sp_public_cert
+  end
+
+  test "generate_saml_certs() updates an institution's SAML cert" do
+    user = users(:southwest_admin)
+    log_in_as(user)
+    institution = user.institution
+    institution.update!(saml_sp_private_key: CryptUtils.generate_key.private_to_pem)
+    patch institution_generate_saml_certs_path(institution)
+    institution.reload
     assert_not_empty institution.saml_sp_public_cert
   end
 
@@ -513,6 +525,49 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   institutions" do
     log_in_as(users(:southwest_admin))
     patch "/institutions/bogus/generate-saml-certs"
+    assert_response :not_found
+  end
+
+  # generate_saml_key()
+
+  test "generate_saml_key() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    patch institution_generate_saml_key_path(@institution)
+    assert_response :not_found
+  end
+
+  test "generate_saml_key() redirects to root page for logged-out users" do
+    patch institution_generate_saml_key_path(@institution)
+    assert_redirected_to @institution.scope_url
+  end
+
+  test "generate_saml_key() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    patch institution_generate_saml_key_path(@institution)
+    assert_response :forbidden
+  end
+
+  test "generate_saml_key() updates an institution's SAML private key" do
+    user = users(:southwest_admin)
+    log_in_as(user)
+    institution = user.institution
+    patch institution_generate_saml_key_path(institution)
+    institution.reload
+    assert_not_empty institution.saml_sp_private_key
+  end
+
+  test "generate_saml_key() returns HTTP 302" do
+    user = users(:southwest_admin)
+    log_in_as(user)
+    institution = user.institution
+    patch institution_generate_saml_key_path(institution)
+    assert_redirected_to institution_path(institution)
+  end
+
+  test "generate_saml_key() returns HTTP 404 for nonexistent
+  institutions" do
+    log_in_as(users(:southwest_admin))
+    patch "/institutions/bogus/generate-saml-key"
     assert_response :not_found
   end
 

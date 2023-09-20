@@ -60,12 +60,18 @@
                         class: "dropdown-item", method: :patch) do
                 %i.fa.fa-sync
                 Refresh Configuration Metadata
-            -# Generate Certificates button
+            -# Generate SP Private Key button
+            = link_to(institution_generate_saml_key_path(@institution),
+                      class: "dropdown-item", method: :patch,
+                      data: { confirm: "Are you sure you want to regenerate the SP private key? This will also invalidate the SP certificates." }) do
+              %i.fa.fa-key
+              Generate SP Private Key
+            -# Generate SP Certificates button
             = link_to(institution_generate_saml_certs_path(@institution),
                       class: "dropdown-item", method: :patch,
-                      data: { confirm: "Are you sure you want to regenerate certificates? This will overwrite the public and private SP certificates." }) do
-              %i.fa.fa-key
-              Generate SP Certificates
+                      data: { confirm: "Are you sure you want to regenerate the SP certificate? This will overwrite the SP certificate." }) do
+              %i.fa.fa-certificate
+              Generate SP Public Certificate
 
         .btn-group{role: "group"}
           %button.btn.btn-light.dropdown-toggle{type:             "button",
@@ -142,7 +148,8 @@
               %dt Public Certificate
               %dd
                 - if @institution.saml_sp_public_cert.present?
-                  = x509_cert_as_card(@institution.saml_sp_public_cert)
+                  = x509_cert_as_card(cert: @institution.saml_sp_public_cert,
+                                      key:  @institution.saml_sp_private_key)
                 - else
                   = boolean(false, style: :word, false_value: "NOT SET")
 
@@ -160,7 +167,7 @@
               %dt Public Certificate
               %dd
                 - if @institution.saml_idp_cert.present?
-                  = x509_cert_as_card(@institution.saml_idp_cert)
+                  = x509_cert_as_card(cert: @institution.saml_idp_cert)
                 - else
                   = boolean(false, style: :word, false_value: "NOT SET")
               %dt Email Location

@@ -782,6 +782,59 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.generate_saml_certs?
   end
 
+  # generate_saml_key?()
+
+  test "generate_saml_key?() returns false with a nil user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @institution)
+    policy = InstitutionPolicy.new(context, @institution)
+    assert !policy.generate_saml_key?
+  end
+
+  test "generate_saml_key?() is restrictive by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.generate_saml_key?
+  end
+
+  test "generate_saml_key?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.generate_saml_key?
+  end
+
+  test "generate_saml_key?() authorizes administrators of the same
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, user.institution)
+    assert policy.generate_saml_key?
+  end
+
+  test "generate_saml_key?() does not authorize administrators of different
+  institutions" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.generate_saml_key?
+  end
+
+  test "generate_saml_key?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.generate_saml_key?
+  end
+
   # index?()
 
   test "index?() returns false with a nil request context" do
