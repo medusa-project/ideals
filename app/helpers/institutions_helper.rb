@@ -34,7 +34,7 @@ module InstitutionsHelper
   # @param cert [String]
   # @return [String] HTML <dl> element.
   #
-  def x509_cert_as_dl(cert)
+  def x509_cert_as_card(cert)
     html = StringIO.new
     cert = OpenSSL::X509::Certificate.new(cert)
     html << "<div class=\"card\">"
