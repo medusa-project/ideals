@@ -46,8 +46,8 @@
   #saml-tab-pane.tab-pane.fade{role:              "tabpanel",
                                "aria-labelledby": "saml-tab",
                                tabindex:          "0"}
-    .btn-group.float-end{role: "group"}
-      - if policy(@institution).edit_saml_authentication?
+    - if policy(@institution).edit_saml_authentication?
+      .btn-group.float-end{role: "group"}
         .btn-group{role: "group"}
           %button.btn.btn-light.dropdown-toggle{type:             "button",
                                                 "data-bs-toggle": "dropdown",
@@ -152,26 +152,7 @@
       %dt SP Public Certificate
       %dd
         - if @institution.saml_sp_public_cert.present?
-          - begin
-            - cert = OpenSSL::X509::Certificate.new(@institution.saml_sp_public_cert)
-            - if cert.signature_algorithm == "sha256WithRSAEncryption"
-              %dl
-                %dt Signature Algorithm
-                %dd= cert.signature_algorithm
-                %dt Subject
-                %dd
-                  %code= cert.subject
-                %dt Issuer
-                %dd
-                  %code= cert.issuer
-                %dt Issued
-                %dd= cert.not_before
-                %dt Expires
-                %dd= cert.not_after
-            - else
-              = boolean(false, style: :word, false_value: "INVALID")
-          - rescue
-            = boolean(false, style: :word, false_value: "INVALID")
+          = x509_cert_as_dl(@institution.saml_sp_public_cert)
         - else
           = boolean(false, style: :word, false_value: "NOT SET")
       %dt SP Private Certificate
@@ -191,23 +172,7 @@
       %dt IdP Public Certificate
       %dd
         - if @institution.saml_idp_cert.present?
-          - begin
-            - cert = OpenSSL::X509::Certificate.new(@institution.saml_idp_cert)
-            %dl
-              %dt Signature Algorithm
-              %dd= cert.signature_algorithm
-              %dt Subject
-              %dd
-                %code= cert.subject
-              %dt Issuer
-              %dd
-                %code= cert.issuer
-              %dt Issued
-              %dd= cert.not_before
-              %dt Expires
-              %dd= cert.not_after
-          - rescue
-            = boolean(false, style: :word, false_value: "INVALID")
+          = x509_cert_as_dl(@institution.saml_idp_cert)
         - else
           = boolean(false, style: :word, false_value: "NOT SET")
 
