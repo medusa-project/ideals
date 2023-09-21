@@ -12,7 +12,7 @@ gem "activerecord-session_store"
 gem "aws-sdk-s3", "~> 1"
 # Use ActiveModel has_secure_password for local identity users
 gem "bcrypt", "~> 3"
-gem "bootstrap", "~> 5.2"
+gem "bootstrap", "~> 5"
 # Handles RabbitMQ messages.
 gem "bunny"
 gem "amq-protocol"
