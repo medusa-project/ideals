@@ -186,6 +186,7 @@ These tasks are run via cron in the demo and production environments:
 * `downloads:cleanup` (daily)
 * `db:sessions:trim` (daily)
 * `institutions:update_auth_metadata` (daily)
+* `institutions:rotate_saml_certs` (monthly)
 
 # DesignConcepts
 

@@ -71,6 +71,9 @@
 # * `primary_color`             Theme primary color.
 # * `primary_hover_color`       Theme hover-over primary color.
 # * `saml_auth_enabled`         Whether SAML authentication is enabled.
+# * `saml_auto_cert_rotation`   If true, the SAML certificate will be
+#                               automatically rotated out and replaced with a
+#                               new one when it is close to expiration.
 # * `saml_config_metadata_url`  SAML configuration metadata XML URL. This may
 #                               be used for institutions that are not a member
 #                               of a recognized federation (for which this URL
@@ -96,10 +99,13 @@
 #                               authentication.
 # * `saml_idp_sso_service_url`  Required only by institutions that use SAML for
 #                               authentication.
-# * `saml_sp_private_key`       May be required by institutions that use SAML
-#                               for authentication.
-# * `saml_sp_public_cert`       May be required by institutions that use SAML
-#                               for authentication.
+# * `saml_sp_next_public_cert`  SAML X.509 public certificate with a later
+#                               expiration than {saml_sp_public_cert} to
+#                               facilitate seamless rollover when the latter
+#                               expires.
+# * `saml_sp_private_key`       SAML private key as a PEM-format string.
+# * `saml_sp_public_cert`       SAML X.509 public certificate (generated from
+#                               {saml_sp_private_key}) as a PEM-format string.
 # * `service_name`              Name of the service that the institution is
 #                               running. For example, at UIUC, this would be
 #                               "IDEALS."

@@ -69,7 +69,7 @@
             -# Generate SP Certificate button
             = link_to(institution_generate_saml_cert_path(@institution),
                       class: "dropdown-item", method: :patch,
-                      data: { confirm: "Are you sure you want to regenerate the SP certificate? This will overwrite the SP certificate." }) do
+                      data: { confirm: "Are you sure you want to regenerate the SP certificate? This will overwrite the current SP certificate." }) do
               %i.fa.fa-certificate
               Generate SP Public Certificate
 
@@ -145,11 +145,24 @@
                     = boolean(false, style: :word, false_value: "INVALID")
                 - else
                   = boolean(false, style: :word, false_value: "NOT SET")
+              %dt Automatic Certificate Rotation
+              %dd
+                = boolean(@institution.saml_auto_cert_rotation, style: :word,
+                          true_value: "ENABLED", false_value: "DISABLED")
               %dt Public Certificate
               %dd
                 - if @institution.saml_sp_public_cert.present?
                   = x509_cert_as_card(cert: @institution.saml_sp_public_cert,
                                       key:  @institution.saml_sp_private_key)
+                - else
+                  = boolean(false, style: :word, false_value: "NOT SET")
+              %dt Next Public Certificate
+              %dd
+                - if @institution.saml_sp_next_public_cert.present?
+                  = x509_cert_as_card(cert: @institution.saml_sp_next_public_cert,
+                                      key:  @institution.saml_sp_private_key)
+                - elsif @institution.saml_auto_cert_rotation
+                  Will be automatically generated closer to expiration of the public certificate.
                 - else
                   = boolean(false, style: :word, false_value: "NOT SET")
 

@@ -8,17 +8,21 @@ class CryptUtils
   # @param key [String,OpenSSL::PKey::RSA]
   # @param organization [String]
   # @param common_name [String]
-  # @param expires_in [Integer] Expiration in seconds from now.
+  # @param not_before [Time] Time at which the certificate becomes valid.
+  # @param not_after [Time] Time after which the certificate is no longer
+  #                         valid.
   # @return [OpenSSL::X509::Certificate]
   #
   def self.generate_cert(key:,
                          organization:,
                          common_name:,
-                         expires_in: 10.years.to_i)
+                         not_before: Time.now,
+                         not_after:)
     raise ArgumentError, "Missing key argument" unless key
     raise ArgumentError, "Missing organization argument" unless organization
     raise ArgumentError, "Missing common_name argument" unless common_name
-    raise ArgumentError, "Missing expires_in argument" unless expires_in
+    raise ArgumentError, "Missing not_before argument" unless not_before
+    raise ArgumentError, "Missing not_after argument" unless not_after
     unless key.kind_of?(OpenSSL::PKey::RSA)
       key = OpenSSL::PKey::RSA.new(key)
     end
@@ -26,8 +30,8 @@ class CryptUtils
     cert = OpenSSL::X509::Certificate.new
     cert.version    = 2
     cert.serial     = 0
-    cert.not_before = Time.now
-    cert.not_after  = Time.now + expires_in
+    cert.not_before = not_before
+    cert.not_after  = not_after
     cert.public_key = key.public_key
     cert.subject    = name
     cert.issuer     = name

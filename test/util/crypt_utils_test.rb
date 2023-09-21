@@ -9,7 +9,8 @@ class CryptUtilsTest < ActiveSupport::TestCase
       CryptUtils.generate_cert(key:          nil,
                                organization: "Acme, Inc.",
                                common_name:  "Cats",
-                               expires_in:   10.years.to_i)
+                               not_before:   Time.now,
+                               not_after:    Time.new(2035, 3, 5))
     end
   end
 
@@ -19,7 +20,8 @@ class CryptUtilsTest < ActiveSupport::TestCase
       CryptUtils.generate_cert(key:          CryptUtils.generate_key,
                                organization: nil,
                                common_name:  "Cats",
-                               expires_in:   10.years.to_i)
+                               not_before:   Time.now,
+                               not_after:    Time.new(2035, 3, 5))
     end
   end
 
@@ -29,25 +31,39 @@ class CryptUtilsTest < ActiveSupport::TestCase
       CryptUtils.generate_cert(key:          CryptUtils.generate_key,
                                organization: "Acme, Inc.",
                                common_name:  nil,
-                               expires_in:   10.years.to_i)
+                               not_before:   Time.now,
+                               not_after:    Time.new(2035, 3, 5))
     end
   end
 
-  test "generate_cert() raises an error when the expires_in argument is
+  test "generate_cert() raises an error when the not_before argument is
   missing" do
     assert_raises ArgumentError do
       CryptUtils.generate_cert(key:          CryptUtils.generate_key,
                                organization: "Acme, Inc.",
                                common_name:  "Cats",
-                               expires_in:   nil)
+                               not_before:   nil,
+                               not_after:    Time.new(2035, 3, 5))
+    end
+  end
+
+  test "generate_cert() raises an error when the not_after argument is
+  missing" do
+    assert_raises ArgumentError do
+      CryptUtils.generate_cert(key:          CryptUtils.generate_key,
+                               organization: "Acme, Inc.",
+                               common_name:  "Cats",
+                               not_before:   Time.now,
+                               not_after:    nil)
     end
   end
 
   test "generate_cert() when given a string key returns a correct value" do
     key  = CryptUtils.generate_key
-    cert = CryptUtils.generate_cert(key: key.private_to_pem,
+    cert = CryptUtils.generate_cert(key:          key.private_to_pem,
                                     organization: "Acme Inc.",
-                                    common_name:  "Cats")
+                                    common_name:  "Cats",
+                                    not_after:    Time.new(2035, 3, 5))
     assert_equal "sha256WithRSAEncryption", cert.signature_algorithm
     assert cert.subject.to_s.include?("O=Acme Inc.")
     assert cert.subject.to_s.include?("CN=Cats")
@@ -58,7 +74,8 @@ class CryptUtilsTest < ActiveSupport::TestCase
     key  = CryptUtils.generate_key
     cert = CryptUtils.generate_cert(key:          key,
                                     organization: "Acme Inc.",
-                                    common_name:  "Cats")
+                                    common_name:  "Cats",
+                                    not_after:    Time.new(2035, 3, 5))
     assert_equal "sha256WithRSAEncryption", cert.signature_algorithm
     assert cert.subject.to_s.include?("O=Acme Inc.")
     assert cert.subject.to_s.include?("CN=Cats")

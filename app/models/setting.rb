@@ -14,15 +14,18 @@ class Setting < ApplicationRecord
 
   class Key
     # String
-    BANNER_MESSAGE       = "banner_message"
+    BANNER_MESSAGE           = "banner_message"
     # Allowed values: info, warning, danger
-    BANNER_MESSAGE_TYPE  = "banner_message.type"
+    BANNER_MESSAGE_TYPE      = "banner_message.type"
     # Used in global search context. Not used in a scoped context, where
     # {Institution#earliest_search_year} is used instead.
-    EARLIEST_SEARCH_YEAR = "earliest_search_year"
+    EARLIEST_SEARCH_YEAR     = "earliest_search_year"
     # Feedback email used in global context and for sending e.g. error emails
     # to.
-    FEEDBACK_EMAIL       = "feedback_email"
+    FEEDBACK_EMAIL           = "feedback_email"
+    # Number of years for which newly generated SAML public certificates are
+    # valid.
+    SAML_CERT_VALIDITY_YEARS = "saml_cert.expiry_years"
   end
 
   validates :key, presence: true, uniqueness: { case_sensitive: false }

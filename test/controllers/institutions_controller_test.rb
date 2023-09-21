@@ -507,10 +507,23 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     user = users(:southwest_admin)
     log_in_as(user)
     institution = user.institution
-    institution.update!(saml_sp_private_key: CryptUtils.generate_key.private_to_pem)
+    institution.update!(saml_sp_private_key: CryptUtils.generate_key.private_to_pem,
+                        saml_sp_public_cert: nil)
     patch institution_generate_saml_cert_path(institution)
     institution.reload
     assert_not_empty institution.saml_sp_public_cert
+  end
+
+  test "generate_saml_cert() nils out an institution's next SAML cert" do
+    user = users(:southwest_admin)
+    log_in_as(user)
+    institution = user.institution
+    institution.update!(saml_sp_private_key:      CryptUtils.generate_key.private_to_pem,
+                        saml_sp_public_cert:      nil,
+                        saml_sp_next_public_cert: "something")
+    patch institution_generate_saml_cert_path(institution)
+    institution.reload
+    assert_nil institution.saml_sp_next_public_cert
   end
 
   test "generate_saml_cert() returns HTTP 302" do

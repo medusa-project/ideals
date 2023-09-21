@@ -47,6 +47,14 @@
                    options_for_select([%w(Blue/Info info), %w(Yellow/Warning warning), %w(Red/Danger danger)],
                                       Setting.string(Setting::Key::BANNER_MESSAGE_TYPE)),
                    class: "form-select")
+  .mb-3.row
+    = label_tag("settings[#{Setting::Key::SAML_CERT_VALIDITY_YEARS}]",
+                "SAML Certificate Validity (Years)",
+                class: "col-sm-3 col-form-label")
+    .col-sm-9
+      = number_field_tag("settings[#{Setting::Key::SAML_CERT_VALIDITY_YEARS}]",
+                         Setting::integer(Setting::Key::SAML_CERT_VALIDITY_YEARS),
+                         class: "form-control")
 
   .mb-3.row
     .col-sm-3

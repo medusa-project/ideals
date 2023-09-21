@@ -168,17 +168,20 @@ class InstitutionsController < ApplicationController
   #
   def generate_saml_cert
     if @institution.saml_sp_private_key.blank?
-      raise "You must supply an SP private key before you can generate certificates."
+      raise "You must supply or generate a private key before you can "\
+            "generate a certificate."
     end
     cert = CryptUtils.generate_cert(key:          @institution.saml_sp_private_key,
                                     organization: @institution.name,
-                                    common_name:  @institution.service_name)
-    @institution.update!(saml_sp_public_cert: cert.to_pem)
+                                    common_name:  @institution.service_name,
+                                    not_after:    Time.now + Setting.integer(Setting::Key::SAML_CERT_VALIDITY_YEARS, 10).years)
+    @institution.update!(saml_sp_public_cert:      cert.to_pem,
+                         saml_sp_next_public_cert: nil)
   rescue => e
     flash['error'] = "#{e}"
   else
-    toast!(title:   "Certificates generated",
-           message: "The SAML SP's certificates have been updated.")
+    toast!(title:   "Certificate generated",
+           message: "The SAML SP's public certificate has been updated.")
   ensure
     redirect_back fallback_location: institution_path(@institution)
   end
@@ -901,6 +904,7 @@ class InstitutionsController < ApplicationController
                                         # Authentication tab
                                         :local_auth_enabled,
                                         :saml_auth_enabled,
+                                        :saml_auto_cert_rotation,
                                         :saml_email_attribute,
                                         :saml_email_location,
                                         :saml_first_name_attribute,
@@ -908,6 +912,7 @@ class InstitutionsController < ApplicationController
                                         :saml_idp_entity_id,
                                         :saml_idp_sso_service_url,
                                         :saml_last_name_attribute,
+                                        :saml_sp_next_public_cert,
                                         :saml_sp_private_key,
                                         :saml_sp_public_cert,
                                         :shibboleth_auth_enabled,
