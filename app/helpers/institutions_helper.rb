@@ -46,7 +46,7 @@ module InstitutionsHelper
       html <<   "This certificate was not signed by the current private key."
       html << "</div>"
     end
-    html <<     "<dl>"
+    html <<     "<dl style=\"word-break: break-all\">"
     html <<       "<dt>Signature Algorithm</dt>"
     html <<       "<dd>"
     html <<         cert.signature_algorithm
@@ -56,23 +56,23 @@ module InstitutionsHelper
     html <<       "</dd>"
     html <<       "<dt>Subject</dt>"
     html <<       "<dd>"
-    html <<         "<code style=\"word-break: break-all\">"
+    html <<         "<code>"
     html <<           cert.subject
     html <<         "</code>"
     html <<       "</dd>"
     html <<       "<dt>Issuer</dt>"
     html <<       "<dd>"
-    html <<         "<code style=\"word-break: break-all\">"
+    html <<         "<code>"
     html <<           cert.issuer
     html <<         "</code>"
     html <<       "</dd>"
     html <<       "<dt>Issued</dt>"
     html <<       "<dd>"
-    html <<         cert.not_before
+    html <<         local_time(cert.not_before)
     html <<       "</dd>"
     html <<       "<dt>Expires</dt>"
     html <<       "<dd>"
-    html <<         cert.not_after
+    html <<         local_time(cert.not_after)
     html <<       "</dd>"
     html <<     "</dl>"
     html <<   "</div>"
