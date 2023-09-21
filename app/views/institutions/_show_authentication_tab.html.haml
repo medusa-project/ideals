@@ -120,7 +120,7 @@
           .card-body
             %dl
               %dt Entity ID
-              %dd
+              %dd{style: "word-break: break-all;"}
                 %code= @institution.saml_sp_entity_id
               %dt Metadata URL
               %dd
@@ -172,7 +172,7 @@
           .card-body
             %dl
               %dt Entity ID
-              %dd
+              %dd{style: "word-break: break-all;"}
                 - if @institution.saml_idp_entity_id.present?
                   %code= @institution.saml_idp_entity_id
                 - else
