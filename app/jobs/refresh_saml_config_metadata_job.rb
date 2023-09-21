@@ -23,8 +23,8 @@ class RefreshSamlConfigMetadataJob < ApplicationJob
                                institution:   institution,
                                user:          user,
                                started_at:    Time.now,
-                               status_text:   "Updating federation metadata "\
-                                              "for #{institution.name}")
+                               status_text:   "Updating SAML configuration "\
+                                              "metadata for #{institution.name}")
     is_temp_file = false
     begin
       if config_file.present?
