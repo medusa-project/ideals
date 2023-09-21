@@ -4,6 +4,45 @@ class CryptUtilsTest < ActiveSupport::TestCase
 
   # generate_cert()
 
+  test "generate_cert() raises an error when the key argument is missing" do
+    assert_raises ArgumentError do
+      CryptUtils.generate_cert(key:          nil,
+                               organization: "Acme, Inc.",
+                               common_name:  "Cats",
+                               expires_in:   10.years.to_i)
+    end
+  end
+
+  test "generate_cert() raises an error when the organization argument is
+  missing" do
+    assert_raises ArgumentError do
+      CryptUtils.generate_cert(key:          CryptUtils.generate_key,
+                               organization: nil,
+                               common_name:  "Cats",
+                               expires_in:   10.years.to_i)
+    end
+  end
+
+  test "generate_cert() raises an error when the common_name argument is
+  missing" do
+    assert_raises ArgumentError do
+      CryptUtils.generate_cert(key:          CryptUtils.generate_key,
+                               organization: "Acme, Inc.",
+                               common_name:  nil,
+                               expires_in:   10.years.to_i)
+    end
+  end
+
+  test "generate_cert() raises an error when the expires_in argument is
+  missing" do
+    assert_raises ArgumentError do
+      CryptUtils.generate_cert(key:          CryptUtils.generate_key,
+                               organization: "Acme, Inc.",
+                               common_name:  "Cats",
+                               expires_in:   nil)
+    end
+  end
+
   test "generate_cert() when given a string key returns a correct value" do
     key  = CryptUtils.generate_key
     cert = CryptUtils.generate_cert(key: key.private_to_pem,

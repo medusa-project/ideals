@@ -15,6 +15,10 @@ class CryptUtils
                          organization:,
                          common_name:,
                          expires_in: 10.years.to_i)
+    raise ArgumentError, "Missing key argument" unless key
+    raise ArgumentError, "Missing organization argument" unless organization
+    raise ArgumentError, "Missing common_name argument" unless common_name
+    raise ArgumentError, "Missing expires_in argument" unless expires_in
     unless key.kind_of?(OpenSSL::PKey::RSA)
       key = OpenSSL::PKey::RSA.new(key)
     end
