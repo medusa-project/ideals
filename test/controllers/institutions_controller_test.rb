@@ -472,59 +472,59 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  # generate_saml_certs()
+  # generate_saml_cert()
 
-  test "generate_saml_certs() returns HTTP 404 for unscoped requests" do
+  test "generate_saml_cert() returns HTTP 404 for unscoped requests" do
     host! ::Configuration.instance.main_host
-    patch institution_generate_saml_certs_path(@institution)
+    patch institution_generate_saml_cert_path(@institution)
     assert_response :not_found
   end
 
-  test "generate_saml_certs() redirects to root page for logged-out users" do
-    patch institution_generate_saml_certs_path(@institution)
+  test "generate_saml_cert() redirects to root page for logged-out users" do
+    patch institution_generate_saml_cert_path(@institution)
     assert_redirected_to @institution.scope_url
   end
 
-  test "generate_saml_certs() returns HTTP 403 for unauthorized users" do
+  test "generate_saml_cert() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:southwest))
-    patch institution_generate_saml_certs_path(@institution)
+    patch institution_generate_saml_cert_path(@institution)
     assert_response :forbidden
   end
 
-  test "generate_saml_certs() does not update an institution's certs when the
+  test "generate_saml_cert() does not update an institution's certs when the
   institution does not have a private key set" do
     user = users(:southwest_admin)
     log_in_as(user)
     institution = user.institution
     institution.update!(saml_sp_private_key: nil,
                         saml_sp_public_cert: nil)
-    patch institution_generate_saml_certs_path(institution)
+    patch institution_generate_saml_cert_path(institution)
     institution.reload
     assert_nil institution.saml_sp_public_cert
   end
 
-  test "generate_saml_certs() updates an institution's SAML cert" do
+  test "generate_saml_cert() updates an institution's SAML cert" do
     user = users(:southwest_admin)
     log_in_as(user)
     institution = user.institution
     institution.update!(saml_sp_private_key: CryptUtils.generate_key.private_to_pem)
-    patch institution_generate_saml_certs_path(institution)
+    patch institution_generate_saml_cert_path(institution)
     institution.reload
     assert_not_empty institution.saml_sp_public_cert
   end
 
-  test "generate_saml_certs() returns HTTP 302" do
+  test "generate_saml_cert() returns HTTP 302" do
     user = users(:southwest_admin)
     log_in_as(user)
     institution = user.institution
-    patch institution_generate_saml_certs_path(institution)
+    patch institution_generate_saml_cert_path(institution)
     assert_redirected_to institution_path(institution)
   end
 
-  test "generate_saml_certs() returns HTTP 404 for nonexistent
+  test "generate_saml_cert() returns HTTP 404 for nonexistent
   institutions" do
     log_in_as(users(:southwest_admin))
-    patch "/institutions/bogus/generate-saml-certs"
+    patch "/institutions/bogus/generate-saml-cert"
     assert_response :not_found
   end
 

@@ -71,7 +71,7 @@ class InstitutionPolicy < ApplicationPolicy
     edit_settings
   end
 
-  def generate_saml_certs
+  def generate_saml_cert
     generate_saml_key
   end
 

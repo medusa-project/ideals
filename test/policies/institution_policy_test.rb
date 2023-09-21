@@ -729,57 +729,57 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.edit_theme?
   end
 
-  # generate_saml_certs?()
+  # generate_saml_cert?()
 
-  test "generate_saml_certs?() returns false with a nil user" do
+  test "generate_saml_cert?() returns false with a nil user" do
     context = RequestContext.new(user:        nil,
                                  institution: @institution)
     policy = InstitutionPolicy.new(context, @institution)
-    assert !policy.generate_saml_certs?
+    assert !policy.generate_saml_cert?
   end
 
-  test "generate_saml_certs?() is restrictive by default" do
+  test "generate_saml_cert?() is restrictive by default" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: @institution)
     policy  = InstitutionPolicy.new(context, @institution)
-    assert !policy.generate_saml_certs?
+    assert !policy.generate_saml_cert?
   end
 
-  test "generate_saml_certs?() authorizes sysadmins" do
+  test "generate_saml_cert?() authorizes sysadmins" do
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: @institution)
     policy  = InstitutionPolicy.new(context, @institution)
-    assert policy.generate_saml_certs?
+    assert policy.generate_saml_cert?
   end
 
-  test "generate_saml_certs?() authorizes administrators of the same
+  test "generate_saml_cert?() authorizes administrators of the same
   institution" do
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: @institution)
     policy  = InstitutionPolicy.new(context, user.institution)
-    assert policy.generate_saml_certs?
+    assert policy.generate_saml_cert?
   end
 
-  test "generate_saml_certs?() does not authorize administrators of different
+  test "generate_saml_cert?() does not authorize administrators of different
   institutions" do
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: @institution)
     policy  = InstitutionPolicy.new(context, @institution)
-    assert policy.generate_saml_certs?
+    assert policy.generate_saml_cert?
   end
 
-  test "generate_saml_certs?() respects role limits" do
+  test "generate_saml_cert?() respects role limits" do
     # sysadmin user limited to an insufficient role
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
     policy  = InstitutionPolicy.new(context, @institution)
-    assert !policy.generate_saml_certs?
+    assert !policy.generate_saml_cert?
   end
 
   # generate_saml_key?()

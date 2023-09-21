@@ -164,9 +164,9 @@ class InstitutionsController < ApplicationController
   end
 
   ##
-  # Responds to `PATCH /institutions/:id/generate-saml-certs`
+  # Responds to `PATCH /institutions/:id/generate-saml-cert`
   #
-  def generate_saml_certs
+  def generate_saml_cert
     if @institution.saml_sp_private_key.blank?
       raise "You must supply an SP private key before you can generate certificates."
     end

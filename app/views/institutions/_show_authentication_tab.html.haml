@@ -66,8 +66,8 @@
                       data: { confirm: "Are you sure you want to regenerate the SP private key? This will also invalidate the SP certificates." }) do
               %i.fa.fa-key
               Generate SP Private Key
-            -# Generate SP Certificates button
-            = link_to(institution_generate_saml_certs_path(@institution),
+            -# Generate SP Certificate button
+            = link_to(institution_generate_saml_cert_path(@institution),
                       class: "dropdown-item", method: :patch,
                       data: { confirm: "Are you sure you want to regenerate the SP certificate? This will overwrite the SP certificate." }) do
               %i.fa.fa-certificate
