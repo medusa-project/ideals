@@ -14,6 +14,10 @@ class SettingTest < ActiveSupport::TestCase
     assert_nil Setting.boolean('bogus')
   end
 
+  test 'boolean() returns the provided default value for nonexistent keys' do
+    assert Setting.boolean('bogus', true)
+  end
+
   # integer()
 
   test 'integer() returns an integer for existing keys' do
@@ -24,6 +28,10 @@ class SettingTest < ActiveSupport::TestCase
 
   test 'integer() returns nil for nonexistent keys' do
     assert_nil Setting.integer('bogus')
+  end
+
+  test 'integer() returns the provided default value for nonexistent keys' do
+    assert_equal 30, Setting.integer('bogus', 30)
   end
 
   # set()
@@ -53,6 +61,10 @@ class SettingTest < ActiveSupport::TestCase
 
   test 'string() returns nil for nonexistent keys' do
     assert_nil Setting.string('bogus')
+  end
+
+  test 'string() returns the provided default value for nonexistent keys' do
+    assert_equal "cats", Setting.string('bogus', "cats")
   end
 
 end

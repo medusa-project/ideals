@@ -28,21 +28,27 @@ class Setting < ApplicationRecord
   validates :key, presence: true, uniqueness: { case_sensitive: false }
 
   ##
+  # @param key [String]
+  # @param default [Boolean] Value to return if there is no value for the given
+  #                          key.
   # @return [Boolean] Value associated with the given key as a boolean, or nil
   #                   if there is no value associated with the given key.
   #
-  def self.boolean(key)
+  def self.boolean(key, default = nil)
     v = value_for(key)
-    v ? ['true', '1', true, 1].include?(v) : nil
+    v ? ['true', '1', true, 1].include?(v) : default
   end
 
   ##
+  # @param key [String]
+  # @param default [Boolean] Value to return if there is no value for the given
+  #                          key.
   # @return [Integer] Value associated with the given key as an integer, or nil
   #                   if there is no value associated with the given key.
   #
-  def self.integer(key)
+  def self.integer(key, default = nil)
     v = value_for(key)
-    v ? v.to_i : nil
+    v ? v.to_i : default
   end
 
   ##
@@ -63,12 +69,15 @@ class Setting < ApplicationRecord
   end
 
   ##
+  # @param key [String]
+  # @param default [Boolean] Value to return if there is no value for the given
+  #                          key.
   # @return [String,nil] Value associated with the given key as a string, or nil
   #                      if there is no value associated with the given key.
   #
-  def self.string(key)
+  def self.string(key, default = nil)
     v = value_for(key)
-    v ? v.to_s : nil
+    v ? v.to_s : default
   end
 
   ##
