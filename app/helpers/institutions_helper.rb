@@ -66,11 +66,11 @@ module InstitutionsHelper
     html <<           cert.issuer
     html <<         "</code>"
     html <<       "</dd>"
-    html <<       "<dt>Issued</dt>"
+    html <<       "<dt>Not Before</dt>"
     html <<       "<dd>"
     html <<         local_time(cert.not_before)
     html <<       "</dd>"
-    html <<       "<dt>Expires</dt>"
+    html <<       "<dt>Not After</dt>"
     html <<       "<dd>"
     html <<         local_time(cert.not_after)
     html <<       "</dd>"
