@@ -880,22 +880,24 @@ class InstitutionsController < ApplicationController
   end
 
   def settings_params
-    params.require(:institution).permit(# Settings tab
+    params.require(:institution).permit(# General Settings tab
                                         :about_html, :about_url,
                                         :copyright_notice, :deposit_agreement,
                                         :earliest_search_year, :feedback_email,
+                                        :google_analytics_measurement_id,
                                         :main_website_url, :service_name,
+                                        :submissions_reviewed,
                                         :welcome_html,
                                         # Element Mappings tab
                                         :author_element_id,
                                         :date_approved_element_id,
                                         :date_submitted_element_id,
+                                        :handle_uri_element_id,
+                                        :title_element_id,
+                                        # Deposit Agreement tab
                                         :deposit_form_access_help,
                                         :deposit_form_collection_help,
                                         :deposit_form_disagreement_help,
-                                        :google_analytics_measurement_id,
-                                        :handle_uri_element_id,
-                                        :title_element_id,
                                         # Authentication tab
                                         :local_auth_enabled,
                                         :saml_auth_enabled,
