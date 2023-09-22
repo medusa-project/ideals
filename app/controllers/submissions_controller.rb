@@ -112,7 +112,7 @@ class SubmissionsController < ApplicationController
   # Clients may arrive here from a main menu, or from a
   # {CollectionsController#show show-collection page}.
   #
-  # Responds to `GET /submit` and `GET /collections/:collection_id/deposit`.
+  # Responds to `GET /submit` and `GET /collections/:collection_id/submit`.
   #
   def new
     # This will be nil if we are arriving at /submit, but otherwise we will
