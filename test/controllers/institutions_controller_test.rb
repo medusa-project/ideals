@@ -711,7 +711,7 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     institution = user.institution
     patch institution_refresh_saml_config_metadata_path(institution)
     institution.reload
-    assert_not_nil institution.saml_idp_cert
+    assert_not_nil institution.saml_idp_signing_cert
   end
 
   test "refresh_saml_config_metadata() returns HTTP 302" do

@@ -1,5 +1,6 @@
 OmniAuth.config.logger = Rails.logger
 
+# The SAML provider's setup-phase proc. See below.
 SAML_SETUP_PROC = lambda do |env|
   request     = Rack::Request.new(env)
   institution = Institution.find_by_fqdn(request.host_with_port)
@@ -13,8 +14,14 @@ SAML_SETUP_PROC = lambda do |env|
   s.options[:idp_sso_service_url]                = institution.saml_idp_sso_service_url
   s.options[:idp_sso_service_url_runtime_params] = { original_request_param: :mapped_idp_param }
   s.options[:idp_cert_multi]                     = {
-    signing:    [institution.saml_idp_cert, institution.saml_idp_cert2].select(&:present?),
-    encryption: []
+    signing:    [
+      institution.saml_idp_signing_cert,
+      institution.saml_idp_signing_cert2
+    ].select(&:present?),
+    encryption: [
+      institution.saml_idp_encryption_cert,
+      institution.saml_idp_encryption_cert2
+    ].select(&:present?)
   }
   s.options[:certificate]                        = institution.saml_sp_public_cert
   s.options[:private_key]                        = institution.saml_sp_private_key
@@ -40,7 +47,9 @@ Rails.application.config.middleware.use OmniAuth::Builder do
     provider :developer
   else
     # The real Shibboleth provider is available in all other environments.
-    # TODO: I haven't been able to get omniauth-shibboleth working using the setup phase, so its configuration is currently hard-coded for UIUC
+    # UIUC is the only tenant that uses this, and only because it's what we
+    # knew how to do long before we added the SAML provider, but switching to
+    # the SAML provider would require updating our iTrust registrations.
     provider :shibboleth, {
       uid_field: "eppn",
       # N.B.: overwriteUserAttrs is a custom property needed in testing
@@ -69,9 +78,8 @@ Rails.application.config.middleware.use OmniAuth::Builder do
   end
 
   # SAML (everybody else) is available in all environments.
-  # N.B.: this provider is added here, but it needs further setup at request
-  # time as its properties will vary depending on which institution's host is
-  # being accessed.
+  # N.B.: this provider needs further setup at request time, as its properties
+  # will vary depending on which institution's host is being accessed.
   # See: https://github.com/omniauth/omniauth/wiki/Setup-Phase
   provider :saml, setup: SAML_SETUP_PROC
 end

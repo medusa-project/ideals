@@ -69,11 +69,17 @@
         = f.label :saml_idp_sso_service_url, "SSO Service URL"
         = f.text_field :saml_idp_sso_service_url, class: "form-control"
       .mb-3
-        = f.label :saml_idp_cert, "Public Certificate"
-        = f.text_area :saml_idp_cert, rows: 10, class: "form-control"
+        = f.label :saml_idp_signing_cert, "Signing Certificate"
+        = f.text_area :saml_idp_signing_cert, rows: 10, class: "form-control"
       .mb-3
-        = f.label :saml_idp_cert2, "Public Certificate 2"
-        = f.text_area :saml_idp_cert2, rows: 10, class: "form-control"
+        = f.label :saml_idp_signing_cert2, "Signing Certificate 2"
+        = f.text_area :saml_idp_signing_cert2, rows: 10, class: "form-control"
+      .mb-3
+        = f.label :saml_idp_encryption_cert, "Encryption Certificate"
+        = f.text_area :saml_idp_encryption_cert, rows: 10, class: "form-control"
+      .mb-3
+        = f.label :saml_idp_encryption_cert2, "Encryption Certificate 2"
+        = f.text_area :saml_idp_encryption_cert2, rows: 10, class: "form-control"
       .mb-3
         = f.label :saml_email_location, "Email Location"
         = f.select :saml_email_location,

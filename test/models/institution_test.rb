@@ -857,27 +857,65 @@ class InstitutionTest < ActiveSupport::TestCase
 
   # update_from_saml_config_metadata()
 
-  test "update_from_saml_config_metadata() raises an error if there is no
-  matching entityID in the XML file" do
-    @instance.fqdn = "bogus.org"
+  test "update_from_saml_config_metadata() raises an error if there is more
+  than one EntityDescriptor and saml_idp_entity_id is not set" do
+    @instance.saml_idp_entity_id = nil
     xml_file = file_fixture("oaf_metadata.xml")
-
     assert_raises do
       @instance.update_from_saml_config_metadata(xml_file)
     end
   end
 
-  test "update_from_saml_config_metadata() updates properties from OAF
-  metadata" do
-    @instance.saml_idp_sso_service_url = nil
-    @instance.saml_idp_cert            = nil
+  test "update_from_saml_config_metadata() raises an error if there is more
+  than one EntityDescriptor but no matching IdP entityID in the XML file" do
+    @instance.saml_idp_entity_id = "bogus.org"
+    xml_file = file_fixture("oaf_metadata.xml")
+    assert_raises do
+      @instance.update_from_saml_config_metadata(xml_file)
+    end
+  end
+
+  test "update_from_saml_config_metadata() updates properties from metadata
+  containing one EntityDescriptor" do
+    @instance.saml_idp_sso_service_url  = nil
+    @instance.saml_idp_signing_cert     = nil
+    @instance.saml_idp_signing_cert2    = nil
+    @instance.saml_idp_encryption_cert  = nil
+    @instance.saml_idp_encryption_cert2 = nil
+    xml_file = file_fixture("southwest_saml.xml")
+
+    @instance.update_from_saml_config_metadata(xml_file)
+    assert_equal "https://login.openathens.net/saml/2/sso/southwest.edu",
+                 @instance.saml_idp_sso_service_url
+    header  = "-----BEGIN CERTIFICATE-----\n"
+    trailer = "\n-----END CERTIFICATE-----"
+    assert @instance.saml_idp_signing_cert.starts_with?(header)
+    assert @instance.saml_idp_signing_cert.ends_with?(trailer)
+    assert_nil @instance.saml_idp_signing_cert2
+    assert_nil @instance.saml_idp_encryption_cert
+    assert_nil @instance.saml_idp_encryption_cert2
+  end
+
+  test "update_from_saml_config_metadata() updates properties from metadata
+  containing multiple EntityDescriptors" do
+    @instance.saml_idp_sso_service_url  = nil
+    @instance.saml_idp_signing_cert     = nil
+    @instance.saml_idp_signing_cert2    = nil
+    @instance.saml_idp_encryption_cert  = nil
+    @instance.saml_idp_encryption_cert2 = nil
     xml_file = file_fixture("oaf_metadata.xml")
 
     @instance.update_from_saml_config_metadata(xml_file)
     assert_equal "https://login.openathens.net/saml/2/sso/southwest.edu",
                  @instance.saml_idp_sso_service_url
-    assert @instance.saml_idp_cert.starts_with?("-----BEGIN CERTIFICATE-----\n")
-    assert @instance.saml_idp_cert.ends_with?("\n-----END CERTIFICATE-----")
+    header  = "-----BEGIN CERTIFICATE-----\n"
+    trailer = "\n-----END CERTIFICATE-----"
+    assert @instance.saml_idp_signing_cert.starts_with?(header)
+    assert @instance.saml_idp_signing_cert.ends_with?(trailer)
+    assert @instance.saml_idp_signing_cert2.starts_with?(header)
+    assert @instance.saml_idp_signing_cert2.ends_with?(trailer)
+    assert_nil @instance.saml_idp_encryption_cert
+    assert_nil @instance.saml_idp_encryption_cert2
   end
 
   # upload_banner_image()

@@ -93,10 +93,14 @@
 # * `saml_last_name_attribute`  Name of the SAML attribute containing a user's
 #                               last name. Needed only by institutions that use
 #                               SAML for authentication.
-# * `saml_idp_cert`             Required only by institutions that use SAML for
-#                               authentication.
-# * `saml_idp_cert2`            Facilitates seamless rollover of IdP
+# * `saml_idp_encryption_cert`  Required only by institutions that use SAML for
+# #                             authentication.
+# * `saml_idp_encryption_cert2` Facilitates seamless rollover of IdP
 #                               certificates.
+# * `saml_idp_signing_cert`     Required only by institutions that use SAML for
+#                               authentication.
+# * `saml_idp_signing_cert2`    Facilitates seamless rollover of IdP
+# #                             certificates.
 # * `saml_idp_entity_id`        Required only by institutions that use SAML for
 #                               authentication.
 # * `saml_idp_sso_service_url`  Required only by institutions that use SAML for
@@ -715,37 +719,47 @@ class Institution < ApplicationRecord
   end
 
   ##
+  # Updates SAML IdP information from a federation metadata file.
+  #
   # @param metadata_xml_file [File]
   #
   def update_from_saml_config_metadata(metadata_xml_file)
     File.open(metadata_xml_file) do |file|
-      doc        = Nokogiri::XML(file)
-      sp_entity  = doc.xpath("//md:EntityDescriptor[@entityID = '#{self.saml_sp_entity_id}']",
-                             md: SAML_METADATA_NS).first
-      idp_entity = doc.xpath("//md:EntityDescriptor[@entityID = '#{self.saml_idp_entity_id}']",
-                             md: SAML_METADATA_NS).first
-      if sp_entity
-        # IdP SSO service URL
-        # Does the SP's EntityDescriptor contain an IDPSSODescriptor with an
-        # SSO service URL?
-        self.saml_idp_sso_service_url = sp_entity.xpath("./md:IDPSSODescriptor/md:SingleSignOnService[@Binding = 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect']/@Location",
-                                                        md: SAML_METADATA_NS).first&.text
-        if self.saml_idp_sso_service_url.blank?
-          # Does its IdP's EntityDescriptor contain one?
-          self.saml_idp_sso_service_url = idp_entity.xpath("./md:IDPSSODescriptor/md:SingleSignOnService[@Binding = 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect']/@Location",
-                                                           md: SAML_METADATA_NS).first&.text
-          if self.saml_idp_sso_service_url.blank?
-            raise "No matching SP or IdP entityID found in federation metadata"
-          end
+      doc          = Nokogiri::XML(file)
+      entities = doc.xpath("//md:EntityDescriptor", md: SAML_METADATA_NS)
+      if entities.count > 1
+        if self.saml_idp_entity_id.blank?
+          raise "There are multiple md:EntityDescriptors, but don't know which "\
+                "one to use because the institution's IdP entity ID is not set."
         end
-        # IdP cert
-        self.saml_idp_cert = "-----BEGIN CERTIFICATE-----\n" +
-          idp_entity.xpath("//ds:X509Certificate", ds: XML_DS_NS).first.text.strip +
-          "\n-----END CERTIFICATE-----"
-        self.save!
+        idp_entity = doc.xpath("//md:EntityDescriptor[@entityID = '#{self.saml_idp_entity_id}']",
+                               md: SAML_METADATA_NS).first
       else
-        raise "No matching SP entityID found in federation metadata"
+        idp_entity = entities.first
       end
+      # IdP SSO service URL
+      # Does the EntityDescriptor contain an IDPSSODescriptor with an SSO
+      # service URL?
+      self.saml_idp_sso_service_url = idp_entity.xpath("./md:IDPSSODescriptor/md:SingleSignOnService[@Binding = 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect']/@Location",
+                                                       md: SAML_METADATA_NS).first&.text
+      # IdP cert(s) - there should be at most 4 (two each for signing and
+      # encryption).
+      signing_certs    = []
+      encryption_certs = []
+      idp_entity.xpath("./md:IDPSSODescriptor//md:KeyDescriptor", md: SAML_METADATA_NS).each do |node, index|
+        der_node = node.xpath(".//ds:X509Certificate", ds: XML_DS_NS)
+        pem_cert = CryptUtils.der_to_pem(der_node.text.strip)
+        if node.attr("use") == "encryption"
+          encryption_certs << pem_cert
+        else
+          signing_certs << pem_cert
+        end
+      end
+      self.saml_idp_signing_cert     = signing_certs[0]
+      self.saml_idp_signing_cert2    = signing_certs[1]
+      self.saml_idp_encryption_cert  = encryption_certs[0]
+      self.saml_idp_encryption_cert2 = encryption_certs[1]
+      self.save!
     end
   end
 

@@ -2,6 +2,13 @@ require 'test_helper'
 
 class CryptUtilsTest < ActiveSupport::TestCase
 
+  # der_to_pem()
+
+  test "der_to_pem() returns a correct PEM certificate" do
+    assert_equal "-----BEGIN CERTIFICATE-----\ncats\n-----END CERTIFICATE-----",
+                 CryptUtils.der_to_pem("cats")
+  end
+
   # generate_cert()
 
   test "generate_cert() raises an error when the key argument is missing" do

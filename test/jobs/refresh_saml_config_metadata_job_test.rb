@@ -19,22 +19,22 @@ class RefreshSamlConfigMetadataJobTest < ActiveSupport::TestCase
 
   test "perform() refreshes an institution's federation metadata" do
     institution = institutions(:southwest)
-    institution.update!(saml_idp_cert: nil)
+    institution.update!(saml_idp_signing_cert: nil)
 
     RefreshSamlConfigMetadataJob.new.perform(institution: institution)
     # This is tested more thoroughly in the tests of Institution
-    assert_not_nil institution.saml_idp_cert
+    assert_not_nil institution.saml_idp_signing_cert
   end
 
   test "perform() updates an institution's metadata from a local XML file" do
     institution = institutions(:southwest)
-    institution.update!(sso_federation: Institution::SSOFederation::NONE,
-                        saml_idp_cert:  nil)
+    institution.update!(sso_federation:         Institution::SSOFederation::NONE,
+                        saml_idp_signing_cert:  nil)
 
     RefreshSamlConfigMetadataJob.new.perform(institution:       institution,
                                              configuration_xml: file_fixture("southwest_saml.xml"))
     # This is tested more thoroughly in the tests of Institution
-    assert_not_nil institution.saml_idp_cert
+    assert_not_nil institution.saml_idp_signing_cert
   end
 
   test "perform() updates an institution's metadata from a remote XML file" do

@@ -1,47 +1,113 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- N.B.: This is an abridged snapshot of: http://fed.openathens.net/oafed/metadata
-that has been modified to mesh with the fixture data. -->
-<md:EntitiesDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" ID="db4fb1d2b2e041abb15ac81a3f7107df" Name="https://fed.openathens.net/oafed/metadata" validUntil="2023-05-24T12:14:38.453Z">
-  <!-- Southwest University SP -->
-  <md:EntityDescriptor xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui" xmlns:shibmd="urn:mace:shibboleth:metadata:1.0" entityID="http://southwest.edu/entity">
-    <md:IDPSSODescriptor WantAuthnRequestsSigned="false" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol urn:oasis:names:tc:SAML:1.1:protocol urn:mace:shibboleth:1.0">
-      <md:Extensions>
-        <shibmd:Scope regexp="false">southwest.edu</shibmd:Scope>
-        <mdui:UIInfo>
-          <mdui:DisplayName xml:lang="en">Southwest University</mdui:DisplayName>
-          <mdui:Description xml:lang="en">Southwest University</mdui:Description>
-        </mdui:UIInfo>
-      </md:Extensions>
-      <md:KeyDescriptor use="signing">
-        <ds:KeyInfo>
-          <ds:KeyName>gateway.athensams.net</ds:KeyName>
-          <ds:X509Data>
-            <ds:X509Certificate>MIIDvjCCAqagAwIBAgIEVOxCIjANBgkqhkiG9w0BAQsFADCBoDEoMCYGCSqGSIb3DQEJARYZYXRoZW5zaGVscEBlZHVzZXJ2Lm9yZy51azELMAkGA1UEBhMCR0IxETAPBgNVBAgMCFNvbWVyc2V0MQ0wCwYDVQQHDARCYXRoMRAwDgYDVQQKDAdFZHVzZXJ2MRMwEQYDVQQLDApPcGVuQXRoZW5zMR4wHAYDVQQDDBVnYXRld2F5LmF0aGVuc2Ftcy5uZXQwHhcNMTUwMjI0MDkyMDA2WhcNMjUwMjI0MDkyMDA2WjCBoDEoMCYGCSqGSIb3DQEJARYZYXRoZW5zaGVscEBlZHVzZXJ2Lm9yZy51azELMAkGA1UEBhMCR0IxETAPBgNVBAgMCFNvbWVyc2V0MQ0wCwYDVQQHDARCYXRoMRAwDgYDVQQKDAdFZHVzZXJ2MRMwEQYDVQQLDApPcGVuQXRoZW5zMR4wHAYDVQQDDBVnYXRld2F5LmF0aGVuc2Ftcy5uZXQwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCandpa4o0Njtw1DqbrrNTfOVe1PqyXIIVmDrJ6VUR/mokXXu+m5Gm+1f+3lyN5IA2YMn9Z8Yo37JQjIHs+xVS3q4nT1ewS7S3en1pdXKsH1WnUnVWUmpl9WJZrUwi5i8X80LNyr7PmudhuKNEATGUXkA/xWCkk2d8jf91hy7Qu+HA8LOKtdbbNigErh2IY/YuNWUVUqgGbMH5BGr7ZEhPrz+Vwcf9lhPW+tKpKpZEzJfQiq8EoPaeMXEpKWBEErm67gkWFCA5VhfcJLqFjQEC3pWOxt5rZVS8gl/Z33VSJZVzY5jWcQzmGaLXPHXyiKPmixl6+DjGlUM0ylNF7GvtDAgMBAAEwDQYJKoZIhvcNAQELBQADggEBAFhmhujLZueiJ6F7mQCpfB0Hj4Y8FyFUUc8NMAt5Set7H4DKSSl4shcqisZBa5yTdyenYwkmBszvCWs6Yeep+zJmCR62cb/f1M32oMzLm02OlznWMkE8/IajGmdxTnB6Z/XcdMMIiCeok4kqe5KMd5oRAyNskHYZ+8kzhs2zTveR+rqCtYxa/AYpwf7n0VQR9clBSNCIT4BCRi10aPE531VIxl4ljY3CwNoZ4lQTU/0aj8O4j68V2neiQb8lewAii0b2xoyOGYP4okd7T2tl4gl2noVbCvYNjd6GYze/w4lgwiemkby7wu5sN1lEudgKDV+H54wU29ZIyDEFM6DDNE4=</ds:X509Certificate>
-          </ds:X509Data>
-        </ds:KeyInfo>
-      </md:KeyDescriptor>
-      <md:KeyDescriptor use="encryption">
-        <ds:KeyInfo>
-          <ds:KeyName>gateway.athensams.net</ds:KeyName>
-          <ds:X509Data>
-            <ds:X509Certificate>MIIDvjCCAqagAwIBAgIEVOxCIjANBgkqhkiG9w0BAQsFADCBoDEoMCYGCSqGSIb3DQEJARYZYXRoZW5zaGVscEBlZHVzZXJ2Lm9yZy51azELMAkGA1UEBhMCR0IxETAPBgNVBAgMCFNvbWVyc2V0MQ0wCwYDVQQHDARCYXRoMRAwDgYDVQQKDAdFZHVzZXJ2MRMwEQYDVQQLDApPcGVuQXRoZW5zMR4wHAYDVQQDDBVnYXRld2F5LmF0aGVuc2Ftcy5uZXQwHhcNMTUwMjI0MDkyMDA2WhcNMjUwMjI0MDkyMDA2WjCBoDEoMCYGCSqGSIb3DQEJARYZYXRoZW5zaGVscEBlZHVzZXJ2Lm9yZy51azELMAkGA1UEBhMCR0IxETAPBgNVBAgMCFNvbWVyc2V0MQ0wCwYDVQQHDARCYXRoMRAwDgYDVQQKDAdFZHVzZXJ2MRMwEQYDVQQLDApPcGVuQXRoZW5zMR4wHAYDVQQDDBVnYXRld2F5LmF0aGVuc2Ftcy5uZXQwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCandpa4o0Njtw1DqbrrNTfOVe1PqyXIIVmDrJ6VUR/mokXXu+m5Gm+1f+3lyN5IA2YMn9Z8Yo37JQjIHs+xVS3q4nT1ewS7S3en1pdXKsH1WnUnVWUmpl9WJZrUwi5i8X80LNyr7PmudhuKNEATGUXkA/xWCkk2d8jf91hy7Qu+HA8LOKtdbbNigErh2IY/YuNWUVUqgGbMH5BGr7ZEhPrz+Vwcf9lhPW+tKpKpZEzJfQiq8EoPaeMXEpKWBEErm67gkWFCA5VhfcJLqFjQEC3pWOxt5rZVS8gl/Z33VSJZVzY5jWcQzmGaLXPHXyiKPmixl6+DjGlUM0ylNF7GvtDAgMBAAEwDQYJKoZIhvcNAQELBQADggEBAFhmhujLZueiJ6F7mQCpfB0Hj4Y8FyFUUc8NMAt5Set7H4DKSSl4shcqisZBa5yTdyenYwkmBszvCWs6Yeep+zJmCR62cb/f1M32oMzLm02OlznWMkE8/IajGmdxTnB6Z/XcdMMIiCeok4kqe5KMd5oRAyNskHYZ+8kzhs2zTveR+rqCtYxa/AYpwf7n0VQR9clBSNCIT4BCRi10aPE531VIxl4ljY3CwNoZ4lQTU/0aj8O4j68V2neiQb8lewAii0b2xoyOGYP4okd7T2tl4gl2noVbCvYNjd6GYze/w4lgwiemkby7wu5sN1lEudgKDV+H54wU29ZIyDEFM6DDNE4=</ds:X509Certificate>
-          </ds:X509Data>
-        </ds:KeyInfo>
-      </md:KeyDescriptor>
-      <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://login.openathens.net/saml/2/sso/southwest.edu"/>
-      <md:SingleSignOnService Binding="urn:mace:shibboleth:1.0:profiles:AuthnRequest" Location="https://login.openathens.net/saml/1/sso/southwest.edu"/>
-    </md:IDPSSODescriptor>
-    <md:Organization>
-      <md:OrganizationName xml:lang="en">Southwest University</md:OrganizationName>
-      <md:OrganizationDisplayName xml:lang="en">Southwest University</md:OrganizationDisplayName>
-      <md:OrganizationURL xml:lang="en">http://www.openathens.org</md:OrganizationURL>
-    </md:Organization>
-  </md:EntityDescriptor>
-
-  <!-- Southwest University IDP -->
-  <md:EntityDescriptor xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui" xmlns:shibmd="urn:mace:shibboleth:metadata:1.0" entityID="https://idp.southwest.edu">
-    <md:IDPSSODescriptor WantAuthnRequestsSigned="false" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol urn:oasis:names:tc:SAML:1.1:protocol urn:mace:shibboleth:1.0">
-      <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://login.openathens.net/saml/2/sso/southwest"/>
-    </md:IDPSSODescriptor>
-  </md:EntityDescriptor>
-</md:EntitiesDescriptor>
+<md:EntityDescriptor
+        xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"
+        xmlns:remd="http://refeds.org/metadata" ID="da3595f8db4b490b9fd925a48752842b"
+        entityID="https://southwest.edu/entity"
+        validUntil="2083-09-23T20:09:20.570Z">
+  <ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+    <ds:SignedInfo>
+      <ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+      <ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/>
+      <ds:Reference URI="#da3595f8db4b490b9fd925a48752842b">
+        <ds:Transforms>
+          <ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+          <ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+        </ds:Transforms>
+        <ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/>
+        <ds:DigestValue>7TgigFSAruJsMk3v6yxAQmYttu4r8jrSeYFRh8EYdDk=</ds:DigestValue>
+      </ds:Reference>
+    </ds:SignedInfo>
+    <ds:SignatureValue>d75edvy6KlMwpNyMObCuUi+Gga6EVKBX5f49jOoE+woTMpSnb83H2wGZzZ3oOOk5dOAR1eNEzMbDPEjTXwhH5pVea+2nBl9v7cvqf4b4jgE4Hk2CnwtWhERiG3ifgBkBWgE3k2GhZ2SY7uws5zZ94zRT7+euw4EA0kIoY7tzqajy0sckVelWynJOVtjKmt9YTAfTjFMnZ6G1BdsCTf7B1fqm1hp4tnJaAcrzDH+7kYCy+Aa/KxLOLWza4Skn1hlk5XeaCr6BjX4XofvTMCQdAeRas52dZClu3Kv87RsDKH4L5DyeqFEjROwG5PCQSy3FMcOvtQpjzsNCDvFG7iq1Xw==</ds:SignatureValue>
+    <ds:KeyInfo>
+      <ds:X509Data>
+        <ds:X509Certificate>
+          MIIFJzCCAw+gAwIBAgIBADANBgkqhkiG9w0BAQsFADBWMQswCQYDVQQGEwJVUzER
+          MA8GA1UECAwISWxsaW5vaXMxHTAbBgNVBAoMFFNvdXRod2VzdCBVbml2ZXJzaXR5
+          MRUwEwYDVQQDDAxTb3V0aHdlc3QgSVIwIBcNMjMwOTIyMjAxMjQxWhgPMjA3MzA5
+          MjIyMDEyNDFaMFYxCzAJBgNVBAYTAlVTMREwDwYDVQQIDAhJbGxpbm9pczEdMBsG
+          A1UECgwUU291dGh3ZXN0IFVuaXZlcnNpdHkxFTATBgNVBAMMDFNvdXRod2VzdCBJ
+          UjCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBANFzFRpxvrVeW6slqNgK
+          xm7L99rgidxTp3oW80SHFpD39nHnbye3PtZ3ICtDlEHCYpEgoK/TCHy31MTGSABf
+          BqpStSxVZpQMSDos9AT/wHtQZw6h67zfGCxYOHCYwYx7jKHbjPLkvIBj+GhL9aBE
+          CbsHVgp9wu5ZAe/NEFy5ytefLKj+gItEx+O162J/cn7saBcnjAvIUJ61nj7YB2Oa
+          DxxAm5YvYofax32Lm2hdirU2lfQuyhB1FYXyO7nlIakdCHGU1nWBDHflfq/LFEgf
+          6EDRNHiXtr+NCagOJqb8IvO8y3wnlxBrzk741c9fzOuuymKUuiTDd7T5X1jqlrr3
+          zKojGk//J3gsCjYx8Oe690zBD6GUmsfHaS3FdcKAmvNy2lmLmCAIGNooTXaQ3ihT
+          khqFwM6tYuWC7x5eN283yJ0FROe2ndYsQutYWmrbbsgviYC06lZMN0YyrCBsepxJ
+          DCg2N0ZPO6olAWxitBpjkOWt/kBLjhSevDf8QzgznRdzX3kF0OUbC3EaQkMYrDRn
+          O8+sLNQ7UTNciZW0DYcwQLad7lrpJS6+kBpv3Kg64OcOMHxZFiehKFb1tN+ScveS
+          dEk4f7necQuItNtYqmnyDtBdH5dpdV35VgZDM9kwx0DuSKTOFbwENoKLHt2aUhXI
+          3+dcF1MC6PkjEUwgUm/O0T8XAgMBAAEwDQYJKoZIhvcNAQELBQADggIBAI1siSRQ
+          JwNuRYeNQvtNjBDwgVtA98dB3/urj/COURLVSrWtAlaDFh0noLK+ui8wVtGTK1SU
+          OxD67XlhJED2SqcpbIcVzjJ2EXowS8Hu2pFLS69TaWjynlGZb24/r4wDhxQeU0l2
+          X47Fy46BCTZLXDesO9CYmfVNcJXxpvSw7eTFMOfnPwtka0w4dZxlN7xvuGFlputS
+          AMyHBgzSB3PZx75h07CPLhQ4pWWisgx9/mMWJn3RKljqoQ2W4ZU/nbdyxIFpe1BT
+          5VWmxJ/3h1G4axmy5+bwvAnIUTbTFcwNxy6WJLVvcqCQwoBdjBFfuUVgKtWifAFz
+          3VNkYaU0HV8wMaeNu4zBMEswcjcLLkCWkfMeS0nd8yXdWI93GmFqFtFpudE5ixqS
+          CapJq3Ma8ujB56aeS3XAIzYCwZgvEAOg/x37LZU3J4W+ndG0DMI7A2agzSb3i7Pn
+          OmSonoK2pYhIItT2oosN6PGOLnOHieyy8cR2r1R/67+fVo1Ks3DjOl0/AgsdaG+h
+          /lW9ULHHy67Ttj6X7oGFBe4041kokV/882A/QkVNNoO5xi0axTHzMy4QuhFgWvGg
+          wzckQQDM7SA/5LJ+Bo8dob02ro5Oye3/Zgor2s4Mlp1loIuBQ+6JnCVMiJDwGe9j
+          5XwvxnzWRD63P0K/fzoDjkIBbT3ztC1PV9yZ
+        </ds:X509Certificate>
+      </ds:X509Data>
+    </ds:KeyInfo>
+  </ds:Signature>
+  <md:IDPSSODescriptor
+          WantAuthnRequestsSigned="false"
+          errorURL="https://login.openathens.net/auth-error?error=ERRORURL_CODE&amp;ts=ERRORURL_TS&amp;context=ERRORURL_CTX&amp;transaction=ERRORURL_TID&amp;sp=ERRORURL_RP"
+          protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol urn:oasis:names:tc:SAML:1.1:protocol urn:mace:shibboleth:1.0">
+    <md:Extensions
+            xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui"
+            xmlns:shibmd="urn:mace:shibboleth:metadata:1.0">
+      <shibmd:Scope regexp="false">southwest.edu</shibmd:Scope>
+      <mdui:UIInfo>
+        <mdui:DisplayName xml:lang="en">Southwest University</mdui:DisplayName>
+        <mdui:Description xml:lang="en">Southwest University</mdui:Description>
+      </mdui:UIInfo>
+    </md:Extensions>
+    <md:KeyDescriptor use="signing">
+      <ds:KeyInfo
+              xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+        <ds:KeyName>gateway.athensams.net</ds:KeyName>
+        <ds:X509Data>
+          <ds:X509Certificate>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
+            RPYrFGgzfIUlULNCzX37JeCOhkIbwqE5oS3W</ds:X509Certificate>
+        </ds:X509Data>
+      </ds:KeyInfo>
+    </md:KeyDescriptor>
+    <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://login.openathens.net/saml/2/sso/southwest.edu"/>
+    <md:SingleSignOnService Binding="urn:mace:shibboleth:1.0:profiles:AuthnRequest" Location="https://login.openathens.net/saml/2/sso/southwest.edu"/>
+  </md:IDPSSODescriptor>
+  <md:Organization>
+    <md:OrganizationName xml:lang="en">Southwest University</md:OrganizationName>
+    <md:OrganizationDisplayName xml:lang="en">Southwest University</md:OrganizationDisplayName>
+    <md:OrganizationURL xml:lang="en">https://southwest.edu</md:OrganizationURL>
+  </md:Organization>
+</md:EntityDescriptor>

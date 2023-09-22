@@ -3,6 +3,14 @@
 class CryptUtils
 
   ##
+  # @param der [String] Base64-encoded DER certificate.
+  # @return [String] PEM-format certificate.
+  #
+  def self.der_to_pem(der)
+    "-----BEGIN CERTIFICATE-----\n" + der + "\n-----END CERTIFICATE-----"
+  end
+
+  ##
   # Generates a public certificate from a private key.
   #
   # @param key [String,OpenSSL::PKey::RSA]

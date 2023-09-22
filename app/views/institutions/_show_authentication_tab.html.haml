@@ -179,16 +179,28 @@
                             @institution.saml_idp_sso_service_url)
                 - else
                   Not Set
-              %dt Public Certificate
+              %dt Public Signing Certificate
               %dd
-                - if @institution.saml_idp_cert.present?
-                  = x509_cert_as_card(cert: @institution.saml_idp_cert)
+                - if @institution.saml_idp_signing_cert.present?
+                  = x509_cert_as_card(cert: @institution.saml_idp_signing_cert)
                 - else
                   = boolean(false, style: :word, false_value: "NOT SET")
-              %dt Public Certificate 2
+              %dt Public Signing Certificate 2
               %dd
-                - if @institution.saml_idp_cert2.present?
-                  = x509_cert_as_card(cert: @institution.saml_idp_cert2)
+                - if @institution.saml_idp_signing_cert2.present?
+                  = x509_cert_as_card(cert: @institution.saml_idp_signing_cert2)
+                - else
+                  = boolean(false, style: :word, false_value: "NOT SET")
+              %dt Public Encryption Certificate
+              %dd
+                - if @institution.saml_idp_encryption_cert.present?
+                  = x509_cert_as_card(cert: @institution.saml_idp_encryption_cert)
+                - else
+                  = boolean(false, style: :word, false_value: "NOT SET")
+              %dt Public Encryption Certificate 2
+              %dd
+                - if @institution.saml_idp_encryption_cert2.present?
+                  = x509_cert_as_card(cert: @institution.saml_idp_encryption_cert2)
                 - else
                   = boolean(false, style: :word, false_value: "NOT SET")
               %dt Email Location
