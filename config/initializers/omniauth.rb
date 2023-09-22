@@ -41,8 +41,31 @@ Rails.application.config.middleware.use OmniAuth::Builder do
   else
     # The real Shibboleth provider is available in all other environments.
     # TODO: I haven't been able to get omniauth-shibboleth working using the setup phase, so its configuration is currently hard-coded for UIUC
-    shib_opts = YAML.load_file(File.join(Rails.root, 'config', 'shibboleth.yml'))
-    provider :shibboleth, shib_opts.symbolize_keys
+    provider :shibboleth, {
+      uid_field: "eppn",
+      # N.B.: overwriteUserAttrs is a custom property needed in testing
+      extra_fields: %w[
+        eppn
+        unscoped-affiliation
+        uid
+        sn
+        org-dn
+        nickname
+        givenName
+        member
+        telephoneNumber
+        iTrustAffiliation
+        departmentName
+        programCode
+        levelCode
+        overwriteUserAttrs
+      ],
+      request_type: "header",
+      info_fields: {
+        name: "displayName",
+        email: "mail"
+      }
+    }
   end
 
   # SAML (everybody else) is available in all environments.
