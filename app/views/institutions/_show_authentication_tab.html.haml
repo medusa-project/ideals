@@ -122,6 +122,8 @@
               %dt Entity ID
               %dd{style: "word-break: break-all;"}
                 %code= @institution.saml_sp_entity_id
+              %dt Assertion Consumer Service URL
+              %dd= "#{@institution.scope_url}/auth/saml/callback"
               %dt Metadata URL
               %dd
                 - if !@institution.saml_auth_enabled
