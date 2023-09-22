@@ -43,9 +43,12 @@ class UnitsController < ApplicationController
   #
   # Accepts the following query arguments:
   #
-  # * `for-select`: Changes the response representation to one that is
-  #                 appropriate to consume by JavaScript for building a select
-  #                 menu.
+  # * `unit_id`:               Required.
+  # * `for-select`:            Changes the response representation to one that
+  #                            is appropriate to consume by JavaScript for
+  #                            building a select menu.
+  # * `include-children`:      Whether to include child collections in the
+  #                            results.
   # * `only-submitter-access`: Limits the results to collections for which the
   #                            current user has submitter access.
   #
@@ -55,8 +58,8 @@ class UnitsController < ApplicationController
     raise ActionController::BadRequest if params[:unit_id].blank?
     @collections = Collection.search.
         institution(@unit.institution).
-        filter(Collection::IndexFields::PRIMARY_UNIT, @unit.id).
-        include_children(false).
+        filter(Collection::IndexFields::UNITS, @unit.id).
+        include_children(params[:'include-children'] == "true").
         order("#{Collection::IndexFields::TITLE}.sort").
         limit(999)
     if params[:'only-submitter-access'] == "true"

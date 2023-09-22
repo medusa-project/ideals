@@ -192,7 +192,7 @@ const SubmissionForm = function() {
 
     const fetchCollectionsForUnit = function(unitID, onComplete) {
         collectionSection.hide();
-        new IDEALS.Client().fetchUnitCollections(unitID, true, function(data) {
+        new IDEALS.Client().fetchUnitCollections(unitID, true, true, function(data) {
             collectionsMenu.children().remove();
             if (data.length > 0) {
                 $.each(data, function (index, value) {
