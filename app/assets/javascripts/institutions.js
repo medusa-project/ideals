@@ -85,11 +85,9 @@ const InstitutionView = {
 
                         const onFederationRadioChanged = function (checkedRadio) {
                             if (parseInt(checkedRadio.val()) != 2) { // 2 = Institution::SSOFederation::NONE
-                                $("[name='institution[saml_idp_cert]']").parent().hide();
                                 $("[name='institution[saml_idp_sso_service_url]']").parent().hide();
                                 $("[name='institution[saml_idp_entity_id]']").next("p").show();
                             } else {
-                                $("[name='institution[saml_idp_cert]']").parent().show();
                                 $("[name='institution[saml_idp_sso_service_url]']").parent().show();
                                 $("[name='institution[saml_idp_entity_id]']").next("p").hide();
                             }
