@@ -27,12 +27,17 @@ IDEALS.Client = function() {
 
     /**
      * @param unitID {Number}
+     * @param includeChildren {Boolean}
      * @param onlySubmitterAccess {Boolean}
      * @param onSuccess {Function} Function accepting response data.
      */
-    this.fetchUnitCollections = function (unitID, onlySubmitterAccess, onSuccess) {
+    this.fetchUnitCollections = function (unitID, includeChildren,
+                                          onlySubmitterAccess, onSuccess) {
         var url = ROOT_URL + "/units/" + unitID +
             "/collections-tree-fragment?for-select=true";
+        if (includeChildren) {
+            url += "&include-children=true"
+        }
         if (onlySubmitterAccess) {
             url += "&only-submitter-access=true"
         }
