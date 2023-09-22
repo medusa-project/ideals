@@ -72,6 +72,9 @@
         = f.label :saml_idp_cert, "Public Certificate"
         = f.text_area :saml_idp_cert, rows: 10, class: "form-control"
       .mb-3
+        = f.label :saml_idp_cert2, "Public Certificate 2"
+        = f.text_area :saml_idp_cert2, rows: 10, class: "form-control"
+      .mb-3
         = f.label :saml_email_location, "Email Location"
         = f.select :saml_email_location,
                    options_for_select(Institution::SAMLEmailLocation.all.map{ |v| [Institution::SAMLEmailLocation.label_for(v), v] },

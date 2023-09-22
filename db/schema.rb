@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_09_21_155140) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_22_012621) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -404,6 +404,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_21_155140) do
     t.boolean "submissions_reviewed", default: true, null: false
     t.text "saml_sp_next_public_cert"
     t.boolean "saml_auto_cert_rotation", default: true
+    t.text "saml_idp_cert2"
     t.index ["fqdn"], name: "index_institutions_on_fqdn", unique: true
     t.index ["incoming_message_queue"], name: "index_institutions_on_incoming_message_queue", unique: true
     t.index ["key"], name: "index_institutions_on_key", unique: true

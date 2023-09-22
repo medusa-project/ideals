@@ -12,7 +12,10 @@ SAML_SETUP_PROC = lambda do |env|
   s.options[:sp_entity_id]                       = institution.saml_sp_entity_id
   s.options[:idp_sso_service_url]                = institution.saml_idp_sso_service_url
   s.options[:idp_sso_service_url_runtime_params] = { original_request_param: :mapped_idp_param }
-  s.options[:idp_cert]                           = institution.saml_idp_cert
+  s.options[:idp_cert_multi]                     = {
+    signing:    [institution.saml_idp_cert, institution.saml_idp_cert2].select(&:present?),
+    encryption: []
+  }
   s.options[:certificate]                        = institution.saml_sp_public_cert
   s.options[:private_key]                        = institution.saml_sp_private_key
   s.options[:certificate_new]                    = institution.saml_sp_next_public_cert
