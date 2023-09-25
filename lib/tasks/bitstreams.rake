@@ -2,20 +2,29 @@ require 'rake'
 
 namespace :bitstreams do
 
-  desc "Copy a bitstream's file from production into the local instance"
-  task :copy_from_prod, [:bitstream_id] => :environment do |task, args|
-    bs  = Bitstream.find(args[:bitstream_id])
-    url = "https://www.ideals.illinois.edu/items/#{bs.item_id}/bitstreams/#{bs.id}/object"
+  def copy_bitstream_from_prod(id)
+    bs     = Bitstream.find(id)
+    s3_key = Bitstream.permanent_key(institution_key: bs.institution.key,
+                                     item_id:         bs.item_id,
+                                     filename:        bs.filename)
+    opts   = { region: "us-east-2" }
+    client = Aws::S3::Client.new(opts)
+
     Dir.mktmpdir do |dir|
       path = File.join(dir, bs.filename)
-      `curl -LsSo "#{path}" "#{url}"`
+      client.get_object(bucket:          "ideals-main",
+                        key:             s3_key,
+                        response_target: path)
       Bitstream.transaction do
-        bs.update!(permanent_key: Bitstream.permanent_key(institution_key: bs.institution.key,
-                                                          item_id:         bs.item_id,
-                                                          filename:        bs.filename))
+        bs.update!(permanent_key: s3_key)
         bs.upload_to_permanent(File.new(path))
       end
     end
+  end
+
+  desc "Copy a bitstream's file from production into the local instance"
+  task :copy_from_prod, [:bitstream_id] => :environment do |task, args|
+    copy_bitstream_from_prod(args[:bitstream_id])
   end
 
   # This works only for bitstreams that exist in both the production and local
@@ -25,18 +34,7 @@ namespace :bitstreams do
   task :copy_item_from_prod, [:item_id] => :environment do |task, args|
     item = Item.find(args[:item_id])
     item.bitstreams.each do |bs|
-      puts bs.filename
-      url = "https://www.ideals.illinois.edu/items/#{item.id}/bitstreams/#{bs.id}/object"
-      Dir.mktmpdir do |dir|
-        path = File.join(dir, bs.filename)
-        `curl -LsSo "#{path}" "#{url}"`
-        Bitstream.transaction do
-          bs.update!(permanent_key: Bitstream.permanent_key(institution_key: bs.institution.key,
-                                                            item_id:         bs.item_id,
-                                                            filename:        bs.filename))
-          bs.upload_to_permanent(File.new(path))
-        end
-      end
+      copy_bitstream_from_prod(bs.id)
     end
   end
 
