@@ -106,135 +106,134 @@
         - else
           None
 
-    .row
-      .col-xl-6
-        .card.mb-3
-          %h5.card-header Service Provider
-          .card-body
-            %dl
-              %dt Entity ID
-              %dd{style: "word-break: break-all;"}
-                %code= @institution.saml_sp_entity_id
-              %dt Assertion Consumer Service URL
-              %dd= "#{@institution.scope_url}/auth/saml/callback"
-              %dt Metadata URL
-              %dd
-                - if !@institution.saml_auth_enabled
-                  = boolean(false, style: :word, false_value: "SAML IS DISABLED")
-                - elsif @institution.saml_sp_entity_id.present?
-                  = link_to("#{@institution.scope_url}/auth/saml/metadata",
-                              "#{@institution.scope_url}/auth/saml/metadata")
-                - else
-                  = boolean(false, style: :word, false_value: "NOT AVAILABLE")
-              %dt Private Key
-              %dd
-                - if @institution.saml_sp_private_key.present?
-                  - begin
-                    - public_cert = OpenSSL::X509::Certificate.new(@institution.saml_sp_public_cert)
-                    - private_key = OpenSSL::PKey::RSA.new(@institution.saml_sp_private_key)
-                    - if public_cert.check_private_key(private_key)
-                      = boolean(true, style: :word, true_value: "VALID")
-                    - else
-                      - raise "Invalid signature algorithm"
-                  - rescue
-                    = boolean(false, style: :word, false_value: "INVALID")
-                - else
-                  = boolean(false, style: :word, false_value: "NOT SET")
-              %dt Automatic Certificate Rotation
-              %dd
-                = boolean(@institution.saml_auto_cert_rotation, style: :word,
-                          true_value: "ENABLED", false_value: "DISABLED")
-              %dt Public Certificate
-              %dd
-                - if @institution.saml_sp_public_cert.present?
-                  = x509_cert_as_card(cert: @institution.saml_sp_public_cert,
-                                      key:  @institution.saml_sp_private_key)
-                - else
-                  = boolean(false, style: :word, false_value: "NOT SET")
-              %dt Next Public Certificate
-              %dd
-                - if @institution.saml_sp_next_public_cert.present?
-                  = x509_cert_as_card(cert: @institution.saml_sp_next_public_cert,
-                                      key:  @institution.saml_sp_private_key)
-                - elsif @institution.saml_auto_cert_rotation
-                  Will be automatically generated closer to expiration of the public certificate.
-                - else
-                  = boolean(false, style: :word, false_value: "NOT SET")
-
-      .col-xl-6
-        .card
-          %h5.card-header Identity Provider
-          .card-body
-            %dl
-              %dt Entity ID
-              %dd{style: "word-break: break-all;"}
-                - if @institution.saml_idp_entity_id.present?
-                  %code= @institution.saml_idp_entity_id
-                - else
-                  = boolean(false, style: :word, false_value: "NOT SET")
-              %dt SSO Service Binding
-              %dd
-                %code= @institution.saml_idp_sso_binding_urn
-              %dt SSO Service URL
-              %dd
-                - case @institution.saml_idp_sso_binding_urn
-                - when "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
-                  = link_to(@institution.saml_idp_sso_redirect_service_url,
-                            @institution.saml_idp_sso_redirect_service_url)
-                - when "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
-                  = link_to(@institution.saml_idp_sso_post_service_url,
-                            @institution.saml_idp_sso_post_service_url)
-                - else
-                  Not Set
-              %dt Public Signing Certificate
-              %dd
-                - if @institution.saml_idp_signing_cert.present?
-                  = x509_cert_as_card(cert: @institution.saml_idp_signing_cert)
-                - else
-                  = boolean(false, style: :word, false_value: "NOT SET")
-              %dt Public Signing Certificate 2
-              %dd
-                - if @institution.saml_idp_signing_cert2.present?
-                  = x509_cert_as_card(cert: @institution.saml_idp_signing_cert2)
-                - else
-                  = boolean(false, style: :word, false_value: "NOT SET")
-              %dt Public Encryption Certificate
-              %dd
-                - if @institution.saml_idp_encryption_cert.present?
-                  = x509_cert_as_card(cert: @institution.saml_idp_encryption_cert)
-                - else
-                  = boolean(false, style: :word, false_value: "NOT SET")
-              %dt Public Encryption Certificate 2
-              %dd
-                - if @institution.saml_idp_encryption_cert2.present?
-                  = x509_cert_as_card(cert: @institution.saml_idp_encryption_cert2)
-                - else
-                  = boolean(false, style: :word, false_value: "NOT SET")
-              %dt Email Location
-              %dd
-                - if @institution.saml_email_location.present?
-                  = Institution::SAMLEmailLocation.label_for(@institution.saml_email_location)
-                - else
-                  = boolean(false, style: :word, false_value: "NOT SET")
-              - if @institution.saml_email_location == Institution::SAMLEmailLocation::ATTRIBUTE
-                %dt Email Attribute
+    - if @institution.saml_auth_enabled
+      .row
+        .col-xl-6
+          .card.mb-3
+            %h5.card-header Service Provider
+            .card-body
+              %dl
+                %dt Entity ID
+                %dd{style: "word-break: break-all;"}
+                  %code= @institution.saml_sp_entity_id
+                %dt Assertion Consumer Service URL
+                %dd= "#{@institution.scope_url}/auth/saml/callback"
+                %dt Metadata URL
                 %dd
-                  - if @institution.saml_email_attribute.present?
-                    %code= @institution.saml_email_attribute
+                  - if @institution.saml_sp_entity_id.present?
+                    = link_to("#{@institution.scope_url}/auth/saml/metadata",
+                                "#{@institution.scope_url}/auth/saml/metadata")
+                  - else
+                    = boolean(false, style: :word, false_value: "NOT AVAILABLE")
+                %dt Private Key
+                %dd
+                  - if @institution.saml_sp_private_key.present?
+                    - begin
+                      - public_cert = OpenSSL::X509::Certificate.new(@institution.saml_sp_public_cert)
+                      - private_key = OpenSSL::PKey::RSA.new(@institution.saml_sp_private_key)
+                      - if public_cert.check_private_key(private_key)
+                        = boolean(true, style: :word, true_value: "VALID")
+                      - else
+                        - raise "Invalid signature algorithm"
+                    - rescue
+                      = boolean(false, style: :word, false_value: "INVALID")
                   - else
                     = boolean(false, style: :word, false_value: "NOT SET")
-              %dt First Name Attribute
-              %dd
-                - if @institution.saml_first_name_attribute.present?
-                  %code= @institution.saml_first_name_attribute
-                - else
-                  = boolean(false, style: :word, false_value: "NOT SET")
-              %dt Last Name Attribute
-              %dd
-                - if @institution.saml_last_name_attribute.present?
-                  %code= @institution.saml_last_name_attribute
-                - else
-                  = boolean(false, style: :word, false_value: "NOT SET")
+                %dt Automatic Certificate Rotation
+                %dd
+                  = boolean(@institution.saml_auto_cert_rotation, style: :word,
+                            true_value: "ENABLED", false_value: "DISABLED")
+                %dt Public Certificate
+                %dd
+                  - if @institution.saml_sp_public_cert.present?
+                    = x509_cert_as_card(cert: @institution.saml_sp_public_cert,
+                                        key:  @institution.saml_sp_private_key)
+                  - else
+                    = boolean(false, style: :word, false_value: "NOT SET")
+                %dt Next Public Certificate
+                %dd
+                  - if @institution.saml_sp_next_public_cert.present?
+                    = x509_cert_as_card(cert: @institution.saml_sp_next_public_cert,
+                                        key:  @institution.saml_sp_private_key)
+                  - elsif @institution.saml_auto_cert_rotation
+                    Will be automatically generated closer to expiration of the public certificate.
+                  - else
+                    = boolean(false, style: :word, false_value: "NOT SET")
+
+        .col-xl-6
+          .card
+            %h5.card-header Identity Provider
+            .card-body
+              %dl
+                %dt Entity ID
+                %dd{style: "word-break: break-all;"}
+                  - if @institution.saml_idp_entity_id.present?
+                    %code= @institution.saml_idp_entity_id
+                  - else
+                    = boolean(false, style: :word, false_value: "NOT SET")
+                %dt SSO Service Binding
+                %dd
+                  %code= @institution.saml_idp_sso_binding_urn
+                %dt SSO Service URL
+                %dd
+                  - case @institution.saml_idp_sso_binding_urn
+                  - when "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+                    = link_to(@institution.saml_idp_sso_redirect_service_url,
+                              @institution.saml_idp_sso_redirect_service_url)
+                  - when "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                    = link_to(@institution.saml_idp_sso_post_service_url,
+                              @institution.saml_idp_sso_post_service_url)
+                  - else
+                    Not Set
+                %dt Public Signing Certificate
+                %dd
+                  - if @institution.saml_idp_signing_cert.present?
+                    = x509_cert_as_card(cert: @institution.saml_idp_signing_cert)
+                  - else
+                    = boolean(false, style: :word, false_value: "NOT SET")
+                %dt Public Signing Certificate 2
+                %dd
+                  - if @institution.saml_idp_signing_cert2.present?
+                    = x509_cert_as_card(cert: @institution.saml_idp_signing_cert2)
+                  - else
+                    = boolean(false, style: :word, false_value: "NOT SET")
+                %dt Public Encryption Certificate
+                %dd
+                  - if @institution.saml_idp_encryption_cert.present?
+                    = x509_cert_as_card(cert: @institution.saml_idp_encryption_cert)
+                  - else
+                    = boolean(false, style: :word, false_value: "NOT SET")
+                %dt Public Encryption Certificate 2
+                %dd
+                  - if @institution.saml_idp_encryption_cert2.present?
+                    = x509_cert_as_card(cert: @institution.saml_idp_encryption_cert2)
+                  - else
+                    = boolean(false, style: :word, false_value: "NOT SET")
+                %dt Email Location
+                %dd
+                  - if @institution.saml_email_location.present?
+                    = Institution::SAMLEmailLocation.label_for(@institution.saml_email_location)
+                  - else
+                    = boolean(false, style: :word, false_value: "NOT SET")
+                - if @institution.saml_email_location == Institution::SAMLEmailLocation::ATTRIBUTE
+                  %dt Email Attribute
+                  %dd
+                    - if @institution.saml_email_attribute.present?
+                      %code= @institution.saml_email_attribute
+                    - else
+                      = boolean(false, style: :word, false_value: "NOT SET")
+                %dt First Name Attribute
+                %dd
+                  - if @institution.saml_first_name_attribute.present?
+                    %code= @institution.saml_first_name_attribute
+                  - else
+                    = boolean(false, style: :word, false_value: "NOT SET")
+                %dt Last Name Attribute
+                %dd
+                  - if @institution.saml_last_name_attribute.present?
+                    %code= @institution.saml_last_name_attribute
+                  - else
+                    = boolean(false, style: :word, false_value: "NOT SET")
 
   - if @institution.key == "uiuc"
     #shibboleth-tab-pane.tab-pane.fade{role:              "tabpanel",
