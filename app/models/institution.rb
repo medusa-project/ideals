@@ -103,6 +103,7 @@
 # #                             certificates.
 # * `saml_idp_entity_id`        Required only by institutions that use SAML for
 #                               authentication.
+# * `saml_idp_sso_binding_urn`  SAML 2.0 binding URN (for post or redirect).
 # * `saml_idp_sso_service_url`  Required only by institutions that use SAML for
 #                               authentication.
 # * `saml_sp_next_public_cert`  SAML X.509 public certificate with a later
@@ -253,6 +254,9 @@ class Institution < ApplicationRecord
   validates :primary_hover_color, presence: true
   validates :saml_email_location, inclusion: { in: SAMLEmailLocation.all },
             allow_blank: true
+  validates :saml_idp_sso_binding_urn, inclusion: { in: %w[
+      urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST
+      urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect] }
   validates :service_name, presence: true
 
   validate :disallow_key_changes, :validate_css_colors

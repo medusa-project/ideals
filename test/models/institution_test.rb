@@ -829,6 +829,17 @@ class InstitutionTest < ActiveSupport::TestCase
     assert !@instance.valid?
   end
 
+  # saml_idp_sso_binding_urn
+
+  test "saml_idp_sso_binding_urn must be an allowed value" do
+    @instance.saml_idp_sso_binding_urn = "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+    assert @instance.valid?
+    @instance.saml_idp_sso_binding_urn = "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+    assert @instance.valid?
+    @instance.saml_idp_sso_binding_urn = "bogus"
+    assert !@instance.valid?
+  end
+
   # saml_sp_entity_id()
 
   test "saml_sp_entity_id() returns a correct value" do

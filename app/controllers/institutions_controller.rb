@@ -918,6 +918,7 @@ class InstitutionsController < ApplicationController
                                         :saml_sp_next_public_cert,
                                         :saml_sp_private_key,
                                         :saml_sp_public_cert,
+                                        :saml_idp_sso_binding_urn,
                                         :shibboleth_auth_enabled,
                                         :shibboleth_email_attribute,
                                         :shibboleth_extra_attributes,

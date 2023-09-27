@@ -69,6 +69,14 @@
         = f.label :saml_idp_sso_service_url, "SSO Service URL"
         = f.text_field :saml_idp_sso_service_url, class: "form-control"
       .mb-3
+        = f.label :saml_idp_sso_binding_urn, "SSO Binding"
+        = f.select(:saml_idp_sso_binding_urn,
+                   options_for_select([["POST", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"],
+                                       ["Redirect", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"]],
+                                       f.object.saml_idp_sso_binding_urn),
+                   {},
+                   class: "form-select")
+      .mb-3
         = f.label :saml_idp_signing_cert, "Signing Certificate"
         = f.text_area :saml_idp_signing_cert, rows: 10, class: "form-control"
       .mb-3

@@ -179,6 +179,9 @@
                             @institution.saml_idp_sso_service_url)
                 - else
                   Not Set
+              %dt SSO Service Binding
+              %dd
+                %code= @institution.saml_idp_sso_binding_urn
               %dt Public Signing Certificate
               %dd
                 - if @institution.saml_idp_signing_cert.present?
