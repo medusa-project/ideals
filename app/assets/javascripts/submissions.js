@@ -174,10 +174,11 @@ const EditSubmissionView = {
 
         /****************** Properties/Collections section *********************/
 
-        const propertiesForm = form.filter("#properties-form");
-        const unitsMenu = $("[name=unit_id]");
-        const collectionSection = $("#collection-section");
-        const collectionsMenu = $("[name='item[primary_collection_id]']");
+        const propertiesForm     = form.filter("#properties-form");
+        const unitsMenu          = $("[name=unit_id]");
+        const collectionSection  = $("#collection-section");
+        const collectionsMenu    = $("[name='item[primary_collection_id]']");
+        const noCollectionsAlert = $("#no-collections-alert");
 
         const setPropertiesError = function (message) {
             setErrorAlert(propertiesForm.find("#properties-messages"), message);
@@ -199,11 +200,14 @@ const EditSubmissionView = {
             new IDEALS.Client().fetchUnitCollections(unitID, true, true, function (data) {
                 collectionsMenu.children().remove();
                 if (data.length > 0) {
+                    noCollectionsAlert.hide();
                     $.each(data, function (index, value) {
                         collectionsMenu.append(
                             "<option value='" + value[1] + "'>" + value[0] + "</option>");
                     });
                     collectionSection.show();
+                } else {
+                    noCollectionsAlert.show();
                 }
                 if (onComplete) {
                     onComplete();
