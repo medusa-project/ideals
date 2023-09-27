@@ -888,16 +888,19 @@ class InstitutionTest < ActiveSupport::TestCase
 
   test "update_from_saml_config_metadata() updates properties from metadata
   containing one EntityDescriptor" do
-    @instance.saml_idp_sso_service_url  = nil
-    @instance.saml_idp_signing_cert     = nil
-    @instance.saml_idp_signing_cert2    = nil
-    @instance.saml_idp_encryption_cert  = nil
-    @instance.saml_idp_encryption_cert2 = nil
+    @instance.saml_idp_sso_post_service_url     = nil
+    @instance.saml_idp_sso_redirect_service_url = nil
+    @instance.saml_idp_signing_cert             = nil
+    @instance.saml_idp_signing_cert2            = nil
+    @instance.saml_idp_encryption_cert          = nil
+    @instance.saml_idp_encryption_cert2         = nil
     xml_file = file_fixture("southwest_saml.xml")
 
     @instance.update_from_saml_config_metadata(xml_file)
-    assert_equal "https://login.openathens.net/saml/2/sso/southwest.edu",
-                 @instance.saml_idp_sso_service_url
+    assert_equal "https://login.openathens.net/saml/2/POST/sso/southwest.edu",
+                 @instance.saml_idp_sso_post_service_url
+    assert_equal "https://login.openathens.net/saml/2/redirect/sso/southwest.edu",
+                 @instance.saml_idp_sso_redirect_service_url
     header  = "-----BEGIN CERTIFICATE-----\n"
     trailer = "\n-----END CERTIFICATE-----"
     assert @instance.saml_idp_signing_cert.starts_with?(header)
@@ -909,16 +912,19 @@ class InstitutionTest < ActiveSupport::TestCase
 
   test "update_from_saml_config_metadata() updates properties from metadata
   containing multiple EntityDescriptors" do
-    @instance.saml_idp_sso_service_url  = nil
-    @instance.saml_idp_signing_cert     = nil
-    @instance.saml_idp_signing_cert2    = nil
-    @instance.saml_idp_encryption_cert  = nil
-    @instance.saml_idp_encryption_cert2 = nil
+    @instance.saml_idp_sso_post_service_url     = nil
+    @instance.saml_idp_sso_redirect_service_url = nil
+    @instance.saml_idp_signing_cert             = nil
+    @instance.saml_idp_signing_cert2            = nil
+    @instance.saml_idp_encryption_cert          = nil
+    @instance.saml_idp_encryption_cert2         = nil
     xml_file = file_fixture("oaf_metadata.xml")
 
     @instance.update_from_saml_config_metadata(xml_file)
-    assert_equal "https://login.openathens.net/saml/2/sso/southwest.edu",
-                 @instance.saml_idp_sso_service_url
+    assert_equal "https://login.openathens.net/saml/2/POST/sso/southwest.edu",
+                 @instance.saml_idp_sso_post_service_url
+    assert_equal "https://login.openathens.net/saml/2/redirect/sso/southwest.edu",
+                 @instance.saml_idp_sso_redirect_service_url
     header  = "-----BEGIN CERTIFICATE-----\n"
     trailer = "\n-----END CERTIFICATE-----"
     assert @instance.saml_idp_signing_cert.starts_with?(header)

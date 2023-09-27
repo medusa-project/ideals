@@ -11,9 +11,16 @@ SAML_SETUP_PROC = lambda do |env|
   # N.B.: Most of these options are documented here:
   # https://github.com/SAML-Toolkits/ruby-saml
   s.options[:sp_entity_id]                       = institution.saml_sp_entity_id
-  s.options[:idp_sso_service_url]                = institution.saml_idp_sso_service_url
+  case institution.saml_idp_sso_binding_urn
+  when "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+    s.options[:idp_sso_service_url]              = institution.saml_idp_sso_redirect_service_url
+  else
+    s.options[:idp_sso_service_url]              = institution.saml_idp_sso_post_service_url
+  end
   s.options[:idp_sso_service_binding]            = institution.saml_idp_sso_binding_urn
-  s.options[:idp_sso_service_url_runtime_params] = { original_request_param: :mapped_idp_param }
+  s.options[:idp_sso_service_url_runtime_params] = {
+    original_request_param: :mapped_idp_param
+  }
   s.options[:idp_cert_multi]                     = {
     signing:    [
       institution.saml_idp_signing_cert,

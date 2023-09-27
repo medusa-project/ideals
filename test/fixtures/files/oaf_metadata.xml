@@ -408,7 +408,10 @@ that has been modified to mesh with the fixture data. -->
       </md:NameIDFormat>
       <md:SingleSignOnService
               Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
-              Location="https://login.openathens.net/saml/2/sso/southwest.edu"/>
+              Location="https://login.openathens.net/saml/2/redirect/sso/southwest.edu"/>
+      <md:SingleSignOnService
+              Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+              Location="https://login.openathens.net/saml/2/POST/sso/southwest.edu"/>
       <saml:Attribute FriendlyName="displayName"
                       Name="urn:oid:2.16.840.1.113730.3.1.241"
                       NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"/>

@@ -172,16 +172,20 @@
                   %code= @institution.saml_idp_entity_id
                 - else
                   = boolean(false, style: :word, false_value: "NOT SET")
-              %dt SSO Service URL
-              %dd
-                - if @institution.saml_idp_sso_service_url.present?
-                  = link_to(@institution.saml_idp_sso_service_url,
-                            @institution.saml_idp_sso_service_url)
-                - else
-                  Not Set
               %dt SSO Service Binding
               %dd
                 %code= @institution.saml_idp_sso_binding_urn
+              %dt SSO Service URL
+              %dd
+                - case @institution.saml_idp_sso_binding_urn
+                - when "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+                  = link_to(@institution.saml_idp_sso_redirect_service_url,
+                            @institution.saml_idp_sso_redirect_service_url)
+                - when "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                  = link_to(@institution.saml_idp_sso_post_service_url,
+                            @institution.saml_idp_sso_post_service_url)
+                - else
+                  Not Set
               %dt Public Signing Certificate
               %dd
                 - if @institution.saml_idp_signing_cert.present?

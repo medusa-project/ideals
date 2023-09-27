@@ -9,133 +9,151 @@
 #
 # # Attributes
 #
-# * `active_link_color`         Theme active hyperlink color.
-# * `author_element_id`         Foreign key to {RegisteredElement} designating
-#                               an element to treat as the author element.
-# * `banner_image_filename`     Filename of the banner image, which may exist
-#                               in the application S3 bucket under
-#                               {image_key_prefix}. If not present, a generic
-#                               image is used.
-# * `banner_image_height`       Height of the banner image.
-# * `copyright_notice`          Generic institution-wide copyright notice,
-#                               generally displayed on the website somewhere.
-# * `created_at`                Managed by ActiveRecord.
-# * `date_approved_element_id`  Foreign key to {RegisteredElement} designating
-#                               an element to treat as the date-approved
-#                               element.
-# * `date_submitted_element_id` Foreign key to {RegisteredElement} designating
-#                               an element to treat as the date-submitted
-#                               element.
-# * `deposit_agreement`         Deposit agreement for new item submissions.
-# * `earliest_search_year`      Earliest year available in advanced search.
-# * `feedback_email`            Email address for public feedback.
-# * `footer_background_color`   Theme background color of the footer.
-# * `footer_image_filename`     Filename of the footer image, which is expected
-#                               to exist in the application S3 bucket under
-#                               {image_key_prefix}.
-# * `google_analytics_measurement_id` Google Analytics v4 measurement ID
-#                               (a.k.a. key).
-# * `handle_uri_element_id`     Foreign key to {RegisteredElement} designating
-#                               an element to treat as the date-submitted
-#                               element.
-# * `has_favicon`               Whether the instance has a favicon, i.e.
-#                               whether an institution admin has uploaded one.
-#                               Unlike the other image-related attributes, the
-#                               favicon's filenames are fixed.
-# * `header_background_color`   Theme background color of the header.
-# * `header_image_filename`     Filename of the header image, which is expected
-#                               to exist in the application S3 bucket under
-#                               {image_key_prefix}.
-# * `key`                       Short string that uniquely and permanently
-#                               identifies the institution.
-# * `latitude_degrees`          Degrees component of the institution's
-#                               latitude.
-# * `latitude_minutes`          Minutes component of the institution's
-#                               latitude.
-# * `latitude_seconds`          Seconds component of the institution's
-#                               latitude.
-# * `link_color`                Theme hyperlink color.
-# * `link_hover_color`          Theme hover-over-hyperlink color.
-# * `local_auth_enabled`        Whether local-identity authentication is
-#                               enabled.
-# * `longitude_degrees`         Degrees component of the institution's
-#                               longitude.
-# * `longitude_minutes`         Minutes component of the institution's
-#                               longitude.
-# * `longitude_seconds`         Seconds component of the institution's
-#                               longitude.
-# * `main_website_url`          URL of the institution's main website.
-# * `medusa_file_group_id`      ID of the Medusa file group in which the
-#                               institution's content is stored.
-# * `name`                      Institution name.
-# * `primary_color`             Theme primary color.
-# * `primary_hover_color`       Theme hover-over primary color.
-# * `saml_auth_enabled`         Whether SAML authentication is enabled.
-# * `saml_auto_cert_rotation`   If true, the SAML certificate will be
-#                               automatically rotated out and replaced with a
-#                               new one when it is close to expiration.
-# * `saml_config_metadata_url`  SAML configuration metadata XML URL. This may
-#                               be used for institutions that are not a member
-#                               of a recognized federation (for which this URL
-#                               is already known and hard-coded into the app)
-#                               to assist in populating the other required SAML
-#                               properties.
-# * `saml_email_attribute`      Name of the SAML attribute containing the email
-#                               address. Used only when `saml_email_location`
-#                               is set to
-#                               {#Institution::SAMLEmailLocation::ATTRIBUTE}.
-# * `saml_email_location`       One of the {Institution::SAMLEmailLocation}
-#                               constant values. Required by institutions that
-#                               use SAML for authentication.
-# * `saml_first_name_attribute` Name of the SAML attribute containing a user's
-#                               first name. Needed only by institutions that
-#                               use SAML for authentication.
-# * `saml_last_name_attribute`  Name of the SAML attribute containing a user's
-#                               last name. Needed only by institutions that use
-#                               SAML for authentication.
-# * `saml_idp_encryption_cert`  Required only by institutions that use SAML for
-# #                             authentication.
-# * `saml_idp_encryption_cert2` Facilitates seamless rollover of IdP
-#                               certificates.
-# * `saml_idp_signing_cert`     Required only by institutions that use SAML for
-#                               authentication.
-# * `saml_idp_signing_cert2`    Facilitates seamless rollover of IdP
-# #                             certificates.
-# * `saml_idp_entity_id`        Required only by institutions that use SAML for
-#                               authentication.
-# * `saml_idp_sso_binding_urn`  SAML 2.0 binding URN (for post or redirect).
-# * `saml_idp_sso_service_url`  Required only by institutions that use SAML for
-#                               authentication.
-# * `saml_sp_next_public_cert`  SAML X.509 public certificate with a later
-#                               expiration than {saml_sp_public_cert} to
-#                               facilitate seamless rollover when the latter
-#                               expires.
-# * `saml_sp_private_key`       SAML private key as a PEM-format string.
-# * `saml_sp_public_cert`       SAML X.509 public certificate (generated from
-#                               {saml_sp_private_key}) as a PEM-format string.
-# * `service_name`              Name of the service that the institution is
-#                               running. For example, at UIUC, this would be
-#                               "IDEALS."
-# * `shibboleth_auth_enabled`   Whether Shibboleth authentication is enabled.
-# * `shibboleth_email_attribute` Shibboleth email attribute.
-# * `shibboleth_extra_attributes` Array of extra attributes to request from the
-#                               Shibboleth IdP. This can also be set to a
-#                               comma-separated string which will be
-#                               transformed into an array upon save.
-# * `shibboleth_name_attribute` Shibboleth name attribute.
-# * `shibboleth_org_dn`         Value of an `eduPersonOrgDN` attribute from the
-#                               Shibboleth IdP. This should be filled in by all
-#                               institutions that use Shibboleth for
-#                               authentication (currently only UIUC).
-# * `sso_federation`            Set to one of the {Institution::SSOFederation}
-#                               constant values.
-# * `submissions_reviewed`      When a new {Collection} is created, its
-#                               {Collection#submissions_reviewed} property is
-#                               set to this value.
-# * `title_element_id`          Foreign key to {RegisteredElement} designating
-#                               an element to treat as the title element.
-# * `updated_at`                Managed by ActiveRecord.
-# * `welcome_html`              HTML text that appears on the main page.
+# * `active_link_color`                 Theme active hyperlink color.
+# * `author_element_id`                 Foreign key to {RegisteredElement}
+#                                       designating an element to treat as the
+#                                       author element.
+# * `banner_image_filename`             Filename of the banner image, which may
+#                                       exist in the application S3 bucket
+#                                       under {image_key_prefix}. If not. a
+#                                       generic image is used.
+# * `banner_image_height`               Height of the banner image.
+# * `copyright_notice`                  Generic institution-wide copyright
+#                                       notice, generally displayed on the
+#                                       website somewhere.
+# * `created_at`                        Managed by ActiveRecord.
+# * `date_approved_element_id`          Foreign key to {RegisteredElement}
+#                                       designating an element to treat as the
+#                                       date-approved element.
+# * `date_submitted_element_id`         Foreign key to {RegisteredElement}
+#                                       designating an element to treat as the
+#                                       date-submitted element.
+# * `deposit_agreement`                 Deposit agreement for new item
+#                                       submissions.
+# * `earliest_search_year`              Earliest year available in advanced
+#                                       search.
+# * `feedback_email`                    Email address for public feedback.
+# * `footer_background_color`           Theme background color of the footer.
+# * `footer_image_filename`             Filename of the footer image, which is
+#                                       expected to exist in the application S3
+#                                       bucket under {image_key_prefix}.
+# * `google_analytics_measurement_id`   Google Analytics v4 measurement ID.
+# * `handle_uri_element_id`             Foreign key to {RegisteredElement}
+#                                       designating an element to treat as the
+#                                       date-submitted element.
+# * `has_favicon`                       Whether the instance has a favicon,
+#                                       i.e. whether an institution admin has
+#                                       uploaded one. Unlike the other
+#                                       image-related attributes, the favicon's
+#                                       filenames are fixed.
+# * `header_background_color`           Theme background color of the header.
+# * `header_image_filename`             Filename of the header image, which is
+#                                       expected to exist in the application S3
+#                                       bucket under {image_key_prefix}.
+# * `key`                               Short string that uniquely and
+#                                       permanently identifies the institution.
+# * `latitude_degrees`                  Degrees component of the institution's
+#                                       latitude.
+# * `latitude_minutes`                  Minutes component of the institution's
+#                                       latitude.
+# * `latitude_seconds`                  Seconds component of the institution's
+#                                       latitude.
+# * `link_color`                        Theme hyperlink color.
+# * `link_hover_color`                  Theme hover-over-hyperlink color.
+# * `local_auth_enabled`                Whether local-identity authentication
+#                                       is enabled.
+# * `longitude_degrees`                 Degrees component of the institution's
+#                                       longitude.
+# * `longitude_minutes`                 Minutes component of the institution's
+#                                       longitude.
+# * `longitude_seconds`                 Seconds component of the institution's
+#                                       longitude.
+# * `main_website_url`                  URL of the institution's main website.
+# * `medusa_file_group_id`              ID of the Medusa file group in which
+#                                       the institution's content is stored.
+# * `name`                              Institution name.
+# * `primary_color`                     Theme primary color.
+# * `primary_hover_color`               Theme hover-over primary color.
+# * `saml_auth_enabled`                 Whether SAML authentication is enabled.
+# * `saml_auto_cert_rotation`           If true, the SAML certificate will be
+#                                       automatically rotated out and replaced
+#                                       with a new one when it is close to
+#                                       expiration.
+# * `saml_config_metadata_url`          SAML configuration metadata XML URL.
+#                                       This may be used for institutions that
+#                                       are not a member of a recognized
+#                                       federation (for which this URL is
+#                                       already known and hard-coded into the
+#                                       app) to assist in populating the other
+#                                       required SAML properties.
+# * `saml_email_attribute`              Name of the SAML attribute containing
+#                                       the email address. Used only when
+#                                       `saml_email_location` is set to
+#                                       {#Institution::SAMLEmailLocation::ATTRIBUTE}.
+# * `saml_email_location`               One of the
+#                                       {Institution::SAMLEmailLocation}
+#                                       constant values. Required by
+#                                       institutions that use SAML for
+#                                       authentication.
+# * `saml_first_name_attribute`         Name of the SAML attribute containing a
+#                                       user's first name. Needed only by
+#                                       institutions that use SAML for
+#                                       authentication.
+# * `saml_last_name_attribute`          Name of the SAML attribute containing a
+#                                       user's last name. Needed only by
+#                                       institutions that use SAML for
+#                                       authentication.
+# * `saml_idp_encryption_cert`          Required only by institutions that use
+# #                                     SAML for authentication.
+# * `saml_idp_encryption_cert2`         Facilitates seamless rollover of IdP
+#                                       certificates.
+# * `saml_idp_signing_cert`             Required only by institutions that use
+#                                       SAML for authentication.
+# * `saml_idp_signing_cert2`            Facilitates seamless rollover of IdP
+# #                                     certificates.
+# * `saml_idp_entity_id`                Required only by institutions that use
+#                                       SAML for authentication.
+# * `saml_idp_sso_binding_urn`          SAML 2.0 binding URN (for post or
+#                                       redirect).
+# * `saml_idp_sso_post_service_url`     Required only by institutions that use
+#                                       SAML for authentication.
+# * `saml_idp_sso_redirect_service_url` Required only by institutions that use
+#                                       SAML for authentication.
+# * `saml_sp_next_public_cert`          SAML X.509 public certificate with a
+#                                       later expiration than
+#                                       {saml_sp_public_cert} to facilitate
+#                                       seamless rollover when the latter
+#                                       expires.
+# * `saml_sp_private_key`               SAML private key as a PEM-format
+#                                       string.
+# * `saml_sp_public_cert`               SAML X.509 public certificate
+#                                       (generated from {saml_sp_private_key})
+#                                       as a PEM-format string.
+# * `service_name`                      Name of the service that the
+#                                       institution is running. For example, at
+#                                       UIUC, this would be "IDEALS."
+# * `shibboleth_auth_enabled`           Whether Shibboleth authentication is
+#                                       enabled.
+# * `shibboleth_email_attribute`        Shibboleth email attribute.
+# * `shibboleth_extra_attributes`       Array of extra attributes to request
+#                                       from the Shibboleth IdP. This can also
+#                                       be set to a comma-separated string
+#                                       which will be transformed into an array
+#                                       upon save.
+# * `shibboleth_name_attribute`         Shibboleth name attribute.
+# * `shibboleth_org_dn`                 Value of an `eduPersonOrgDN` attribute
+#                                       from the Shibboleth IdP.
+# * `sso_federation`                    Set to one of the
+#                                       {Institution::SSOFederation} constant
+#                                       values.
+# * `submissions_reviewed`              When a new {Collection} is created, its
+#                                       {Collection#submissions_reviewed}
+#                                       property is set to this value.
+# * `title_element_id`                  Foreign key to {RegisteredElement}
+#                                       designating an element to treat as the
+#                                       title element.
+# * `updated_at`                        Managed by ActiveRecord.
+# * `welcome_html`                      HTML that appears on the main page.
 #
 class Institution < ApplicationRecord
 
@@ -741,11 +759,16 @@ class Institution < ApplicationRecord
       else
         idp_entity = entities.first
       end
-      # IdP SSO service URL
-      # Does the EntityDescriptor contain an IDPSSODescriptor with an SSO
-      # service URL?
-      self.saml_idp_sso_service_url = idp_entity.xpath("./md:IDPSSODescriptor/md:SingleSignOnService[@Binding = 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect']/@Location",
-                                                       md: SAML_METADATA_NS).first&.text
+      # IdP SSO service URL(s)
+      idp_entity.xpath("./md:IDPSSODescriptor/md:SingleSignOnService",
+                       md: SAML_METADATA_NS).each do |node|
+        case node.attr("Binding")
+        when "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+          self.saml_idp_sso_redirect_service_url = node.attr("Location")
+        when "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+          self.saml_idp_sso_post_service_url = node.attr("Location")
+        end
+      end
       # IdP cert(s) - there should be at most 4 (two each for signing and
       # encryption).
       signing_certs    = []

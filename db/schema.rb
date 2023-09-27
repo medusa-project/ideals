@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_09_27_160543) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_27_173356) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -381,7 +381,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_27_160543) do
     t.bigint "handle_uri_element_id"
     t.text "deposit_agreement"
     t.integer "banner_image_height", default: 200, null: false
-    t.string "saml_idp_sso_service_url"
+    t.string "saml_idp_sso_post_service_url"
     t.text "saml_idp_signing_cert"
     t.string "saml_email_attribute"
     t.string "saml_first_name_attribute"
@@ -408,6 +408,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_27_160543) do
     t.text "saml_idp_encryption_cert"
     t.text "saml_idp_encryption_cert2"
     t.string "saml_idp_sso_binding_urn", default: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+    t.string "saml_idp_sso_redirect_service_url"
     t.index ["fqdn"], name: "index_institutions_on_fqdn", unique: true
     t.index ["incoming_message_queue"], name: "index_institutions_on_incoming_message_queue", unique: true
     t.index ["key"], name: "index_institutions_on_key", unique: true
