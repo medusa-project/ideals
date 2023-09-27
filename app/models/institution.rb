@@ -759,6 +759,7 @@ class Institution < ApplicationRecord
       else
         idp_entity = entities.first
       end
+
       # IdP SSO service URL(s)
       idp_entity.xpath("./md:IDPSSODescriptor/md:SingleSignOnService",
                        md: SAML_METADATA_NS).each do |node|
@@ -769,6 +770,10 @@ class Institution < ApplicationRecord
           self.saml_idp_sso_post_service_url = node.attr("Location")
         end
       end
+      self.saml_idp_sso_binding_urn = self.saml_idp_sso_post_service_url.present? ?
+                                        "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" :
+                                        "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+
       # IdP cert(s) - there should be at most 4 (two each for signing and
       # encryption).
       signing_certs    = []

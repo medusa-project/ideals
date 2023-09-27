@@ -888,6 +888,7 @@ class InstitutionTest < ActiveSupport::TestCase
 
   test "update_from_saml_config_metadata() updates properties from metadata
   containing one EntityDescriptor" do
+    @instance.saml_idp_sso_binding_urn          = nil
     @instance.saml_idp_sso_post_service_url     = nil
     @instance.saml_idp_sso_redirect_service_url = nil
     @instance.saml_idp_signing_cert             = nil
@@ -897,6 +898,9 @@ class InstitutionTest < ActiveSupport::TestCase
     xml_file = file_fixture("southwest_saml.xml")
 
     @instance.update_from_saml_config_metadata(xml_file)
+
+    assert_equal "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST",
+                 @instance.saml_idp_sso_binding_urn
     assert_equal "https://login.openathens.net/saml/2/POST/sso/southwest.edu",
                  @instance.saml_idp_sso_post_service_url
     assert_equal "https://login.openathens.net/saml/2/redirect/sso/southwest.edu",
@@ -912,6 +916,7 @@ class InstitutionTest < ActiveSupport::TestCase
 
   test "update_from_saml_config_metadata() updates properties from metadata
   containing multiple EntityDescriptors" do
+    @instance.saml_idp_sso_binding_urn          = nil
     @instance.saml_idp_sso_post_service_url     = nil
     @instance.saml_idp_sso_redirect_service_url = nil
     @instance.saml_idp_signing_cert             = nil
@@ -921,6 +926,9 @@ class InstitutionTest < ActiveSupport::TestCase
     xml_file = file_fixture("oaf_metadata.xml")
 
     @instance.update_from_saml_config_metadata(xml_file)
+
+    assert_equal "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST",
+                 @instance.saml_idp_sso_binding_urn
     assert_equal "https://login.openathens.net/saml/2/POST/sso/southwest.edu",
                  @instance.saml_idp_sso_post_service_url
     assert_equal "https://login.openathens.net/saml/2/redirect/sso/southwest.edu",
