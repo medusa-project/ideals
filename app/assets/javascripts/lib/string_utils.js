@@ -8,13 +8,16 @@ IDEALS.StringUtils = {};
  * @param bytes {Number} Byte size integer.
  * @return {String}
  */
-IDEALS.StringUtils.formatBytes = function(bytes) {
+IDEALS.StringUtils.formatBytes = function(bytes, decimalPlaces) {
+    if (!decimalPlaces) {
+        decimalPlaces = 0;
+    }
     const sizes = ["bytes", "KB", "MB", "GB", "TB"];
     if (bytes === 0) {
         return "0 bytes";
     }
     const i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-    return Math.round(bytes / Math.pow(1024, i), 2) + " " + sizes[i];
+    return (bytes / Math.pow(1024, i)).toFixed(decimalPlaces) + " " + sizes[i];
 };
 
 /**

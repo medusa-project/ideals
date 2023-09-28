@@ -31,8 +31,8 @@ const ImportsView = {
                     progressBar.children(":first").css("width", pctString);
                     progressBar.children(":first").text(pctString);
 
-                    $("#uploaded-bytes").text(IDEALS.StringUtils.formatBytes(e.loaded));
-                    $("#total-bytes").text(IDEALS.StringUtils.formatBytes(e.total));
+                    $("#uploaded-bytes").text(IDEALS.StringUtils.formatBytes(e.loaded, 1));
+                    $("#total-bytes").text(IDEALS.StringUtils.formatBytes(e.total, 1));
                 });
                 xhr.setRequestHeader("X-CSRF-Token", CSRF_TOKEN);
                 xhr.onloadstart = function() {
