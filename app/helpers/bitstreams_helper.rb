@@ -215,11 +215,11 @@ module BitstreamsHelper
     # than putting it in an <object>.
     text = bitstream.kind_of?(Bitstream) ? bitstream.data.read : bitstream
     html = StringIO.new
-    html << "<div id=\"text-viewer\">"
-    html <<   "<pre>"
+    html << "<textarea readonly id=\"text-viewer\">"
+
     html <<     html_escape(text)
-    html <<   "</pre>"
-    html << "</div>"
+
+    html << "</textarea>"
     raw(html.string)
   end
 
