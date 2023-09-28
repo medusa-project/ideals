@@ -132,9 +132,8 @@ class ImportsController < ApplicationController
       render plain:  "X-Filename header not provided",
              status: :bad_request and return
     end
-    input = request.env['rack.input']
-    input.rewind
-    input.set_encoding(Encoding::UTF_8)
+    input = request.body
+
     @import.save_file(file:     input,
                       filename: StringUtils.sanitize_filename(filename))
     head :no_content
