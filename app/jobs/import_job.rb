@@ -19,7 +19,12 @@ class ImportJob < ApplicationJob
   def perform(*args)
     import    = args[0][:import]
     submitter = args[0][:user]
-    Importer.new.import(import, submitter)
+    begin
+      Importer.new.import(import, submitter)
+    rescue => e
+      import.task.fail(detail:    e.message,
+                       backtrace: e.backtrace)
+    end
   end
 
 end
