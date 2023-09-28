@@ -314,32 +314,18 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
 
   test "upload_file() returns HTTP 204 for authorized users" do
     log_in_as(users(:southwest_admin))
-    post import_upload_file_path(@import),
-         headers: { "X-Filename": "image.jpg" },
-         params:  { bulkfile: @bulkfile }
+    post import_upload_file_path(@import), params: { file: @bulkfile }
 
     assert_response :no_content
   end
 
-  test "upload_file() returns HTTP 400 for a missing X-Filename header" do
-    log_in_as(users(:southwest_admin))
-    post import_upload_file_path(@import),
-         xhr: true,
-         params: {
-           bulkfile: @bulkfile
-         }
-    assert_response :bad_request
-  end
-
-  test "upload_file() uploads a file to the application S3 bucket" do
+  test "upload_file() uploads a file" do
     user = users(:southwest_admin)
     log_in_as(user)
 
     assert_equal 0, @import.files.length
 
-    post import_upload_file_path(@import),
-         headers: { "X-Filename": "image.jpg" },
-         params:  { bulkfile: @bulkfile }
+    post import_upload_file_path(@import), params:  { file: @bulkfile }
 
     assert_equal 1, @import.files.length
   end
