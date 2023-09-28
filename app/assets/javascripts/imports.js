@@ -13,7 +13,6 @@ const ImportsView = {
             const waitMessage  = $("#wait-message");
             const fileInput    = panel.find("input[name=file]");
             const submitButton = panel.find("input[type=submit]");
-            const cancelButton = panel.find("button.cancel");
             const xhr          = new XMLHttpRequest();
 
             function uploadFile(file, onSuccess, onError) {
@@ -60,7 +59,7 @@ const ImportsView = {
                 });
             }
 
-            cancelButton.on("click", function() {
+            panel.on("hide.bs.modal", function() {
                 xhr.abort();
             });
             submitButton.on("click", function() {
