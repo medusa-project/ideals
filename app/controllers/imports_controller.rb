@@ -121,22 +121,11 @@ class ImportsController < ApplicationController
   # form, writing it to a temporary location on the file system. (It may be
   # a compressed file that will need to get unzipped).
   #
-  # The request must include an `X-Filename` header containing the filename of
-  # the uploaded file.
-  #
   # Responds to `POST /imports/:id/upload-file`.
   #
   def upload_file
-    filename = request.headers['X-Filename']
-    if filename.blank?
-      render plain:  "X-Filename header not provided",
-             status: :bad_request and return
-    end
-    input = request.env['rack.input']
-    input.rewind
-    input.set_encoding(Encoding::UTF_8)
-    @import.save_file(file:     input,
-                      filename: StringUtils.sanitize_filename(filename))
+    @import.save_file(file:     params[:file],
+                      filename: params[:file].original_filename)
     head :no_content
   end
 

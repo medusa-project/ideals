@@ -111,11 +111,7 @@ class Import < ApplicationRecord
     import_root = filesystem_root
     FileUtils.mkdir_p(import_root)
     path = File.join(import_root, filename)
-    if file.kind_of?(File)
-      FileUtils.cp(file.path, path)
-    elsif file.kind_of?(StringIO)
-      File.copy_stream(file, path)
-    end
+    FileUtils.cp(file.path, path)
   end
 
 

@@ -71,7 +71,7 @@ Rails.application.routes.draw do
   resources :imports, except: :update do
     match "/complete", to: "imports#complete", via: :post
     match "/delete-all-files", to: "imports#delete_all_files", via: :post
-    match "/upload-file", to: "imports#upload_file", via: :post
+    match "/upload-file", to: "imports#upload_file", via: :post, as: "upload_file"
   end
   resources :index_pages, path: "index-pages"
   resources :institutions, except: [:edit, :update], param: :key do

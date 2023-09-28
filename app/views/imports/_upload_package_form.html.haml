@@ -1,35 +1,38 @@
 -# frozen_string_literal: true
 
-= form_for(@import, remote: true) do |f|
+= form_tag(import_upload_file_path(@import), multipart: true) do |f|
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
   -# Needed by JavaScript
-  = hidden_field_tag "import_uri", import_path(f.object)
+  = hidden_field_tag "import_uri", import_path(@import)
 
   -# This input is hidden via CSS. JavaScript sends .file-drop-zone click
   -# events to it in order to open a file selection dialog.
-  %input.file-chooser{type: "file", accept: ".csv,.zip"}
-
-  .file-drop-zone.bg-light.mb-3
-    %div
-      %i.fa.fa-upload
-      Drop a CSV or zipped package file here, or click to select it.
+  = file_field_tag("file",
+                   directory: false,
+                   class:     "form-control mb-3",
+                   accept:    ".csv,.zip")
 
   -# this is set to display:none and shown via JS when an upload is in progress
   #wait-message
-    #progress-bar.progress{role:            "progressbar",
-                           "aria-label":    "Basic example",
-                           "aria-valuenow": 25,
-                           "aria-valuemin": 0,
-                           "aria-valuemax": 100}
+    #progress-bar.progress.mb-3{role:            "progressbar",
+                                "aria-label":    "Basic example",
+                                "aria-valuenow": 25,
+                                "aria-valuemin": 0,
+                                "aria-valuemax": 100}
       .progress-bar{style: "width: 25%"}
 
     %p
       Please wait for the file to upload. This panel will close when the
       upload is complete.
+    %p
+      Uploaded
+      %span#uploaded-bytes
+      of
+      %span#total-bytes
 
   .clearfix
     .float-end
       %button.btn.btn-light.cancel{"data-bs-dismiss": "modal", type: "button"} Cancel
-
+      = submit_tag("Upload", class: "btn btn-primary")
