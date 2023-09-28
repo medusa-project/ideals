@@ -111,11 +111,7 @@ class Import < ApplicationRecord
     import_root = filesystem_root
     FileUtils.mkdir_p(import_root)
     path = File.join(import_root, filename)
-    if file.respond_to?(:path) && file.path.present?
-      FileUtils.cp(file.path, path)
-    elsif file.respond_to?(:read)
-      File.copy_stream(file, path)
-    end
+    FileUtils.cp(file.path, path)
   end
 
 
