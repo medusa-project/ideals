@@ -244,7 +244,6 @@ class ApplicationController < ActionController::Base
 
   def rescue_server_error(exception)
     @breadcrumbable = nil # we don't want a breadcrumb on our error page
-    @feedback_email = ::Configuration.instance.admin[:tech_mail_list][0]
     @message        = IdealsMailer.error_body(exception,
                                               method:   request.method,
                                               host:     request.host,
