@@ -23,6 +23,9 @@ class Setting < ApplicationRecord
     # Feedback email used in global context and for sending e.g. error emails
     # to.
     FEEDBACK_EMAIL           = "feedback_email"
+    RESULT_WINDOW_DEFAULT    = "result_window.default"
+    RESULT_WINDOW_MIN        = "result_window.min"
+    RESULT_WINDOW_MAX        = "result_window.max"
     # Number of years for which newly generated SAML public certificates are
     # valid.
     SAML_CERT_VALIDITY_YEARS = "saml_cert.expiry_years"

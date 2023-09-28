@@ -18,6 +18,7 @@
         This is used in the global context and for notifications of
         system-level events. Institutions can override this within their own
         contexts.
+
   .mb-3.row
     = label_tag("settings[#{Setting::Key::EARLIEST_SEARCH_YEAR}]",
                 "Earliest Search Year",
@@ -30,6 +31,7 @@
         = icon_for(:info)
         This is used only in the global context.
         Institutions can override this within their own contexts.
+
   .mb-3.row
     = label_tag("settings[#{Setting::Key::BANNER_MESSAGE}]",
                 "Banner Message",
@@ -38,6 +40,7 @@
       = text_area_tag("settings[#{Setting::Key::BANNER_MESSAGE}]",
                        Setting::string(Setting::Key::BANNER_MESSAGE),
                        class: "form-control")
+
   .mb-3.row
     = label_tag("settings[#{Setting::Key::BANNER_MESSAGE_TYPE}]",
                 "Banner Message Type",
@@ -47,6 +50,34 @@
                    options_for_select([%w(Blue/Info info), %w(Yellow/Warning warning), %w(Red/Danger danger)],
                                       Setting.string(Setting::Key::BANNER_MESSAGE_TYPE)),
                    class: "form-select")
+
+  .mb-3.row
+    = label_tag("settings[#{Setting::Key::RESULT_WINDOW_DEFAULT}]",
+                "Default Result Window",
+                class: "col-sm-3 col-form-label")
+    .col-sm-9
+      = number_field_tag("settings[#{Setting::Key::RESULT_WINDOW_DEFAULT}]",
+                           Setting::integer(Setting::Key::RESULT_WINDOW_DEFAULT),
+                           class: "form-control")
+
+  .mb-3.row
+    = label_tag("settings[#{Setting::Key::RESULT_WINDOW_MIN}]",
+                "Minimum Result Window",
+                class: "col-sm-3 col-form-label")
+    .col-sm-9
+      = number_field_tag("settings[#{Setting::Key::RESULT_WINDOW_MIN}]",
+                           Setting::integer(Setting::Key::RESULT_WINDOW_MIN),
+                           class: "form-control")
+
+  .mb-3.row
+    = label_tag("settings[#{Setting::Key::RESULT_WINDOW_MAX}]",
+                "Maximum Result Window",
+                class: "col-sm-3 col-form-label")
+    .col-sm-9
+      = number_field_tag("settings[#{Setting::Key::RESULT_WINDOW_MAX}]",
+                           Setting::integer(Setting::Key::RESULT_WINDOW_MAX),
+                           class: "form-control")
+
   .mb-3.row
     = label_tag("settings[#{Setting::Key::SAML_CERT_VALIDITY_YEARS}]",
                 "SAML Certificate Validity (Years)",

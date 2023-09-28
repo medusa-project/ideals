@@ -360,10 +360,9 @@ class ApplicationController < ActionController::Base
   #                   application configuration and `window` query argument.
   #
   def window_size
-    config  = ::Configuration.instance
-    default = config.website[:window][:default]
-    min     = config.website[:window][:min]
-    max     = config.website[:window][:max]
+    default = Setting.integer(Setting::Key::RESULT_WINDOW_DEFAULT, 25)
+    min     = Setting.integer(Setting::Key::RESULT_WINDOW_MIN, 10)
+    max     = Setting.integer(Setting::Key::RESULT_WINDOW_MAX, 100)
     client  = params[:window].to_i
     if client < min || client > max
       return default
