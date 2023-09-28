@@ -390,6 +390,9 @@ class AbstractRelation
   ###########################################################################
 
   ##
+  # N.B.: this will not disable the requesting of result documents. If all you
+  # need is a count, you should first call {limit} with an argument of 0.
+  #
   # @return [Integer]
   #
   def count
