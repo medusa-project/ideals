@@ -140,7 +140,7 @@ module Indexed
       class_ = name.constantize
 
       # Get the document count.
-      relation    = search
+      relation    = search.limit(0)
       count       = relation.count
       progress    = Progress.new(count)
       index       = 0
