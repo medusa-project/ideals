@@ -16,7 +16,7 @@
 
   -# this is set to display:none and shown via JS when an upload is in progress
   #wait-message
-    #progress-bar.progress.mb-3{role:            "progressbar",
+    #progress-bar.progress.mb-2{role:            "progressbar",
                                 "aria-label":    "Basic example",
                                 "aria-valuenow": 25,
                                 "aria-valuemin": 0,
@@ -24,13 +24,13 @@
       .progress-bar{style: "width: 25%"}
 
     %p
-      Please wait for the file to upload. This panel will close when the
-      upload is complete.
-    %p
-      Uploaded
       %span#uploaded-bytes
       of
       %span#total-bytes
+    %p
+      Please wait for the file to upload. This panel will close when the
+      upload is complete.
+
 
   .clearfix
     .float-end
