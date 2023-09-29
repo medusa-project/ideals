@@ -17,7 +17,7 @@ test_config = File.exist?(path) ? YAML.load(File.read(path)) : {}
 default: &default
   adapter:      postgresql
   encoding:     unicode
-  pool:         <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  pool:         <%= 2 * ENV.fetch("RAILS_MAX_THREADS").to_i { 10 } %>
   timeout:      5000
   min_messages: warning
   template:     template0
