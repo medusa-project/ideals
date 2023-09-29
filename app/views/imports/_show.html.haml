@@ -6,6 +6,11 @@
       %dd= Import::Format.to_s(@import.format)
       %dt Database ID
       %dd= @import.id
+      %dt File
+      %dd
+        %pre= @import.files&.map{ |f| File.basename(f) }.join("\n")
+      %dt Collection
+      %dd= link_to(@import.collection.title, @import.collection)
       %dt User
       %dd
         - if @import.user
@@ -14,8 +19,6 @@
             = @import.user.name
         - else
           Unknown
-      %dt Collection
-      %dd= link_to(@import.collection.title, @import.collection)
       %dt Created
       %dd= local_time(@import.created_at)
 
@@ -26,9 +29,4 @@
     - else
       %p Task not created yet.
 
-- if @import.files&.any?
-  %h3 Files
-  %dl
-    %dt Files
-    %dd
-      %pre= @import.files&.join("\n")
+
