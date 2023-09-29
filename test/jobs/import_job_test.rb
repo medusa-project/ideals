@@ -20,6 +20,19 @@ class ImportJobTest < ActiveSupport::TestCase
     assert task.status_text.start_with?("Import")
   end
 
+  test "perform() deletes the import file" do
+    import = imports(:uiuc_csv_file_new)
+    import.update!(task: nil)
+    import.save_file(file:     File.new(file_fixture("csv/new.csv")),
+                     filename: "new.csv")
+    submitter = users(:uiuc)
+    ImportJob.new.perform(import: import, user: submitter)
+
+    import.files.each do |file|
+      assert !File.exist?(file)
+    end
+  end
+
   test "perform() runs the CSV file importer if the Import has one key ending
   in .csv" do
     import = imports(:uiuc_csv_file_new)

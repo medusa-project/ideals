@@ -24,6 +24,8 @@ class ImportJob < ApplicationJob
     rescue => e
       import.task.fail(detail:    e.message,
                        backtrace: e.backtrace)
+    ensure
+      import.delete_all_files
     end
   end
 
