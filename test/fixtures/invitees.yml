@@ -1,50 +1,3 @@
-################################# example ###################################
-
-example:
-  institution:       example
-  email:             example@example.edu
-  approval_state:    <%= Invitee::ApprovalState::APPROVED %>
-  note:              Sample note
-  rejection_reason:
-  expires_at:        <%= Time.now + Invitee::EXPIRATION %>
-  institution_admin: false
-
-example2:
-  institution:       example
-  email:             example2@example.edu
-  approval_state:    <%= Invitee::ApprovalState::APPROVED %>
-  note:              Sample note
-  rejection_reason:
-  expires_at:        <%= Time.now + Invitee::EXPIRATION %>
-  institution_admin: false
-
-example_sysadmin:
-  institution:       example
-  email:             admin@example.edu
-  approval_state:    <%= Invitee::ApprovalState::APPROVED %>
-  note:              Sample note
-  rejection_reason:
-  expires_at:        <%= Time.now + Invitee::EXPIRATION %>
-  institution_admin: false
-
-example_approved:
-  institution:       example
-  email:             approved-invitee@example.edu
-  approval_state:    <%= Invitee::ApprovalState::APPROVED %>
-  note:              Sample note
-  rejection_reason:
-  expires_at:        <%= Time.now + Invitee::EXPIRATION %>
-  institution_admin: false
-
-example_pending:
-  institution:       example
-  email:             pending@example.edu
-  approval_state:    <%= Invitee::ApprovalState::PENDING %>
-  note:              This invitee is pending.
-  rejection_reason:
-  expires_at:        <%= Time.now + Invitee::EXPIRATION %>
-  institution_admin: false
-
 ################################ northeast ##################################
 
 northeast:
@@ -90,6 +43,24 @@ southwest_sysadmin:
   email:             sysadmin@southwest.edu
   approval_state:    <%= Invitee::ApprovalState::APPROVED %>
   note:              Sample note
+  rejection_reason:
+  expires_at:        <%= Time.now + Invitee::EXPIRATION %>
+  institution_admin: false
+
+southwest_approved:
+  institution:       southwest
+  email:             approved-invitee@southwest.edu
+  approval_state:    <%= Invitee::ApprovalState::APPROVED %>
+  note:              Sample note
+  rejection_reason:
+  expires_at:        <%= Time.now + Invitee::EXPIRATION %>
+  institution_admin: false
+
+southwest_pending:
+  institution:       southwest
+  email:             pending@southwest.edu
+  approval_state:    <%= Invitee::ApprovalState::PENDING %>
+  note:              This invitee is pending.
   rejection_reason:
   expires_at:        <%= Time.now + Invitee::EXPIRATION %>
   institution_admin: false

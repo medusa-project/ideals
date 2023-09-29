@@ -5,7 +5,7 @@ class LocalIdentityTest < ActiveSupport::TestCase
   include ActionMailer::TestHelper
 
   setup do
-    @instance = local_identities(:example)
+    @instance = local_identities(:southwest)
   end
 
   # create()

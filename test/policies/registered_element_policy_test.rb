@@ -245,7 +245,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   end
 
   test "index_template?() does not authorize non-sysadmins" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = RegisteredElementPolicy.new(context, Usage)
@@ -253,7 +253,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
   end
 
   test "index_template?() authorizes sysadmins" do
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = RegisteredElementPolicy.new(context, Usage)
@@ -262,7 +262,7 @@ class RegisteredElementPolicyTest < ActiveSupport::TestCase
 
   test "index_template?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)

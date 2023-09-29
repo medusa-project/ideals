@@ -763,13 +763,13 @@ class ItemTest < ActiveSupport::TestCase
   # embargoed_for?()
 
   test "embargoed_for?() returns false for an item with no embargoes" do
-    assert !@instance.embargoed_for?(users(:example))
+    assert !@instance.embargoed_for?(users(:southwest))
   end
 
   test "embargoed_for?() returns false for an item with only a download embargo" do
     @instance.embargoes.build(kind:       Embargo::Kind::DOWNLOAD,
                               expires_at: Time.now + 1.year).save!
-    assert !@instance.embargoed_for?(users(:example))
+    assert !@instance.embargoed_for?(users(:southwest))
   end
 
   test "embargoed_for?() returns false for an item with an all-access embargo to
@@ -790,7 +790,7 @@ class ItemTest < ActiveSupport::TestCase
   which the given user is not exempt" do
     @instance.embargoes.build(kind:       Embargo::Kind::ALL_ACCESS,
                               expires_at: Time.now + 1.year).save!
-    assert @instance.embargoed_for?(users(:example))
+    assert @instance.embargoed_for?(users(:southwest))
   end
 
   # exhume!()

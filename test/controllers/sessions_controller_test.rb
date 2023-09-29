@@ -3,7 +3,7 @@ require 'test_helper'
 class SessionsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
-    @institution = institutions(:example)
+    @institution = institutions(:southwest)
     host! @institution.fqdn
   end
 
@@ -24,7 +24,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
   test "create() with identity strategy with a disabled user redirects to the
   return URL" do
-    user = users(:example)
+    user = users(:southwest)
     user.update!(enabled: false)
     post "/auth/identity/callback", params: {
       auth_key: user.email,
@@ -35,7 +35,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
   test "create() with identity strategy via XHR with a disabled user returns
   HTTP 403" do
-    user = users(:example)
+    user = users(:southwest)
     user.update!(enabled: false)
     post "/auth/identity/callback", params: {
       auth_key: user.email,
@@ -66,7 +66,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
   test "create() with identity strategy with valid credentials redirects to the
   institution root URL" do
-    user = users(:example)
+    user = users(:southwest)
     post "/auth/identity/callback", params: {
         auth_key: user.email,
         password: "password"
@@ -76,7 +76,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
   test "create() with identity strategy via XHR with valid credentials
   redirects to the institution root URL" do
-    user = users(:example)
+    user = users(:southwest)
     post "/auth/identity/callback", params: {
       auth_key: user.email,
       password: "password"
@@ -86,7 +86,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
   test "create() with identity strategy with valid credentials ascribes a
   correct Login object" do
-    user = users(:example)
+    user = users(:southwest)
     user.logins.destroy_all
     post "/auth/identity/callback", params: {
       auth_key: user.email,

@@ -568,7 +568,7 @@ class UnitTest < ActiveSupport::TestCase
 
   test "primary_administrator=() sets the primary administrator to a user who
   is not already an administrator" do
-    user = users(:example)
+    user = users(:southwest)
     assert_not_equal user, @instance.primary_administrator
     assert_equal 1, @instance.administrators.count
 
@@ -581,7 +581,7 @@ class UnitTest < ActiveSupport::TestCase
 
   test "primary_administrator=() sets the primary administrator to a user who
   is already an administrator" do
-    user = users(:example)
+    user = users(:southwest)
     @instance.administering_users << user
     @instance.save!
 
@@ -595,7 +595,7 @@ class UnitTest < ActiveSupport::TestCase
   test "primary_administrator cannot be set on child units" do
     unit = units(:uiuc_unit1_unit2)
     assert unit.valid?
-    unit.primary_administrator = users(:example_sysadmin)
+    unit.primary_administrator = users(:southwest_sysadmin)
     unit.reload
     assert !unit.valid?
   end

@@ -31,7 +31,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
 
   test "edit_password() returns HTTP 403 for users other than the user whose
   password is being changed" do
-    log_in_as(users(:example_sysadmin))
+    log_in_as(users(:southwest_sysadmin))
     identity = local_identities(:southwest)
     get local_identity_edit_password_path(identity), xhr: true
     assert_response :forbidden
@@ -462,7 +462,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update_password() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:example))
+    log_in_as(users(:southwest))
     identity = local_identities(:southwest_sysadmin)
     patch local_identity_update_password_path(identity), xhr: true
     assert_response :forbidden

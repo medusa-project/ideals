@@ -3,7 +3,7 @@ require 'test_helper'
 class FileFormatPolicyTest < ActiveSupport::TestCase
 
   setup do
-    @user = users(:example)
+    @user = users(:southwest)
   end
 
   # index?()
@@ -14,7 +14,7 @@ class FileFormatPolicyTest < ActiveSupport::TestCase
   end
 
   test "index?() does not authorize non-sysadmins" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = FileFormatPolicy.new(context, FileFormat)
@@ -22,7 +22,7 @@ class FileFormatPolicyTest < ActiveSupport::TestCase
   end
 
   test "index?() authorizes sysadmins" do
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = FileFormatPolicy.new(context, FileFormat)
@@ -31,7 +31,7 @@ class FileFormatPolicyTest < ActiveSupport::TestCase
 
   test "index?() respects role limits" do
     # sysadmin user limited to an insufficient role
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)

@@ -7,7 +7,7 @@ class IdealsMailerTest < ActionMailer::TestCase
   # account_approved()
 
   test "account_approved() sends the expected email" do
-    identity = local_identities(:example)
+    identity = local_identities(:southwest)
     identity.create_registration_digest
 
     email = IdealsMailer.account_approved(identity).deliver_now
@@ -15,7 +15,7 @@ class IdealsMailerTest < ActionMailer::TestCase
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
     assert_equal [identity.email], email.to
-    assert_equal "Register your Example IR account", email.subject
+    assert_equal "Register your Southwest IR account", email.subject
 
     assert_equal render_template("account_approved.txt",
                                  url: identity.registration_url),
@@ -28,7 +28,7 @@ class IdealsMailerTest < ActionMailer::TestCase
   # account_denied()
 
   test "account_denied() sends the expected email" do
-    invitee = invitees(:example_pending)
+    invitee = invitees(:southwest_pending)
     invitee.update!(rejection_reason: "Not good enough")
 
     email = IdealsMailer.account_denied(invitee).deliver_now
@@ -36,7 +36,7 @@ class IdealsMailerTest < ActionMailer::TestCase
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
     assert_equal [invitee.email], email.to
-    assert_equal "Your Example IR account request", email.subject
+    assert_equal "Your Southwest IR account request", email.subject
 
     assert_equal render_template("account_denied.txt"),
                  email.text_part.body.raw_source
@@ -47,7 +47,7 @@ class IdealsMailerTest < ActionMailer::TestCase
   # account_registered()
 
   test "account_registered() sends the expected email" do
-    identity    = local_identities(:example)
+    identity    = local_identities(:southwest)
     institution = identity.invitee.institution
 
     email = IdealsMailer.account_registered(identity).deliver_now
@@ -55,7 +55,7 @@ class IdealsMailerTest < ActionMailer::TestCase
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
     assert_equal [identity.email], email.to
-    assert_equal "Welcome to Example IR!", email.subject
+    assert_equal "Welcome to Southwest IR!", email.subject
 
     assert_equal render_template("account_registered.txt",
                                  service_name: institution.service_name,
@@ -71,7 +71,7 @@ class IdealsMailerTest < ActionMailer::TestCase
 
   test "account_request_action_required() raises an error if the institution's
   feedback email is not set" do
-    invitee = invitees(:example_pending)
+    invitee = invitees(:southwest_pending)
     invitee.institution.update!(feedback_email: nil)
 
     assert_raises do
@@ -80,15 +80,15 @@ class IdealsMailerTest < ActionMailer::TestCase
   end
 
   test "account_request_action_required() sends the expected email" do
-    invitee     = invitees(:example_pending)
-    institution = institutions(:example)
+    invitee     = invitees(:southwest_pending)
+    institution = institutions(:southwest)
 
     email = IdealsMailer.account_request_action_required(invitee).deliver_now
     assert !ActionMailer::Base.deliveries.empty?
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
     assert_equal [institution.feedback_email], email.to
-    assert_equal "[TEST: Illinois IR] Action required on a new Example IR user",
+    assert_equal "[TEST: Illinois IR] Action required on a new Southwest IR user",
                  email.subject
 
     invitee_url = sprintf("https://%s/invitees/%d",
@@ -103,14 +103,14 @@ class IdealsMailerTest < ActionMailer::TestCase
   # account_request_received()
 
   test "account_request_received() sends the expected email" do
-    invitee = invitees(:example_pending)
+    invitee = invitees(:southwest_pending)
 
     email = IdealsMailer.account_request_received(invitee).deliver_now
     assert !ActionMailer::Base.deliveries.empty?
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
     assert_equal [invitee.email], email.to
-    assert_equal "Your Example IR account request", email.subject
+    assert_equal "Your Southwest IR account request", email.subject
 
     assert_equal render_template("account_request_received.txt"),
                  email.text_part.body.raw_source
@@ -168,7 +168,7 @@ class IdealsMailerTest < ActionMailer::TestCase
   # invited()
 
   test "invited() sends the expected email" do
-    identity = local_identities(:example)
+    identity = local_identities(:southwest)
     identity.create_registration_digest
 
     email = IdealsMailer.invited(identity).deliver_now
@@ -176,7 +176,7 @@ class IdealsMailerTest < ActionMailer::TestCase
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
     assert_equal [identity.email], email.to
-    assert_equal "Register for an account with Example IR", email.subject
+    assert_equal "Register for an account with Southwest IR", email.subject
 
     assert_equal render_template("invited.txt", url: identity.registration_url),
                  email.text_part.body.raw_source
@@ -239,7 +239,7 @@ class IdealsMailerTest < ActionMailer::TestCase
     assert !ActionMailer::Base.deliveries.empty?
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
-    assert_equal ["admin@example.edu"], email.to
+    assert_equal ["sysadmin@illinois.edu"], email.to
     assert_equal "A new IDEALS item requires review", email.subject
 
     assert_equal render_template("item_requires_review.txt",
@@ -277,7 +277,7 @@ class IdealsMailerTest < ActionMailer::TestCase
   # password_reset()
 
   test "password_reset() sends the expected email" do
-    identity = local_identities(:example)
+    identity = local_identities(:southwest)
     identity.create_reset_digest
 
     email = IdealsMailer.password_reset(identity).deliver_now
@@ -285,7 +285,7 @@ class IdealsMailerTest < ActionMailer::TestCase
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
     assert_equal [identity.email], email.to
-    assert_equal "Reset your Example IR password", email.subject
+    assert_equal "Reset your Southwest IR password", email.subject
 
     assert_equal render_template("password_reset.txt",
                                  url: identity.password_reset_url),

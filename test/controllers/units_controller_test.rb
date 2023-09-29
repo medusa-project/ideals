@@ -76,7 +76,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:example))
+    log_in_as(users(:southwest))
     post units_path,
          xhr: true,
          params: {
@@ -366,7 +366,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_properties() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:example))
+    log_in_as(users(:southwest))
     unit = units(:uiuc_unit1)
     get unit_edit_properties_path(unit), xhr: true
     assert_response :forbidden
@@ -651,14 +651,14 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show_review_submissions() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:example))
+    log_in_as(users(:southwest))
     unit = units(:uiuc_unit1)
     get unit_review_submissions_path(unit), xhr: true
     assert_response :forbidden
   end
 
   test "show_review_submissions() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:example_sysadmin))
+    log_in_as(users(:southwest_sysadmin))
     unit = units(:uiuc_unit1)
     get unit_review_submissions_path(unit)
     assert_response :not_found
@@ -717,14 +717,14 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show_submissions_in_progress() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:example))
+    log_in_as(users(:southwest))
     unit = units(:uiuc_unit1)
     get unit_submissions_in_progress_path(unit), xhr: true
     assert_response :forbidden
   end
 
   test "show_submissions_in_progress() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:example_sysadmin))
+    log_in_as(users(:southwest_sysadmin))
     unit = units(:uiuc_unit1)
     get unit_submissions_in_progress_path(unit)
     assert_response :not_found
@@ -763,7 +763,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "statistics_by_range() returns HTTP 200 for CSV" do
-    log_in_as(users(:example_sysadmin))
+    log_in_as(users(:southwest_sysadmin))
     get unit_statistics_by_range_path(units(:uiuc_unit1), format: :csv), params: {
       from_year:  2008,
       from_month: 1,

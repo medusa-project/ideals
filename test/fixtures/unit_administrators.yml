@@ -5,7 +5,7 @@ uiuc_unit1_admin:
 
 uiuc_unit2_admin:
   unit:    uiuc_unit2
-  user:    example_sysadmin
+  user:    uiuc_sysadmin
   primary: true
 
 uiuc_unit1_unit2_unit1:

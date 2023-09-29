@@ -49,7 +49,7 @@ class UserGroupTest < ActiveSupport::TestCase
   # all_users()
 
   test "all_users() returns associated users" do
-    assert @instance.all_users.include?(users(:example_sysadmin))
+    assert @instance.all_users.include?(users(:southwest_sysadmin))
   end
 
   test "all_users() returns all users belonging to an associated AD group" do
@@ -89,20 +89,20 @@ class UserGroupTest < ActiveSupport::TestCase
   # includes?()
 
   test "includes?() returns false for a user not associated with the instance" do
-    assert !@instance.includes?(users(:example))
+    assert !@instance.includes?(users(:southwest))
   end
 
   test "includes?() returns true for a user directly associated with the
   instance" do
-    user             = users(:example)
+    user             = users(:southwest)
     @instance.users << user
     assert @instance.includes?(user)
   end
 
   test "includes?() returns true for a user whose email address matches a
   pattern on the instance" do
-    user = users(:example)
-    @instance.email_patterns.build(pattern: "example.edu").save!
+    user = users(:southwest)
+    @instance.email_patterns.build(pattern: "southwest.edu").save!
     assert @instance.includes?(user)
   end
 
@@ -112,7 +112,7 @@ class UserGroupTest < ActiveSupport::TestCase
     # the NetID contains "sysadmin" and the user group contains an AD group with
     # the string "sysadmin" in it.
     @instance.ad_groups.build(name: "test sysadmin group")
-    user = users(:example_sysadmin)
+    user = users(:southwest_sysadmin)
     assert @instance.includes?(user)
   end
 
@@ -145,7 +145,7 @@ class UserGroupTest < ActiveSupport::TestCase
   end
 
   test "key must be unique within the same institution" do
-    institution = institutions(:example)
+    institution = institutions(:southwest)
     UserGroup.create!(key:         "test",
                       name:        SecureRandom.hex,
                       institution: institution)
@@ -163,7 +163,7 @@ class UserGroupTest < ActiveSupport::TestCase
   end
 
   test "key cannot be `sysadmin` within an institution's scope" do
-    institution = institutions(:example)
+    institution = institutions(:southwest)
     assert_raises ActiveRecord::RecordInvalid do
       UserGroup.create!(key:         UserGroup::SYSADMIN_KEY,
                         name:        "New Group",
@@ -180,7 +180,7 @@ class UserGroupTest < ActiveSupport::TestCase
   end
 
   test "name must be unique within the same institution" do
-    institution = institutions(:example)
+    institution = institutions(:southwest)
     UserGroup.create!(key:         SecureRandom.hex,
                       name:        "Test",
                       institution: institution)

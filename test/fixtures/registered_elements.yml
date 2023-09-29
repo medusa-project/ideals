@@ -91,68 +91,6 @@ empty_dcterms_dateSubmitted:
   highwire_mapping:
   scope_note:
 
-################################# example #################################
-
-example_dc_creator:
-  institution:      example
-  name:             dc:creator
-  label:            Creator
-  uri:              http://purl.org/dc/elements/1.1/creator
-  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
-  template:         false
-  highwire_mapping:
-  scope_note:
-
-example_dc_description:
-  institution:      example
-  name:             dc:description
-  label:            Description
-  uri:              http://purl.org/dc/elements/1.1/description
-  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
-  template:         false
-  highwire_mapping:
-  scope_note:
-
-example_dc_identifier:
-  institution:      example
-  name:             dc:identifier
-  label:            Handle URI
-  uri:              http://purl.org/dc/elements/1.1/identifier
-  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
-  template:         false
-  highwire_mapping:
-  scope_note:
-
-example_dc_title:
-  institution:      example
-  name:             dc:title
-  label:            Title
-  uri:              http://purl.org/dc/elements/1.1/title
-  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
-  template:         false
-  highwire_mapping:
-  scope_note:
-
-example_dcterms_dateAccepted:
-  institution:      example
-  name:             dcterms:dateAccepted
-  label:            Date Accepted
-  uri:              http://purl.org/dc/terms/dateAccepted
-  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
-  template:         false
-  highwire_mapping:
-  scope_note:
-
-example_dcterms_dateSubmitted:
-  institution:      example
-  name:             dcterms:dateSubmitted
-  label:            Date Submitted
-  uri:              http://purl.org/dc/terms/dateSubmitted
-  input_type:       <%= RegisteredElement::InputType::TEXT_FIELD %>
-  template:         false
-  highwire_mapping:
-  scope_note:
-
 ################################# northeast #################################
 
 northeast_dc_title:

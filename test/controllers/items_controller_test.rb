@@ -184,14 +184,14 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_embargoes() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:example))
+    log_in_as(users(:southwest))
     item = items(:uiuc_item1)
     get item_edit_embargoes_path(item), xhr: true
     assert_response :forbidden
   end
 
   test "edit_embargoes() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:example_sysadmin))
+    log_in_as(users(:southwest_sysadmin))
     item = items(:uiuc_item1)
     get item_edit_embargoes_path(item)
     assert_response :not_found
@@ -220,14 +220,14 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_membership() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:example))
+    log_in_as(users(:southwest))
     item = items(:uiuc_item1)
     get item_edit_membership_path(item), xhr: true
     assert_response :forbidden
   end
 
   test "edit_membership() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:example_sysadmin))
+    log_in_as(users(:southwest_sysadmin))
     item = items(:uiuc_item1)
     get item_edit_membership_path(item)
     assert_response :not_found
@@ -256,14 +256,14 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_metadata() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:example))
+    log_in_as(users(:southwest))
     item = items(:uiuc_item1)
     get item_edit_metadata_path(item), xhr: true
     assert_response :forbidden
   end
 
   test "edit_metadata() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:example_sysadmin))
+    log_in_as(users(:southwest_sysadmin))
     item = items(:uiuc_item1)
     get item_edit_metadata_path(item)
     assert_response :not_found
@@ -292,14 +292,14 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_properties() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:example))
+    log_in_as(users(:southwest))
     item = items(:uiuc_item1)
     get item_edit_properties_path(item), xhr: true
     assert_response :forbidden
   end
 
   test "edit_properties() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:example_sysadmin))
+    log_in_as(users(:southwest_sysadmin))
     item = items(:uiuc_item1)
     get item_edit_properties_path(item)
     assert_response :not_found
@@ -328,14 +328,14 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_withdrawal() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:example))
+    log_in_as(users(:southwest))
     item = items(:uiuc_item1)
     get item_edit_withdrawal_path(item), xhr: true
     assert_response :forbidden
   end
 
   test "edit_withdrawal() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:example_sysadmin))
+    log_in_as(users(:southwest_sysadmin))
     item = items(:uiuc_item1)
     get item_edit_withdrawal_path(item)
     assert_response :not_found
@@ -719,7 +719,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "statistics() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:example_sysadmin))
+    log_in_as(users(:southwest_sysadmin))
     get item_statistics_path(items(:uiuc_item1))
     assert_response :not_found
   end
@@ -792,14 +792,14 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "upload_bitstreams() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:example))
+    log_in_as(users(:southwest))
     item = items(:uiuc_item1)
     get item_upload_bitstreams_path(item), xhr: true
     assert_response :forbidden
   end
 
   test "upload_bitstreams() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:example_sysadmin))
+    log_in_as(users(:southwest_sysadmin))
     item = items(:uiuc_item1)
     get item_upload_bitstreams_path(item)
     assert_response :not_found

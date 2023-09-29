@@ -169,7 +169,7 @@ class BitstreamTest < ActiveSupport::TestCase
   end
 
   test "add_download() creates an associated Event" do
-    user = users(:example_sysadmin)
+    user = users(:southwest_sysadmin)
     assert_difference "Event.count" do
       @instance.add_download(user: user)
     end

@@ -3,7 +3,7 @@ require 'test_helper'
 class CreateItemCommandTest < ActiveSupport::TestCase
 
   test "execute() returns the expected instance" do
-    submitter   = users(:example_sysadmin)
+    submitter   = users(:southwest_sysadmin)
     collection  = collections(:uiuc_collection1)
     institution = collection.institution
     command     = CreateItemCommand.new(submitter:          submitter,
@@ -23,7 +23,7 @@ class CreateItemCommandTest < ActiveSupport::TestCase
   test "execute() creates an associated Event" do
     Event.destroy_all
 
-    submitter   = users(:example_sysadmin)
+    submitter   = users(:southwest_sysadmin)
     collection  = collections(:uiuc_collection1)
     institution = collection.institution
     command     = CreateItemCommand.new(submitter:          submitter,

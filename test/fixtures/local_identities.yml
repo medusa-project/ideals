@@ -5,38 +5,6 @@
 
 <% password_digest = BCrypt::Engine.hash_secret("password", BCrypt::Engine.generate_salt) %>
 
-################################# example ###################################
-
-example:
-  invitee:         example
-  email:           example@example.edu
-  lowercase_email: example@example.edu
-  password_digest: <%= password_digest %>
-
-example2:
-  invitee:         example2
-  email:           example2@example.edu
-  lowercase_email: example2@example.edu
-  password_digest: <%= password_digest %>
-
-example_sysadmin:
-  invitee:         example_sysadmin
-  email:           admin@example.edu
-  lowercase_email: admin@example.edu
-  password_digest: <%= password_digest %>
-
-pending:
-  invitee:         example
-  email:           pending@example.edu
-  lowercase_email: pending@example.edu
-  password_digest: <%= password_digest %>
-
-approved:
-  invitee:         example_approved
-  email:           approved@example.edu
-  lowercase_email: approved@example.edu
-  password_digest: <%= password_digest %>
-
 ################################ northeast ##################################
 
 northeast:
@@ -70,4 +38,3 @@ southwest_sysadmin:
   email:           sysadmin@southwest.edu
   lowercase_email: sysadmin@southwest.edu
   password_digest: <%= password_digest %>
-

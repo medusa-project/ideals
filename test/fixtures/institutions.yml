@@ -19,29 +19,6 @@ empty:
   handle_uri_element:             empty_dc_identifier
   deposit_form_disagreement_help: Sample text
 
-example:
-  key:                            example
-  fqdn:                           example.edu
-  name:                           Example University
-  service_name:                   Example IR
-  local_auth_enabled:             true
-  saml_auth_enabled:              true
-  sso_federation:                 <%= Institution::SSOFederation::OPENATHENS %>
-  saml_idp_entity_id:             https://idp.example.edu
-  saml_email_attribute:           emailAddress
-  saml_first_name_attribute:      firstName
-  saml_last_name_attribute:       lastName
-  main_website_url:               https://example.edu
-  feedback_email:                 feedback@example.edu
-  outgoing_message_queue:         example_to_nowhere
-  incoming_message_queue:         nowhere_to_example
-  title_element:                  example_dc_title
-  author_element:                 example_dc_creator
-  date_approved_element:          example_dcterms_dateAccepted
-  date_submitted_element:         example_dcterms_dateSubmitted
-  handle_uri_element:             example_dc_identifier
-  deposit_form_disagreement_help: Sample text
-
 northeast:
   key:                            northeast
   fqdn:                           https://northeast.edu

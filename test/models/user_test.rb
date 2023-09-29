@@ -3,7 +3,7 @@ require 'test_helper'
 class UserTest < ActiveSupport::TestCase
 
   setup do
-    @user = users(:example)
+    @user = users(:southwest)
   end
 
   SAML_AUTH_HASH = {
@@ -425,7 +425,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "effective_collection_admin?() returns true when the user is a
   sysadmin" do
-    @user      = users(:example_sysadmin)
+    @user      = users(:southwest_sysadmin)
     collection = collections(:uiuc_collection1)
     assert @user.effective_collection_admin?(collection)
   end
@@ -472,13 +472,13 @@ class UserTest < ActiveSupport::TestCase
   # effective_institution_admin?()
 
   test "effective_institution_admin?() returns true if the user is a sysadmin" do
-    @user = users(:example_sysadmin)
+    @user = users(:southwest_sysadmin)
     assert @user.effective_institution_admin?(@user.institution)
   end
 
   test "effective_institution_admin?() returns true if the user is an
   administrator of the given institution" do
-    @user       = users(:example_sysadmin)
+    @user       = users(:southwest_sysadmin)
     institution = institutions(:uiuc)
     @user.administering_institutions << institution
     @user.save!
@@ -494,7 +494,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "effective_submittable_collections() returns all collections in the same
   institution for sysadmins" do
-    user = users(:example_sysadmin)
+    user = users(:southwest_sysadmin)
     assert_equal Collection.joins(:units).where("units.institution_id = ?",
                                                 user.institution_id).count,
                  user.effective_submittable_collections.count
@@ -523,13 +523,13 @@ class UserTest < ActiveSupport::TestCase
 
   test "effective_submittable_collections() returns an empty set for ordinary
   users" do
-    assert_empty users(:example).effective_submittable_collections
+    assert_empty users(:southwest).effective_submittable_collections
   end
 
   # effective_collection_submitter?()
 
   test "effective_collection_submitter?() returns true when the user is a sysadmin" do
-    @user      = users(:example_sysadmin)
+    @user      = users(:southwest_sysadmin)
     collection = collections(:uiuc_collection1)
     assert @user.effective_collection_submitter?(collection)
   end
@@ -576,7 +576,7 @@ class UserTest < ActiveSupport::TestCase
   # effective_unit_admin?()
 
   test "effective_unit_admin?() returns true when the user is a sysadmin" do
-    @user = users(:example_sysadmin)
+    @user = users(:southwest_sysadmin)
     unit  = units(:uiuc_unit1)
     assert @user.effective_unit_admin?(unit)
   end
@@ -674,7 +674,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "sysadmin?() returns true when the user is directly associated with the
   sysadmin user group" do
-    @user = users(:example_sysadmin)
+    @user = users(:southwest_sysadmin)
     assert @user.sysadmin?
   end
 

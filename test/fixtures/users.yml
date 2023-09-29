@@ -6,42 +6,6 @@
 # in the config/environments/test.yml file.
 #
 
-################################# example ###################################
-
-example:
-  institution: example
-  identity:    example
-  name:        I have no rights
-  email:       example@example.edu
-  phone:       (888) 555-1234
-  enabled:     true
-
-example2:
-  institution: example
-  identity:    example2
-  name:        I have no rights
-  email:       example2@example.edu
-  phone:       (888) 555-1234
-  enabled:     true
-
-example_approved:
-  institution: example
-  identity:    approved
-  name:        Not Approved
-  email:       approved@example.edu
-  phone:       (888) 555-1234
-  enabled:     true
-
-example_sysadmin:
-  institution: example
-  identity:    example_sysadmin
-  name:        admin
-  email:       admin@example.edu
-  phone:       (888) 555-1234
-  enabled:     true
-  user_groups:
-    - sysadmin
-
 ################################# northeast #################################
 
 northeast:

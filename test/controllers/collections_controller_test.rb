@@ -94,7 +94,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:example))
+    log_in_as(users(:southwest))
     post collections_path,
          xhr: true,
          params: {
@@ -118,7 +118,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
            primary_unit_id: units(:uiuc_unit1).id,
            collection: {
              institution_id:   @institution.id,
-             administrator_id: users(:example_sysadmin).id
+             administrator_id: users(:southwest_sysadmin).id
            },
            elements: {
              title: "New Collection"
@@ -136,7 +136,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
              primary_unit_id: units(:uiuc_unit1).id,
              collection: {
                institution_id:   @institution.id,
-               administrator_id: users(:example_sysadmin).id
+               administrator_id: users(:southwest_sysadmin).id
              },
              elements: {
                title: "New Collection"
@@ -154,7 +154,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
              primary_unit_id: units(:uiuc_unit1).id,
              collection: {
                institution_id:   @institution.id,
-               administrator_id: users(:example_sysadmin).id
+               administrator_id: users(:southwest_sysadmin).id
              },
              elements: {
                title: "New Collection"
@@ -256,14 +256,14 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_collection_membership() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:example))
+    log_in_as(users(:southwest))
     collection = collections(:uiuc_collection1)
     get collection_edit_collection_membership_path(collection), xhr: true
     assert_response :forbidden
   end
 
   test "edit_collection_membership() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:example_sysadmin))
+    log_in_as(users(:southwest_sysadmin))
     collection = collections(:uiuc_collection1)
     get collection_edit_collection_membership_path(collection)
     assert_response :not_found
@@ -299,14 +299,14 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_administering_groups() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:example))
+    log_in_as(users(:southwest))
     collection = collections(:uiuc_collection1)
     get collection_edit_administering_groups_path(collection), xhr: true
     assert_response :forbidden
   end
 
   test "edit_administering_groups() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:example_sysadmin))
+    log_in_as(users(:southwest_sysadmin))
     collection = collections(:uiuc_collection1)
     get collection_edit_administering_groups_path(collection)
     assert_response :not_found
@@ -342,14 +342,14 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_administering_users() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:example))
+    log_in_as(users(:southwest))
     collection = collections(:uiuc_collection1)
     get collection_edit_administering_users_path(collection), xhr: true
     assert_response :forbidden
   end
 
   test "edit_administering_users() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:example_sysadmin))
+    log_in_as(users(:southwest_sysadmin))
     collection = collections(:uiuc_collection1)
     get collection_edit_administering_users_path(collection)
     assert_response :not_found
@@ -385,14 +385,14 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_properties() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:example))
+    log_in_as(users(:southwest))
     collection = collections(:uiuc_collection1)
     get collection_edit_properties_path(collection), xhr: true
     assert_response :forbidden
   end
 
   test "edit_properties() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:example_sysadmin))
+    log_in_as(users(:southwest_sysadmin))
     collection = collections(:uiuc_collection1)
     get collection_edit_properties_path(collection)
     assert_response :not_found
@@ -428,14 +428,14 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_submitting_groups() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:example))
+    log_in_as(users(:southwest))
     collection = collections(:uiuc_collection1)
     get collection_edit_submitting_groups_path(collection), xhr: true
     assert_response :forbidden
   end
 
   test "edit_submitting_groups() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:example_sysadmin))
+    log_in_as(users(:southwest_sysadmin))
     collection = collections(:uiuc_collection1)
     get collection_edit_submitting_groups_path(collection)
     assert_response :not_found
@@ -471,14 +471,14 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_submitting_users() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:example))
+    log_in_as(users(:southwest))
     collection = collections(:uiuc_collection1)
     get collection_edit_submitting_users_path(collection), xhr: true
     assert_response :forbidden
   end
 
   test "edit_submitting_users() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:example_sysadmin))
+    log_in_as(users(:southwest_sysadmin))
     collection = collections(:uiuc_collection1)
     get collection_edit_submitting_users_path(collection)
     assert_response :not_found
@@ -521,14 +521,14 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit_unit_membership() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:example))
+    log_in_as(users(:southwest))
     collection = collections(:uiuc_collection1)
     get collection_edit_unit_membership_path(collection), xhr: true
     assert_response :forbidden
   end
 
   test "edit_unit_membership() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:example_sysadmin))
+    log_in_as(users(:southwest_sysadmin))
     collection = collections(:uiuc_collection1)
     get collection_edit_unit_membership_path(collection)
     assert_response :not_found
@@ -718,7 +718,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show_about() returns HTTP 410 for a buried collection" do
-    log_in_as(users(:example_sysadmin))
+    log_in_as(users(:southwest_sysadmin))
     get collection_about_path(collections(:uiuc_buried)), xhr: true
     assert_response :gone
   end
@@ -739,14 +739,14 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show_access() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:example))
+    log_in_as(users(:southwest))
     collection = collections(:uiuc_collection1)
     get collection_access_path(collection), xhr: true
     assert_response :forbidden
   end
 
   test "show_access() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:example_sysadmin))
+    log_in_as(users(:southwest_sysadmin))
     collection = collections(:uiuc_collection1)
     get collection_access_path(collection)
     assert_response :not_found
@@ -825,14 +825,14 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show_review_submissions() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:example))
+    log_in_as(users(:southwest))
     collection = collections(:uiuc_collection1)
     get collection_review_submissions_path(collection), xhr: true
     assert_response :forbidden
   end
 
   test "show_review_submissions() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:example_sysadmin))
+    log_in_as(users(:southwest_sysadmin))
     collection = collections(:uiuc_collection1)
     get collection_review_submissions_path(collection)
     assert_response :not_found
@@ -891,14 +891,14 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show_submissions_in_progress() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:example))
+    log_in_as(users(:southwest))
     collection = collections(:uiuc_collection1)
     get collection_submissions_in_progress_path(collection), xhr: true
     assert_response :forbidden
   end
 
   test "show_submissions_in_progress() returns HTTP 404 for non-XHR requests" do
-    log_in_as(users(:example_sysadmin))
+    log_in_as(users(:southwest_sysadmin))
     collection = collections(:uiuc_collection1)
     get collection_submissions_in_progress_path(collection)
     assert_response :not_found
@@ -1073,7 +1073,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
           xhr: true,
           params: {
             collection: {
-              administering_user_ids: [ users(:example_sysadmin).id ]
+              administering_user_ids: [ users(:southwest_sysadmin).id ]
             }
           }
     assert_response :ok

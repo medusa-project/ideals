@@ -14,7 +14,7 @@ class InviteeTest < ActiveSupport::TestCase
   end
 
   setup do
-    @instance = invitees(:example)
+    @instance = invitees(:southwest)
     assert @instance.valid?
   end
 
@@ -35,13 +35,13 @@ class InviteeTest < ActiveSupport::TestCase
   # approve()
 
   test "approve() updates the approval state" do
-    @instance = invitees(:example_pending)
+    @instance = invitees(:southwest_pending)
     @instance.approve
     assert_equal Invitee::ApprovalState::APPROVED, @instance.approval_state
   end
 
   test "approve() sends an email" do
-    @instance = invitees(:example_pending)
+    @instance = invitees(:southwest_pending)
     assert_emails 1 do
       @instance.approve
     end
@@ -109,13 +109,13 @@ class InviteeTest < ActiveSupport::TestCase
   # invite()
 
   test "invite() updates the approval state" do
-    @instance = invitees(:example_pending)
+    @instance = invitees(:southwest_pending)
     @instance.invite
     assert_equal Invitee::ApprovalState::APPROVED, @instance.approval_state
   end
 
   test "invite() sends an email" do
-    @instance = invitees(:example_pending)
+    @instance = invitees(:southwest_pending)
     assert_emails 1 do
       @instance.invite
     end
@@ -146,19 +146,19 @@ class InviteeTest < ActiveSupport::TestCase
   # reject()
 
   test "reject() updates the approval state" do
-    @instance = invitees(:example_pending)
+    @instance = invitees(:southwest_pending)
     @instance.reject
     assert_equal Invitee::ApprovalState::REJECTED, @instance.approval_state
   end
 
   test "reject() updates the rejection reason" do
-    @instance = invitees(:example_pending)
+    @instance = invitees(:southwest_pending)
     @instance.reject(reason: "Nope")
     assert_equal "Nope", @instance.rejection_reason
   end
 
   test "reject() sends an email" do
-    @instance = invitees(:example_pending)
+    @instance = invitees(:southwest_pending)
     assert_emails 1 do
       @instance.reject
     end

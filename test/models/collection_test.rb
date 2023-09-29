@@ -323,7 +323,7 @@ class CollectionTest < ActiveSupport::TestCase
   # effective_administering_groups()
 
   test "effective_administering_groups() includes sysadmins" do
-    @instance.effective_administering_groups.include?(users(:example_sysadmin))
+    @instance.effective_administering_groups.include?(users(:southwest_sysadmin))
   end
 
   test "effective_administering_groups() includes unit admins" do
@@ -344,7 +344,7 @@ class CollectionTest < ActiveSupport::TestCase
   # effective_administering_users()
 
   test "effective_administering_users() includes sysadmins" do
-    @instance.effective_administering_users.include?(users(:example_sysadmin))
+    @instance.effective_administering_users.include?(users(:southwest_sysadmin))
   end
 
   test "effective_administering_users() includes unit admins" do
@@ -436,7 +436,7 @@ class CollectionTest < ActiveSupport::TestCase
   # effective_submitting_users()
 
   test "effective_submitting_users() includes sysadmins" do
-    @instance.effective_submitting_users.include?(users(:example_sysadmin))
+    @instance.effective_submitting_users.include?(users(:southwest_sysadmin))
   end
 
   test "effective_submitting_users() includes unit admins" do

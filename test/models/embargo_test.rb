@@ -33,12 +33,12 @@ class EmbargoTest < ActiveSupport::TestCase
 
   test "exempt?() returns false when the given user is not exempt from the
   embargo" do
-    user    = users(:example)
+    user    = users(:southwest)
     assert !@instance.exempt?(user)
   end
 
   test "exempt?() returns true when the given user is exempt from the embargo" do
-    user    = users(:example_sysadmin)
+    user    = users(:southwest_sysadmin)
     assert !@instance.exempt?(user)
     @instance.user_groups << user_groups(:sysadmin)
     assert @instance.exempt?(user)

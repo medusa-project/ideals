@@ -23,7 +23,7 @@ class InviteePolicyTest < ActiveSupport::TestCase
   end
 
   test "approve?() does not authorize non-sysadmins" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InviteePolicy.new(context, @invitee)
@@ -82,7 +82,7 @@ class InviteePolicyTest < ActiveSupport::TestCase
   end
 
   test "create?() does not authorize non-sysadmins" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InviteePolicy.new(context, @invitee)
@@ -141,7 +141,7 @@ class InviteePolicyTest < ActiveSupport::TestCase
   end
 
   test "create_unsolicited?() does not authorize logged-in users" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InviteePolicy.new(context, @invitee)
@@ -172,7 +172,7 @@ class InviteePolicyTest < ActiveSupport::TestCase
   end
 
   test "destroy?() does not authorize non-sysadmins" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InviteePolicy.new(context, @invitee)
@@ -231,7 +231,7 @@ class InviteePolicyTest < ActiveSupport::TestCase
   end
 
   test "edit?() does not authorize non-sysadmins" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InviteePolicy.new(context, @invitee)
@@ -290,7 +290,7 @@ class InviteePolicyTest < ActiveSupport::TestCase
   end
 
   test "index?() does not authorize non-sysadmins" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = InviteePolicy.new(context, @invitee)
@@ -391,7 +391,7 @@ class InviteePolicyTest < ActiveSupport::TestCase
   end
 
   test "new?() does not authorize logged-in users" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InviteePolicy.new(context, @invitee)
@@ -422,7 +422,7 @@ class InviteePolicyTest < ActiveSupport::TestCase
   end
 
   test "reject?() does not authorize non-sysadmins" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InviteePolicy.new(context, @invitee)
@@ -481,7 +481,7 @@ class InviteePolicyTest < ActiveSupport::TestCase
   end
 
   test "resend_email?() does not authorize non-sysadmins" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = InviteePolicy.new(context, @invitee)
@@ -540,7 +540,7 @@ class InviteePolicyTest < ActiveSupport::TestCase
   end
 
   test "show?() does not authorize non-sysadmins" do
-    user    = users(:example)
+    user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy = InviteePolicy.new(context, @invitee)
