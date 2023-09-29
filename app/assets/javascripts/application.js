@@ -24,6 +24,7 @@
 // Application library files
 //= require lib/ideals
 //= require lib/string_utils.js
+//= require lib/time_utils.js
 //= require lib/ui_utils.js
 //= require lib/ideals_client.js
 

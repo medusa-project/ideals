@@ -17,8 +17,9 @@ const ImportsView = {
 
             function uploadFile(file, onSuccess, onError) {
                 console.debug("Uploading " + file);
-                const formdata = new FormData();
-                formdata.append("file", file);
+                const startTime = new Date().getTime();
+                const formData  = new FormData();
+                formData.append("file", file);
 
                 const uri = $("input[name=import_uri]").val() + "/upload-file";
                 xhr.open("POST", uri, true);
@@ -32,6 +33,11 @@ const ImportsView = {
 
                     $("#uploaded-bytes").text(IDEALS.StringUtils.formatBytes(e.loaded, 1));
                     $("#total-bytes").text(IDEALS.StringUtils.formatBytes(e.total, 1));
+
+                    const eta = IDEALS.TimeUtils.eta(
+                        startTime, e.loaded / parseFloat(e.total));
+                    const remaining = eta - new Date().getTime();
+                    $("#eta").text(IDEALS.TimeUtils.timeToHMS(remaining) + " remaining");
                 });
                 xhr.setRequestHeader("X-CSRF-Token", CSRF_TOKEN);
                 xhr.onloadstart = function() {
@@ -42,7 +48,7 @@ const ImportsView = {
                 xhr.onloadend   = completeUpload;
                 xhr.onerror     = onError;
                 console.debug("POST " + uri);
-                xhr.send(formdata);
+                xhr.send(formData);
             }
 
             function completeUpload() {
