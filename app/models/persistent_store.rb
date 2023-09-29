@@ -165,7 +165,7 @@ class PersistentStore
     if !data && !path && !file && !io
       raise ArgumentError, "One of the source arguments must be provided."
     end
-
+    acl = public ? "public-read" : "private"
     if path || file
       # N.B.: Aws::S3::Object.upload_file() will automatically use the
       # multipart API for files larger than 15 MB. (S3 has a 5 GB limit when
@@ -173,12 +173,11 @@ class PersistentStore
       s3 = Aws::S3::Resource.new(S3Client.client_options)
       s3.bucket(BUCKET).
         object(key).
-        upload_file(path || file)
-      attach_public_acl(key) if public
+        upload_file(path || file, acl: acl)
     else
       S3Client.instance.put_object(bucket:  BUCKET,
                                    key:     key,
-                                   acl:     public ? "public-read" : "private",
+                                   acl:     acl,
                                    body:    data || io)
     end
   end
