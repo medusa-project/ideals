@@ -849,9 +849,10 @@ class Bitstream < ApplicationRecord
       command         = "soffice --headless --convert-to pdf "\
         "#{source_tempfile.path} "\
         "--outdir #{tmpdir}"
-      result   = system(command)
-      status   = $?.exitstatus
-      raise "Command returned status code #{status}: #{command}" unless result
+      output, status = Open3.capture2e(command)
+      if status != 0
+        raise "Command returned status code #{status}: #{command}\n\nOutput: #{output}"
+      end
 
       pdf_path = File.join(tmpdir,
                            File.basename(source_tempfile).gsub(/#{File.extname(source_tempfile)}\z/, ".pdf"))
