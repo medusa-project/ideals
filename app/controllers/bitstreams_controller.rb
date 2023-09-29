@@ -259,7 +259,8 @@ class BitstreamsController < ApplicationController
         redirect_to @bitstream.derivative_pdf_url, allow_other_host: true
       else
         render plain: "Unable to provide a PDF representation of this bitstream.",
-               status: :not_found
+               status: :not_acceptable
+        return
       end
     else
       render formats: :json

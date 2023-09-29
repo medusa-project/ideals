@@ -520,11 +520,11 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
     assert_response :found
   end
 
-  test "show() with pdf format returns HTTP 404 for a bitstream that cannot be
+  test "show() with pdf format returns HTTP 406 for a bitstream that cannot be
   represented as PDF" do
     bs = bitstreams(:southwest_unit1_collection1_item1_approved)
     get item_bitstream_path(bs.item, bs, format: :pdf)
-    assert_response :not_found
+    assert_response :not_acceptable
   end
 
   test "show() respects role limits" do
