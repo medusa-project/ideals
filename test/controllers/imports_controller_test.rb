@@ -13,57 +13,6 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
     @import.delete_all_files
   end
 
-  # complete()
-
-  test "complete() returns HTTP 404 for unscoped requests" do
-    host! ::Configuration.instance.main_host
-    post import_complete_path(@import)
-    assert_response :not_found
-  end
-
-  test "complete() redirects to root page for logged-out users" do
-    post "/imports/bogus/complete"
-    assert_redirected_to @import.institution.scope_url
-  end
-
-  test "complete() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:southwest))
-    post import_complete_path(@import)
-    assert_response :forbidden
-  end
-
-  test "complete() completes an element" do
-    log_in_as(users(:southwest_admin))
-    collection_id = collections(:southwest_unit1_collection1).id
-    post import_complete_path(@import),
-         xhr: true,
-         params: {
-           import: {
-             collection_id: collection_id
-           }
-         }
-    @import.reload
-    assert_equal collection_id, @import.collection_id
-  end
-
-  test "complete() returns HTTP 200" do
-    log_in_as(users(:southwest_admin))
-    post import_complete_path(@import),
-         xhr: true,
-         params: {
-           import: {
-             collection_id: collections(:southwest_unit1_collection1).id
-           }
-         }
-    assert_response :ok
-  end
-
-  test "complete() returns HTTP 404 for a nonexistent import" do
-    log_in_as(users(:southwest_admin))
-    post "/imports/bogus/complete"
-    assert_response :not_found
-  end
-
   # create()
 
   test "create() returns HTTP 404 for unscoped requests" do
@@ -314,7 +263,7 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
 
   test "upload_file() returns HTTP 204 for authorized users" do
     log_in_as(users(:southwest_admin))
-    post import_upload_file_path(@import), params: { file: @bulkfile }
+    post import_upload_file_path(@import), params: { file: @bulkfile }, xhr: true
 
     assert_response :no_content
   end

@@ -16,34 +16,16 @@ class ImportPolicy < ApplicationPolicy
     @import          = import
   end
 
-  def complete
-    if !@user
-      return LOGGED_OUT_RESULT
-    elsif effective_sysadmin?(@user, @role_limit)
-      return AUTHORIZED_RESULT
-    elsif @ctx_institution != @import.institution
-      return WRONG_SCOPE_RESULT
-    elsif @user != @import.user
-      return {
-        authorized: false,
-        reason:     "Imports can only be modified by the user who created them."
-      }
-    end
-    result = create
-    return result unless result[:authorized]
-    AUTHORIZED_RESULT
-  end
-
   def create
     index
   end
 
   def delete_all_files
-    complete
+    upload_file
   end
 
   def edit
-    complete
+    upload_file
   end
 
   def index
@@ -66,7 +48,21 @@ class ImportPolicy < ApplicationPolicy
   end
 
   def upload_file
-    complete
+    if !@user
+      return LOGGED_OUT_RESULT
+    elsif effective_sysadmin?(@user, @role_limit)
+      return AUTHORIZED_RESULT
+    elsif @ctx_institution != @import.institution
+      return WRONG_SCOPE_RESULT
+    elsif @user != @import.user
+      return {
+        authorized: false,
+        reason:     "Imports can only be modified by the user who created them."
+      }
+    end
+    result = create
+    return result unless result[:authorized]
+    AUTHORIZED_RESULT
   end
 
 end

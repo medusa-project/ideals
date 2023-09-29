@@ -45,24 +45,12 @@ const ImportsView = {
                     fileInput.hide();
                     waitMessage.show();
                 };
-                xhr.onloadend   = completeUpload;
-                xhr.onerror     = onError;
+                xhr.onloadend = function() {
+                    window.location.reload();
+                };
+                xhr.onerror   = onError;
                 console.debug("POST " + uri);
                 xhr.send(formData);
-            }
-
-            function completeUpload() {
-                $.ajax({
-                    method:  "POST",
-                    url:     $("input[name=import_uri]").val() + "/complete",
-                    headers: {"X-CSRF-Token": CSRF_TOKEN},
-                    success: function () {
-                        // the controller has sent reload-the-page JS
-                    },
-                    error: function (data, status, xhr) {
-                        console.error(data);
-                    }
-                });
             }
 
             panel.on("hide.bs.modal", function() {

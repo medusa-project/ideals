@@ -7,13 +7,11 @@
 # the import. The import is associated with a {Collection} into which files
 # are being imported.
 #
-# In the UI, there is a file upload "drop zone" into which either a compressed
-# file (for packages) or a CSV file can be dropped. {upload_file} receives the
-# file and stores it on the file system.
-#
-# After all files have been uploaded, {complete} is called which invokes an
-# {ImportJob} to work asynchronously on the import using whatever importer it
-# deems necessary (e.g. {CsvImporter}, {SafImporter}, etc.)
+# In the UI, there is a file input accepting either a compressed file (for
+# packages) or a CSV file can be dropped. {upload_file} receives the file,
+# stores it on the file system, and invokes an {ImportJob} to work
+# asynchronously on the import using whatever importer it deems necessary
+# ({CsvImporter}, {SafImporter}, etc.)
 #
 # After the import has succeeded, the import package is deleted.
 #
@@ -23,17 +21,6 @@ class ImportsController < ApplicationController
   before_action :set_import, except: [:create, :index, :new]
   before_action :authorize_import, except: [:create, :index, :new]
   before_action :store_location, only: :index
-
-  ##
-  # Responds to `POST /imports/:id`
-  #
-  def complete
-    ImportJob.perform_later(import: @import, user: current_user)
-    toast!(title:   "Files uploaded",
-           message: "The files have been uploaded. The import will commence "\
-                    "momentarily.")
-    render "shared/reload"
-  end
 
   ##
   # Responds to `POST /imports`
@@ -121,12 +108,17 @@ class ImportsController < ApplicationController
   # form, writing it to a temporary location on the file system. (It may be
   # a compressed file that will need to get unzipped).
   #
-  # Responds to `POST /imports/:id/upload-file`.
+  # Responds to `POST /imports/:id/upload-file` (XHR only).
   #
   def upload_file
     @import.save_file(file:     params[:file],
                       filename: params[:file].original_filename)
-    head :no_content
+    # (waiting for the file to upload)
+    ImportJob.perform_later(import: @import, user: current_user)
+    toast!(title:   "Files uploaded",
+           message: "The files have been uploaded. The import will commence "\
+                    "momentarily.")
+    # The page will reload via JS.
   end
 
 
