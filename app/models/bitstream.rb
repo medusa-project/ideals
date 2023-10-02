@@ -510,7 +510,7 @@ class Bitstream < ApplicationRecord
     source_key = self.effective_key
     raise "Instance has no effective key" unless source_key
     ext        = self.format&.extensions&.first || "tmp"
-    tempfile   = Tempfile.new(["#{self.class}-download_to_temp_file-#{self.id}", ".#{ext}"])
+    tempfile   = Tempfile.new(["#{self.class}-#{self.id}-download_to_temp_file", ".#{ext}"])
     begin
       ObjectSpace.undefine_finalizer(tempfile)
       PersistentStore.instance.get_object(key:             source_key,
