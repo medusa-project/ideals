@@ -49,6 +49,7 @@ test:
 
 demo:
   <<: *default
+  pool:     <%= 2 * ENV.fetch("RAILS_MAX_THREADS") { 5 }.to_i %>
   host:     <%= db ? db[:host] : nil %>
   port:     <%= db ? db[:port] : nil %>
   database: <%= db ? db[:database] : nil %>
@@ -57,6 +58,7 @@ demo:
 
 production:
   <<: *default
+  pool:     <%= 2 * ENV.fetch("RAILS_MAX_THREADS") { 5 }.to_i %>
   host:     <%= db ? db[:host] : nil %>
   port:     <%= db ? db[:port] : nil %>
   database: <%= db ? db[:database] : nil %>
