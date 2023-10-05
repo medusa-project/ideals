@@ -230,18 +230,20 @@
               = link_to(user_path(current_user), class: "dropdown-item") do
                 = icon_for(current_user)
                 My Account
-            %li
-              %hr.dropdown-divider
-            %li
-              = link_to("https://docs.google.com/document/d/14CodOjc4Pjn42OOCtZp4lK1oRbm8lvPEXvDGDOxgyzY/edit?usp=sharing", class: "dropdown-item", target: "_blank") do
-                = icon_for(:help)
-                IR Administrator's Guide
-            %li
-              = link_to("https://docs.google.com/document/d/1yAFOUC_gKrtH7cF7ZB0Vu3M989CI_26gF3O55kio2OU/edit?usp=sharing", class: "dropdown-item", target: "_blank") do
-                = icon_for(:help)
-                System Administrator's Guide
-            %li
-              %hr.dropdown-divider
+            - if InstitutionAdministrator.where(user: current_user).count > 0
+              %li
+                %hr.dropdown-divider
+              %li
+                = link_to("https://docs.google.com/document/d/14CodOjc4Pjn42OOCtZp4lK1oRbm8lvPEXvDGDOxgyzY/edit?usp=sharing", class: "dropdown-item", target: "_blank") do
+                  = icon_for(:help)
+                  IR Administrator's Guide
+            - if current_user.sysadmin?
+              %li
+                = link_to("https://docs.google.com/document/d/1yAFOUC_gKrtH7cF7ZB0Vu3M989CI_26gF3O55kio2OU/edit?usp=sharing", class: "dropdown-item", target: "_blank") do
+                  = icon_for(:help)
+                  System Administrator's Guide
+              %li
+                %hr.dropdown-divider
             %li
               = link_to(logout_path, method: :delete, class: "dropdown-item") do
                 %i.fa.fa-sign-out-alt
