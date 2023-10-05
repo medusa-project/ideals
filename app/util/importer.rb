@@ -35,7 +35,7 @@ class Importer
     if file.split(".").last.downcase == "zip"
       import.task.update!(status_text: "Decompressing the package")
       tmpdir = Dir.mktmpdir
-      `unzip #{file} -d #{tmpdir}`
+      `unzip "#{file}" -d #{tmpdir}`
       # Try to detect the package format.
       root_files_path = tmpdir + "/*"
       # We want to support package files with or without a top-level enclosing
@@ -80,7 +80,7 @@ class Importer
                              task:               import.task)
       return Import::Format::CSV_FILE
     else
-      import.task.fail(detail: "Unable to detect the package format.")
+      import.task.fail(detail: "The file to import must have a .zip or .csv extension.")
     end
   end
 
