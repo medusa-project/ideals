@@ -120,18 +120,32 @@ class PersistentStore
   end
 
   ##
-  # @param key [String]
-  # @param expires_in [Integer] Seconds.
+  # @param key [String]          Target object key.
+  # @param upload_id [String]    For multipart uploads.
+  # @param part_number [Integer] For multipart uploads.
+  # @param expires_in [Integer]  Seconds.
   # @return [String]
   # @see public_url
   #
-  def presigned_upload_url(key:, expires_in: 30)
-    aws_client = S3Client.instance.send(:get_client)
-    signer     = Aws::S3::Presigner.new(client: aws_client)
-    signer.presigned_url(:put_object,
-                         bucket:            BUCKET,
-                         key:               key,
-                         expires_in:        expires_in)
+  def presigned_upload_url(key:,
+                           upload_id:   nil,
+                           part_number: nil,
+                           expires_in:  30)
+    if (upload_id.present? && part_number.blank?) ||
+      (upload_id.blank? && part_number.present?)
+      raise ArgumentError, "upload_id and part_number must both be provided"
+    end
+    resource = S3Client.instance.send(:get_resource)
+    bucket   = resource.bucket(BUCKET)
+    object   = bucket.object(key)
+    if upload_id && part_number
+      object.presigned_url(:upload_part,
+                           upload_id:   upload_id.to_s,
+                           part_number: part_number,
+                           expires_in:  expires_in)
+    else
+      object.presigned_url(:put, expires_in: expires_in)
+    end
   end
 
   ##

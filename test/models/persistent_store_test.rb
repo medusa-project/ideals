@@ -204,11 +204,22 @@ class PersistentStoreTest < ActiveSupport::TestCase
                                                   expires_in: 1.minute.to_i)
   end
 
+  # presigned_upload_url()
+
   test "presigned_upload_url() returns a presigned URL" do
     store = PersistentStore.instance
     key   = "cats/siamese"
     assert_not_empty store.presigned_upload_url(key:        key,
                                                 expires_in: 1.minute.to_i)
+  end
+
+  test "presigned_upload_url() returns a presigned URL for a multipart part" do
+    store = PersistentStore.instance
+    key   = "cats/siamese"
+    assert_not_empty store.presigned_upload_url(key:         key,
+                                                upload_id:   "whatever",
+                                                part_number: 1,
+                                                expires_in:  1.minute.to_i)
   end
 
   # public_url()
