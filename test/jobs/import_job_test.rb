@@ -28,9 +28,7 @@ class ImportJobTest < ActiveSupport::TestCase
     submitter = users(:uiuc)
     ImportJob.new.perform(import: import, user: submitter)
 
-    import.files.each do |file|
-      assert !File.exist?(file)
-    end
+    assert !File.exist?(import.file)
   end
 
   test "perform() runs the CSV file importer if the Import has one key ending

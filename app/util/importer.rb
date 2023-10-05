@@ -24,7 +24,7 @@ class Importer
   #                   testing.
   #
   def import(import, submitter)
-    files       = import.files
+    file        = import.file
     import.task = Task.create!(name:        self.class.name,
                                institution: submitter&.institution,
                                user:        submitter,
@@ -32,10 +32,10 @@ class Importer
                                status_text: "Importing items")
     # If the import is a compressed file, download and decompress it. SAF and
     # CSV packages are supported within compressed files.
-    if files.length == 1 && files[0].split(".").last.downcase == "zip"
+    if file.split(".").last.downcase == "zip"
       import.task.update!(status_text: "Decompressing the package")
       tmpdir = Dir.mktmpdir
-      `unzip #{files[0]} -d #{tmpdir}`
+      `unzip #{file} -d #{tmpdir}`
       # Try to detect the package format.
       root_files_path = tmpdir + "/*"
       # We want to support package files with or without a top-level enclosing
@@ -71,9 +71,9 @@ class Importer
       else
         import.task.fail(detail: "Unable to detect the package format.")
       end
-    elsif files.length == 1 && files[0].split(".").last.downcase == "csv"
+    elsif file.split(".").last.downcase == "csv"
       import.task.update!(status_text: "Importing items from CSV file")
-      CsvImporter.new.import(csv:                File.read(files[0]),
+      CsvImporter.new.import(csv:                File.read(file),
                              submitter:          submitter,
                              primary_collection: import.collection,
                              imported_items:     [],

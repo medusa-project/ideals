@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_09_27_173356) do
+ActiveRecord::Schema[7.0].define(version: 2023_10_05_144225) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -290,13 +290,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_27_173356) do
   create_table "imports", force: :cascade do |t|
     t.bigint "collection_id", null: false
     t.bigint "user_id"
-    t.text "files"
     t.text "imported_items"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "format"
     t.bigint "institution_id", null: false
     t.bigint "task_id"
+    t.string "filename"
     t.index ["collection_id"], name: "index_imports_on_collection_id"
     t.index ["format"], name: "index_imports_on_format"
     t.index ["institution_id"], name: "index_imports_on_institution_id"

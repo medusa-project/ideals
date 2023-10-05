@@ -38,10 +38,10 @@ class ImportTest < ActiveSupport::TestCase
       @instance.save_file(file:     file,
                           filename: File.basename(file.path))
     end
-    assert_equal 1, @instance.files.length
+    assert File.exist?(@instance.file)
 
     @instance.delete_all_files
-    assert_equal 0, @instance.files.length
+    assert !File.exist?(@instance.file)
   end
 
   # destroy()
@@ -53,24 +53,27 @@ class ImportTest < ActiveSupport::TestCase
                           filename: File.basename(file.path))
     end
 
-    assert_equal 1, @instance.files.length
+    assert File.exist?(@instance.file)
 
     @instance.destroy
-    assert_equal 0, @instance.files.length
+    assert !File.exist?(@instance.file)
   end
 
-  # files()
+  # file()
 
-  test "files() returns a correct list of files" do
+  test "file() returns nil if filename is blank" do
+    assert_nil @instance.file
+  end
+
+  test "file() returns a correct pathname" do
     fixture = file_fixture("escher_lego.png")
     File.open(fixture, "r") do |file|
       @instance.save_file(file:     file,
                           filename: File.basename(file.path))
     end
 
-    assert_equal 1, @instance.files.length
     assert_equal File.join(@instance.filesystem_root, fixture.basename),
-                 @instance.files.first
+                 @instance.file
   end
 
   # filesystem_root()
@@ -118,13 +121,19 @@ class ImportTest < ActiveSupport::TestCase
       @instance.save_file(file:     file,
                           filename: File.basename(file.path))
     end
-    assert_equal 1, @instance.files.length
+    assert File.exist?(@instance.file)
     @instance.task.succeed
     @instance.save!
-    assert_equal 0, @instance.files.length
+    assert !File.exist?(@instance.file)
   end
 
   # save_file()
+
+  test "save_file() updates the filename" do
+    @instance.save_file(file:     File.new(file_fixture("pooh.jpg")),
+                        filename: "pooh.jpg")
+    assert_equal "pooh.jpg", @instance.filename
+  end
 
   test "save_file() saves a file to a temporary location" do
     @instance.save_file(file:     File.new(file_fixture("pooh.jpg")),

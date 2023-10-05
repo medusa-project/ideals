@@ -12,7 +12,7 @@
 # * `collection_id`  ID of the {Collection} into which new items are to be
 #                    imported.
 # * `created_at`     Managed by ActiveRecord.
-# * `files`          JSON array of all files to import.
+# * `filename`       Name of the file to import.
 # * `format`         One of the {Import::Format} constant values. This may be
 #                    null in the case of a newly created instance to which
 #                    files have not been uploaded yet.
@@ -52,7 +52,6 @@ class Import < ApplicationRecord
   belongs_to :task, optional: true
   belongs_to :user, optional: true
 
-  serialize :files, JSON
   serialize :imported_items, JSON
 
   before_save :delete_all_files_upon_success
@@ -64,11 +63,11 @@ class Import < ApplicationRecord
   end
 
   ##
-  # @return [Enumerable<String>] Enumerable of file pathnames. In general there
-  #                              will always be either zero or one.
+  # @return [String] File pathname.
   #
-  def files
-    Dir.glob(File.join(self.filesystem_root, '**', '*')).select{ |f| File.file?(f) }
+  def file
+    return nil if self.filename.blank?
+    File.join(self.filesystem_root, self.filename)
   end
 
   ##
@@ -108,6 +107,7 @@ class Import < ApplicationRecord
   # @param filename [String]
   #
   def save_file(file:, filename:)
+    self.update!(filename: filename)
     import_root = filesystem_root
     FileUtils.mkdir_p(import_root)
     path = File.join(import_root, filename)

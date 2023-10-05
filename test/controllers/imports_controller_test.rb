@@ -113,10 +113,10 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
     @import.save_file(file:     File.new(file_fixture("escher_lego.png")),
                       filename: "image.jpg")
 
-    assert_equal 1, @import.files.length
+    assert File.exist?(@import.file)
 
     post import_delete_all_files_path(@import)
-    assert_equal 0, @import.files.length
+    assert !File.exist?(@import.file)
   end
 
   # edit()
@@ -272,11 +272,12 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
     user = users(:southwest_admin)
     log_in_as(user)
 
-    assert_equal 0, @import.files.length
+    assert_nil @import.file
 
     post import_upload_file_path(@import), params:  { file: @bulkfile }
 
-    assert_equal 1, @import.files.length
+    @import.reload
+    assert File.exist?(@import.file)
   end
 
 end

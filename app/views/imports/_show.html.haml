@@ -8,7 +8,7 @@
       %dd= @import.id
       %dt File
       %dd
-        %pre= @import.files&.map{ |f| File.basename(f) }.join("\n")
+        %pre= @import.filename
       %dt Collection
       %dd= link_to(@import.collection.title, @import.collection)
       %dt User
