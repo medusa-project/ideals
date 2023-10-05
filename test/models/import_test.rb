@@ -129,10 +129,16 @@ class ImportTest < ActiveSupport::TestCase
 
   # save_file()
 
-  test "save_file() updates the filename" do
+  test "save_file() sets the filename" do
     @instance.save_file(file:     File.new(file_fixture("pooh.jpg")),
                         filename: "pooh.jpg")
     assert_equal "pooh.jpg", @instance.filename
+  end
+
+  test "save_file() sets the length" do
+    @instance.save_file(file:     File.new(file_fixture("pooh.jpg")),
+                        filename: "pooh.jpg")
+    assert_equal File.size(file_fixture("pooh.jpg")), @instance.length
   end
 
   test "save_file() saves a file to a temporary location" do

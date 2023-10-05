@@ -6,9 +6,14 @@
       %dd= Import::Format.to_s(@import.format)
       %dt Database ID
       %dd= @import.id
-      %dt File
+      %dt Filename
       %dd
-        %pre= @import.filename
+        - if @import.filename.present?
+          %pre= @import.filename
+      %dt File Length
+      %dd
+        - if @import.length.present?
+          = number_to_human_size(@import.length)
       %dt Collection
       %dd= link_to(@import.collection.title, @import.collection)
       %dt User

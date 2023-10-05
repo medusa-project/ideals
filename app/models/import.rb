@@ -21,6 +21,7 @@
 #                    {SafImporter}) and can be used to reconstruct one.
 # * `institution_id` Foreign key to {Institution} representing the institution
 #                    into which items are being imported.
+# * `length`         Length of the file identified by {filename}.
 # * `task_id`        Foreign key to {Task} which can be used for status
 #                    reports.
 # * `updated_at`     Managed by ActiveRecord.
@@ -107,7 +108,7 @@ class Import < ApplicationRecord
   # @param filename [String]
   #
   def save_file(file:, filename:)
-    self.update!(filename: filename)
+    self.update!(filename: filename, length: File.size(file))
     import_root = filesystem_root
     FileUtils.mkdir_p(import_root)
     path = File.join(import_root, filename)
