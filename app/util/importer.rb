@@ -38,7 +38,7 @@ class Importer
     # reside there.
     file = import.file
     unless File.exist?(file)
-      import.task.update!(status_text: "Downloading the import file")
+      import.task.update!(status_text: "Copying the import file to the file system")
       import.download
     end
     # If the import is a compressed file, download and decompress it. SAF and
