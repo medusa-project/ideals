@@ -221,7 +221,6 @@ class Item < ApplicationRecord
     now         = Time.now
     count       = item_ids.count
     raise ArgumentError, "No items provided" if count < 1
-    institution = nil
     progress    = print_progress ? Progress.new(count) : nil
     status_text = "Generating a zip file for #{count} items"
     task&.update!(indeterminate: false,
@@ -233,8 +232,7 @@ class Item < ApplicationRecord
           stuffdir = File.join(tmpdir, "items")
           index    = 0
           item_ids.each do |item_id|
-            item        = Item.find(item_id)
-            institution = item.institution
+            item = Item.find(item_id)
             item.bitstreams.where.not(permanent_key: nil).each do |bs|
               # N.B.: we could ascribe a download event to the bitstream here,
               # but we don't, in the expectation that this is more of an
@@ -242,8 +240,8 @@ class Item < ApplicationRecord
               dest_dir = File.join(stuffdir, item.handle&.handle || "#{item.id}")
               FileUtils.mkdir_p(dest_dir)
               dest_path = File.join(dest_dir, bs.filename)
-              PersistentStore.instance.get_object(key:             bs.permanent_key,
-                                                  response_target: dest_path)
+              ObjectStore.instance.get_object(key:             bs.permanent_key,
+                                              response_target: dest_path)
               task&.progress(index / count.to_f)
               progress&.report(index, "Downloading files")
               index += 1
@@ -257,8 +255,8 @@ class Item < ApplicationRecord
 
           # Upload the zip file into the application S3 bucket.
           File.open(zip_pathname, "r") do |file|
-            PersistentStore.instance.put_object(key:  dest_key,
-                                                file: file)
+            ObjectStore.instance.put_object(key:  dest_key,
+                                            file: file)
           end
         end
       end

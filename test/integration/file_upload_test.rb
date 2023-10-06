@@ -15,7 +15,7 @@ class FileUploadTest < ActionDispatch::IntegrationTest
   test "uploading a file to a submitting item" do
     file   = file_fixture("crane.jpg")
     length = File.size(file)
-    store  = PersistentStore.instance
+    store  = ObjectStore.instance
     item   = items(:southwest_unit1_collection1_submitting)
 
     log_in_as(users(:southwest_admin))
@@ -50,7 +50,7 @@ class FileUploadTest < ActionDispatch::IntegrationTest
   test "uploading a file to an approved item" do
     file   = file_fixture("crane.jpg")
     length = File.size(file)
-    store  = PersistentStore.instance
+    store  = ObjectStore.instance
     item   = items(:southwest_unit1_collection1_item1)
 
     log_in_as(users(:southwest_admin))

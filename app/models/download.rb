@@ -103,7 +103,7 @@ class Download < ApplicationRecord
   # @return [String]
   #
   def presigned_url(expiry_seconds: 900)
-    PersistentStore.instance.presigned_download_url(
+    ObjectStore.instance.presigned_download_url(
       key:                          self.object_key,
       expires_in:                   expiry_seconds,
       response_content_disposition: content_disposition(self.filename))
@@ -143,7 +143,7 @@ class Download < ApplicationRecord
     if self.filename.present?
       key = self.object_key
       LOGGER.debug('delete_object(): deleting %s', key)
-      PersistentStore.instance.delete_object(key: key)
+      ObjectStore.instance.delete_object(key: key)
     end
   end
 

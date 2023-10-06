@@ -258,8 +258,8 @@ class Bitstream < ApplicationRecord
 
       # Upload the zip file into the application S3 bucket.
       File.open(zip_pathname, "r") do |file|
-        PersistentStore.instance.put_object(key:  dest_key,
-                                            file: file)
+        ObjectStore.instance.put_object(key:  dest_key,
+                                        file: file)
       end
     end
   end
@@ -385,12 +385,12 @@ class Bitstream < ApplicationRecord
   # @return [IO] New instance for reading.
   #
   def data
-    PersistentStore.instance.get_object(key: self.effective_key)
+    ObjectStore.instance.get_object(key: self.effective_key)
   end
 
   def delete_derivatives
     begin
-      PersistentStore.instance.delete_objects(key_prefix: derivative_key_prefix)
+      ObjectStore.instance.delete_objects(key_prefix: derivative_key_prefix)
     rescue Aws::S3::Errors::NoSuchBucket
       # This would hopefully only happen because of a test environment
       # misconfiguration. In any case, it's safe to assume that if the bucket
@@ -427,7 +427,7 @@ class Bitstream < ApplicationRecord
   #
   def delete_from_permanent_storage
     return if self.permanent_key.blank?
-    PersistentStore.instance.delete_object(key: self.permanent_key)
+    ObjectStore.instance.delete_object(key: self.permanent_key)
     self.update!(permanent_key: nil)
   rescue Aws::S3::Errors::NotFound
     self.update!(permanent_key: nil)
@@ -439,7 +439,7 @@ class Bitstream < ApplicationRecord
   #
   def delete_from_staging
     return if self.staging_key.blank?
-    PersistentStore.instance.delete_object(key: self.staging_key)
+    ObjectStore.instance.delete_object(key: self.staging_key)
     self.update!(staging_key: nil)
   rescue Aws::S3::Errors::NotFound
     # nothing we can do
@@ -460,7 +460,7 @@ class Bitstream < ApplicationRecord
     unless has_representative_image?
       raise "Derivatives are not supported for this format."
     end
-    store = PersistentStore.instance
+    store = ObjectStore.instance
     key   = derivative_image_key(region: region, size: size, format: :jpg)
     unless store.object_exists?(key: key)
       if generate_async
@@ -479,7 +479,7 @@ class Bitstream < ApplicationRecord
   #                  automatically.
   #
   def derivative_pdf_url
-    store  = PersistentStore.instance
+    store  = ObjectStore.instance
     expiry = 1.hour.to_i
     format = self.format
     if format.media_type == "application/pdf"
@@ -513,8 +513,8 @@ class Bitstream < ApplicationRecord
     tempfile   = Tempfile.new(["#{self.class}-#{self.id}-download_to_temp_file", ".#{ext}"])
     begin
       ObjectSpace.undefine_finalizer(tempfile)
-      PersistentStore.instance.get_object(key:             source_key,
-                                          response_target: tempfile.path)
+      ObjectStore.instance.get_object(key:             source_key,
+                                      response_target: tempfile.path)
     rescue => e
       tempfile.unlink
       raise e
@@ -620,7 +620,7 @@ class Bitstream < ApplicationRecord
 
   def move_into_permanent_storage
     raise "Staging key is blank" if self.staging_key.blank?
-    store         = PersistentStore.instance
+    store         = ObjectStore.instance
     permanent_key = self.class.permanent_key(institution_key: self.institution.key,
                                              item_id:         self.item_id,
                                              filename:        self.filename)
@@ -640,9 +640,9 @@ class Bitstream < ApplicationRecord
       raise IOError, "This bitstream has no corresponding storage object."
     end
     content_type = self.format&.media_types&.first || "application/octet-stream"
-    PersistentStore.instance.presigned_download_url(key:                          key,
-                                                    response_content_type:        content_type,
-                                                    response_content_disposition: content_disposition)
+    ObjectStore.instance.presigned_download_url(key:                          key,
+                                                response_content_type:        content_type,
+                                                response_content_disposition: content_disposition)
   end
 
   ##
@@ -660,7 +660,7 @@ class Bitstream < ApplicationRecord
                                    filename:        self.filename)
       self.update!(staging_key: key)
     end
-    PersistentStore.instance.presigned_upload_url(key: key, expires_in: 30)
+    ObjectStore.instance.presigned_upload_url(key: key, expires_in: 30)
   end
 
   ##
@@ -723,8 +723,8 @@ class Bitstream < ApplicationRecord
   # @param file [String]
   #
   def upload_to_permanent(file)
-    PersistentStore.instance.put_object(key:  self.permanent_key,
-                                        path: file)
+    ObjectStore.instance.put_object(key:  self.permanent_key,
+                                    path: file)
     self.update!(length: File.size(file))
   end
 
@@ -739,8 +739,8 @@ class Bitstream < ApplicationRecord
   # @param io [IO]
   #
   def upload_to_staging(io)
-    PersistentStore.instance.put_object(key: self.staging_key,
-                                        io:  io)
+    ObjectStore.instance.put_object(key: self.staging_key,
+                                    io:  io)
     self.update!(length: io.size)
   end
 
@@ -819,7 +819,7 @@ class Bitstream < ApplicationRecord
         raise "Command returned status code #{status}: #{command}" unless result
 
         File.open(deriv_path, "rb") do |file|
-          PersistentStore.instance.put_object(key: target_key, file: file)
+          ObjectStore.instance.put_object(key: target_key, file: file)
         end
       end
     rescue => e
@@ -860,8 +860,8 @@ class Bitstream < ApplicationRecord
         return pdf_path
       else
         File.open(pdf_path, "rb") do |file|
-          PersistentStore.instance.put_object(key:  derivative_pdf_key,
-                                              file: file)
+          ObjectStore.instance.put_object(key:  derivative_pdf_key,
+                                          file: file)
         end
       end
     ensure
@@ -896,8 +896,8 @@ class Bitstream < ApplicationRecord
                                               filename:        self.filename)
       end
       if target_key
-        PersistentStore.instance.move_object(source_key: self.permanent_key_was,
-                                             target_key: target_key)
+        ObjectStore.instance.move_object(source_key: self.permanent_key_was,
+                                         target_key: target_key)
         self.update_column(:permanent_key, target_key) # skip callbacks
       end
     elsif self.staging_key_was.present? && self.staging_key.present?
@@ -910,8 +910,8 @@ class Bitstream < ApplicationRecord
                                             filename:        self.filename)
       end
       if target_key
-        PersistentStore.instance.move_object(source_key: self.staging_key_was,
-                                             target_key: target_key)
+        ObjectStore.instance.move_object(source_key: self.staging_key_was,
+                                         target_key: target_key)
         self.update_column(:staging_key, target_key) # skip callbacks
       end
     end

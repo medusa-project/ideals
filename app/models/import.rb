@@ -62,7 +62,7 @@ class Import < ApplicationRecord
     if self.id.present? && self.institution_id.present? &&
       self.filename.present?
       File.delete(self.file) if File.exist?(self.file)
-      PersistentStore.instance.delete_object(key: self.file_key)
+      ObjectStore.instance.delete_object(key: self.file_key)
     end
   end
 
@@ -75,7 +75,7 @@ class Import < ApplicationRecord
   def download
     file = self.file
     raise "File already exists: #{file}" if File.exist?(file)
-    store = PersistentStore.instance
+    store = ObjectStore.instance
     FileUtils.mkdir_p(File.dirname(file))
     store.get_object(key: self.file_key, response_target: file)
     store.delete_object(key: self.file_key)
@@ -111,7 +111,7 @@ class Import < ApplicationRecord
   # @return [Array<Hash>]
   #
   def presigned_upload_url
-    PersistentStore.instance.presigned_upload_url(key:        self.file_key,
+    ObjectStore.instance.presigned_upload_url(key:        self.file_key,
                                                   expires_in: 30)
   end
 

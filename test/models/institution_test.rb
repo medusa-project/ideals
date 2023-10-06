@@ -310,7 +310,7 @@ class InstitutionTest < ActiveSupport::TestCase
     @instance.delete_banner_image
 
     key = Institution.banner_image_key(@instance.key, "jpg")
-    assert !PersistentStore.instance.object_exists?(key: key)
+    assert !ObjectStore.instance.object_exists?(key: key)
   end
 
   test "delete_banner_image() returns if there is no banner image" do
@@ -329,11 +329,11 @@ class InstitutionTest < ActiveSupport::TestCase
     @instance.delete_favicons
 
     key = "institutions/#{@instance.key}/theme/favicons/favicon-original.png"
-    assert !PersistentStore.instance.object_exists?(key: key)
+    assert !ObjectStore.instance.object_exists?(key: key)
 
     InstitutionsHelper::FAVICONS.each do |icon|
       key = "institutions/#{@instance.key}/theme/favicons/favicon-#{icon[:size]}x#{icon[:size]}.png"
-      assert !PersistentStore.instance.object_exists?(key: key)
+      assert !ObjectStore.instance.object_exists?(key: key)
     end
   end
 
@@ -353,7 +353,7 @@ class InstitutionTest < ActiveSupport::TestCase
     @instance.delete_footer_image
 
     key = Institution.footer_image_key(@instance.key, "jpg")
-    assert !PersistentStore.instance.object_exists?(key: key)
+    assert !ObjectStore.instance.object_exists?(key: key)
   end
 
   test "delete_footer_image() returns if there is no footer image" do
@@ -372,7 +372,7 @@ class InstitutionTest < ActiveSupport::TestCase
     @instance.delete_header_image
 
     key = Institution.header_image_key(@instance.key, "jpg")
-    assert !PersistentStore.instance.object_exists?(key: key)
+    assert !ObjectStore.instance.object_exists?(key: key)
   end
 
   test "delete_header_image() returns if there is no header image" do
@@ -777,14 +777,14 @@ class InstitutionTest < ActiveSupport::TestCase
     # Delete its derivatives.
     InstitutionsHelper::FAVICONS.each do |icon|
       key = "institutions/#{@instance.key}/theme/favicons/favicon-#{icon[:size]}x#{icon[:size]}.png"
-      PersistentStore.instance.delete_object(key: key)
+      ObjectStore.instance.delete_object(key: key)
     end
     # Regenerate them.
     @instance.regenerate_favicons
     # Assert that they have all been generated.
     InstitutionsHelper::FAVICONS.each do |icon|
       key = "institutions/#{@instance.key}/theme/favicons/favicon-#{icon[:size]}x#{icon[:size]}.png"
-      assert PersistentStore.instance.object_exists?(key: key)
+      assert ObjectStore.instance.object_exists?(key: key)
     end
   end
 
@@ -951,7 +951,7 @@ class InstitutionTest < ActiveSupport::TestCase
       @instance.upload_banner_image(io: file, extension: "jpg")
     end
     key = Institution.banner_image_key(@instance.key, "jpg")
-    assert PersistentStore.instance.object_exists?(key: key)
+    assert ObjectStore.instance.object_exists?(key: key)
   end
 
   test "upload_banner_image() updates the footer_image_filename attribute" do
@@ -970,11 +970,11 @@ class InstitutionTest < ActiveSupport::TestCase
       @instance.upload_favicon(io: file)
     end
     key = "institutions/#{@instance.key}/theme/favicons/favicon-original.png"
-    assert PersistentStore.instance.object_exists?(key: key)
+    assert ObjectStore.instance.object_exists?(key: key)
 
     InstitutionsHelper::FAVICONS.each do |icon|
       key = "institutions/#{@instance.key}/theme/favicons/favicon-#{icon[:size]}x#{icon[:size]}.png"
-      assert PersistentStore.instance.object_exists?(key: key)
+      assert ObjectStore.instance.object_exists?(key: key)
     end
   end
 
@@ -1000,7 +1000,7 @@ class InstitutionTest < ActiveSupport::TestCase
       @instance.upload_footer_image(io: file, extension: "jpg")
     end
     key = Institution.footer_image_key(@instance.key, "jpg")
-    assert PersistentStore.instance.object_exists?(key: key)
+    assert ObjectStore.instance.object_exists?(key: key)
   end
 
   test "upload_footer_image() updates the footer_image_filename attribute" do
@@ -1019,7 +1019,7 @@ class InstitutionTest < ActiveSupport::TestCase
       @instance.upload_header_image(io: file, extension: "jpg")
     end
     key = Institution.header_image_key(@instance.key, "jpg")
-    assert PersistentStore.instance.object_exists?(key: key)
+    assert ObjectStore.instance.object_exists?(key: key)
   end
 
   test "upload_header_image() updates the header_image_filename attribute" do

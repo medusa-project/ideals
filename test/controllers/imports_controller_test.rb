@@ -42,8 +42,8 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
       `cd "#{package_root}" && rm -f #{csv_package} && zip -r "#{csv_package}" valid_items`
       @import.update!(filename: File.basename(csv_package),
                       length:   File.size(csv_package))
-      PersistentStore.instance.put_object(key:  @import.file_key,
-                                          path: csv_package)
+      ObjectStore.instance.put_object(key:  @import.file_key,
+                                      path: csv_package)
 
       post import_complete_upload_path(@import)
     end

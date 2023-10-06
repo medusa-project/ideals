@@ -1,6 +1,6 @@
 require "test_helper"
 
-class PersistentStoreTest < ActiveSupport::TestCase
+class ObjectStoreTest < ActiveSupport::TestCase
 
   setup do
     bucket = ::Configuration.instance.storage[:bucket]
@@ -19,20 +19,20 @@ class PersistentStoreTest < ActiveSupport::TestCase
 
   test "copy_object() raises an error if source_key is blank" do
     assert_raises ArgumentError do
-      PersistentStore.instance.copy_object(source_key: nil,
+      ObjectStore.instance.copy_object(source_key: nil,
                                            target_key: "cats/mainecoon")
     end
   end
 
   test "copy_object() raises an error if target_key is blank" do
     assert_raises ArgumentError do
-      PersistentStore.instance.copy_object(source_key: "cats/siamese",
+      ObjectStore.instance.copy_object(source_key: "cats/siamese",
                                            target_key: nil)
     end
   end
 
   test "copy_object() copies an object" do
-    store = PersistentStore.instance
+    store = ObjectStore.instance
     file  = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")
     store.put_object(key:  "cats/siamese", path: file)
     store.copy_object(source_key: "cats/siamese", target_key: "cats/mainecoon")
@@ -46,7 +46,7 @@ class PersistentStoreTest < ActiveSupport::TestCase
   # delete_object()
 
   test "delete_object() deletes an object" do
-    store = PersistentStore.instance
+    store = ObjectStore.instance
     file  = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")
     key   = "cats/siamese"
     store.put_object(key: key, path: file)
@@ -57,7 +57,7 @@ class PersistentStoreTest < ActiveSupport::TestCase
   # delete_objects()
 
   test "delete_objects() deletes all intended objects" do
-    store = PersistentStore.instance
+    store = ObjectStore.instance
     file  = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")
     store.put_object(key:  "cats/siamese", path: file)
     store.put_object(key:  "cats/mainecoon", path: file)
@@ -73,7 +73,7 @@ class PersistentStoreTest < ActiveSupport::TestCase
   # get_object()
 
   test "get_object() can download an object into memory" do
-    store = PersistentStore.instance
+    store = ObjectStore.instance
     file  = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")
     key   = "cats/siamese"
     store.put_object(key: key, path: file)
@@ -81,7 +81,7 @@ class PersistentStoreTest < ActiveSupport::TestCase
   end
 
   test "get_object() can download an object to a file" do
-    store = PersistentStore.instance
+    store = ObjectStore.instance
     file  = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")
     key   = "cats/siamese"
     store.put_object(key: key, path: file)
@@ -92,7 +92,7 @@ class PersistentStoreTest < ActiveSupport::TestCase
   end
 
   test "get_object() raises an error when given a nonexistent key" do
-    store = PersistentStore.instance
+    store = ObjectStore.instance
     assert_raises do
       store.get_object(key: "bogus")
     end
@@ -102,20 +102,20 @@ class PersistentStoreTest < ActiveSupport::TestCase
 
   test "move_object() raises an error if source_key is blank" do
     assert_raises ArgumentError do
-      PersistentStore.instance.move_object(source_key: nil,
+      ObjectStore.instance.move_object(source_key: nil,
                                            target_key: "cats/mainecoon")
     end
   end
 
   test "move_object() raises an error if target_key is blank" do
     assert_raises ArgumentError do
-      PersistentStore.instance.move_object(source_key: "cats/siamese",
+      ObjectStore.instance.move_object(source_key: "cats/siamese",
                                            target_key: nil)
     end
   end
 
   test "move_object() copies an object" do
-    store = PersistentStore.instance
+    store = ObjectStore.instance
     file  = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")
     source_key = "cats/siamese"
     target_key = "cats/mainecoon"
@@ -126,7 +126,7 @@ class PersistentStoreTest < ActiveSupport::TestCase
   end
 
   test "move_object() deletes the source object" do
-    store      = PersistentStore.instance
+    store      = ObjectStore.instance
     file       = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")
     source_key = "cats/siamese"
     target_key = "cats/mainecoon"
@@ -146,7 +146,7 @@ class PersistentStoreTest < ActiveSupport::TestCase
   # object_count()
 
   test "object_count() returns a correct count" do
-    store = PersistentStore.instance
+    store = ObjectStore.instance
     file  = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")
     store.put_object(key: "cats/siamese", path: file)
     store.put_object(key: "cats/mainecoon", path: file)
@@ -157,21 +157,21 @@ class PersistentStoreTest < ActiveSupport::TestCase
 
   test "object_exists?() returns true when the object exists" do
     key   = "test-#{SecureRandom.hex}"
-    store = PersistentStore.instance
+    store = ObjectStore.instance
     store.put_object(key:  key,
                      path: File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png"))
     assert store.object_exists?(key: key)
   end
 
   test "object_exists?() returns false when the object does not exist" do
-    assert !PersistentStore.instance.object_exists?(key: "bogus")
+    assert !ObjectStore.instance.object_exists?(key: "bogus")
   end
 
   # object_length()
 
   test "object_length() returns the object length" do
     key   = "test"
-    store = PersistentStore.instance
+    store = ObjectStore.instance
     store.put_object(key:  key,
                      path: File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png"))
     assert store.object_length(key: key) > 5000
@@ -179,14 +179,14 @@ class PersistentStoreTest < ActiveSupport::TestCase
 
   test "object_exists?() raises an error when the object does not exist" do
     assert_raises do
-      PersistentStore.instance.object_length(key: "bogus")
+      ObjectStore.instance.object_length(key: "bogus")
     end
   end
 
   # objects()
 
   test "objects() returns a correct value" do
-    store = PersistentStore.instance
+    store = ObjectStore.instance
     file  = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")
     store.put_object(key: "cats/siamese", path: file)
     store.put_object(key: "cats/mainecoon", path: file)
@@ -196,7 +196,7 @@ class PersistentStoreTest < ActiveSupport::TestCase
   # presigned_download_url()
 
   test "presigned_download_url() returns a presigned URL" do
-    store = PersistentStore.instance
+    store = ObjectStore.instance
     file  = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")
     key   = "cats/siamese"
     store.put_object(key: key, path: file)
@@ -207,14 +207,14 @@ class PersistentStoreTest < ActiveSupport::TestCase
   # presigned_upload_url()
 
   test "presigned_upload_url() returns a presigned URL" do
-    store = PersistentStore.instance
+    store = ObjectStore.instance
     key   = "cats/siamese"
     assert_not_empty store.presigned_upload_url(key:        key,
                                                 expires_in: 1.minute.to_i)
   end
 
   test "presigned_upload_url() returns a presigned URL for a multipart part" do
-    store = PersistentStore.instance
+    store = ObjectStore.instance
     key   = "cats/siamese"
     assert_not_empty store.presigned_upload_url(key:         key,
                                                 upload_id:   "whatever",
@@ -225,7 +225,7 @@ class PersistentStoreTest < ActiveSupport::TestCase
   # public_url()
 
   test "public_url() returns a URL" do
-    store = PersistentStore.instance
+    store = ObjectStore.instance
     file  = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")
     key   = "cats/siamese"
     store.put_object(key: key, path: file)
@@ -235,7 +235,7 @@ class PersistentStoreTest < ActiveSupport::TestCase
   # put_object()
 
   test "put_object() uploads the given pathname" do
-    store = PersistentStore.instance
+    store = ObjectStore.instance
     file  = File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png")
     key   = "cats/siamese"
     store.put_object(key: key, path: file)
@@ -243,7 +243,7 @@ class PersistentStoreTest < ActiveSupport::TestCase
   end
 
   test "put_object() uploads the given file" do
-    store = PersistentStore.instance
+    store = ObjectStore.instance
     file  = File.new(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png"))
     key   = "cats/siamese"
     store.put_object(key: key, file: file)
@@ -251,7 +251,7 @@ class PersistentStoreTest < ActiveSupport::TestCase
   end
 
   test "put_object() uploads the given IO" do
-    store = PersistentStore.instance
+    store = ObjectStore.instance
     File.open(File.join(Rails.root, "test", "fixtures", "files", "escher_lego.png"), "r") do |file|
       key   = "cats/siamese"
       store.put_object(key: key, io: file)
@@ -260,7 +260,7 @@ class PersistentStoreTest < ActiveSupport::TestCase
   end
 
   test "put_object() uploads the given string" do
-    store = PersistentStore.instance
+    store = ObjectStore.instance
     key   = "cats/siamese"
     store.put_object(key: key, data: "some data")
     assert store.object_exists?(key: key)
@@ -280,7 +280,7 @@ class PersistentStoreTest < ActiveSupport::TestCase
 
   test "upload_path() raises an error if root_path does not exist" do
     root_path = "/bogus/bogus/bogus"
-    store     = PersistentStore.instance
+    store     = ObjectStore.instance
     assert_raises IOError do
       store.upload_path(root_path:  root_path,
                         key_prefix: "prefix/")
@@ -289,7 +289,7 @@ class PersistentStoreTest < ActiveSupport::TestCase
 
   test "upload_path() uploads correct objects with correct keys" do
     root_path = File.join(file_fixture_path, "packages", "saf", "valid_item")
-    store     = PersistentStore.instance
+    store     = ObjectStore.instance
     store.upload_path(root_path:  root_path,
                        key_prefix: "prefix/")
 
@@ -301,7 +301,7 @@ class PersistentStoreTest < ActiveSupport::TestCase
 
   test "upload_path() adds uploaded keys to the uploaded_keys array" do
     root_path     = File.join(file_fixture_path, "packages", "saf", "valid_item")
-    store         = PersistentStore.instance
+    store         = ObjectStore.instance
     uploaded_keys = []
     store.upload_path(root_path:     root_path,
                       key_prefix:    "prefix/",

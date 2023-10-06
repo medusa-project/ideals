@@ -217,7 +217,7 @@ class BitstreamTest < ActiveSupport::TestCase
   test "archived_files() returns a cached result" do
     @instance = bitstreams(:southwest_unit1_collection1_item1_zip)
     files = @instance.archived_files # cache the result
-    PersistentStore.instance.delete_object(key: @instance.effective_key)
+    ObjectStore.instance.delete_object(key: @instance.effective_key)
     new_files = @instance.archived_files
     assert_equal files, new_files
   end
@@ -289,7 +289,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "data() raises an error when an object does not exist in either the
   staging or permanent area" do
-    PersistentStore.instance.delete_object(key: @instance.staging_key)
+    ObjectStore.instance.delete_object(key: @instance.staging_key)
     assert_raises Aws::S3::Errors::NoSuchKey do
       @instance.data
     end
@@ -313,7 +313,7 @@ class BitstreamTest < ActiveSupport::TestCase
   # delete_derivatives()
 
   test "delete_derivatives() deletes all derivatives" do
-    store = PersistentStore.instance
+    store = ObjectStore.instance
 
     # upload the source image to the staging area of the application S3 bucket
     File.open(file_fixture("escher_lego.png"), "r") do |file|
@@ -382,7 +382,7 @@ class BitstreamTest < ActiveSupport::TestCase
   end
 
   test "delete_from_permanent_storage() deletes the corresponding object" do
-    store = PersistentStore.instance
+    store = ObjectStore.instance
 
     # Write a file to the bucket.
     fixture = file_fixture("escher_lego.png")
@@ -416,7 +416,7 @@ class BitstreamTest < ActiveSupport::TestCase
     end
 
     # Check that the file exists in the bucket.
-    assert PersistentStore.instance.object_exists?(key: @instance.permanent_key)
+    assert ObjectStore.instance.object_exists?(key: @instance.permanent_key)
     # Delete it.
     @instance.delete_from_permanent_storage
     # Check that the properties have been updated.
@@ -432,7 +432,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "delete_from_staging() deletes the corresponding object" do
     Bitstream.delete_all
-    store = PersistentStore.instance
+    store = ObjectStore.instance
 
     # Write a file to the bucket.
     fixture = file_fixture("escher_lego.png")
@@ -465,7 +465,7 @@ class BitstreamTest < ActiveSupport::TestCase
     end
 
     # Check that the file exists in the bucket.
-    assert PersistentStore.instance.object_exists?(key: @instance.staging_key)
+    assert ObjectStore.instance.object_exists?(key: @instance.staging_key)
     # Delete it.
     @instance.delete_from_staging
     # Check that the properties have been updated.
@@ -539,7 +539,7 @@ class BitstreamTest < ActiveSupport::TestCase
   test "destroy() deletes the corresponding file from the staging area of the
   application bucket" do
     @instance = bitstreams(:uiuc_submitted_in_staging)
-    store     = PersistentStore.instance
+    store     = ObjectStore.instance
     key       = Bitstream.staging_key(institution_key: @instance.institution.key,
                                       item_id:         @instance.item_id,
                                       filename:        @instance.filename)
@@ -551,7 +551,7 @@ class BitstreamTest < ActiveSupport::TestCase
   test "destroy() deletes the corresponding file from the permanent area of the
   application bucket" do
     @instance = bitstreams(:uiuc_approved_in_permanent)
-    store     = PersistentStore.instance
+    store     = ObjectStore.instance
     key       = Bitstream.permanent_key(institution_key: @instance.institution.key,
                                         item_id:         @instance.item_id,
                                         filename:        @instance.filename)
@@ -562,7 +562,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "destroy() deletes corresponding derivatives" do
     @instance  = bitstreams(:uiuc_submitted_in_staging)
-    store      = PersistentStore.instance
+    store      = ObjectStore.instance
     key_prefix = @instance.send(:derivative_key_prefix)
     @instance.derivative_image_url(size: 256) # generate a derivative
 
@@ -863,7 +863,7 @@ class BitstreamTest < ActiveSupport::TestCase
       end
 
       # Check that the file exists in the bucket.
-      assert PersistentStore.instance.object_exists?(key: @instance.permanent_key)
+      assert ObjectStore.instance.object_exists?(key: @instance.permanent_key)
     ensure
       @instance.delete_from_staging
       @instance.delete_from_permanent_storage
@@ -882,7 +882,7 @@ class BitstreamTest < ActiveSupport::TestCase
         staging_key = @instance.staging_key
         @instance.move_into_permanent_storage
       end
-      assert !PersistentStore.instance.object_exists?(key: staging_key)
+      assert !ObjectStore.instance.object_exists?(key: staging_key)
     ensure
       @instance.delete_from_staging
       @instance.delete_from_permanent_storage
@@ -1093,8 +1093,8 @@ class BitstreamTest < ActiveSupport::TestCase
 
     assert_not_equal old_key, new_key
     assert new_key.end_with?(new_filename)
-    assert !PersistentStore.instance.object_exists?(key: old_key)
-    assert PersistentStore.instance.object_exists?(key: new_key)
+    assert !ObjectStore.instance.object_exists?(key: old_key)
+    assert ObjectStore.instance.object_exists?(key: new_key)
   end
 
   test "save() moves the permanent storage object when the filename has
@@ -1107,8 +1107,8 @@ class BitstreamTest < ActiveSupport::TestCase
 
     assert_not_equal old_key, new_key
     assert new_key.end_with?(new_filename)
-    assert !PersistentStore.instance.object_exists?(key: old_key)
-    assert PersistentStore.instance.object_exists?(key: new_key)
+    assert !ObjectStore.instance.object_exists?(key: old_key)
+    assert ObjectStore.instance.object_exists?(key: new_key)
   end
 
   test "save() moves the storage object in staging when the staging key has
@@ -1118,8 +1118,8 @@ class BitstreamTest < ActiveSupport::TestCase
     @instance.update!(staging_key: "new/key")
     new_key   = @instance.staging_key
 
-    assert !PersistentStore.instance.object_exists?(key: old_key)
-    assert PersistentStore.instance.object_exists?(key: new_key)
+    assert !ObjectStore.instance.object_exists?(key: old_key)
+    assert ObjectStore.instance.object_exists?(key: new_key)
   end
 
   test "save() moves the storage object in staging when the permanent key has
@@ -1129,8 +1129,8 @@ class BitstreamTest < ActiveSupport::TestCase
     @instance.update!(permanent_key: "new/key")
     new_key   = @instance.permanent_key
 
-    assert !PersistentStore.instance.object_exists?(key: old_key)
-    assert PersistentStore.instance.object_exists?(key: new_key)
+    assert !ObjectStore.instance.object_exists?(key: old_key)
+    assert ObjectStore.instance.object_exists?(key: new_key)
   end
 
   # save() delete_from_medusa callback
@@ -1308,7 +1308,7 @@ class BitstreamTest < ActiveSupport::TestCase
       @instance.upload_to_permanent(fixture)
 
       # Check that the file exists in the bucket.
-      assert PersistentStore.instance.object_exists?(key: @instance.permanent_key)
+      assert ObjectStore.instance.object_exists?(key: @instance.permanent_key)
     ensure
       @instance.delete_from_permanent_storage
     end
@@ -1342,7 +1342,7 @@ class BitstreamTest < ActiveSupport::TestCase
       end
 
       # Check that the file exists in the bucket.
-      assert PersistentStore.instance.object_exists?(key: @instance.staging_key)
+      assert ObjectStore.instance.object_exists?(key: @instance.staging_key)
     ensure
       @instance.delete_from_staging
     end

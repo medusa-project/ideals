@@ -268,7 +268,7 @@ structure:
 * `institutions/:institution_key/storage/:item_id/`
 * `institutions/:institution_key/uploads/:item_id/`
 
-The high-level PersistentStore class provides access to the bucket and objects
+The high-level ObjectStore class provides access to the bucket and objects
 within it. This class wraps the `S3Client` class, which itself is a convenience
 wrapper around an `Aws::S3::Client` from the `aws-sdk-s3` gem.
 

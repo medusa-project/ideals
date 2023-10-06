@@ -513,7 +513,7 @@ class UnitTest < ActiveSupport::TestCase
       unit.collections.each do |collection|
         collection.items.each do |item|
           item.bitstreams.each do |bitstream|
-            assert PersistentStore.instance.object_exists?(key: bitstream.effective_key)
+            assert ObjectStore.instance.object_exists?(key: bitstream.effective_key)
           end
         end
       end

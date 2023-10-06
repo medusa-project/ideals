@@ -115,7 +115,7 @@ namespace :bitstreams do
     bitstreams.each do |bs|
       target_key          = file_group.directory.relative_key + "/" +
         Bitstream.medusa_key(bs.item.handle.handle, bs.filename)
-      exists_in_bucket    = PersistentStore.instance.object_exists?(key: target_key)
+      exists_in_bucket    = ObjectStore.instance.object_exists?(key: target_key)
       num_in_bucket      += 1 if exists_in_bucket
       exists_in_medusa_db = false
       file_group.directory.walk_tree do |node|

@@ -48,11 +48,11 @@ class ImportTest < ActiveSupport::TestCase
     fixture = file_fixture("zip.zip")
     @instance.update!(filename: "zip.zip",
                       length:   File.size(fixture))
-    PersistentStore.instance.put_object(key:  @instance.file_key,
+    ObjectStore.instance.put_object(key:  @instance.file_key,
                                         path: fixture)
 
     @instance.delete_file
-    assert !PersistentStore.instance.object_exists?(key: @instance.file_key)
+    assert !ObjectStore.instance.object_exists?(key: @instance.file_key)
   end
 
   # destroy()
@@ -70,7 +70,7 @@ class ImportTest < ActiveSupport::TestCase
 
   test "destroy() deletes the associated bucket object" do
     fixture = file_fixture("zip.zip")
-    store   = PersistentStore.instance
+    store   = ObjectStore.instance
     @instance.update!(filename: "zip.zip",
                       length:   File.size(fixture))
     store.put_object(key:  @instance.file_key,
@@ -99,7 +99,7 @@ class ImportTest < ActiveSupport::TestCase
   test "download() downloads a file from the application S3 bucket to the
   filesystem" do
     fixture = file_fixture("zip.zip")
-    store   = PersistentStore.instance
+    store   = ObjectStore.instance
     @instance.update!(filename: "zip.zip",
                       length:   File.size(fixture))
     store.put_object(key:  @instance.file_key,
@@ -111,7 +111,7 @@ class ImportTest < ActiveSupport::TestCase
 
   test "download() deletes the downloaded file from the application S3 bucket" do
     fixture = file_fixture("zip.zip")
-    store   = PersistentStore.instance
+    store   = ObjectStore.instance
     @instance.update!(filename: "zip.zip",
                       length:   File.size(fixture))
     store.put_object(key:  @instance.file_key,
@@ -237,12 +237,12 @@ class ImportTest < ActiveSupport::TestCase
     fixture = file_fixture("zip.zip")
     @instance.update!(filename: "zip.zip",
                       length:   File.size(fixture))
-    PersistentStore.instance.put_object(key:  @instance.file_key,
-                                        path: fixture)
+    ObjectStore.instance.put_object(key:  @instance.file_key,
+                                    path: fixture)
 
     @instance.task.succeed
     @instance.save!
-    assert !PersistentStore.instance.object_exists?(key: @instance.file_key)
+    assert !ObjectStore.instance.object_exists?(key: @instance.file_key)
   end
 
 end

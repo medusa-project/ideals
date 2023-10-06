@@ -8,8 +8,8 @@ class ImportJobTest < ActiveSupport::TestCase
     import.update!(task:     nil,
                    filename: File.basename(fixture),
                    length:   File.size(fixture))
-    PersistentStore.instance.put_object(key:  import.file_key,
-                                        path: fixture)
+    ObjectStore.instance.put_object(key:  import.file_key,
+                                    path: fixture)
 
     user = users(:southwest)
     ImportJob.new.perform(import: import, user: user)
@@ -30,8 +30,8 @@ class ImportJobTest < ActiveSupport::TestCase
     import.update!(task:     nil,
                    filename: File.basename(fixture),
                    length:   File.size(fixture))
-    PersistentStore.instance.put_object(key:  import.file_key,
-                                        path: fixture)
+    ObjectStore.instance.put_object(key:  import.file_key,
+                                    path: fixture)
 
     submitter = users(:uiuc)
     ImportJob.new.perform(import: import, user: submitter)
@@ -45,8 +45,8 @@ class ImportJobTest < ActiveSupport::TestCase
     import  = imports(:uiuc_csv_file_new)
     import.update!(filename: File.basename(fixture),
                    length:   File.size(fixture))
-    PersistentStore.instance.put_object(key:  import.file_key,
-                                        path: fixture)
+    ObjectStore.instance.put_object(key:  import.file_key,
+                                    path: fixture)
 
     format = ImportJob.new.perform(import: import)
     assert_equal Import::Format::CSV_FILE, format
@@ -59,8 +59,8 @@ class ImportJobTest < ActiveSupport::TestCase
     `cd "#{package_root}" && rm -f #{csv_package} && zip -r "#{csv_package}" valid_items`
     import.update!(filename: File.basename(csv_package),
                    length:   File.size(csv_package))
-    PersistentStore.instance.put_object(key:  import.file_key,
-                                        path: csv_package)
+    ObjectStore.instance.put_object(key:  import.file_key,
+                                    path: csv_package)
 
     format = ImportJob.new.perform(import: import)
     assert_equal Import::Format::CSV_PACKAGE, format
@@ -73,8 +73,8 @@ class ImportJobTest < ActiveSupport::TestCase
     `cd "#{package_root}" && rm -f #{saf_package} && zip -r "#{saf_package}" valid_item`
     import.update!(filename: File.basename(saf_package),
                    length:   File.size(saf_package))
-    PersistentStore.instance.put_object(key:  import.file_key,
-                                        path: saf_package)
+    ObjectStore.instance.put_object(key:  import.file_key,
+                                    path: saf_package)
 
     format = ImportJob.new.perform(import: import)
     assert_equal Import::Format::SAF, format

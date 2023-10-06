@@ -425,7 +425,7 @@ class Institution < ApplicationRecord
     return nil if self.banner_image_filename.blank?
     key = [self.class.image_key_prefix(self.key),
            self.banner_image_filename].join
-    PersistentStore.instance.public_url(key: key)
+    ObjectStore.instance.public_url(key: key)
   end
 
   def breadcrumb_label
@@ -460,28 +460,28 @@ class Institution < ApplicationRecord
   def delete_banner_image
     return if self.banner_image_filename.blank?
     key = self.class.image_key_prefix(self.key) + self.banner_image_filename
-    PersistentStore.instance.delete_object(key: key)
+    ObjectStore.instance.delete_object(key: key)
     self.update!(banner_image_filename: nil)
   end
 
   def delete_favicons
     return unless self.has_favicon
     key_prefix = self.class.image_key_prefix(self.key) + "favicons/"
-    PersistentStore.instance.delete_objects(key_prefix: key_prefix)
+    ObjectStore.instance.delete_objects(key_prefix: key_prefix)
     self.update!(has_favicon: false)
   end
 
   def delete_footer_image
     return if self.footer_image_filename.blank?
     key = self.class.image_key_prefix(self.key) + self.footer_image_filename
-    PersistentStore.instance.delete_object(key: key)
+    ObjectStore.instance.delete_object(key: key)
     self.update!(footer_image_filename: nil)
   end
 
   def delete_header_image
     return if self.header_image_filename.blank?
     key = self.class.image_key_prefix(self.key) + self.header_image_filename
-    PersistentStore.instance.delete_object(key: key)
+    ObjectStore.instance.delete_object(key: key)
     self.update!(header_image_filename: nil)
   end
 
@@ -542,7 +542,7 @@ class Institution < ApplicationRecord
     key = [self.class.image_key_prefix(self.key),
            "favicons/",
            self.class.favicon_filename(size: size)].join
-    PersistentStore.instance.public_url(key: key)
+    ObjectStore.instance.public_url(key: key)
   end
 
   ##
@@ -569,7 +569,7 @@ class Institution < ApplicationRecord
     return nil if self.footer_image_filename.blank?
     key = [self.class.image_key_prefix(self.key),
            self.footer_image_filename].join
-    PersistentStore.instance.public_url(key: key)
+    ObjectStore.instance.public_url(key: key)
   end
 
   ##
@@ -579,7 +579,7 @@ class Institution < ApplicationRecord
     return nil if self.header_image_filename.blank?
     key = [self.class.image_key_prefix(self.key),
            self.header_image_filename].join
-    PersistentStore.instance.public_url(key: key)
+    ObjectStore.instance.public_url(key: key)
   end
 
   ##
@@ -644,17 +644,17 @@ class Institution < ApplicationRecord
         master_key  = key_prefix + "favicon-original.png"
         master_path = File.join(tmpdir, "favicon-original.png")
         # Download the master favicon.
-        PersistentStore.instance.get_object(key:             master_key,
-                                            response_target: master_path)
+        ObjectStore.instance.get_object(key:             master_key,
+                                        response_target: master_path)
         # Generate a bunch of resized derivatives and upload them.
         InstitutionsHelper::FAVICONS.each_with_index do |icon, index|
           deriv_path = "#{tmpdir}/favicon-#{icon[:size]}x#{icon[:size]}.png"
           size       = "#{icon[:size]}x#{icon[:size]}"
           `convert #{master_path} -background none -resize #{size} -gravity center -extent #{size} #{deriv_path}`
           dest_key   = "#{key_prefix}favicon-#{icon[:size]}x#{icon[:size]}.png"
-          PersistentStore.instance.put_object(key:    dest_key,
-                                              path:   deriv_path,
-                                              public: true)
+          ObjectStore.instance.put_object(key:    dest_key,
+                                          path:   deriv_path,
+                                          public: true)
           task&.progress(index / InstitutionsHelper::FAVICONS.length.to_f)
         end
       end
@@ -832,9 +832,9 @@ class Institution < ApplicationRecord
       # Upload the "master favicon"
       key_prefix = self.class.image_key_prefix(self.key)
       dest_key   = key_prefix + "favicons/favicon-original.png"
-      PersistentStore.instance.put_object(key:    dest_key,
-                                          path:   tempfile.path,
-                                          public: true)
+      ObjectStore.instance.put_object(key:    dest_key,
+                                      path:   tempfile.path,
+                                      public: true)
       self.update!(has_favicon: true)
       regenerate_favicons(task: task)
       task&.succeed
@@ -1121,7 +1121,7 @@ class Institution < ApplicationRecord
   #
   def upload_theme_image(io:, filename:)
     key = self.class.image_key_prefix(self.key) + filename
-    PersistentStore.instance.put_object(key: key, io: io, public: true)
+    ObjectStore.instance.put_object(key: key, io: io, public: true)
   end
 
   def validate_css_colors

@@ -6,7 +6,7 @@
 # when writing to the bucket, to ensure that the resulting objects receive the
 # correct tags, ACLs, metadata, etc.
 #
-class PersistentStore
+class ObjectStore
 
   include Singleton
 

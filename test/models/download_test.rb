@@ -35,7 +35,7 @@ class DownloadTest < ActiveSupport::TestCase
   # expire()
 
   test "expire() deletes the corresponding storage object" do
-    store       = PersistentStore.instance
+    store       = ObjectStore.instance
     institution = institutions(:uiuc)
     File.open(file_fixture("crane.jpg"), "r") do |file|
       download = Download.create!(filename:    "file.jpg",

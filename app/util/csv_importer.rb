@@ -298,8 +298,8 @@ class CsvImporter
                             primary:         primary,
                             description:     file_descriptions ? file_descriptions[file_index] : nil,
                             length:          File.size(upload_file))
-          PersistentStore.instance.put_object(key:  permanent_key,
-                                              path: upload_file)
+          ObjectStore.instance.put_object(key:  permanent_key,
+                                          path: upload_file)
           primary          = false
           bundle_position += 1
         end

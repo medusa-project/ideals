@@ -184,7 +184,7 @@ class ItemSubmissionTest < ActionDispatch::IntegrationTest
   def upload_files
     file   = file_fixture("crane.jpg")
     length = File.size(file)
-    store  = PersistentStore.instance
+    store  = ObjectStore.instance
 
     # Create a bitstream
     assert_difference "Bitstream.count" do

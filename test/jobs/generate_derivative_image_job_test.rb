@@ -12,7 +12,7 @@ class GenerateDerivativeImageJobTest < ActiveSupport::TestCase
     GenerateDerivativeImageJob.perform_now(bs, :full, 512, :jpg)
 
     key = bs.send(:derivative_image_key, region: :full, size: 512, format: :jpg)
-    assert PersistentStore.instance.object_exists?(key: key)
+    assert ObjectStore.instance.object_exists?(key: key)
   end
 
 end

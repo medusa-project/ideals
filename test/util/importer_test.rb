@@ -16,8 +16,8 @@ class ImporterTest < ActiveSupport::TestCase
     import.update!(task:     nil,
                    filename: File.basename(fixture),
                    length:   File.size(fixture))
-    PersistentStore.instance.put_object(key:  import.file_key,
-                                        path: fixture)
+    ObjectStore.instance.put_object(key:  import.file_key,
+                                    path: fixture)
     submitter = users(:uiuc)
     Importer.new.import(import, submitter)
     import.reload
@@ -52,8 +52,8 @@ class ImporterTest < ActiveSupport::TestCase
     `cd "#{package_root}" && rm -f #{zip_package} && zip -r "#{zip_package}" valid_items`
     import.update!(filename: File.basename(zip_package),
                    length:   File.size(zip_package))
-    PersistentStore.instance.put_object(key:  import.file_key,
-                                        path: zip_package)
+    ObjectStore.instance.put_object(key:  import.file_key,
+                                    path: zip_package)
 
     format = Importer.new.import(import, users(:uiuc))
     assert_equal Import::Format::CSV_PACKAGE, format
@@ -65,8 +65,8 @@ class ImporterTest < ActiveSupport::TestCase
     csv_file = file_fixture("csv/new.csv")
     import.update!(filename: File.basename(csv_file),
                    length:   File.size(csv_file))
-    PersistentStore.instance.put_object(key:  import.file_key,
-                                        path: csv_file)
+    ObjectStore.instance.put_object(key:  import.file_key,
+                                    path: csv_file)
 
     format = Importer.new.import(import, users(:uiuc))
     assert_equal Import::Format::CSV_FILE, format
@@ -79,8 +79,8 @@ class ImporterTest < ActiveSupport::TestCase
     `cd "#{package_root}" && rm -f #{zip_package} && zip -r "#{zip_package}" valid_items`
     import.update!(filename: File.basename(zip_package),
                    length:   File.size(zip_package))
-    PersistentStore.instance.put_object(key:  import.file_key,
-                                        path: zip_package)
+    ObjectStore.instance.put_object(key:  import.file_key,
+                                    path: zip_package)
 
     format = Importer.new.import(import, users(:uiuc))
     assert_equal Import::Format::CSV_PACKAGE, format
@@ -93,8 +93,8 @@ class ImporterTest < ActiveSupport::TestCase
     `cd "#{package_root}" && rm -f #{zip_package} && zip -r "#{zip_package}" .`
     import.update!(filename: File.basename(zip_package),
                    length:   File.size(zip_package))
-    PersistentStore.instance.put_object(key:  import.file_key,
-                                        path: zip_package)
+    ObjectStore.instance.put_object(key:  import.file_key,
+                                    path: zip_package)
 
     format = Importer.new.import(import, users(:uiuc))
     assert_equal Import::Format::CSV_PACKAGE, format
@@ -107,8 +107,8 @@ class ImporterTest < ActiveSupport::TestCase
     `cd "#{package_root}" && rm -f #{zip_package} && zip -r "#{zip_package}" valid_items`
     import.update!(filename: File.basename(zip_package),
                    length:   File.size(zip_package))
-    PersistentStore.instance.put_object(key:  import.file_key,
-                                        path: zip_package)
+    ObjectStore.instance.put_object(key:  import.file_key,
+                                    path: zip_package)
 
     format = Importer.new.import(import, users(:uiuc))
     assert_equal Import::Format::CSV_PACKAGE, format
@@ -121,8 +121,8 @@ class ImporterTest < ActiveSupport::TestCase
     `cd "#{package_root}" && rm -f #{zip_package} && zip -r "#{zip_package}" valid_item`
     import.update!(filename: File.basename(zip_package),
                    length:   File.size(zip_package))
-    PersistentStore.instance.put_object(key:  import.file_key,
-                                        path: zip_package)
+    ObjectStore.instance.put_object(key:  import.file_key,
+                                    path: zip_package)
 
     format = Importer.new.import(import, users(:uiuc))
     assert_equal Import::Format::SAF, format
@@ -135,8 +135,8 @@ class ImporterTest < ActiveSupport::TestCase
     `cd "#{package_root}" && rm -f #{zip_package} && zip -r "#{zip_package}" .`
     import.update!(filename: File.basename(zip_package),
                    length:   File.size(zip_package))
-    PersistentStore.instance.put_object(key:  import.file_key,
-                                        path: zip_package)
+    ObjectStore.instance.put_object(key:  import.file_key,
+                                    path: zip_package)
 
     format = Importer.new.import(import, users(:uiuc))
     assert_equal Import::Format::SAF, format
@@ -149,8 +149,8 @@ class ImporterTest < ActiveSupport::TestCase
     `cd "#{package_root}" && rm -f #{zip_package} && zip -r "#{zip_package}" valid_item`
     import.update!(filename: File.basename(zip_package),
                    length:   File.size(zip_package))
-    PersistentStore.instance.put_object(key:  import.file_key,
-                                        path: zip_package)
+    ObjectStore.instance.put_object(key:  import.file_key,
+                                    path: zip_package)
 
     format = Importer.new.import(import, users(:uiuc))
     assert_equal Import::Format::SAF, format

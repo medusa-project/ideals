@@ -13,7 +13,7 @@
 -# Read in JavaScript to determine whether to display the remove buttons.
 - can_delete_bitstreams = policy(item).delete_bitstreams?
 = hidden_field_tag "can_delete_bitstreams", can_delete_bitstreams
-= hidden_field_tag "max_upload_size", PersistentStore::MAX_UPLOAD_SIZE
+= hidden_field_tag "max_upload_size", ObjectStore::MAX_UPLOAD_SIZE
 
 -# This table is modified by IDEALS.ItemFileUploader.addFile() (JavaScript).
 -# Its structure must be kept in sync with that code.

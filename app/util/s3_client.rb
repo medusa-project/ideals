@@ -3,11 +3,11 @@
 # all other method calls to it.
 #
 # N.B.: there is a higher-level interface to the application S3 bucket in
-# {PersistentStore}. It is recommended to use that instead where possible--
+# {ObjectStore}. It is recommended to use that instead where possible--
 # especially when writing to the bucket.
 #
 # @see https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/S3/Client.html
-# @see PersistentStore
+# @see ObjectStore
 #
 class S3Client
 
