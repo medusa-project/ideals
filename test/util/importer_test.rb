@@ -35,7 +35,6 @@ class ImporterTest < ActiveSupport::TestCase
 
   test "import() runs the CSV package importer for CSV packages" do
     import       = imports(:uiuc_csv_package_new)
-    FileUtils.rm_rf(import.filesystem_root)
     package_root = File.join(file_fixture_path, "packages/csv")
     zip_package  = File.join(Dir.mktmpdir, "test.zip")
     `cd "#{package_root}" && rm -f #{zip_package} && zip -r "#{zip_package}" valid_items`
@@ -48,7 +47,6 @@ class ImporterTest < ActiveSupport::TestCase
 
   test "import() supports CSV packages without an enclosing directory" do
     import       = imports(:uiuc_csv_package_new)
-    FileUtils.rm_rf(import.filesystem_root)
     package_root = File.join(file_fixture_path, "packages/csv/valid_items")
     zip_package  = File.join(Dir.mktmpdir, "test.zip")
     `cd "#{package_root}" && rm -f #{zip_package} && zip -r "#{zip_package}" .`
@@ -61,7 +59,6 @@ class ImporterTest < ActiveSupport::TestCase
 
   test "import() supports CSV packages with an enclosing directory" do
     import       = imports(:uiuc_csv_package_new)
-    FileUtils.rm_rf(import.filesystem_root)
     package_root = File.join(file_fixture_path, "packages/csv")
     zip_package  = File.join(Dir.mktmpdir, "test.zip")
     `cd "#{package_root}" && rm -f #{zip_package} && zip -r "#{zip_package}" valid_items`
@@ -74,7 +71,6 @@ class ImporterTest < ActiveSupport::TestCase
 
   test "import() runs the SAF package importer for SAF packages" do
     import       = imports(:uiuc_saf_new)
-    FileUtils.rm_rf(import.filesystem_root)
     package_root = File.join(file_fixture_path, "packages/saf")
     zip_package  = File.join(Dir.tmpdir, "test.zip")
     `cd "#{package_root}" && rm -f #{zip_package} && zip -r "#{zip_package}" valid_item`
@@ -86,7 +82,6 @@ class ImporterTest < ActiveSupport::TestCase
 
   test "import() supports SAF packages without an enclosing directory" do
     import       = imports(:uiuc_saf_new)
-    FileUtils.rm_rf(import.filesystem_root)
     package_root = File.join(file_fixture_path, "packages/saf/valid_item")
     zip_package  = File.join(Dir.tmpdir, "test.zip")
     `cd "#{package_root}" && rm -f #{zip_package} && zip -r "#{zip_package}" .`
@@ -98,7 +93,6 @@ class ImporterTest < ActiveSupport::TestCase
 
   test "import() supports SAF packages with an enclosing directory" do
     import       = imports(:uiuc_saf_new)
-    FileUtils.rm_rf(import.filesystem_root)
     package_root = File.join(file_fixture_path, "packages/saf")
     zip_package  = File.join(Dir.tmpdir, "test.zip")
     `cd "#{package_root}" && rm -f #{zip_package} && zip -r "#{zip_package}" valid_item`

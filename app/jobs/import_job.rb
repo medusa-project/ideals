@@ -25,7 +25,7 @@ class ImportJob < ApplicationJob
       import.task.fail(detail:    e.message,
                        backtrace: e.backtrace)
     ensure
-      import.delete_all_files
+      import.delete_file
     end
   end
 

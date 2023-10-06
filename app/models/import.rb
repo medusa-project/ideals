@@ -55,12 +55,11 @@ class Import < ApplicationRecord
 
   serialize :imported_items, JSON
 
-  before_save :delete_all_files_upon_success
-  before_destroy :delete_all_files
+  before_save :delete_file, if: -> { task&.succeeded? }
+  before_destroy :delete_file
 
-  def delete_all_files
-    fs_root = self.filesystem_root
-    FileUtils.rm_r(fs_root) if File.exist?(fs_root)
+  def delete_file
+    File.delete(self.file) if File.exist?(self.file)
   end
 
   ##
@@ -68,16 +67,7 @@ class Import < ApplicationRecord
   #
   def file
     return nil if self.filename.blank?
-    File.join(self.filesystem_root, self.filename)
-  end
-
-  ##
-  # @return [String]
-  #
-  def filesystem_root
-    raise "Instance not persisted" if self.id.blank?
-    tmpdir = Dir.tmpdir
-    File.join(tmpdir, "ideals_imports", self.institution.key, self.id.to_s)
+    File.join(file_dir, self.filename)
   end
 
   ##
@@ -109,7 +99,7 @@ class Import < ApplicationRecord
   #
   def save_file(file:, filename:)
     self.update!(filename: filename, length: File.size(file))
-    import_root = filesystem_root
+    import_root = file_dir
     FileUtils.mkdir_p(import_root)
     path = File.join(import_root, filename)
     FileUtils.cp(file.path, path)
@@ -118,8 +108,9 @@ class Import < ApplicationRecord
 
   private
 
-  def delete_all_files_upon_success
-    self.delete_all_files if self.task&.succeeded?
+  def file_dir
+    raise "Instance not persisted" if self.id.blank?
+    File.join(Dir.tmpdir, "ideals_imports", self.institution.key, self.id.to_s)
   end
 
   def validate_imported_items

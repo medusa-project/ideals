@@ -16,7 +16,6 @@ class ImportTest < ActiveSupport::TestCase
   setup do
     setup_s3
     @instance = imports(:uiuc_saf_new)
-    @instance.delete_all_files
   end
 
   teardown do
@@ -31,16 +30,16 @@ class ImportTest < ActiveSupport::TestCase
     assert !@instance.valid?
   end
 
-  # delete_all_files()
+  # delete_file()
 
-  test "delete_all_files() deletes all corresponding files" do
+  test "delete_file() deletes the corresponding file" do
     File.open(file_fixture("escher_lego.png"), "r") do |file|
       @instance.save_file(file:     file,
                           filename: File.basename(file.path))
     end
     assert File.exist?(@instance.file)
 
-    @instance.delete_all_files
+    @instance.delete_file
     assert !File.exist?(@instance.file)
   end
 
@@ -72,23 +71,10 @@ class ImportTest < ActiveSupport::TestCase
                           filename: File.basename(file.path))
     end
 
-    assert_equal File.join(@instance.filesystem_root, fixture.basename),
+    assert_equal File.join(Dir.tmpdir, "ideals_imports",
+                           @instance.institution.key, @instance.id.to_s,
+                           fixture.basename),
                  @instance.file
-  end
-
-  # filesystem_root()
-
-  test "filesystem_root() raises an error for an instance that has not been
-  persisted yet" do
-    import = Import.new
-    assert_raises do
-      import.filesystem_root
-    end
-  end
-
-  test "filesystem_root() returns the instance's filesystem root" do
-    assert_equal File.join(Dir.tmpdir, "ideals_imports", @instance.institution.key, @instance.id.to_s),
-                 @instance.filesystem_root
   end
 
   # progress()
@@ -144,7 +130,9 @@ class ImportTest < ActiveSupport::TestCase
   test "save_file() saves a file to a temporary location" do
     @instance.save_file(file:     File.new(file_fixture("pooh.jpg")),
                         filename: "pooh.jpg")
-    assert File.exist?(File.join(@instance.filesystem_root, "pooh.jpg"))
+    assert File.exist?(File.join(Dir.tmpdir, "ideals_imports",
+                                 @instance.institution.key, @instance.id.to_s,
+                                 "pooh.jpg"))
   end
 
 end

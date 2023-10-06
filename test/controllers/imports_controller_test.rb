@@ -10,7 +10,7 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
   end
 
   teardown do
-    @import.delete_all_files
+    @import.delete_file
   end
 
   # create()
