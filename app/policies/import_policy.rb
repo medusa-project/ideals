@@ -16,12 +16,16 @@ class ImportPolicy < ApplicationPolicy
     @import          = import
   end
 
+  def complete_upload
+    update
+  end
+
   def create
     index
   end
 
   def edit
-    upload_file
+    update
   end
 
   def index
@@ -43,7 +47,7 @@ class ImportPolicy < ApplicationPolicy
     effective_institution_admin(@user, @import.institution, @role_limit)
   end
 
-  def upload_file
+  def update
     if !@user
       return LOGGED_OUT_RESULT
     elsif effective_sysadmin?(@user, @role_limit)

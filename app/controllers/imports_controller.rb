@@ -3,17 +3,21 @@
 ##
 # # How imports work
 #
-# Before any uploading happens, a new {Import} instance is created representing
-# the import. The import is associated with a {Collection} into which files
-# are being imported.
-#
-# In the UI, there is a file input accepting either a compressed file (for
-# packages) or a CSV file can be dropped. {upload_file} receives the file,
-# stores it on the file system, and invokes an {ImportJob} to work
-# asynchronously on the import using whatever importer it deems necessary
-# ({CsvImporter}, {SafImporter}, etc.)
-#
-# After the import has succeeded, the import package is deleted.
+# 1. Before any uploading happens, the client creates an {Import} instance
+#    representing the import, which is associated with a {Collection} into
+#    which files are to be imported.
+# 2. In the UI, there is a file input accepting either a compressed file (for
+#    packages) or a CSV file. When the input receives a file:
+#      1. An XHR PATCH request is made to {update} containing its name and
+#         length.
+#      2. An XHR GET request is made to {show}. The response contains a JSON
+#         representation of the {Import}, which contains a presigned S3 URL to
+#         upload to.
+#      3. The client uploads the file to this URL.
+#      4. When the upload is complete, the client invokes {complete_upload},
+#         which invokes an {ImportJob} to work asynchronously.
+#      5. After the import has finished (successfully or not), the import
+#         package is deleted.
 #
 class ImportsController < ApplicationController
 
@@ -23,10 +27,21 @@ class ImportsController < ApplicationController
   before_action :store_location, only: :index
 
   ##
+  # Responds to `POST /imports/:id/complete-upload`
+  #
+  def complete_upload
+    ImportJob.perform_later(import: @import, user: current_user)
+    toast!(title:   "File uploaded",
+           message: "The file has been uploaded. The import will commence "\
+             "momentarily.")
+    # The page will reload via JS.
+  end
+
+  ##
   # Responds to `POST /imports`
   #
   def create
-    @import      = Import.new(sanitized_params)
+    @import      = Import.new(import_params)
     @import.user = current_user
     authorize @import
     begin
@@ -81,7 +96,7 @@ class ImportsController < ApplicationController
       render plain: "Missing institution ID", status: :bad_request
       return
     end
-    @import = Import.new(sanitized_params)
+    @import = Import.new(import_params)
     render partial: "imports/import_form"
   end
 
@@ -89,32 +104,39 @@ class ImportsController < ApplicationController
   # Responds to `GET /imports/:id`
   #
   def show
-    render partial: "show"
+    if request.format == :json
+      render "show"
+    else
+      render partial: "show"
+    end
   end
 
   ##
-  # Receives a file uploaded via the "Edit Import" a.k.a. "Upload Package"
-  # form, writing it to a temporary location on the file system. (It may be
-  # a compressed file that will need to get unzipped).
+  # Responds to `PUT/PATCH /imports/:id`
   #
-  # Responds to `POST /imports/:id/upload-file` (XHR only).
-  #
-  def upload_file
-    @import.save_file(file:     params[:file],
-                      filename: params[:file].original_filename)
-    # (waiting for the file to upload)
-    ImportJob.perform_later(import: @import, user: current_user)
-    toast!(title:   "Files uploaded",
-           message: "The files have been uploaded. The import will commence "\
-                    "momentarily.")
-    # The page will reload via JS.
+  def update
+    begin
+      @import.update!(import_params)
+      # Reset the associated Task. This is only a brief UI nicety as the
+      # importer will handle the brunt of this once it starts.
+      @import.task&.update!(percent_complete: 0,
+                            status:           Task::Status::PENDING,
+                            status_text:      "Waiting to import items")
+    rescue => e
+      render partial: "shared/validation_messages",
+             locals: { object: @import.errors.any? ? @import : e },
+             status: :bad_request
+    else
+      head :no_content
+    end
   end
 
 
   private
 
-  def sanitized_params
-    params.require(:import).permit(:collection_id, :institution_id, :user_id)
+  def import_params
+    params.require(:import).permit(:collection_id, :filename,
+                                   :institution_id, :length, :user_id)
   end
 
   def set_import

@@ -33,48 +33,129 @@ class ImportTest < ActiveSupport::TestCase
   # delete_file()
 
   test "delete_file() deletes the corresponding file" do
-    File.open(file_fixture("escher_lego.png"), "r") do |file|
-      @instance.save_file(file:     file,
-                          filename: File.basename(file.path))
-    end
-    assert File.exist?(@instance.file)
+    fixture = file_fixture("zip.zip")
+    @instance.update!(filename: "zip.zip",
+                      length:   File.size(fixture))
+    FileUtils.mkdir_p(File.dirname(@instance.file))
+    FileUtils.cp(file_fixture("zip.zip"), @instance.file)
 
     @instance.delete_file
     assert !File.exist?(@instance.file)
   end
 
+  test "delete_file() deletes the associated bucket object" do
+    fixture = file_fixture("zip.zip")
+    @instance.update!(filename: "zip.zip",
+                      length:   File.size(fixture))
+    PersistentStore.instance.put_object(key:  @instance.file_key,
+                                        path: fixture)
+
+    @instance.delete_file
+    assert !PersistentStore.instance.object_exists?(key: @instance.file_key)
+  end
+
   # destroy()
 
-  test "destroy() deletes all corresponding uploads " do
-    fixture = file_fixture("escher_lego.png")
-    File.open(fixture, "r") do |file|
-      @instance.save_file(file:     file,
-                          filename: File.basename(file.path))
-    end
-
-    assert File.exist?(@instance.file)
+  test "destroy() deletes the associated file" do
+    fixture = file_fixture("zip.zip")
+    @instance.update!(filename: "zip.zip",
+                      length:   File.size(fixture))
+    FileUtils.mkdir_p(File.dirname(@instance.file))
+    FileUtils.cp(file_fixture("zip.zip"), @instance.file)
 
     @instance.destroy
     assert !File.exist?(@instance.file)
   end
 
+  test "destroy() deletes the associated bucket object" do
+    fixture = file_fixture("zip.zip")
+    @instance.update!(filename: "zip.zip",
+                      length:   File.size(fixture))
+    PersistentStore.instance.put_object(key:  @instance.file_key,
+                                        path: fixture)
+
+    @instance.destroy
+    assert !PersistentStore.instance.object_exists?(key: @instance.file_key)
+  end
+
   # file()
 
-  test "file() returns nil if filename is blank" do
-    assert_nil @instance.file
+  test "file() raises an error if the ID is not set" do
+    assert_raises do
+      Import.new.file
+    end
+  end
+
+  test "file() raises an error if institution_id is not set" do
+    @instance.institution_id = nil
+    assert_raises do
+      @instance.file
+    end
+  end
+
+  test "file() raises an error if the filename is blank" do
+    @instance.filename = nil
+    assert_raises do
+      @instance.file
+    end
   end
 
   test "file() returns a correct pathname" do
-    fixture = file_fixture("escher_lego.png")
-    File.open(fixture, "r") do |file|
-      @instance.save_file(file:     file,
-                          filename: File.basename(file.path))
-    end
+    fixture = file_fixture("zip.zip")
+    @instance.update!(filename: "zip.zip")
 
     assert_equal File.join(Dir.tmpdir, "ideals_imports",
                            @instance.institution.key, @instance.id.to_s,
                            fixture.basename),
                  @instance.file
+  end
+
+  # file_key()
+
+  test "file_key() raises an error if the ID is not set" do
+    assert_raises do
+      Import.new.file_key
+    end
+  end
+
+  test "file_key() raises an error if institution_id is not set" do
+    @instance.institution_id = nil
+    assert_raises do
+      @instance.file_key
+    end
+  end
+
+  test "file_key() raises an error if the filename is blank" do
+    @instance.filename = nil
+    assert_raises do
+      @instance.file_key
+    end
+  end
+
+  test "file_key() returns a correct key" do
+    fixture = file_fixture("zip.zip")
+    @instance.update!(filename: fixture.basename)
+
+    assert_equal [Bitstream::INSTITUTION_KEY_PREFIX,
+                      @instance.institution.key,
+                      "imports",
+                      @instance.id,
+                      fixture.basename].join("/"),
+                 @instance.file_key
+  end
+
+  # presigned_upload_url()
+
+  test "presigned_upload_url() raises an error if filename is not set" do
+    @instance.filename = nil
+    assert_raises do
+      @instance.presigned_upload_url
+    end
+  end
+
+  test "presigned_upload_url() returns a URL" do
+    @instance.filename = "zip.zip"
+    assert_not_nil @instance.presigned_upload_url
   end
 
   # progress()
@@ -93,46 +174,32 @@ class ImportTest < ActiveSupport::TestCase
     assert_equal percent_complete, @instance.task.percent_complete
   end
 
-  # root_key_prefix()
-
-  test "root_key_prefix() returns a correct value" do
-    assert_equal "institutions/#{@instance.institution.key}/imports/#{@instance.id}/",
-                 @instance.root_key_prefix
-  end
-
   # save()
 
-  test "save() deletes all uploaded files when the task is succeeded" do
-    File.open(file_fixture("escher_lego.png"), "r") do |file|
-      @instance.save_file(file:     file,
-                          filename: File.basename(file.path))
-    end
-    assert File.exist?(@instance.file)
+  test "save() deletes the file when the task is succeeded" do
+    # Copy the file in place
+    fixture = file_fixture("zip.zip")
+    @instance.update!(filename: "zip.zip",
+                      length:   File.size(fixture))
+    FileUtils.mkdir_p(File.dirname(@instance.file))
+    FileUtils.cp(file_fixture("zip.zip"), @instance.file)
+
     @instance.task.succeed
     @instance.save!
     assert !File.exist?(@instance.file)
   end
 
-  # save_file()
+  test "save() deletes the bucket object when the task is succeeded" do
+    # Upload the file to the bucket
+    fixture = file_fixture("zip.zip")
+    @instance.update!(filename: "zip.zip",
+                      length:   File.size(fixture))
+    PersistentStore.instance.put_object(key:  @instance.file_key,
+                                        path: fixture)
 
-  test "save_file() sets the filename" do
-    @instance.save_file(file:     File.new(file_fixture("pooh.jpg")),
-                        filename: "pooh.jpg")
-    assert_equal "pooh.jpg", @instance.filename
-  end
-
-  test "save_file() sets the length" do
-    @instance.save_file(file:     File.new(file_fixture("pooh.jpg")),
-                        filename: "pooh.jpg")
-    assert_equal File.size(file_fixture("pooh.jpg")), @instance.length
-  end
-
-  test "save_file() saves a file to a temporary location" do
-    @instance.save_file(file:     File.new(file_fixture("pooh.jpg")),
-                        filename: "pooh.jpg")
-    assert File.exist?(File.join(Dir.tmpdir, "ideals_imports",
-                                 @instance.institution.key, @instance.id.to_s,
-                                 "pooh.jpg"))
+    @instance.task.succeed
+    @instance.save!
+    assert !PersistentStore.instance.object_exists?(key: @instance.file_key)
   end
 
 end

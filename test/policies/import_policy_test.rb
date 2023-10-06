@@ -6,6 +6,83 @@ class ImportPolicyTest < ActiveSupport::TestCase
     @import = imports(:southwest_saf_new)
   end
 
+  # complete_upload?()
+
+  test "complete_upload?() returns false with a nil user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @import.institution)
+    policy  = ImportPolicy.new(context, @import)
+    assert !policy.complete_upload?
+  end
+
+  test "complete_upload?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = ImportPolicy.new(context, @import)
+    assert !policy.complete_upload?
+  end
+
+  test "complete_upload?() does not authorize non-privileged users" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ImportPolicy.new(context, @import)
+    assert !policy.complete_upload?
+  end
+
+  test "complete_upload?() authorizes administrators of the same institution" do
+    user = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ImportPolicy.new(context, @import)
+    assert policy.complete_upload?
+  end
+
+  test "complete_upload?() does not authorize users other than the creator of the
+  instance" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ImportPolicy.new(context, @import)
+    assert !policy.complete_upload?
+  end
+
+  test "complete_upload?() authorizes sysadmins" do
+    user    = make_sysadmin(@import.user)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = ImportPolicy.new(context, @import)
+    assert policy.complete_upload?
+  end
+
+  test "complete_upload?() does not authorize administrators of a different
+  institution than in the request context" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = ImportPolicy.new(context, @import)
+    assert !policy.complete_upload?
+  end
+
+  test "complete_upload?() does not authorize administrators of a different
+  institution than the instance" do
+    user    = users(:northeast_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = ImportPolicy.new(context, @import)
+    assert !policy.complete_upload?
+  end
+
+  test "complete_upload?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::COLLECTION_SUBMITTER)
+    policy  = ImportPolicy.new(context, @import)
+    assert !policy.complete_upload?
+  end
+
   # create?()
 
   test "create?() returns false with a nil user" do
@@ -338,81 +415,81 @@ class ImportPolicyTest < ActiveSupport::TestCase
     assert !policy.show?
   end
 
-  # upload_file?()
+  # update?()
 
-  test "upload_file?() returns false with a nil user" do
+  test "update?() returns false with a nil user" do
     context = RequestContext.new(user:        nil,
                                  institution: @import.institution)
     policy  = ImportPolicy.new(context, @import)
-    assert !policy.upload_file?
+    assert !policy.update?
   end
 
-  test "upload_file?() does not authorize an incorrect scope" do
+  test "update?() does not authorize an incorrect scope" do
     context = RequestContext.new(user:        users(:southwest_admin),
                                  institution: institutions(:northeast))
     policy  = ImportPolicy.new(context, @import)
-    assert !policy.upload_file?
+    assert !policy.update?
   end
 
-  test "upload_file?() does not authorize non-privileged users" do
+  test "update?() does not authorize non-privileged users" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
-    assert !policy.upload_file?
+    assert !policy.update?
   end
 
-  test "upload_file?() authorizes administrators of the same institution" do
+  test "update?() authorizes administrators of the same institution" do
     user = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
-    assert policy.upload_file?
+    assert policy.update?
   end
 
-  test "upload_file?() does not authorize users other than the creator of the
+  test "update?() does not authorize users other than the creator of the
   instance" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
-    assert !policy.upload_file?
+    assert !policy.update?
   end
 
-  test "upload_file?() authorizes sysadmins" do
+  test "update?() authorizes sysadmins" do
     user    = make_sysadmin(@import.user)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = ImportPolicy.new(context, @import)
-    assert policy.upload_file?
+    assert policy.update?
   end
 
-  test "upload_file?() does not authorize administrators of a different
+  test "update?() does not authorize administrators of a different
   institution than in the request context" do
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
     policy  = ImportPolicy.new(context, @import)
-    assert !policy.upload_file?
+    assert !policy.update?
   end
 
-  test "upload_file?() does not authorize administrators of a different
+  test "update?() does not authorize administrators of a different
   institution than the instance" do
     user    = users(:northeast_admin)
     context = RequestContext.new(user:        user,
                                  institution: institutions(:northeast))
     policy  = ImportPolicy.new(context, @import)
-    assert !policy.upload_file?
+    assert !policy.update?
   end
 
-  test "upload_file?() respects role limits" do
+  test "update?() respects role limits" do
     # sysadmin user limited to an insufficient role
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::COLLECTION_SUBMITTER)
     policy  = ImportPolicy.new(context, @import)
-    assert !policy.upload_file?
+    assert !policy.update?
   end
 
 end

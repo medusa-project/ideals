@@ -68,8 +68,8 @@ Rails.application.routes.draw do
         as: "global_user_groups"
   match "/handle/:prefix/:suffix", to: "handles#redirect", via: :get, as: "redirect_handle"
   match "/health", to: "health#index", via: :get, as: "health"
-  resources :imports, except: :update do
-    match "/upload-file", to: "imports#upload_file", via: :post, as: "upload_file"
+  resources :imports do
+    match "/complete-upload", to: "imports#complete_upload", via: :post
   end
   resources :index_pages, path: "index-pages"
   resources :institutions, except: [:edit, :update], param: :key do

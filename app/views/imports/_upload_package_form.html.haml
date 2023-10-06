@@ -1,6 +1,8 @@
 -# frozen_string_literal: true
 
-= form_tag(import_upload_file_path(@import), multipart: true) do |f|
+-# N.B.: this form action won't be used, instead the uploaded file will be
+-# directed to a presigned S3 URL via JS.
+= form_tag(import_path(@import), multipart: true) do |f|
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 

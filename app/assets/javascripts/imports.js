@@ -7,25 +7,38 @@ const ImportsView = {
         const CSRF_TOKEN = $("meta[name=csrf-token]").attr("content");
         const ROOT_URL   = $("input[name=root_url]").val();
 
-        const UploadPackagePanel = function () {
+        const UploadPackagePanel = function() {
             console.debug("Initializing UploadPackagePanel");
             const panel        = $("#edit-import-modal");
             const waitMessage  = $("#wait-message");
             const fileInput    = panel.find("input[name=file]");
             const submitButton = panel.find("input[type=submit]");
+            const importURI    = $("input[name=import_uri]").val();
             const xhr          = new XMLHttpRequest();
 
-            function uploadFile(file, onSuccess, onError) {
-                console.debug("Uploading " + file);
+            const fetchUploadURI = function(file) {
+                const jsonImportURI = importURI + ".json";
+                console.debug("fetchUploadURI(): GET " + jsonImportURI);
+                $.ajax({
+                    url: jsonImportURI,
+                    success: function(data) {
+                        console.debug("fetchUploadURI(): successfully loaded " +
+                            jsonImportURI);
+                        uploadFile(file, data.upload_url);
+                    }
+                });
+            };
+
+            const uploadFile = function(file, uploadURI) {
+                console.debug("uploadFile() invoked with " + file.name);
                 const startTime = new Date().getTime();
                 const formData  = new FormData();
                 formData.append("file", file);
 
-                const uri = $("input[name=import_uri]").val() + "/upload-file";
-                xhr.open("POST", uri, true);
+                xhr.open("PUT", uploadURI, true);
                 xhr.upload.addEventListener("progress", function (e) {
                     const progressBar = $("#progress-bar");
-                    const progress = e.loaded / e.total * 100;
+                    const progress    = e.loaded / e.total * 100;
                     progressBar.attr("aria-valuenow", progress);
                     const pctString = progress.toFixed(1) + "%";
                     progressBar.children(":first").css("width", pctString);
@@ -46,19 +59,52 @@ const ImportsView = {
                     waitMessage.show();
                 };
                 xhr.onloadend = function() {
-                    window.location.reload();
+                    if (xhr.status === 200) {
+                        const completeUploadURI = importURI + "/complete-upload";
+                        console.debug("uploadFile(): upload complete");
+                        console.debug("uploadFile(): POST " + completeUploadURI);
+                        $.ajax({
+                            method:  "POST",
+                            url:     completeUploadURI,
+                            headers: {"X-CSRF-Token": CSRF_TOKEN},
+                            success: function() {
+                                window.location.reload();
+                            }
+                        });
+                    } else {
+                        console.error("uploadFile(): received HTTP " + xhr.status + " for POST " + uploadURI);
+                    }
                 };
-                xhr.onerror   = onError;
-                console.debug("POST " + uri);
+                xhr.onerror = function(e) {
+                    console.error(e);
+                };
                 xhr.send(formData);
-            }
+            };
 
             panel.on("hide.bs.modal", function() {
                 xhr.abort();
             });
             submitButton.on("click", function() {
                 const file = fileInput.prop("files")[0];
-                uploadFile(file);
+                console.debug("Submitted " + file.name + " (" + file.size + " bytes)");
+                console.debug("PATCH " + importURI);
+                // Update the import with the filename and length.
+                $.ajax({
+                    method:  "PATCH",
+                    url:     importURI,
+                    headers: {"X-CSRF-Token": CSRF_TOKEN},
+                    data: {
+                        import: {
+                            filename: file.name,
+                            length:   file.size
+                        }
+                    },
+                    success: function() {
+                        // Now there will be a presigned URL in the import's
+                        // JSON representation.
+                        fetchUploadURI(file);
+                    }
+                });
                 return false;
             });
         };

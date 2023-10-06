@@ -2,10 +2,13 @@
 
 ##
 # Facade class that takes in an import file or package and invokes one of the
-# format-specific importer implementations to import it, decompressing it first
-# if necessary.
+# format-specific importer implementations to import it, downloading and/or
+# decompressing it first if necessary.
 #
-# Supported formats are:
+# The import file may be located on the file system (located by {Import#file})
+# or in the application S3 bucket (located by {Import#file_key}).
+#
+# # Supported Formats
 #
 # 1. Zip file containing:
 #     * SAF package
@@ -24,12 +27,20 @@ class Importer
   #                   testing.
   #
   def import(import, submitter)
-    file        = import.file
-    import.task = Task.create!(name:        self.class.name,
-                               institution: submitter&.institution,
-                               user:        submitter,
-                               started_at:  Time.now,
-                               status_text: "Importing items")
+    import.task ||= Task.new
+    import.task.update!(name:        self.class.name,
+                        institution: submitter&.institution,
+                        user:        submitter,
+                        started_at:  Time.now,
+                        status_text: "Importing items")
+    # Download the file onto the local filesystem, if it does not already
+    # reside there.
+    file = import.file
+    unless File.exist?(file)
+      FileUtils.mkdir_p(File.dirname(import.file))
+      PersistentStore.instance.get_object(key:             import.file_key,
+                                          response_target: import.file)
+    end
     # If the import is a compressed file, download and decompress it. SAF and
     # CSV packages are supported within compressed files.
     if file.split(".").last.downcase == "zip"

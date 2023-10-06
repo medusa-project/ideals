@@ -50,7 +50,7 @@ class Import < ApplicationRecord
 
   belongs_to :collection
   belongs_to :institution
-  belongs_to :task, optional: true
+  belongs_to :task, optional: true # an importer will assign this
   belongs_to :user, optional: true
 
   serialize :imported_items, JSON
@@ -59,15 +59,45 @@ class Import < ApplicationRecord
   before_destroy :delete_file
 
   def delete_file
-    File.delete(self.file) if File.exist?(self.file)
+    if self.id.present? && self.institution_id.present? &&
+      self.filename.present?
+      File.delete(self.file) if File.exist?(self.file)
+      PersistentStore.instance.delete_object(key: self.file_key)
+    end
   end
 
   ##
   # @return [String] File pathname.
   #
   def file
-    return nil if self.filename.blank?
-    File.join(file_dir, self.filename)
+    raise "Instance is not persisted" if self.id.blank?
+    raise "Instance is not associated with an institution" unless self.institution_id
+    raise "Filename is not set" if self.filename.blank?
+    File.join(Dir.tmpdir, "ideals_imports", self.institution.key, self.id.to_s,
+              self.filename)
+  end
+
+  ##
+  # @return [String] Key of the file to import within the application S3
+  #                  bucket.
+  #
+  def file_key
+    raise "Instance is not persisted" if self.id.blank?
+    raise "Instance is not associated with an institution" unless self.institution_id
+    raise "Filename is not set" if self.filename.blank?
+    [Bitstream::INSTITUTION_KEY_PREFIX,
+     self.institution.key,
+     "imports",
+     self.id,
+     self.filename].join("/")
+  end
+
+  ##
+  # @return [Array<Hash>]
+  #
+  def presigned_upload_url
+    PersistentStore.instance.presigned_upload_url(key:        self.file_key,
+                                                  expires_in: 60 * 60)
   end
 
   ##
@@ -80,38 +110,8 @@ class Import < ApplicationRecord
     self.update!(imported_items: imported_items)
   end
 
-  ##
-  # @return [String] Root key prefix of the package.
-  #
-  def root_key_prefix
-    raise "Instance is not persisted" if self.id.blank?
-    [Bitstream::INSTITUTION_KEY_PREFIX,
-     self.institution.key,
-     "imports",
-     self.id].join("/") + "/"
-  end
-
-  ##
-  # Saves an uploaded file to a temporary location.
-  #
-  # @param file [File]
-  # @param filename [String]
-  #
-  def save_file(file:, filename:)
-    self.update!(filename: filename, length: File.size(file))
-    import_root = file_dir
-    FileUtils.mkdir_p(import_root)
-    path = File.join(import_root, filename)
-    FileUtils.cp(file.path, path)
-  end
-
 
   private
-
-  def file_dir
-    raise "Instance not persisted" if self.id.blank?
-    File.join(Dir.tmpdir, "ideals_imports", self.institution.key, self.id.to_s)
-  end
 
   def validate_imported_items
     begin

@@ -3,10 +3,14 @@ require 'test_helper'
 class ImportJobTest < ActiveSupport::TestCase
 
   test "perform() associates a correct Task to the import" do
-    import = imports(:uiuc_csv_file_new)
-    import.update!(task: nil)
-    import.save_file(file:     File.new(file_fixture("csv/new.csv")),
-                     filename: "new.csv")
+    fixture = file_fixture("csv/new.csv")
+    import  = imports(:uiuc_csv_file_new)
+    import.update!(task:     nil,
+                   filename: File.basename(fixture),
+                   length:   File.size(fixture))
+    PersistentStore.instance.put_object(key:  import.file_key,
+                                        path: fixture)
+
     user = users(:southwest)
     ImportJob.new.perform(import: import, user: user)
     import.reload
@@ -21,10 +25,14 @@ class ImportJobTest < ActiveSupport::TestCase
   end
 
   test "perform() deletes the import file" do
-    import = imports(:uiuc_csv_file_new)
-    import.update!(task: nil)
-    import.save_file(file:     File.new(file_fixture("csv/new.csv")),
-                     filename: "new.csv")
+    fixture = file_fixture("csv/new.csv")
+    import  = imports(:uiuc_csv_file_new)
+    import.update!(task:     nil,
+                   filename: File.basename(fixture),
+                   length:   File.size(fixture))
+    PersistentStore.instance.put_object(key:  import.file_key,
+                                        path: fixture)
+
     submitter = users(:uiuc)
     ImportJob.new.perform(import: import, user: submitter)
 
@@ -33,9 +41,13 @@ class ImportJobTest < ActiveSupport::TestCase
 
   test "perform() runs the CSV file importer if the Import has one key ending
   in .csv" do
-    import = imports(:uiuc_csv_file_new)
-    import.save_file(file:     File.new(file_fixture("csv/new.csv")),
-                     filename: "new.csv")
+    fixture = file_fixture("csv/new.csv")
+    import  = imports(:uiuc_csv_file_new)
+    import.update!(filename: File.basename(fixture),
+                   length:   File.size(fixture))
+    PersistentStore.instance.put_object(key:  import.file_key,
+                                        path: fixture)
+
     format = ImportJob.new.perform(import: import)
     assert_equal Import::Format::CSV_FILE, format
   end
@@ -43,10 +55,12 @@ class ImportJobTest < ActiveSupport::TestCase
   test "perform() runs the CSV package importer for CSV packages" do
     import       = imports(:uiuc_csv_package_new)
     package_root = File.join(file_fixture_path, "/packages/csv")
-    zip_package  = File.join(Dir.tmpdir, "test.zip")
-    `cd "#{package_root}" && rm -f #{zip_package} && zip -r "#{zip_package}" valid_items`
-    import.save_file(file:     File.new(zip_package),
-                     filename: File.basename(zip_package))
+    csv_package  = File.join(Dir.tmpdir, "test.zip")
+    `cd "#{package_root}" && rm -f #{csv_package} && zip -r "#{csv_package}" valid_items`
+    import.update!(filename: File.basename(csv_package),
+                   length:   File.size(csv_package))
+    PersistentStore.instance.put_object(key:  import.file_key,
+                                        path: csv_package)
 
     format = ImportJob.new.perform(import: import)
     assert_equal Import::Format::CSV_PACKAGE, format
@@ -55,10 +69,12 @@ class ImportJobTest < ActiveSupport::TestCase
   test "perform() runs the SAF package importer for SAF packages" do
     import       = imports(:uiuc_saf_new)
     package_root = File.join(file_fixture_path, "/packages/saf")
-    zip_package  = File.join(Dir.tmpdir, "test.zip")
-    `cd "#{package_root}" && rm -f #{zip_package} && zip -r "#{zip_package}" valid_item`
-    import.save_file(file:     File.new(zip_package),
-                     filename: File.basename(zip_package))
+    saf_package  = File.join(Dir.tmpdir, "test.zip")
+    `cd "#{package_root}" && rm -f #{saf_package} && zip -r "#{saf_package}" valid_item`
+    import.update!(filename: File.basename(saf_package),
+                   length:   File.size(saf_package))
+    PersistentStore.instance.put_object(key:  import.file_key,
+                                        path: saf_package)
 
     format = ImportJob.new.perform(import: import)
     assert_equal Import::Format::SAF, format
