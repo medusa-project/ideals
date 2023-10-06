@@ -112,7 +112,7 @@ class Import < ApplicationRecord
   #
   def presigned_upload_url
     PersistentStore.instance.presigned_upload_url(key:        self.file_key,
-                                                  expires_in: 60 * 60)
+                                                  expires_in: 30)
   end
 
   ##
