@@ -50,7 +50,7 @@ const ImportsView = {
                     const eta = IDEALS.TimeUtils.eta(
                         startTime, e.loaded / parseFloat(e.total));
                     const remaining = eta - new Date().getTime();
-                    $("#eta").text(IDEALS.TimeUtils.timeToHMS(remaining) + " remaining");
+                    $("#eta").text(IDEALS.TimeUtils.etaToHuman(remaining));
                 });
                 xhr.setRequestHeader("X-CSRF-Token", CSRF_TOKEN);
                 xhr.onloadstart = function() {

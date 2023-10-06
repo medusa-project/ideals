@@ -16,20 +16,37 @@ IDEALS.TimeUtils.eta = function(startTime, percent) {
 
 /**
  * @param time {Integer}
- * @return {String}
+ * @return {String} Human-friendly ETA.
  */
-IDEALS.TimeUtils.timeToHMS = function(time) {
+IDEALS.TimeUtils.etaToHuman = function(time) {
     const diff    = new Date(time);
     const hours   = diff.getUTCHours();
     const minutes = diff.getUTCMinutes();
     const seconds = diff.getUTCSeconds();
 
-    let string = seconds + " seconds";
-    if (minutes > 0) {
-        string = minutes + " minutes, " + string;
-    }
+    const parts = [];
     if (hours > 0) {
-        string = hours + " hours, " + string;
+        let string = hours + " hour";
+        if (hours > 1) {
+            string += "s";
+        }
+        parts.push(string);
     }
-    return string;
+    if (minutes > 0) {
+        let string = minutes + " minute";
+        if (minutes > 1) {
+            string += "s";
+        }
+        parts.push(string);
+    } else if (seconds > 0 && hours < 1) {
+        let string = seconds + " second"
+        if (seconds > 1) {
+            string += "s";
+        }
+        parts.push(string);
+    }
+    if (parts.length > 0) {
+        return parts.join(", ") + " remaining";
+    }
+    return "";
 };
