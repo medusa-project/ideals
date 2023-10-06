@@ -22,8 +22,8 @@ class ImportJob < ApplicationJob
     begin
       Importer.new.import(import, submitter)
     rescue => e
-      import.task.fail(detail:    e.message,
-                       backtrace: e.backtrace)
+      import.task&.fail(detail:    e.message,
+                        backtrace: e.backtrace)
     ensure
       import.delete_file
     end
