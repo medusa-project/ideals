@@ -83,7 +83,8 @@ class CollectionsController < ApplicationController
              locals: { object: @collection.errors.any? ? @collection : e },
              status: :bad_request
     else
-      RefreshOpensearchJob.perform_later
+      # refresh now so that the response contains a current list
+      OpenSearchClient.instance.refresh
       toast!(title:   "Collection created",
              message: "The collection \"#{@collection.title}\" has been created.")
       render "shared/reload"

@@ -86,7 +86,8 @@ class UnitsController < ApplicationController
              locals: { object: @unit.errors.any? ? @unit : e },
              status: :bad_request
     else
-      RefreshOpensearchJob.perform_later
+      # refresh now so that the response contains a current list
+      OpenSearchClient.instance.refresh
       toast!(title:   "Unit created",
              message: "The unit \"#{@unit.title}\" has been created.")
       render "shared/reload"
