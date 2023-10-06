@@ -38,9 +38,7 @@ class Importer
     file = import.file
     unless File.exist?(file)
       import.task.update!(status_text: "Downloading the import file")
-      FileUtils.mkdir_p(File.dirname(import.file))
-      PersistentStore.instance.get_object(key:             import.file_key,
-                                          response_target: import.file)
+      import.download
     end
     # If the import is a compressed file, download and decompress it. SAF and
     # CSV packages are supported within compressed files.

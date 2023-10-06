@@ -67,6 +67,21 @@ class Import < ApplicationRecord
   end
 
   ##
+  # A file-to-be-imported may exist on the filesystem (where it will be located
+  # by {#file}) or in the application S3 bucket (where it will be located by
+  # {#file_key}). In the latter case, this method will download it onto the
+  # filesystem, and delete it from the bucket.
+  #
+  def download
+    file = self.file
+    raise "File already exists: #{file}" if File.exist?(file)
+    store = PersistentStore.instance
+    FileUtils.mkdir_p(File.dirname(file))
+    store.get_object(key: self.file_key, response_target: file)
+    store.delete_object(key: self.file_key)
+  end
+
+  ##
   # @return [String] File pathname.
   #
   def file

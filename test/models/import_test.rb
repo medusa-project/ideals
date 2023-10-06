@@ -69,13 +69,55 @@ class ImportTest < ActiveSupport::TestCase
 
   test "destroy() deletes the associated bucket object" do
     fixture = file_fixture("zip.zip")
+    store   = PersistentStore.instance
     @instance.update!(filename: "zip.zip",
                       length:   File.size(fixture))
-    PersistentStore.instance.put_object(key:  @instance.file_key,
-                                        path: fixture)
+    store.put_object(key:  @instance.file_key,
+                     path: fixture)
 
     @instance.destroy
-    assert !PersistentStore.instance.object_exists?(key: @instance.file_key)
+    assert !store.object_exists?(key: @instance.file_key)
+  end
+
+  # download()
+
+  test "download() raises an error if a file already exists at the
+  destination" do
+    fixture = file_fixture("zip.zip")
+    @instance.update!(filename: "zip.zip",
+                      length:   File.size(fixture))
+
+    File.open(@instance.file, "wb") do |file|
+      file << "hi"
+    end
+    assert_raises do
+      @instance.download
+    end
+  end
+
+  test "download() downloads a file from the application S3 bucket to the
+  filesystem" do
+    fixture = file_fixture("zip.zip")
+    store   = PersistentStore.instance
+    @instance.update!(filename: "zip.zip",
+                      length:   File.size(fixture))
+    store.put_object(key:  @instance.file_key,
+                     path: fixture)
+
+    @instance.download
+    assert File.exist?(@instance.file)
+  end
+
+  test "download() deletes the downloaded file from the application S3 bucket" do
+    fixture = file_fixture("zip.zip")
+    store   = PersistentStore.instance
+    @instance.update!(filename: "zip.zip",
+                      length:   File.size(fixture))
+    store.put_object(key:  @instance.file_key,
+                     path: fixture)
+
+    @instance.download
+    assert !store.object_exists?(key: @instance.file_key)
   end
 
   # file()
