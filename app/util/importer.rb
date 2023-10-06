@@ -37,6 +37,7 @@ class Importer
     # reside there.
     file = import.file
     unless File.exist?(file)
+      import.task.update!(status_text: "Downloading the import file")
       FileUtils.mkdir_p(File.dirname(import.file))
       PersistentStore.instance.get_object(key:             import.file_key,
                                           response_target: import.file)
