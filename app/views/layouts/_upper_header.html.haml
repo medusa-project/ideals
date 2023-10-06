@@ -230,7 +230,7 @@
               = link_to(user_path(current_user), class: "dropdown-item") do
                 = icon_for(current_user)
                 My Account
-            - if InstitutionAdministrator.where(user: current_user).count > 0
+            - if current_user.sysadmin? || InstitutionAdministrator.where(user: current_user).count > 0
               %li
                 %hr.dropdown-divider
               %li
