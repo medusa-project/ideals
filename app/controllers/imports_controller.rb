@@ -44,17 +44,6 @@ class ImportsController < ApplicationController
   end
 
   ##
-  # Deletes all files associated with an import from the application S3 bucket.
-  # This should be done before a new batch is uploaded.
-  #
-  # Responds to `POST /imports/:id/delete_all_files`
-  #
-  def delete_all_files
-    @import.delete_all_files
-    head :no_content
-  end
-
-  ##
   # Returns content for the "upload package" form.
   #
   # Responds to `GET /imports/:id/edit` (XHR only)

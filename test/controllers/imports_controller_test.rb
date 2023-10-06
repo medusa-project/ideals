@@ -81,44 +81,6 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
     assert_equal user, import.user
   end
 
-  # delete_all_files()
-
-  test "delete_all_files() returns HTTP 404 for unscoped requests" do
-    host! ::Configuration.instance.main_host
-    post import_delete_all_files_path(@import)
-    assert_response :not_found
-  end
-
-  test "delete_all_files() redirects to root page for logged-out users" do
-    post import_delete_all_files_path(@import)
-    assert_redirected_to @import.institution.scope_url
-  end
-
-  test "delete_all_files() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:southwest))
-    @import = imports(:uiuc_saf_new)
-    post import_delete_all_files_path(@import)
-    assert_response :forbidden
-  end
-
-  test "delete_all_files() returns HTTP 204 for authorized users" do
-    log_in_as(users(:southwest_admin))
-    post import_delete_all_files_path(@import)
-    assert_response :no_content
-  end
-
-  test "delete_all_files() deletes all files associated with the import" do
-    user = users(:southwest_admin)
-    log_in_as(user)
-    @import.save_file(file:     File.new(file_fixture("escher_lego.png")),
-                      filename: "image.jpg")
-
-    assert File.exist?(@import.file)
-
-    post import_delete_all_files_path(@import)
-    assert !File.exist?(@import.file)
-  end
-
   # edit()
 
   test "edit() returns HTTP 404 for unscoped requests" do

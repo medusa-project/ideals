@@ -20,10 +20,6 @@ class ImportPolicy < ApplicationPolicy
     index
   end
 
-  def delete_all_files
-    upload_file
-  end
-
   def edit
     upload_file
   end

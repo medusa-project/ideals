@@ -70,69 +70,6 @@ class ImportPolicyTest < ActiveSupport::TestCase
     assert !policy.create?
   end
 
-  # delete_all_files?()
-
-  test "delete_all_files?() returns false with a nil user" do
-    context = RequestContext.new(user:        nil,
-                                 institution: @import.institution)
-    policy = ImportPolicy.new(context, @import)
-    assert !policy.delete_all_files?
-  end
-
-  test "delete_all_files?() does not authorize an incorrect scope" do
-    context = RequestContext.new(user:        users(:southwest_admin),
-                                 institution: institutions(:northeast))
-    policy  = ImportPolicy.new(context, @import)
-    assert !policy.delete_all_files?
-  end
-
-  test "delete_all_files?() is restrictive by default" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = ImportPolicy.new(context, @import)
-    assert !policy.delete_all_files?
-  end
-
-  test "delete_all_files?() authorizes sysadmins" do
-    user    = make_sysadmin(@import.user)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = ImportPolicy.new(context, @import)
-    assert policy.delete_all_files?
-  end
-
-  test "delete_all_files?() authorizes administrators of the same institution" do
-    user    = users(:southwest_admin)
-    import  = Import.new(user:        user,
-                         institution: user.institution,
-                         collection:  collections(:uiuc_collection1),
-                         format:      Import::Format::CSV_FILE)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = ImportPolicy.new(context, import)
-    assert policy.delete_all_files?
-  end
-
-  test "delete_all_files?() does not authorize administrators of a different
-  institution" do
-    user    = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: institutions(:northeast))
-    policy  = ImportPolicy.new(context, @import)
-    assert !policy.delete_all_files?
-  end
-
-  test "delete_all_files?() respects role limits" do
-    # sysadmin user limited to an insufficient role
-    user    = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::COLLECTION_SUBMITTER)
-    policy  = ImportPolicy.new(context, @import)
-    assert !policy.delete_all_files?
-  end
-
   # edit?()
 
   test "edit?() returns false with a nil user" do
