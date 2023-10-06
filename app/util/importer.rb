@@ -32,6 +32,7 @@ class Importer
                         institution: submitter&.institution,
                         user:        submitter,
                         started_at:  Time.now,
+                        status:      Task::Status::RUNNING,
                         status_text: "Importing items")
     # Download the file onto the local filesystem, if it does not already
     # reside there.
