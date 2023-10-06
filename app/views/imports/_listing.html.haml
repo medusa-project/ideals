@@ -23,7 +23,7 @@
             - else
               = task_status_badge(Task::Status::PENDING)
           %td= "#{((import.task&.percent_complete || 0) * 100).round(1)}%"
-          %td= local_time(import.created_at)
+          %td= local_time_ago(import.created_at)
           %td
             .btn-group{role: "group"}
               %button.btn.btn-sm.btn-light.show-import{"data-import-id": import.id,
