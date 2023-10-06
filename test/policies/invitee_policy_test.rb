@@ -150,7 +150,7 @@ class InviteePolicyTest < ActiveSupport::TestCase
 
   test "create_unsolicited?() authorizes non-logged-in users" do
     context = RequestContext.new(user:        nil,
-                                 institution: institutions(:uiuc))
+                                 institution: institutions(:southeast))
     policy  = InviteePolicy.new(context, @invitee)
     assert policy.create_unsolicited?
   end
@@ -400,7 +400,7 @@ class InviteePolicyTest < ActiveSupport::TestCase
 
   test "new?() authorizes non-logged-in users" do
     context = RequestContext.new(user:        nil,
-                                 institution: institutions(:uiuc))
+                                 institution: institutions(:southeast))
     policy  = InviteePolicy.new(context, @invitee)
     assert policy.new?
   end

@@ -3,8 +3,8 @@ require 'test_helper'
 class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
 
   setup do
-    host! institutions(:uiuc).fqdn
-    @profile = metadata_profiles(:uiuc_default)
+    host! institutions(:southeast).fqdn
+    @profile = metadata_profiles(:southeast_default)
   end
 
   teardown do
@@ -25,19 +25,19 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "clone() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:uiuc))
+    log_in_as(users(:southeast))
     post metadata_profile_clone_path(@profile)
     assert_response :forbidden
   end
 
   test "clone() redirects to the clone upon success" do
-    log_in_as(users(:uiuc_admin))
+    log_in_as(users(:southeast_admin))
     post metadata_profile_clone_path(@profile)
     assert_redirected_to metadata_profile_path(MetadataProfile.order(created_at: :desc).first)
   end
 
   test "clone() clones a profile" do
-    log_in_as(users(:uiuc_admin))
+    log_in_as(users(:southeast_admin))
     assert_difference "MetadataProfile.count" do
       post metadata_profile_clone_path(@profile)
     end
@@ -57,7 +57,7 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:uiuc))
+    log_in_as(users(:southeast))
     post metadata_profiles_path,
          xhr: true,
          params: {
@@ -69,7 +69,7 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 200" do
-    user = users(:uiuc_admin)
+    user = users(:southeast_admin)
     log_in_as(user)
     post metadata_profiles_path,
          xhr: true,
@@ -83,7 +83,7 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() creates a correct profile" do
-    user = users(:uiuc_admin)
+    user = users(:southeast_admin)
     log_in_as(user)
     assert_difference "MetadataProfile.count" do
       post metadata_profiles_path,
@@ -94,7 +94,7 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
                name:           "cats"
              },
              elements: [
-               institutions(:uiuc).registered_elements.find_by_name("dc:title").id
+               institutions(:southeast).registered_elements.find_by_name("dc:title").id
              ]
            }
     end
@@ -104,7 +104,7 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:uiuc_admin))
+    log_in_as(users(:southeast_admin))
     post metadata_profiles_path,
          xhr: true,
          params: {
@@ -119,47 +119,47 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
 
   test "destroy() returns HTTP 404 for unscoped requests" do
     host! ::Configuration.instance.main_host
-    @profile = metadata_profiles(:uiuc_unused)
+    @profile = metadata_profiles(:southeast_unused)
     delete metadata_profile_path(@profile)
     assert_response :not_found
   end
 
   test "destroy() redirects to root page for logged-out users" do
-    @profile = metadata_profiles(:uiuc_unused)
+    @profile = metadata_profiles(:southeast_unused)
     delete metadata_profile_path(@profile)
     assert_redirected_to @profile.institution.scope_url
   end
 
   test "destroy() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:uiuc))
-    delete metadata_profile_path(metadata_profiles(:uiuc_unused))
+    log_in_as(users(:southeast))
+    delete metadata_profile_path(metadata_profiles(:southeast_unused))
     assert_response :forbidden
   end
 
   test "destroy() destroys the profile" do
-    log_in_as(users(:uiuc_admin))
-    profile = metadata_profiles(:uiuc_unused)
+    log_in_as(users(:southeast_admin))
+    profile = metadata_profiles(:southeast_unused)
     assert_difference "MetadataProfile.count", -1 do
       delete metadata_profile_path(profile)
     end
   end
 
   test "destroy() redirects to metadata profiles view for non-sysadmins" do
-    log_in_as(users(:uiuc_admin))
-    profile = metadata_profiles(:uiuc_unused)
+    log_in_as(users(:southeast_admin))
+    profile = metadata_profiles(:southeast_unused)
     delete metadata_profile_path(profile)
     assert_redirected_to metadata_profiles_path
   end
 
   test "destroy() redirects to the profile's institution for sysadmins" do
-    log_in_as(users(:uiuc_sysadmin))
-    profile = metadata_profiles(:uiuc_unused)
+    log_in_as(users(:southeast_sysadmin))
+    profile = metadata_profiles(:southeast_unused)
     delete metadata_profile_path(profile)
     assert_redirected_to institution_path(profile.institution)
   end
 
   test "destroy() returns HTTP 404 for a missing profile" do
-    log_in_as(users(:uiuc_admin))
+    log_in_as(users(:southeast_admin))
     delete "/metadata-profiles/99999"
     assert_response :not_found
   end
@@ -178,19 +178,19 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "edit() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:uiuc))
+    log_in_as(users(:southeast))
     get edit_metadata_profile_path(@profile)
     assert_response :forbidden
   end
 
   test "edit() returns HTTP 200 for authorized users" do
-    log_in_as(users(:uiuc_admin))
+    log_in_as(users(:southeast_admin))
     get edit_metadata_profile_path(@profile)
     assert_response :ok
   end
 
   test "edit() respects role limits" do
-    log_in_as(users(:uiuc_admin))
+    log_in_as(users(:southeast_admin))
     get edit_metadata_profile_path(@profile)
     assert_response :ok
 
@@ -212,19 +212,19 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "index() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:uiuc))
+    log_in_as(users(:southeast))
     get metadata_profiles_path
     assert_response :forbidden
   end
 
   test "index() returns HTTP 200 for authorized users" do
-    log_in_as(users(:uiuc_admin))
+    log_in_as(users(:southeast_admin))
     get metadata_profiles_path
     assert_response :ok
   end
 
   test "index() respects role limits" do
-    log_in_as(users(:uiuc_admin))
+    log_in_as(users(:southeast_admin))
     get metadata_profiles_path
     assert_response :ok
 
@@ -246,17 +246,17 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "new() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:uiuc))
+    log_in_as(users(:southeast))
     get new_metadata_profile_path
     assert_response :forbidden
   end
 
   test "new() returns HTTP 200 for authorized users" do
-    log_in_as(users(:uiuc_admin))
+    log_in_as(users(:southeast_admin))
     get new_metadata_profile_path,
         params: {
           metadata_profile: {
-            institution_id: institutions(:uiuc).id
+            institution_id: institutions(:southeast).id
           }
         }
     assert_response :ok
@@ -276,19 +276,19 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:uiuc))
+    log_in_as(users(:southeast))
     get metadata_profile_path(@profile)
     assert_response :forbidden
   end
 
   test "show() returns HTTP 200 for authorized users" do
-    log_in_as(users(:uiuc_admin))
+    log_in_as(users(:southeast_admin))
     get metadata_profile_path(@profile)
     assert_response :ok
   end
 
   test "show() respects role limits" do
-    log_in_as(users(:uiuc_admin))
+    log_in_as(users(:southeast_admin))
     get metadata_profile_path(@profile)
     assert_response :ok
 
@@ -300,8 +300,8 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
 
   test "update() returns HTTP 404 for unscoped requests" do
     host! ::Configuration.instance.main_host
-    log_in_as(users(:uiuc))
-    patch metadata_profile_path(metadata_profiles(:uiuc_unused))
+    log_in_as(users(:southeast))
+    patch metadata_profile_path(metadata_profiles(:southeast_unused))
     assert_response :not_found
   end
 
@@ -311,18 +311,18 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:uiuc))
-    patch metadata_profile_path(metadata_profiles(:uiuc_unused))
+    log_in_as(users(:southeast))
+    patch metadata_profile_path(metadata_profiles(:southeast_unused))
     assert_response :forbidden
   end
 
   test "update() updates a profile" do
-    log_in_as(users(:uiuc_admin))
+    log_in_as(users(:southeast_admin))
     patch metadata_profile_path(@profile),
           xhr: true,
           params: {
             metadata_profile: {
-              institution_id: institutions(:uiuc).id,
+              institution_id: institutions(:southeast).id,
               name: "cats"
             }
           }
@@ -331,12 +331,12 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 200" do
-    log_in_as(users(:uiuc_admin))
+    log_in_as(users(:southeast_admin))
     patch metadata_profile_path(@profile),
           xhr: true,
           params: {
             metadata_profile: {
-              institution_id: institutions(:uiuc).id,
+              institution_id: institutions(:southeast).id,
               name:           "cats"
             }
           }
@@ -344,7 +344,7 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 400 for illegal arguments" do
-    log_in_as(users(:uiuc_admin))
+    log_in_as(users(:southeast_admin))
     patch metadata_profile_path(@profile),
           xhr: true,
           params: {
@@ -356,7 +356,7 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update() returns HTTP 404 for nonexistent profiles" do
-    log_in_as(users(:uiuc_admin))
+    log_in_as(users(:southeast_admin))
     patch "/metadata-profiles/99999"
     assert_response :not_found
   end

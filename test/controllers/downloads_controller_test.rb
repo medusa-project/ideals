@@ -3,7 +3,7 @@ require 'test_helper'
 class DownloadsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
-    host! institutions(:uiuc).fqdn
+    host! institutions(:southeast).fqdn
     setup_s3
   end
 
@@ -11,13 +11,13 @@ class DownloadsControllerTest < ActionDispatch::IntegrationTest
 
   test "file() returns HTTP 404 for unscoped requests" do
     host! ::Configuration.instance.main_host
-    get download_file_path(downloads(:uiuc_one))
+    get download_file_path(downloads(:southeast_one))
     assert_response :not_found
   end
 
   test "file() returns HTTP 403 when the request IP does not match the
   download's IP" do
-    download = downloads(:uiuc_one)
+    download = downloads(:southeast_one)
     download.update!(expired:    false,
                      ip_address: "9.9.9.9")
     get download_file_path(download)
@@ -25,7 +25,7 @@ class DownloadsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "file() returns HTTP 410 when the download is expired" do
-    download = downloads(:uiuc_one)
+    download = downloads(:southeast_one)
     download.update!(ip_address: "127.0.0.1",
                      expired:    true)
     get download_file_path(download)
@@ -33,14 +33,14 @@ class DownloadsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "file() returns HTTP 404 when the download has no corresponding file" do
-    download = downloads(:uiuc_one)
+    download = downloads(:southeast_one)
     download.update!(filename: nil)
     get download_file_path(download)
     assert_response :not_found
   end
 
   test "file() redirects to a download URL" do
-    institution = institutions(:uiuc)
+    institution = institutions(:southeast)
     File.open(file_fixture("crane.jpg"), "r") do |file|
       download = Download.create!(filename:    "file.txt",
                                   ip_address:  "127.0.0.1",
@@ -56,13 +56,13 @@ class DownloadsControllerTest < ActionDispatch::IntegrationTest
 
   test "show() returns HTTP 404 for unscoped requests" do
     host! ::Configuration.instance.main_host
-    get download_path(downloads(:uiuc_one))
+    get download_path(downloads(:southeast_one))
     assert_response :not_found
   end
 
   test "show() returns HTTP 403 when the request IP does not match the
   download's IP" do
-    download = downloads(:uiuc_one)
+    download = downloads(:southeast_one)
     download.update!(expired:    false,
                      ip_address: "9.9.9.9")
     get download_path(download)
@@ -70,14 +70,14 @@ class DownloadsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show() returns HTTP 410 when the download is expired" do
-    download = downloads(:uiuc_one)
+    download = downloads(:southeast_one)
     download.update!(expired: true)
     get download_path(download)
     assert_response :forbidden # TODO :see above todo
   end
 
   test "show() returns HTTP 200" do
-    download = downloads(:uiuc_one)
+    download = downloads(:southeast_one)
     get download_path(download)
     assert_response :ok
   end

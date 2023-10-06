@@ -3,7 +3,7 @@ require 'test_helper'
 class HandleTest < ActiveSupport::TestCase
 
   setup do
-    @instance = handles(:uiuc_item1)
+    @instance = handles(:southeast_item1)
   end
 
   # prefix()
@@ -16,7 +16,7 @@ class HandleTest < ActiveSupport::TestCase
 
   test "create() puts the handle to the handle server" do
     client = HandleClient.new
-    handle = Handle.create!(item: items(:uiuc_described))
+    handle = Handle.create!(item: items(:southeast_described))
     begin
       assert client.exists?(handle)
     ensure
@@ -60,19 +60,19 @@ class HandleTest < ActiveSupport::TestCase
 
   test "institution() returns the associated unit's institution if set" do
     @instance.collection = @instance.item = nil
-    @instance.unit = units(:uiuc_unit1)
+    @instance.unit = units(:southeast_unit1)
     assert_equal @instance.unit.institution, @instance.institution
   end
 
   test "institution() returns the associated collection's institution if set" do
     @instance.unit = @instance.item = nil
-    @instance.collection = collections(:uiuc_collection1)
+    @instance.collection = collections(:southeast_collection1)
     assert_equal @instance.collection.institution, @instance.institution
   end
 
   test "institution() returns the associated item's institution if set" do
     @instance.unit = @instance.collection = nil
-    @instance.item = items(:uiuc_item1)
+    @instance.item = items(:southeast_item1)
     assert_equal @instance.item.institution, @instance.institution
   end
 
@@ -122,7 +122,7 @@ class HandleTest < ActiveSupport::TestCase
 
   test "validate() ensures that the instance is not associated with more than one entity" do
     assert @instance.validate
-    @instance.unit = units(:uiuc_unit1)
+    @instance.unit = units(:southeast_unit1)
     assert !@instance.validate
   end
 

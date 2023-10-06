@@ -16,7 +16,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     assert_raises ArgumentError do
       @instance.import(csv:                csv,
                        submitter:          users(:southwest_sysadmin),
-                       primary_collection: collections(:uiuc_empty))
+                       primary_collection: collections(:southeast_empty))
     end
   end
 
@@ -27,7 +27,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     assert_raises ArgumentError do
       @instance.import(csv:                csv,
                        submitter:          users(:southwest_sysadmin),
-                       primary_collection: collections(:uiuc_empty))
+                       primary_collection: collections(:southeast_empty))
     end
   end
 
@@ -38,7 +38,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     assert_raises ArgumentError do
       @instance.import(csv:                csv,
                        submitter:          users(:southwest_sysadmin),
-                       primary_collection: collections(:uiuc_empty))
+                       primary_collection: collections(:southeast_empty))
     end
   end
 
@@ -49,7 +49,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     assert_raises ArgumentError do
       @instance.import(csv:                csv,
                        submitter:          users(:southwest_sysadmin),
-                       primary_collection: collections(:uiuc_empty))
+                       primary_collection: collections(:southeast_empty))
     end
   end
 
@@ -60,7 +60,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     assert_raises ArgumentError do
       @instance.import(csv:                csv,
                        submitter:          users(:southwest_sysadmin),
-                       primary_collection: collections(:uiuc_empty))
+                       primary_collection: collections(:southeast_empty))
     end
   end
 
@@ -72,7 +72,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     assert_raises ArgumentError do
       @instance.import(csv:                csv,
                        submitter:          users(:southwest_sysadmin),
-                       primary_collection: collections(:uiuc_empty))
+                       primary_collection: collections(:southeast_empty))
     end
   end
 
@@ -83,7 +83,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     assert_raises ArgumentError do
       @instance.import(csv:                csv,
                        submitter:          users(:southwest_sysadmin),
-                       primary_collection: collections(:uiuc_empty))
+                       primary_collection: collections(:southeast_empty))
     end
   end
 
@@ -96,7 +96,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     assert_raises ArgumentError do
       @instance.import(csv:                csv,
                        submitter:          users(:southwest_sysadmin),
-                       primary_collection: collections(:uiuc_empty))
+                       primary_collection: collections(:southeast_empty))
     end
   end
 
@@ -109,7 +109,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     assert_raises ArgumentError do
       @instance.import(csv:                csv,
                        submitter:          users(:southwest_sysadmin),
-                       primary_collection: collections(:uiuc_empty))
+                       primary_collection: collections(:southeast_empty))
     end
   end
 
@@ -121,7 +121,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     @instance.import(csv:                csv,
                      file_paths:         [],
                      submitter:          users(:southwest_sysadmin),
-                     primary_collection: collections(:uiuc_empty))
+                     primary_collection: collections(:southeast_empty))
     item     = Item.order(created_at: :desc).limit(1).first
     creators = item.elements.select{ |e| e.name == "dc:creator" }.map(&:string)
     assert creators.include?("Bob")
@@ -136,11 +136,11 @@ class CsvImporterTest < ActiveSupport::TestCase
     end
     @instance.import(csv:                csv,
                      file_paths:         [],
-                     submitter:          users(:uiuc_admin),
-                     primary_collection: collections(:uiuc_empty))
+                     submitter:          users(:southeast_admin),
+                     primary_collection: collections(:southeast_empty))
     item     = Item.order(created_at: :desc).limit(1).first
     creators = item.elements.
-      where(registered_element: RegisteredElement.find_by(institution: institutions(:uiuc),
+      where(registered_element: RegisteredElement.find_by(institution: institutions(:southeast),
                                                           name:        "dc:creator")).
       order(:position).
       pluck(:position)
@@ -157,7 +157,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     @instance.import(csv:                csv,
                      file_paths:         [],
                      submitter:          users(:southwest_sysadmin),
-                     primary_collection: collections(:uiuc_empty))
+                     primary_collection: collections(:southeast_empty))
     item = Item.order(created_at: :desc).limit(1).first
     assert_equal Item::Stages::APPROVED, item.stage
     assert_equal "New Item", item.title
@@ -303,7 +303,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     @instance.import(csv:                csv,
                      file_paths:         [],
                      submitter:          users(:southwest_sysadmin),
-                     primary_collection: collections(:uiuc_empty),
+                     primary_collection: collections(:southeast_empty),
                      imported_items:     imported_items)
     assert_equal 1, imported_items.length
   end
@@ -317,7 +317,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     assert_raises ArgumentError do
       @instance.import(csv:                csv,
                        submitter:          users(:southwest_sysadmin),
-                       primary_collection: collections(:uiuc_empty))
+                       primary_collection: collections(:southeast_empty))
     end
   end
 
@@ -331,7 +331,7 @@ class CsvImporterTest < ActiveSupport::TestCase
       @instance.import(csv:                csv,
                        file_paths:         [],
                        submitter:          users(:southwest_sysadmin),
-                       primary_collection: collections(:uiuc_empty))
+                       primary_collection: collections(:southeast_empty))
     end
   end
 
@@ -343,12 +343,12 @@ class CsvImporterTest < ActiveSupport::TestCase
     assert_raises do
       @instance.import(csv:                csv,
                        submitter:          users(:southwest_sysadmin),
-                       primary_collection: collections(:uiuc_empty))
+                       primary_collection: collections(:southeast_empty))
     end
   end
 
   test "import() updates an existing item" do
-    item = items(:uiuc_item1)
+    item = items(:southeast_item1)
     csv = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title]
       row << [item.id, nil, nil, nil, nil, nil, nil, "New Title"]
@@ -356,13 +356,13 @@ class CsvImporterTest < ActiveSupport::TestCase
     @instance.import(csv:                csv,
                      file_paths:         [],
                      submitter:          users(:southwest_sysadmin),
-                     primary_collection: collections(:uiuc_empty))
+                     primary_collection: collections(:southeast_empty))
     item.reload
     assert_equal "New Title", item.title
   end
 
   test "import() deletes elements corresponding to blank element values" do
-    item = items(:uiuc_described)
+    item = items(:southeast_described)
     csv = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title dc:subject]
       row << [item.id, nil, nil, nil, nil, nil, nil, "Title", ""]
@@ -370,14 +370,14 @@ class CsvImporterTest < ActiveSupport::TestCase
     @instance.import(csv:                csv,
                      file_paths:         [],
                      submitter:          users(:southwest_sysadmin),
-                     primary_collection: collections(:uiuc_empty))
+                     primary_collection: collections(:southeast_empty))
     item.reload
     assert_nil item.element("dc:subject")
   end
 
   test "import() does not modify elements other than those contained in the
   CSV" do
-    item = items(:uiuc_described)
+    item = items(:southeast_described)
     csv = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title]
       row << [item.id, nil, nil, nil, nil, nil, nil, "New Title"]
@@ -385,14 +385,14 @@ class CsvImporterTest < ActiveSupport::TestCase
     @instance.import(csv:                csv,
                      file_paths:         [],
                      submitter:          users(:southwest_sysadmin),
-                     primary_collection: collections(:uiuc_empty))
+                     primary_collection: collections(:southeast_empty))
     item.reload
     assert_equal "New Title", item.element("dc:title").string      # new value
     assert_equal "Some subject", item.element("dc:subject").string # existing value
   end
 
   test "import() succeeds the import's task upon success" do
-    item = items(:uiuc_described)
+    item = items(:southeast_described)
     csv = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title]
       row << [item.id, nil, nil, nil, nil, nil, nil, "New Title"]
@@ -401,14 +401,14 @@ class CsvImporterTest < ActiveSupport::TestCase
     @instance.import(csv:                csv,
                      file_paths:         [],
                      submitter:          users(:southwest_sysadmin),
-                     primary_collection: collections(:uiuc_empty),
+                     primary_collection: collections(:southeast_empty),
                      task:               task)
     assert_equal Task::Status::SUCCEEDED, task.status
     assert_equal 1, task.percent_complete
   end
 
   test "import() fails the import's task upon error" do
-    item = items(:uiuc_described)
+    item = items(:southeast_described)
     csv = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[bogus:bogus]
       row << [item.id, nil, nil, nil, nil, nil, "Bogus element value"]
@@ -417,7 +417,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     assert_raises do
       @instance.import(csv:                csv,
                        submitter:          users(:southwest_sysadmin),
-                       primary_collection: collections(:uiuc_empty),
+                       primary_collection: collections(:southeast_empty),
                        task:               task)
     end
     assert_equal Task::Status::FAILED, task.status

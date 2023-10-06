@@ -27,7 +27,7 @@ class EventTest < ActiveSupport::TestCase
   end
 
   setup do
-    @instance = events(:uiuc_item1_create)
+    @instance = events(:southeast_item1_create)
     assert @instance.valid?
   end
 
@@ -36,13 +36,13 @@ class EventTest < ActiveSupport::TestCase
   test "first() returns the first event" do
     Event.delete_all
     e1 = Event.create!(happened_at: 1.hour.ago,
-                       item:        items(:uiuc_item1),
+                       item:        items(:southeast_item1),
                        event_type:  Event::Type::CREATE)
     e2 = Event.create!(happened_at: 2.hours.ago,
-                       item:        items(:uiuc_item1),
+                       item:        items(:southeast_item1),
                        event_type:  Event::Type::CREATE)
     e3 = Event.create!(happened_at: 3.hours.ago,
-                       item:        items(:uiuc_item1),
+                       item:        items(:southeast_item1),
                        event_type:  Event::Type::CREATE)
     assert_equal e3, Event.all.order(:happened_at).limit(1).first
   end
@@ -58,7 +58,7 @@ class EventTest < ActiveSupport::TestCase
     assert !@instance.valid?
 
     # Bitstream
-    @instance.bitstream = bitstreams(:uiuc_item1_in_staging)
+    @instance.bitstream = bitstreams(:southeast_item1_in_staging)
     assert @instance.valid?
 
     # Collection
@@ -68,13 +68,13 @@ class EventTest < ActiveSupport::TestCase
 
     # Item
     @instance.collection = nil
-    @instance.item       = items(:uiuc_item1)
+    @instance.item       = items(:southeast_item1)
     assert @instance.valid?
 
     # Login
     @instance.bitstream = nil
-    @instance.login     = Login.create!(user:        users(:uiuc),
-                                        institution: institutions(:uiuc),
+    @instance.login     = Login.create!(user:        users(:southeast),
+                                        institution: institutions(:southeast),
                                         provider:    Login::Provider::LOCAL)
     assert @instance.valid?
 

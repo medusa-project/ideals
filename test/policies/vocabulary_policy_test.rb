@@ -188,7 +188,7 @@ class VocabularyPolicyTest < ActiveSupport::TestCase
   end
 
   test "index?() authorizes institution administrators" do
-    user = users(:uiuc_admin)
+    user = users(:southeast_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = VocabularyPolicy.new(context, @vocab)

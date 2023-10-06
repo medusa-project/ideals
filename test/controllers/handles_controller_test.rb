@@ -17,7 +17,7 @@ class HandlesControllerTest < ActionDispatch::IntegrationTest
 
   test "redirect() redirects to the relevant resource via  HTTP 301" do
     prefix = ::Configuration.instance.handles[:prefix]
-    handle = handles(:uiuc_item1)
+    handle = handles(:southeast_item1)
     get redirect_handle_path(prefix, handle.suffix)
     assert_response :moved_permanently
     assert_redirected_to handle.item

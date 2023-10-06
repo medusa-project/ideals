@@ -402,7 +402,7 @@ class InstitutionTest < ActiveSupport::TestCase
 
   test "download_count_by_month() returns a correct count" do
     Event.destroy_all
-    @instance = institutions(:uiuc)
+    @instance = institutions(:southeast)
     expected  = 0
     @instance.units.each do |unit|
       unit.collections.each do |collection|
@@ -422,7 +422,7 @@ class InstitutionTest < ActiveSupport::TestCase
 
   test "download_count_by_month() returns a correct count when supplying start
   and end times" do
-    @instance = institutions(:uiuc)
+    @instance = institutions(:southeast)
     expected = 0
     @instance.units.each do |unit|
       unit.collections.each do |collection|

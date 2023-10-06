@@ -17,42 +17,42 @@ southwest_unit2:
   institution: southwest
   buried:      false
 
-################################## uiuc #####################################
+################################## southeast #####################################
 
-uiuc_unit1:
+southeast_unit1:
   title:       Unit1
-  institution: uiuc
+  institution: southeast
   buried:      false
 
-uiuc_unit1_unit1:
+southeast_unit1_unit1:
   title:       Unit1 Subunit1
-  parent:      uiuc_unit1
-  institution: uiuc
+  parent:      southeast_unit1
+  institution: southeast
   buried:      false
 
-uiuc_unit1_unit2:
+southeast_unit1_unit2:
   title:       Unit1 Subunit2
-  parent:      uiuc_unit1
-  institution: uiuc
+  parent:      southeast_unit1
+  institution: southeast
   buried:      false
 
-uiuc_unit1_unit2_unit1:
+southeast_unit1_unit2_unit1:
   title:       Unit1 Subunit2 Unit1
-  parent:      uiuc_unit1_unit2
-  institution: uiuc
+  parent:      southeast_unit1_unit2
+  institution: southeast
   buried:      false
 
-uiuc_unit2:
+southeast_unit2:
   title:       Unit2
-  institution: uiuc
+  institution: southeast
   buried:      false
 
-uiuc_empty:
+southeast_empty:
   title:       Empty Unit
-  institution: uiuc
+  institution: southeast
   buried:      false
 
-uiuc_buried:
+southeast_buried:
   title:       Buried Unit
-  institution: uiuc
+  institution: southeast
   buried:      true

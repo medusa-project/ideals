@@ -3,7 +3,7 @@ require 'test_helper'
 class DownloadTest < ActiveSupport::TestCase
 
   setup do
-    @download = downloads(:uiuc_one)
+    @download = downloads(:southeast_one)
     setup_s3
   end
 
@@ -12,9 +12,9 @@ class DownloadTest < ActiveSupport::TestCase
   test "cleanup() works properly" do
     Download.destroy_all
 
-    d1 = Download.create(institution: institutions(:uiuc))
-    d2 = Download.create(institution: institutions(:uiuc))
-    d3 = Download.create(institution: institutions(:uiuc))
+    d1 = Download.create(institution: institutions(:southeast))
+    d2 = Download.create(institution: institutions(:southeast))
+    d3 = Download.create(institution: institutions(:southeast))
 
     assert_equal 0, Download.where(expired: true).count
 
@@ -28,7 +28,7 @@ class DownloadTest < ActiveSupport::TestCase
   # create()
 
   test "key is assigned at creation" do
-    @download = Download.create!(institution: institutions(:uiuc))
+    @download = Download.create!(institution: institutions(:southeast))
     assert @download.key.length > 20
   end
 
@@ -36,7 +36,7 @@ class DownloadTest < ActiveSupport::TestCase
 
   test "expire() deletes the corresponding storage object" do
     store       = ObjectStore.instance
-    institution = institutions(:uiuc)
+    institution = institutions(:southeast)
     File.open(file_fixture("crane.jpg"), "r") do |file|
       download = Download.create!(filename:    "file.jpg",
                                   institution: institution)

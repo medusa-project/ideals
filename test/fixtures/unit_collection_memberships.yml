@@ -22,54 +22,54 @@ southwest_unit1_empty:
   collection:   southwest_unit1_empty
   primary:      true
 
-################################## uiuc #####################################
+################################## southeast #####################################
 
-uiuc_unit1_collection1:
-  unit:         uiuc_unit1
-  collection:   uiuc_collection1
+southeast_unit1_collection1:
+  unit:         southeast_unit1
+  collection:   southeast_collection1
   primary:      true
 
-uiuc_unit1_collection1_collection1:
-  unit:         uiuc_unit1
-  collection:   uiuc_collection1_collection1
+southeast_unit1_collection1_collection1:
+  unit:         southeast_unit1
+  collection:   southeast_collection1_collection1
   primary:      true
 
-uiuc_unit1_collection1_collection1_collection1:
-  unit:         uiuc_unit1
-  collection:   uiuc_collection1_collection1_collection1
+southeast_unit1_collection1_collection1_collection1:
+  unit:         southeast_unit1
+  collection:   southeast_collection1_collection1_collection1
   primary:      true
 
-uiuc_unit1_unit2_unit1_collection1:
-  unit:         uiuc_unit1_unit2_unit1
-  collection:   uiuc_unit1_unit2_unit1_collection1
+southeast_unit1_unit2_unit1_collection1:
+  unit:         southeast_unit1_unit2_unit1
+  collection:   southeast_unit1_unit2_unit1_collection1
   primary:      true
 
-uiuc_unit2_collection1:
-  unit:         uiuc_unit2
-  collection:   uiuc_collection1
+southeast_unit2_collection1:
+  unit:         southeast_unit2
+  collection:   southeast_collection1
   primary:      false
 
-uiuc_unit1_described:
-  unit:         uiuc_unit1
-  collection:   uiuc_described
+southeast_unit1_described:
+  unit:         southeast_unit1
+  collection:   southeast_described
   primary:      true
 
-uiuc_unit1_empty:
-  unit:         uiuc_unit1
-  collection:   uiuc_empty
+southeast_unit1_empty:
+  unit:         southeast_unit1
+  collection:   southeast_empty
   primary:      true
 
-uiuc_unit1_undescribed:
-  unit:         uiuc_unit1
-  collection:   uiuc_undescribed
+southeast_unit1_undescribed:
+  unit:         southeast_unit1
+  collection:   southeast_undescribed
   primary:      true
 
-uiuc_unit2_collection2:
-  unit:         uiuc_unit2
-  collection:   uiuc_collection2
+southeast_unit2_collection2:
+  unit:         southeast_unit2
+  collection:   southeast_collection2
   primary:      true
 
-uiuc_buried_buried:
-  unit:         uiuc_buried
-  collection:   uiuc_buried
+southeast_buried_buried:
+  unit:         southeast_buried
+  collection:   southeast_buried
   primary:      true

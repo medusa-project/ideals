@@ -40,22 +40,22 @@ southwest_unused:
   name:                Unused Group
   defines_institution: false
 
-################################### uiuc ####################################
+################################### southeast ####################################
 
-uiuc:
-  institution:         uiuc
-  key:                 uiuc
+southeast:
+  institution:         southeast
+  key:                 southeast
   name:                U of I Users
   defines_institution: true
 
-uiuc_admins:
-  institution:         uiuc
-  key:                 uiuc_admins
+southeast_admins:
+  institution:         southeast
+  key:                 southeast_admins
   name:                U of I Administrators
   defines_institution: false
 
-uiuc_unused:
-  institution:         uiuc
+southeast_unused:
+  institution:         southeast
   key:                 unused
   name:                Unused Group
   defines_institution: false

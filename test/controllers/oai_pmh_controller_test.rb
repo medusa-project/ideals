@@ -8,9 +8,9 @@ require "test_helper"
 class OaiPmhControllerTest < ActionDispatch::IntegrationTest
 
   setup do
-    @institution = institutions(:uiuc)
+    @institution = institutions(:southeast)
     host! @institution.fqdn
-    @valid_identifier = "oai:#{@institution.fqdn}:#{items(:uiuc_item1).handle.handle}"
+    @valid_identifier = "oai:#{@institution.fqdn}:#{items(:southeast_item1).handle.handle}"
     setup_opensearch
     Item.reindex_all
     refresh_opensearch
@@ -237,7 +237,7 @@ class OaiPmhControllerTest < ActionDispatch::IntegrationTest
   test "ListIdentifiers disallows all other arguments when resumptionToken is present" do
     get "/oai-pmh", params: { verb: "ListIdentifiers",
                               resumptionToken: "offset:10",
-                              set: collections(:uiuc_collection1).id }
+                              set: collections(:southeast_collection1).id }
     assert_select "error", "resumptionToken is an exclusive argument."
   end
 
@@ -321,7 +321,7 @@ class OaiPmhControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "ListRecords disallows all other arguments when resumptionToken is present" do
-    handle = handles(:uiuc_collection1)
+    handle = handles(:southeast_collection1)
     get "/oai-pmh", params: { verb:            "ListRecords",
                               resumptionToken: "offset:10",
                               set:             "col_#{handle.prefix}_#{handle.suffix}" }
@@ -355,7 +355,7 @@ class OaiPmhControllerTest < ActionDispatch::IntegrationTest
   # 4.6 ListSets
   test "ListSets returns a list when correct arguments are passed and results
   are available" do
-    handle = handles(:uiuc_collection1)
+    handle = handles(:southeast_collection1)
     get "/oai-pmh", params: { verb: "ListSets" }
     assert_select "ListSets > set > setSpec",
                   "col_#{handle.prefix}_#{handle.suffix}"
@@ -368,7 +368,7 @@ class OaiPmhControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "ListSets disallows all other arguments when resumptionToken is present" do
-    handle = handles(:uiuc_collection1)
+    handle = handles(:southeast_collection1)
     get "/oai-pmh", params: { verb:            "ListSets",
                               resumptionToken: "offset:10",
                               set:             "col_#{handle.prefix}_#{handle.suffix}" }

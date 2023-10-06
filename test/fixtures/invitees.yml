@@ -65,74 +65,74 @@ southwest_pending:
   expires_at:        <%= Time.now + Invitee::EXPIRATION %>
   institution_admin: false
 
-################################## uiuc #####################################
+################################## southeast #####################################
 
-uiuc:
-  institution:       uiuc
-  email:             shib@illinois.edu
+southeast:
+  institution:       southeast
+  email:             shib@southeast.edu
   approval_state:    <%= Invitee::ApprovalState::APPROVED %>
   note:              Sample note
   rejection_reason:
   expires_at:        <%= Time.now + Invitee::EXPIRATION %>
   institution_admin: false
 
-uiuc2:
-  institution:       uiuc
-  email:             user2@illinois.edu
+southeast2:
+  institution:       southeast
+  email:             user2@southeast.edu
   approval_state:    <%= Invitee::ApprovalState::APPROVED %>
   note:              Sample note
   rejection_reason:
   expires_at:        <%= Time.now + Invitee::EXPIRATION %>
   institution_admin: false
 
-uiuc_admin:
-  institution:       uiuc
-  email:             instadmin@illinois.edu
+southeast_admin:
+  institution:       southeast
+  email:             instadmin@southeast.edu
   approval_state:    <%= Invitee::ApprovalState::APPROVED %>
   note:              Sample note
   rejection_reason:
   expires_at:        <%= Time.now + Invitee::EXPIRATION %>
   institution_admin: false
 
-uiuc_sysadmin:
-  institution:       uiuc
-  email:             sysadmin@illinois.edu
+southeast_sysadmin:
+  institution:       southeast
+  email:             sysadmin@southeast.edu
   approval_state:    <%= Invitee::ApprovalState::APPROVED %>
   note:              Sample note
   rejection_reason:
   expires_at:        <%= Time.now + Invitee::EXPIRATION %>
   institution_admin: false
 
-uiuc_unit1_admin:
-  institution:       uiuc
-  email:             uiuc_unit1_admin@illinois.edu
+southeast_unit1_admin:
+  institution:       southeast
+  email:             southeast_unit1_admin@southeast.edu
   approval_state:    <%= Invitee::ApprovalState::APPROVED %>
   note:              Sample note
   rejection_reason:
   expires_at:        <%= Time.now + Invitee::EXPIRATION %>
   institution_admin: false
 
-uiuc_unit1_unit2_unit1_admin:
-  institution:       uiuc
-  email:             uiuc_unit1_unit2_unit1_admin@illinois.edu
+southeast_unit1_unit2_unit1_admin:
+  institution:       southeast
+  email:             southeast_unit1_unit2_unit1_admin@southeast.edu
   approval_state:    <%= Invitee::ApprovalState::APPROVED %>
   note:              Sample note
   rejection_reason:
   expires_at:        <%= Time.now + Invitee::EXPIRATION %>
   institution_admin: false
 
-uiuc_collection1_collection1_admin:
-  institution:       uiuc
-  email:             uiuc_collection1_collection1_admin@illinois.edu
+southeast_collection1_collection1_admin:
+  institution:       southeast
+  email:             southeast_collection1_collection1_admin@southeast.edu
   approval_state:    <%= Invitee::ApprovalState::APPROVED %>
   note:              Sample note
   rejection_reason:
   expires_at:        <%= Time.now + Invitee::EXPIRATION %>
   institution_admin: false
 
-uiuc_collection1_collection1_submitter:
-  institution:       uiuc
-  email:             uiuc_collection1_collection1_submitter@illinois.edu
+southeast_collection1_collection1_submitter:
+  institution:       southeast
+  email:             southeast_collection1_collection1_submitter@southeast.edu
   approval_state:    <%= Invitee::ApprovalState::APPROVED %>
   note:              Sample note
   rejection_reason:

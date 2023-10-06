@@ -7,10 +7,10 @@ class ZipItemsJobTest < ActiveSupport::TestCase
   end
 
   test "perform() creates a correct Task" do
-    item_ids    = [items(:uiuc_approved).id, items(:uiuc_multiple_bitstreams).id]
-    download    = Download.create(institution: institutions(:uiuc))
-    institution = institutions(:uiuc)
-    user        = users(:uiuc)
+    item_ids    = [items(:southeast_approved).id, items(:southeast_multiple_bitstreams).id]
+    download    = Download.create(institution: institutions(:southeast))
+    institution = institutions(:southeast)
+    user        = users(:southeast)
     ZipItemsJob.new.perform(item_ids:    item_ids,
                             download:    download,
                             institution: institution,
@@ -25,8 +25,8 @@ class ZipItemsJobTest < ActiveSupport::TestCase
   end
 
   test "perform() creates a zip file" do
-    item_ids = [items(:uiuc_approved).id, items(:uiuc_multiple_bitstreams).id]
-    download = Download.create(institution: institutions(:uiuc))
+    item_ids = [items(:southeast_approved).id, items(:southeast_multiple_bitstreams).id]
+    download = Download.create(institution: institutions(:southeast))
     ZipItemsJob.new.perform(item_ids: item_ids,
                             download: download)
 
@@ -37,8 +37,8 @@ class ZipItemsJobTest < ActiveSupport::TestCase
   end
 
   test "perform() assigns a correct filename to the zip file" do
-    item_ids = [items(:uiuc_approved).id, items(:uiuc_multiple_bitstreams).id]
-    download = Download.create(institution: institutions(:uiuc))
+    item_ids = [items(:southeast_approved).id, items(:southeast_multiple_bitstreams).id]
+    download = Download.create(institution: institutions(:southeast))
 
     ZipItemsJob.new.perform(item_ids: item_ids,
                             download: download)

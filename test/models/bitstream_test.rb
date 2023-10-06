@@ -38,7 +38,7 @@ class BitstreamTest < ActiveSupport::TestCase
   setup do
     setup_s3
     clear_message_queues
-    @instance = bitstreams(:uiuc_item1_in_staging)
+    @instance = bitstreams(:southeast_item1_in_staging)
     assert @instance.valid?
   end
 
@@ -49,8 +49,8 @@ class BitstreamTest < ActiveSupport::TestCase
   # create_zip_file()
 
   test "create_zip_file() creates a zip of bitstreams" do
-    bitstreams = [bitstreams(:uiuc_approved_in_permanent),
-                  bitstreams(:uiuc_item1_license_bundle)]
+    bitstreams = [bitstreams(:southeast_approved_in_permanent),
+                  bitstreams(:southeast_item1_license_bundle)]
     dest_key   = "institutions/test/downloads/file.zip"
     Bitstream.create_zip_file(bitstreams: bitstreams, dest_key: dest_key)
 
@@ -81,7 +81,7 @@ class BitstreamTest < ActiveSupport::TestCase
   # new_in_staging()
 
   test "new_in_staging() returns a correct instance" do
-    item     = items(:uiuc_item1)
+    item     = items(:southeast_item1)
     filename = "cats.jpg"
     length   = 3424
     bs       = Bitstream.new_in_staging(item:     item,
@@ -261,7 +261,7 @@ class BitstreamTest < ActiveSupport::TestCase
   end
 
   test "create() updates bundle positions in the owning item" do
-    item = items(:uiuc_multiple_bitstreams)
+    item = items(:southeast_multiple_bitstreams)
     Bitstream.create!(bundle_position:   1,
                       item:              item,
                       original_filename: "cats.jpg",
@@ -276,7 +276,7 @@ class BitstreamTest < ActiveSupport::TestCase
   # destroy()
 
   test "destroy() updates bundle positions in the owning item" do
-    @instance = bitstreams(:uiuc_multiple_bitstreams_1)
+    @instance = bitstreams(:southeast_multiple_bitstreams_1)
     item = @instance.item
     @instance.destroy!
     # Assert that the positions are sequential and zero-based.
@@ -351,7 +351,7 @@ class BitstreamTest < ActiveSupport::TestCase
   end
 
   test "delete_from_medusa() sends a correct message if medusa_uuid is set" do
-    @instance = bitstreams(:uiuc_in_medusa)
+    @instance = bitstreams(:southeast_in_medusa)
     @instance.delete_from_medusa
     queue = @instance.institution.outgoing_message_queue
     AmqpHelper::Connector[:ideals].with_parsed_message(queue) do |message|
@@ -364,7 +364,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "delete_from_medusa() supports an institution override argument" do
     queue = institutions(:northeast).outgoing_message_queue
-    @instance = bitstreams(:uiuc_in_medusa)
+    @instance = bitstreams(:southeast_in_medusa)
     @instance.delete_from_medusa(institution: institutions(:northeast))
     AmqpHelper::Connector[:ideals].with_parsed_message(queue) do |message|
       assert_equal "delete", message['operation']
@@ -387,7 +387,7 @@ class BitstreamTest < ActiveSupport::TestCase
     # Write a file to the bucket.
     fixture = file_fixture("escher_lego.png")
     File.open(fixture, "r") do |file|
-      @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
+      @instance = Bitstream.new_in_staging(item:     items(:southeast_item1),
                                            filename: SecureRandom.hex,
                                            length:   File.size(fixture))
       @instance.upload_to_staging(file)
@@ -408,7 +408,7 @@ class BitstreamTest < ActiveSupport::TestCase
     # Write a file to the bucket.
     fixture = file_fixture("escher_lego.png")
     File.open(fixture, "r") do |file|
-      @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
+      @instance = Bitstream.new_in_staging(item:     items(:southeast_item1),
                                            filename: SecureRandom.hex,
                                            length:   File.size(fixture))
       @instance.upload_to_staging(file)
@@ -437,7 +437,7 @@ class BitstreamTest < ActiveSupport::TestCase
     # Write a file to the bucket.
     fixture = file_fixture("escher_lego.png")
     File.open(fixture, "r") do |file|
-      @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
+      @instance = Bitstream.new_in_staging(item:     items(:southeast_item1),
                                            filename: File.basename(fixture),
                                            length:   File.size(fixture))
       @instance.upload_to_staging(file)
@@ -458,7 +458,7 @@ class BitstreamTest < ActiveSupport::TestCase
     # Write a file to the bucket.
     fixture = file_fixture("escher_lego.png")
     File.open(fixture, "r") do |file|
-      @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
+      @instance = Bitstream.new_in_staging(item:     items(:southeast_item1),
                                            filename: File.basename(fixture),
                                            length:   File.size(fixture))
       @instance.upload_to_staging(file)
@@ -538,7 +538,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "destroy() deletes the corresponding file from the staging area of the
   application bucket" do
-    @instance = bitstreams(:uiuc_submitted_in_staging)
+    @instance = bitstreams(:southeast_submitted_in_staging)
     store     = ObjectStore.instance
     key       = Bitstream.staging_key(institution_key: @instance.institution.key,
                                       item_id:         @instance.item_id,
@@ -550,7 +550,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "destroy() deletes the corresponding file from the permanent area of the
   application bucket" do
-    @instance = bitstreams(:uiuc_approved_in_permanent)
+    @instance = bitstreams(:southeast_approved_in_permanent)
     store     = ObjectStore.instance
     key       = Bitstream.permanent_key(institution_key: @instance.institution.key,
                                         item_id:         @instance.item_id,
@@ -561,7 +561,7 @@ class BitstreamTest < ActiveSupport::TestCase
   end
 
   test "destroy() deletes corresponding derivatives" do
-    @instance  = bitstreams(:uiuc_submitted_in_staging)
+    @instance  = bitstreams(:southeast_submitted_in_staging)
     store      = ObjectStore.instance
     key_prefix = @instance.send(:derivative_key_prefix)
     @instance.derivative_image_url(size: 256) # generate a derivative
@@ -574,7 +574,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "destroy() does not send a delete message to Medusa if medusa_uuid is
   not set" do
-    @instance = bitstreams(:uiuc_submitted_in_staging)
+    @instance = bitstreams(:southeast_submitted_in_staging)
     @instance.destroy!
     queue = @instance.institution.outgoing_message_queue
     AmqpHelper::Connector[:ideals].with_parsed_message(queue) do |message|
@@ -584,7 +584,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "destroy() sends a delete message to Medusa if medusa_uuid is set" do
     Message.destroy_all
-    @instance = bitstreams(:uiuc_in_medusa)
+    @instance = bitstreams(:southeast_in_medusa)
     @instance.destroy!
     queue = @instance.institution.outgoing_message_queue
     AmqpHelper::Connector[:ideals].with_parsed_message(queue) do |message|
@@ -712,7 +712,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "ingest_into_medusa() raises an error if the ID is blank" do
     @instance = Bitstream.new
-    @instance.item = items(:uiuc_item1)
+    @instance.item = items(:southeast_item1)
     assert_raises ArgumentError do
       @instance.ingest_into_medusa
     end
@@ -727,7 +727,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "ingest_into_medusa() does nothing if preservation is not active for the
   owning institution" do
-    @instance = bitstreams(:uiuc_awaiting_ingest_into_medusa)
+    @instance = bitstreams(:southeast_awaiting_ingest_into_medusa)
     @instance.institution.outgoing_message_queue = nil
     @instance.ingest_into_medusa
   end
@@ -742,7 +742,7 @@ class BitstreamTest < ActiveSupport::TestCase
   end
 
   test "ingest_into_medusa() sends a message to the queue" do
-    @instance = bitstreams(:uiuc_awaiting_ingest_into_medusa)
+    @instance = bitstreams(:southeast_awaiting_ingest_into_medusa)
     @instance.ingest_into_medusa
     queue     = @instance.institution.outgoing_message_queue
     AmqpHelper::Connector[:ideals].with_parsed_message(queue) do |message|
@@ -810,7 +810,7 @@ class BitstreamTest < ActiveSupport::TestCase
   test "move_into_permanent_storage() raises an error if staging_key is not
   set" do
     assert_raises do
-      @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
+      @instance = Bitstream.new_in_staging(item:     items(:southeast_item1),
                                            filename: SecureRandom.hex,
                                            length:   File.size(fixture))
       @instance.staging_key = nil
@@ -820,7 +820,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "move_into_permanent_storage() raises an error if no object exists in
   staging" do
-    @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
+    @instance = Bitstream.new_in_staging(item:     items(:southeast_item1),
                                          filename: "file.jpg",
                                          length:   1234)
     assert_raises do
@@ -832,7 +832,7 @@ class BitstreamTest < ActiveSupport::TestCase
     begin
       fixture = file_fixture("escher_lego.png")
       File.open(fixture, "r") do |file|
-        @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
+        @instance = Bitstream.new_in_staging(item:     items(:southeast_item1),
                                              filename: SecureRandom.hex,
                                              length:   File.size(fixture))
         @instance.upload_to_staging(file)
@@ -855,7 +855,7 @@ class BitstreamTest < ActiveSupport::TestCase
     begin
       fixture = file_fixture("escher_lego.png")
       File.open(fixture, "r") do |file|
-        @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
+        @instance = Bitstream.new_in_staging(item:     items(:southeast_item1),
                                              filename: SecureRandom.hex,
                                              length:   File.size(fixture))
         @instance.upload_to_staging(file)
@@ -875,7 +875,7 @@ class BitstreamTest < ActiveSupport::TestCase
       fixture     = file_fixture("escher_lego.png")
       staging_key = nil
       File.open(fixture, "r") do |file|
-        @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
+        @instance = Bitstream.new_in_staging(item:     items(:southeast_item1),
                                              filename: SecureRandom.hex,
                                              length:   File.size(fixture))
         @instance.upload_to_staging(file)
@@ -952,7 +952,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "read_full_text() works when full_text_checked_at is not set and force
   argument is false" do
-    @instance = bitstreams(:uiuc_approved_in_permanent)
+    @instance = bitstreams(:southeast_approved_in_permanent)
     @instance.update!(full_text_checked_at: nil,
                       full_text:            nil)
     @instance.read_full_text(force: false)
@@ -963,7 +963,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "read_full_text() works when full_text_checked_at is not set and force
   argument is true" do
-    @instance = bitstreams(:uiuc_approved_in_permanent)
+    @instance = bitstreams(:southeast_approved_in_permanent)
     @instance.update!(full_text_checked_at: nil,
                       full_text:            nil)
     @instance.read_full_text(force: true)
@@ -974,7 +974,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "read_full_text() does nothing when full_text_checked_at is set and
   force argument is false" do
-    @instance = bitstreams(:uiuc_approved_in_permanent)
+    @instance = bitstreams(:southeast_approved_in_permanent)
     checked_at = Time.now.utc
     text       = "cats"
     @instance.update!(full_text_checked_at: checked_at)
@@ -987,7 +987,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "read_full_text() works when full_text_checked_at is set and
   force argument is true" do
-    @instance               = bitstreams(:uiuc_approved_in_permanent)
+    @instance               = bitstreams(:southeast_approved_in_permanent)
     @instance.permanent_key = Bitstream.permanent_key(institution_key: @instance.institution.key,
                                                       item_id:         @instance.item_id,
                                                       filename:        @instance.filename)
@@ -1016,7 +1016,7 @@ class BitstreamTest < ActiveSupport::TestCase
     # This won't work because ActiveJob in the test environment uses the
     # test backend, which is not asynchronous
     skip
-    @instance = bitstreams(:uiuc_approved_in_permanent)
+    @instance = bitstreams(:southeast_approved_in_permanent)
     @instance.update!(full_text_checked_at: nil,
                       full_text:            nil)
     @instance.read_full_text_async
@@ -1057,7 +1057,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "save() sets all other bitstreams attached to the same item to not
   primary" do
-    item = items(:uiuc_approved)
+    item = items(:southeast_approved)
     b1   = item.bitstreams.build(original_filename: "cats.jpg",
                                  length:            123,
                                  primary:           true)
@@ -1085,7 +1085,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "save() moves the storage object in staging when the filename has
   changed" do
-    @instance = bitstreams(:uiuc_submitted_in_staging)
+    @instance = bitstreams(:southeast_submitted_in_staging)
     old_key      = @instance.staging_key
     new_filename = "new filename"
     @instance.update!(filename: new_filename)
@@ -1099,7 +1099,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "save() moves the permanent storage object when the filename has
   changed" do
-    @instance = bitstreams(:uiuc_approved_in_permanent)
+    @instance = bitstreams(:southeast_approved_in_permanent)
     old_key      = @instance.permanent_key
     new_filename = "new filename"
     @instance.update!(filename: new_filename)
@@ -1113,7 +1113,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "save() moves the storage object in staging when the staging key has
   changed" do
-    @instance = bitstreams(:uiuc_submitted_in_staging)
+    @instance = bitstreams(:southeast_submitted_in_staging)
     old_key   = @instance.staging_key
     @instance.update!(staging_key: "new/key")
     new_key   = @instance.staging_key
@@ -1124,7 +1124,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "save() moves the storage object in staging when the permanent key has
   changed" do
-    @instance = bitstreams(:uiuc_approved_in_permanent)
+    @instance = bitstreams(:southeast_approved_in_permanent)
     old_key   = @instance.permanent_key
     @instance.update!(permanent_key: "new/key")
     new_key   = @instance.permanent_key
@@ -1137,7 +1137,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "save() sends a delete message to Medusa when the filename changes" do
     queue = @instance.institution.outgoing_message_queue
-    @instance = bitstreams(:uiuc_approved_in_permanent)
+    @instance = bitstreams(:southeast_approved_in_permanent)
     # These have to be set in order for the delete_from_medusa callback to work
     @instance.update!(medusa_key: "some key",
                       medusa_uuid: SecureRandom.uuid)
@@ -1153,7 +1153,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "save() does not send an ingest message to Medusa if the permanent key
   is not set" do
-    @instance = bitstreams(:uiuc_submitted_in_staging)
+    @instance = bitstreams(:southeast_submitted_in_staging)
     @instance.save!
     queue     = @instance.institution.outgoing_message_queue
     AmqpHelper::Connector[:ideals].with_parsed_message(queue) do |message|
@@ -1163,7 +1163,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "save() does not send an ingest message to Medusa if preservation is not
   active on the owning institution" do
-    @instance = bitstreams(:uiuc_submitted_in_staging)
+    @instance = bitstreams(:southeast_submitted_in_staging)
     @instance.institution.medusa_file_group_id = nil
     @instance.save!
     queue     = @instance.institution.outgoing_message_queue
@@ -1174,7 +1174,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "save() does not send an ingest message to Medusa if the permanent key
   has not changed" do
-    @instance = bitstreams(:uiuc_awaiting_ingest_into_medusa)
+    @instance = bitstreams(:southeast_awaiting_ingest_into_medusa)
     @instance.save!
     queue = @instance.institution.outgoing_message_queue
     AmqpHelper::Connector[:ideals].with_parsed_message(queue) do |message|
@@ -1184,7 +1184,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "save() sends an ingest message to Medusa if the permanent key has
   changed" do
-    @instance = bitstreams(:uiuc_submitted_in_staging)
+    @instance = bitstreams(:southeast_submitted_in_staging)
     @instance.item.assign_handle
     @instance.update!(permanent_key: ["institutions",
                                       @instance.institution.key,
@@ -1201,7 +1201,7 @@ class BitstreamTest < ActiveSupport::TestCase
     # This won't work because ActiveJob in the test environment uses the
     # test backend, which is not asynchronous
     skip
-    @instance = bitstreams(:uiuc_approved_in_permanent)
+    @instance = bitstreams(:southeast_approved_in_permanent)
     @instance.update!(full_text_checked_at: nil,
                       full_text:            nil)
     sleep 2
@@ -1212,7 +1212,7 @@ class BitstreamTest < ActiveSupport::TestCase
   end
 
   test "save() does not read full text when the bundle is not CONTENT" do
-    @instance = bitstreams(:uiuc_approved_in_permanent)
+    @instance = bitstreams(:southeast_approved_in_permanent)
     @instance.update!(bundle:               Bitstream::Bundle::LICENSE,
                       full_text_checked_at: nil,
                       full_text:            nil)
@@ -1224,7 +1224,7 @@ class BitstreamTest < ActiveSupport::TestCase
   end
 
   test "save() does not read full text when full_text_is_checked_at is set" do
-    @instance = bitstreams(:uiuc_approved_in_permanent)
+    @instance = bitstreams(:southeast_approved_in_permanent)
     time      = Time.now.utc
     @instance.update!(full_text_checked_at: time,
                       full_text:            FullText.new(text: "cats"))
@@ -1236,7 +1236,7 @@ class BitstreamTest < ActiveSupport::TestCase
   end
 
   test "save() does not read full text when an effective key does not exist" do
-    @instance = bitstreams(:uiuc_approved_in_permanent)
+    @instance = bitstreams(:southeast_approved_in_permanent)
     @instance.update!(full_text_checked_at: nil,
                       full_text:            nil,
                       staging_key:          nil,
@@ -1253,7 +1253,7 @@ class BitstreamTest < ActiveSupport::TestCase
   test "staging_key must be unique" do
     @instance.update!(staging_key:"cats")
     assert_raises ActiveRecord::RecordNotUnique do
-      Bitstream.create!(item:              items(:uiuc_item1),
+      Bitstream.create!(item:              items(:southeast_item1),
                         staging_key:       "cats",
                         original_filename: "cats",
                         length:            123)
@@ -1278,7 +1278,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "update() update bundle positions in the owning item when increasing a
   bundle position" do
-    @instance = bitstreams(:uiuc_multiple_bitstreams_1)
+    @instance = bitstreams(:southeast_multiple_bitstreams_1)
     assert_equal 0, @instance.bundle_position
     @instance.update!(bundle_position: 2)
     # Assert that the positions are sequential and zero-based.
@@ -1289,7 +1289,7 @@ class BitstreamTest < ActiveSupport::TestCase
 
   test "update() updates bundle positions in the owning item when decreasing a
   bundle position" do
-    @instance = bitstreams(:uiuc_multiple_bitstreams_1)
+    @instance = bitstreams(:southeast_multiple_bitstreams_1)
     @instance = @instance.item.bitstreams.where(bundle_position: 2).first
     @instance.update!(bundle_position: 0)
     # Assert that the positions are sequential and zero-based.
@@ -1303,7 +1303,7 @@ class BitstreamTest < ActiveSupport::TestCase
   test "upload_to_permanent() uploads a file to the application bucket" do
     begin
       fixture = file_fixture("escher_lego.png")
-      key     = %w[institutions uiuc storage file].join("/")
+      key     = %w[institutions southeast storage file].join("/")
       @instance.update!(permanent_key: key)
       @instance.upload_to_permanent(fixture)
 
@@ -1317,7 +1317,7 @@ class BitstreamTest < ActiveSupport::TestCase
   test "upload_to_permanent() updates the length property" do
     begin
       fixture = file_fixture("escher_lego.png")
-      key     = %w[institutions uiuc storage file].join("/")
+      key     = %w[institutions southeast storage file].join("/")
       @instance.update!(permanent_key: key)
       @instance.upload_to_permanent(fixture)
 
@@ -1335,7 +1335,7 @@ class BitstreamTest < ActiveSupport::TestCase
       # Write a file to the bucket.
       fixture = file_fixture("escher_lego.png")
       File.open(fixture, "r") do |file|
-        @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
+        @instance = Bitstream.new_in_staging(item:     items(:southeast_item1),
                                              filename: File.basename(fixture),
                                              length:   File.size(fixture))
         @instance.upload_to_staging(file)
@@ -1354,7 +1354,7 @@ class BitstreamTest < ActiveSupport::TestCase
       # Write a file to the bucket.
       fixture = file_fixture("escher_lego.png")
       File.open(fixture, "r") do |file|
-        @instance = Bitstream.new_in_staging(item:     items(:uiuc_item1),
+        @instance = Bitstream.new_in_staging(item:     items(:southeast_item1),
                                              filename: File.basename(fixture),
                                              length:   File.size(fixture))
         @instance.upload_to_staging(file)

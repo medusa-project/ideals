@@ -25,7 +25,7 @@ class DownloadPolicyTest < ActiveSupport::TestCase
   end
 
   test "file?() restricts expired downloads" do
-    @download = downloads(:uiuc_expired)
+    @download = downloads(:southeast_expired)
     context   = RequestContext.new(user:        nil,
                                    client_ip:   @download.ip_address,
                                    institution: @download.institution)
@@ -62,7 +62,7 @@ class DownloadPolicyTest < ActiveSupport::TestCase
   end
 
   test "show?() restricts expired downloads" do
-    @download = downloads(:uiuc_expired)
+    @download = downloads(:southeast_expired)
     context   = RequestContext.new(user:        nil,
                                    client_ip:   @download.ip_address,
                                    institution: @download.institution)

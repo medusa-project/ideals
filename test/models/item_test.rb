@@ -7,7 +7,7 @@ class ItemTest < ActiveSupport::TestCase
   setup do
     setup_opensearch
     setup_s3
-    @instance = items(:uiuc_item1)
+    @instance = items(:southeast_item1)
   end
 
   teardown do
@@ -23,7 +23,7 @@ class ItemTest < ActiveSupport::TestCase
   # delete_document() (Indexed concern)
 
   test "delete_document() deletes a document" do
-    institution = institutions(:uiuc)
+    institution = institutions(:southeast)
     items = Item.where(institution_id: institution.id)
     items.each(&:reindex)
     refresh_opensearch
@@ -53,7 +53,7 @@ class ItemTest < ActiveSupport::TestCase
   # reindex_all() (Indexed concern)
 
   test "reindex_all() reindexes all items" do
-    institution = institutions(:uiuc)
+    institution = institutions(:southeast)
     assert_equal 0, Item.search.institution(institution).count
 
     Item.reindex_all
@@ -71,14 +71,14 @@ class ItemTest < ActiveSupport::TestCase
   # search() (Indexed concern)
 
   test "search() returns an ItemRelation" do
-    assert_kind_of ItemRelation, Item.search.institution(institutions(:uiuc))
+    assert_kind_of ItemRelation, Item.search.institution(institutions(:southeast))
   end
 
   # create_zip_file()
 
   test "create_zip_file() creates a zip file" do
     setup_s3
-    item_ids = [items(:uiuc_approved).id, items(:uiuc_multiple_bitstreams).id]
+    item_ids = [items(:southeast_approved).id, items(:southeast_multiple_bitstreams).id]
     dest_key   = "institutions/test/downloads/file.zip"
     Item.create_zip_file(item_ids: item_ids, dest_key: dest_key)
 
@@ -92,7 +92,7 @@ class ItemTest < ActiveSupport::TestCase
   test "all_access_embargoes() returns all all-access embargoes" do
     assert_equal 0, @instance.all_access_embargoes.length
 
-    @instance = items(:uiuc_embargoed)
+    @instance = items(:southeast_embargoed)
     assert_equal 1, @instance.all_access_embargoes.length
   end
 
@@ -129,13 +129,13 @@ class ItemTest < ActiveSupport::TestCase
   # approve()
 
   test "approve() sets the stage to approved" do
-    item = items(:uiuc_described)
+    item = items(:southeast_described)
     item.approve
     assert_equal Item::Stages::APPROVED, item.stage
   end
 
   test "approve() creates an associated date-approved element" do
-    item = items(:uiuc_submitting)
+    item = items(:southeast_submitting)
     item.institution.update!(handle_uri_element: nil)
     assert_difference "AscribedElement.count", 1 do
       item.approve
@@ -147,7 +147,7 @@ class ItemTest < ActiveSupport::TestCase
 
   test "approve() does not create an associated date-approved element if no
   such mapping is defined" do
-    item = items(:uiuc_submitting)
+    item = items(:southeast_submitting)
     item.institution.update!(date_approved_element: nil,
                              handle_uri_element:    nil)
     assert_no_difference "item.elements.count" do
@@ -156,7 +156,7 @@ class ItemTest < ActiveSupport::TestCase
   end
 
   test "approve() sets correct bitstream bundle positions" do
-    item = items(:uiuc_described)
+    item = items(:southeast_described)
     item.bitstreams.build(filename: "Test 1", length: 0)
     item.bitstreams.build(filename: "Test 6", length: 0)
     item.bitstreams.build(filename: "Test 5", length: 0)
@@ -200,7 +200,7 @@ class ItemTest < ActiveSupport::TestCase
   license.txt file" do
     deposit_agreement = "<p>This is the deposit agreement.</p>"\
                         "<p>It is in HTML format.</p>"
-    item = items(:uiuc_submitting)
+    item = items(:southeast_submitting)
     item.primary_collection.submissions_reviewed = false
     item.deposit_agreement = deposit_agreement
     item.approve
@@ -222,7 +222,7 @@ class ItemTest < ActiveSupport::TestCase
   end
 
   test "approve() moves all associated Bitstreams into permanent storage" do
-    item    = items(:uiuc_described)
+    item    = items(:southeast_described)
     fixture = file_fixture("escher_lego.png")
     @instance.bitstreams.each do |bs|
       File.open(fixture, "r") do |file|
@@ -254,9 +254,9 @@ class ItemTest < ActiveSupport::TestCase
   # as_change_hash()
 
   test "as_change_hash() returns the correct structure" do
-    @instance = items(:uiuc_described)
+    @instance = items(:southeast_described)
     # add another title to test handling of multiple same-named elements
-    @instance.elements.build(registered_element: registered_elements(:uiuc_dc_title),
+    @instance.elements.build(registered_element: registered_elements(:southeast_dc_title),
                              string: "Alternate title")
     # add an embargo
     @instance.embargoes.build(kind:       Embargo::Kind::ALL_ACCESS,
@@ -273,7 +273,7 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal "ALL_ACCESS", hash['embargo:0:kind']
 
     # test bitstreams
-    @instance = items(:uiuc_item1)
+    @instance = items(:southeast_item1)
     hash = @instance.as_change_hash
     @instance.bitstreams.each do |bs|
       assert_equal bs.filename, hash["bitstream:#{bs.id}:filename"]
@@ -283,7 +283,7 @@ class ItemTest < ActiveSupport::TestCase
   # as_indexed_json()
 
   test "as_indexed_json() returns the correct structure" do
-    @instance.elements.build(registered_element: registered_elements(:uiuc_dc_title),
+    @instance.elements.build(registered_element: registered_elements(:southeast_dc_title),
                              string:             "test")
     doc = @instance.as_indexed_json
     assert_not_empty doc[Item::IndexFields::ALL_ELEMENTS]
@@ -314,7 +314,7 @@ class ItemTest < ActiveSupport::TestCase
     assert_not_empty doc[Item::IndexFields::UNIT_TITLES]
     assert_not_empty doc[Item::IndexFields::UNITS]
 
-    item = items(:uiuc_described)
+    item = items(:southeast_described)
     doc = item.as_indexed_json
     assert_equal 3, item.elements.length
     title = item.elements.find{ |e| e.name == item.institution.title_element.name }
@@ -323,7 +323,7 @@ class ItemTest < ActiveSupport::TestCase
   end
 
   test "as_indexed_json() converts date-type element strings to ISO 8601" do
-    reg_e = registered_elements(:uiuc_dc_date_issued)
+    reg_e = registered_elements(:southeast_dc_date_issued)
     @instance.elements.build(registered_element: reg_e,
                              string:             "October 2015").save
     doc = @instance.as_indexed_json
@@ -331,7 +331,7 @@ class ItemTest < ActiveSupport::TestCase
   end
 
   test "as_indexed_json() strips tags from HTML element values" do
-    reg_e = registered_elements(:uiuc_dc_description)
+    reg_e = registered_elements(:southeast_dc_description)
     @instance.elements.build(registered_element: reg_e,
                              string:             "<a href=\"href\">Text</a>").save
     doc = @instance.as_indexed_json
@@ -346,13 +346,13 @@ class ItemTest < ActiveSupport::TestCase
   end
 
   test "assign_handle() assigns a handle" do
-    item = items(:uiuc_described)
+    item = items(:southeast_described)
     item.assign_handle
     assert_not_nil item.handle.suffix
   end
 
   test "assign_handle() puts the created handle to the server" do
-    item = items(:uiuc_described)
+    item = items(:southeast_described)
     item.handle.destroy!
     item.reload
     item.assign_handle
@@ -360,7 +360,7 @@ class ItemTest < ActiveSupport::TestCase
   end
 
   test "assign_handle() creates an associated handle URI element" do
-    item = items(:uiuc_described)
+    item = items(:southeast_described)
     item.handle.destroy!
     item.reload
     assert_difference "AscribedElement.count", 1 do
@@ -373,7 +373,7 @@ class ItemTest < ActiveSupport::TestCase
 
   test "assign_handle() does not create an associated handle URI element if
   no such mapping is defined" do
-    item = items(:uiuc_described)
+    item = items(:southeast_described)
     item.institution.update!(handle_uri_element: nil)
     assert_no_difference "AscribedElement.count" do
       item.assign_handle
@@ -383,7 +383,7 @@ class ItemTest < ActiveSupport::TestCase
   # authors() (Describable concern)
 
   test "authors() returns all author elements" do
-    item  = items(:uiuc_described)
+    item  = items(:southeast_described)
     reg_e = item.institution.author_element
     item.elements.build(registered_element: reg_e, string: "Value 1")
     item.elements.build(registered_element: reg_e, string: "Value 2")
@@ -423,7 +423,7 @@ class ItemTest < ActiveSupport::TestCase
   end
 
   test "bury!() does nothing to a buried item" do
-    @instance = items(:uiuc_buried)
+    @instance = items(:southeast_buried)
     @instance.bury!
   end
 
@@ -431,7 +431,7 @@ class ItemTest < ActiveSupport::TestCase
 
   test "complete_submission() sets the stage to submitted if the collection is
   reviewing submissions" do
-    item = items(:uiuc_described)
+    item = items(:southeast_described)
     item.primary_collection.submissions_reviewed = true
     item.complete_submission
     assert_equal Item::Stages::SUBMITTED, item.stage
@@ -439,14 +439,14 @@ class ItemTest < ActiveSupport::TestCase
 
   test "complete_submission() sets the stage to approved if the collection is
   not reviewing submissions" do
-    item = items(:uiuc_described)
+    item = items(:southeast_described)
     item.primary_collection.submissions_reviewed = false
     item.complete_submission
     assert_equal Item::Stages::APPROVED, item.stage
   end
 
   test "complete_submission() creates an associated date-submitted element" do
-    item = items(:uiuc_described)
+    item = items(:southeast_described)
     item.complete_submission
     e = item.element(item.institution.date_submitted_element.name)
     assert_not_nil e.string
@@ -455,7 +455,7 @@ class ItemTest < ActiveSupport::TestCase
 
   test "complete_submission() creates an associated date-submitted element
   if the collection is not reviewing submissions" do
-    item = items(:uiuc_submitting)
+    item = items(:southeast_submitting)
     item.primary_collection.submissions_reviewed = false
     item.institution.update!(date_approved_element: nil,
                              handle_uri_element:    nil)
@@ -469,7 +469,7 @@ class ItemTest < ActiveSupport::TestCase
 
   test "complete_submission() does not create an associated date-submitted
   element if no such mapping is defined" do
-    item = items(:uiuc_submitting)
+    item = items(:southeast_submitting)
     item.primary_collection.submissions_reviewed = false
     item.institution.update!(date_submitted_element: nil,
                              date_approved_element:  nil,
@@ -481,7 +481,7 @@ class ItemTest < ActiveSupport::TestCase
 
   test "complete_submission() does not move any associated Bitstreams into
   permanent storage if the collection is reviewing submissions" do
-    item    = items(:uiuc_described)
+    item    = items(:southeast_described)
     item.primary_collection.submissions_reviewed = true
     fixture = file_fixture("escher_lego.png")
     @instance.bitstreams.each do |bs|
@@ -498,7 +498,7 @@ class ItemTest < ActiveSupport::TestCase
 
   test "complete_submission() moves all associated Bitstreams into
   permanent storage if the collection is not reviewing submissions" do
-    item    = items(:uiuc_described)
+    item    = items(:southeast_described)
     item.primary_collection.submissions_reviewed = false
     fixture = file_fixture("escher_lego.png")
     @instance.bitstreams.each do |bs|
@@ -515,7 +515,7 @@ class ItemTest < ActiveSupport::TestCase
 
   test "complete_submission() creates an associated date-approved element when
   the collection is not reviewing submissions" do
-    item = items(:uiuc_submitting)
+    item = items(:southeast_submitting)
     item.primary_collection.submissions_reviewed = false
     item.institution.update!(handle_uri_element: nil)
 
@@ -527,7 +527,7 @@ class ItemTest < ActiveSupport::TestCase
 
   test "approve() does not create an associated date-approved element if no
   such mapping is defined and the collection is not reviewing submissions" do
-    item = items(:uiuc_submitting)
+    item = items(:southeast_submitting)
     item.primary_collection.submissions_reviewed = false
     item.institution.update!(date_approved_element: nil,
                              handle_uri_element:    nil)
@@ -538,7 +538,7 @@ class ItemTest < ActiveSupport::TestCase
 
   test "complete_submission() sets correct bitstream bundle positions when the
   collection is not reviewing submissions" do
-    item = items(:uiuc_described)
+    item = items(:southeast_described)
     item.primary_collection.submissions_reviewed = false
     item.bitstreams.build(filename: "Test 1", length: 0)
     item.bitstreams.build(filename: "Test 6", length: 0)
@@ -562,7 +562,7 @@ class ItemTest < ActiveSupport::TestCase
     deposit_agreement = "This is the deposit agreement. It is intentionally "\
                         "longer than 80 columns in order to check the word "\
                         "wrapping."
-    item = items(:uiuc_submitting)
+    item = items(:southeast_submitting)
     item.primary_collection.submissions_reviewed = false
     item.deposit_agreement = deposit_agreement
     item.complete_submission
@@ -580,7 +580,7 @@ class ItemTest < ActiveSupport::TestCase
   for the license.txt file" do
     deposit_agreement = "<p>This is the deposit agreement.</p>"\
                         "<p>It is in HTML format.</p>"
-    item = items(:uiuc_submitting)
+    item = items(:southeast_submitting)
     item.primary_collection.submissions_reviewed = false
     item.deposit_agreement = deposit_agreement
     item.complete_submission
@@ -594,7 +594,7 @@ class ItemTest < ActiveSupport::TestCase
   test "complete_submission() does not add a license.txt bitstream when
   deposit_agreement is not present and the collection is not reviewing
   submissions" do
-    item = items(:uiuc_submitting)
+    item = items(:southeast_submitting)
     item.primary_collection.submissions_reviewed = false
     item.complete_submission
 
@@ -627,20 +627,20 @@ class ItemTest < ActiveSupport::TestCase
   # destroy()
 
   test "destroy() fails for in-archive items" do
-    item = items(:uiuc_in_medusa)
+    item = items(:southeast_in_medusa)
     assert_raises do
       item.destroy!
     end
   end
 
   test "destroy() succeeds for not-in-archive items" do
-    item = items(:uiuc_submitting)
+    item = items(:southeast_submitting)
     item.destroy!
     assert item.destroyed?
   end
 
   test "destroy() destroys dependent AscribedElements" do
-    item = items(:uiuc_described)
+    item = items(:southeast_described)
     elements = item.elements
     assert elements.count > 0
     item.destroy!
@@ -752,8 +752,8 @@ class ItemTest < ActiveSupport::TestCase
   # element() (Describable concern)
 
   test "element() returns a matching element" do
-    assert_equal "Some title", items(:uiuc_described).element("dc:title").string
-    assert_equal "Some title", items(:uiuc_described).element(:"dc:title").string
+    assert_equal "Some title", items(:southeast_described).element("dc:title").string
+    assert_equal "Some title", items(:southeast_described).element(:"dc:title").string
   end
 
   test "element() returns nil if no such element exists" do
@@ -796,13 +796,13 @@ class ItemTest < ActiveSupport::TestCase
   # exhume!()
 
   test "exhume!() sets the stage to APPROVED" do
-    @instance = items(:uiuc_buried)
+    @instance = items(:southeast_buried)
     @instance.exhume!
     assert_equal Item::Stages::APPROVED, @instance.stage
   end
 
   test "exhume!() creates an associated Event" do
-    @instance = items(:uiuc_buried)
+    @instance = items(:southeast_buried)
     @instance.exhume!
     assert_equal 1, @instance.events.where(event_type: Event::Type::UNDELETE).count
   end
@@ -847,7 +847,7 @@ class ItemTest < ActiveSupport::TestCase
 
   test "metadata_profile() returns the primary collection's effective metadata
   profile" do
-    assert_equal metadata_profiles(:uiuc_default), @instance.metadata_profile
+    assert_equal metadata_profiles(:southeast_default), @instance.metadata_profile
   end
 
   # move_into_permanent_storage()
@@ -892,7 +892,7 @@ class ItemTest < ActiveSupport::TestCase
 
   test "reindex reindexes the instance" do
     assert_equal 0, Item.search.
-      institution(institutions(:uiuc)).
+      institution(institutions(:southeast)).
       filter(Item::IndexFields::ID, @instance.index_id).
       count
 
@@ -900,7 +900,7 @@ class ItemTest < ActiveSupport::TestCase
     refresh_opensearch
 
     assert_equal 1, Item.search.
-      institution(institutions(:uiuc)).
+      institution(institutions(:southeast)).
       filter(Item::IndexFields::ID, @instance.index_id).
       count
   end
@@ -955,7 +955,7 @@ class ItemTest < ActiveSupport::TestCase
 
   test "required_elements_present?() returns true if all required elements are
   present" do
-    @instance.elements.build(registered_element: registered_elements(:uiuc_dc_title),
+    @instance.elements.build(registered_element: registered_elements(:southeast_dc_title),
                              string:             "Title").save
     assert @instance.required_elements_present?
   end
@@ -963,7 +963,7 @@ class ItemTest < ActiveSupport::TestCase
   # save()
 
   test "save() prunes duplicate AscribedElements" do
-    re = registered_elements(:uiuc_dc_title)
+    re = registered_elements(:southeast_dc_title)
     @instance.elements.destroy_all
     @instance.elements.build(registered_element: re,
                              string:             "cats",
@@ -991,7 +991,7 @@ class ItemTest < ActiveSupport::TestCase
 
   test "save() sends two emails when the stage changes from submitting to
   submitted and the primary collection is reviewing submissions" do
-    @instance = items(:uiuc_submitting)
+    @instance = items(:southeast_submitting)
     assert_emails 2 do
       @instance.update!(stage: Item::Stages::SUBMITTED)
     end
@@ -999,7 +999,7 @@ class ItemTest < ActiveSupport::TestCase
 
   test "save() sends one email when the stage changes from submitting to
   submitted and the primary collection is not reviewing submissions" do
-    @instance = items(:uiuc_submitting)
+    @instance = items(:southeast_submitting)
     @instance.primary_collection.update!(submissions_reviewed: false)
     assert_emails 1 do
       @instance.update!(stage: Item::Stages::SUBMITTED)
@@ -1016,7 +1016,7 @@ class ItemTest < ActiveSupport::TestCase
   end
 
   test "set_primary_collection() sets a new collection as primary" do
-    col = collections(:uiuc_collection2)
+    col = collections(:southeast_collection2)
     assert_not_equal col, @instance.primary_collection
     @instance.set_primary_collection(col)
     @instance.reload
@@ -1033,9 +1033,9 @@ class ItemTest < ActiveSupport::TestCase
 
   test "stage cannot be changed from buried when the item's owning collections
   are all buried" do
-    @instance = items(:uiuc_buried)
+    @instance = items(:southeast_buried)
     @instance.collection_item_memberships.destroy_all
-    @instance.collections << collections(:uiuc_buried)
+    @instance.collections << collections(:southeast_buried)
     assert ActiveRecord::RecordInvalid do
       @instance.update!(stage: Item::Stages::APPROVED)
     end
@@ -1103,12 +1103,12 @@ class ItemTest < ActiveSupport::TestCase
   # title() (Describable concern)
 
   test "title() returns the title element value" do
-    item = items(:uiuc_described)
+    item = items(:southeast_described)
     assert_equal "Some title", item.title
   end
 
   test "title() returns an empty string when there is no title element" do
-    item = items(:uiuc_undescribed)
+    item = items(:southeast_undescribed)
     assert_equal "", item.title
   end
 
@@ -1135,7 +1135,7 @@ class ItemTest < ActiveSupport::TestCase
   end
 
   test "validate() ensures that a submission includes at least one bitstream" do
-    item = items(:uiuc_submitting)
+    item = items(:southeast_submitting)
     assert item.validate
     item.bitstreams.destroy_all
     item.stage = Item::Stages::SUBMITTED
@@ -1143,9 +1143,9 @@ class ItemTest < ActiveSupport::TestCase
   end
 
   test "validate() ensures that a submission includes all required elements" do
-    item = items(:uiuc_submitting)
+    item = items(:southeast_submitting)
     assert item.validate
-    item.elements.where(registered_element: registered_elements(:uiuc_dc_title)).destroy_all
+    item.elements.where(registered_element: registered_elements(:southeast_dc_title)).destroy_all
     item.stage = Item::Stages::SUBMITTED
     assert !item.validate
   end

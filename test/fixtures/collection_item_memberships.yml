@@ -32,73 +32,73 @@ southwest_unit1_collection1_embargoed:
   item:       southwest_unit1_collection1_embargoed
   primary:    true
 
-################################## uiuc #####################################
+################################## southeast #####################################
 
-# uiuc_collection1 items
+# southeast_collection1 items
 
-uiuc_collection1_item1:
-  collection: uiuc_collection1
-  item:       uiuc_item1
+southeast_collection1_item1:
+  collection: southeast_collection1
+  item:       southeast_item1
   primary:    true
 
-uiuc_collection1_submitting:
-  collection: uiuc_collection1
-  item:       uiuc_submitting
+southeast_collection1_submitting:
+  collection: southeast_collection1
+  item:       southeast_submitting
   primary:    true
 
-uiuc_collection1_submitted:
-  collection: uiuc_collection1
-  item:       uiuc_submitted
+southeast_collection1_submitted:
+  collection: southeast_collection1
+  item:       southeast_submitted
   primary:    true
 
-uiuc_collection1_approved:
-  collection: uiuc_collection1
-  item:       uiuc_approved
+southeast_collection1_approved:
+  collection: southeast_collection1
+  item:       southeast_approved
   primary:    true
 
-uiuc_collection1_awaiting_ingest_into_medusa:
-  collection: uiuc_collection1
-  item:       uiuc_awaiting_ingest_into_medusa
+southeast_collection1_awaiting_ingest_into_medusa:
+  collection: southeast_collection1
+  item:       southeast_awaiting_ingest_into_medusa
   primary:    true
 
-uiuc_collection1_in_medusa:
-  collection: uiuc_collection1
-  item:       uiuc_in_medusa
+southeast_collection1_in_medusa:
+  collection: southeast_collection1
+  item:       southeast_in_medusa
   primary:    true
 
-uiuc_collection1_described:
-  collection: uiuc_collection1
-  item:       uiuc_described
+southeast_collection1_described:
+  collection: southeast_collection1
+  item:       southeast_described
   primary:    true
 
-uiuc_collection1_embargoed:
-  collection: uiuc_collection1
-  item:       uiuc_embargoed
+southeast_collection1_embargoed:
+  collection: southeast_collection1
+  item:       southeast_embargoed
   primary:    true
 
-uiuc_collection1_undescribed:
-  collection: uiuc_collection1
-  item:       uiuc_undescribed
+southeast_collection1_undescribed:
+  collection: southeast_collection1
+  item:       southeast_undescribed
   primary:    true
 
-uiuc_collection1_withdrawn:
-  collection: uiuc_collection1
-  item:       uiuc_withdrawn
+southeast_collection1_withdrawn:
+  collection: southeast_collection1
+  item:       southeast_withdrawn
   primary:    true
 
-uiuc_collection1_buried:
-  collection: uiuc_collection1
-  item:       uiuc_buried
+southeast_collection1_buried:
+  collection: southeast_collection1
+  item:       southeast_buried
   primary:    true
 
-uiuc_collection1_multiple_bitstreams:
-  collection: uiuc_collection1
-  item:       uiuc_multiple_bitstreams
+southeast_collection1_multiple_bitstreams:
+  collection: southeast_collection1
+  item:       southeast_multiple_bitstreams
   primary:    true
 
-# uiuc_collection1_collection1 items
+# southeast_collection1_collection1 items
 
-uiuc_collection1_collection1_item1:
-  collection: uiuc_collection1_collection1
-  item:       uiuc_collection1_collection1_item1
+southeast_collection1_collection1_item1:
+  collection: southeast_collection1_collection1
+  item:       southeast_collection1_collection1_item1
   primary:    true

@@ -3,8 +3,8 @@
 # ingests
 
 ingest_no_response:
-  institution:   uiuc
-  bitstream:     uiuc_item1_in_staging
+  institution:   southeast
+  bitstream:     southeast_item1_in_staging
   operation:     ingest
   status:
   medusa_key:
@@ -15,8 +15,8 @@ ingest_no_response:
   target_key:    target/cat
 
 successful_ingest:
-  institution:   uiuc
-  bitstream:     uiuc_in_medusa
+  institution:   southeast
+  bitstream:     southeast_in_medusa
   operation:     ingest
   status:        ok
   medusa_key:    target/dog
@@ -27,8 +27,8 @@ successful_ingest:
   target_key:    target/dog
 
 failed_ingest:
-  institution:   uiuc
-  bitstream:     uiuc_in_medusa
+  institution:   southeast
+  bitstream:     southeast_in_medusa
   operation:     ingest
   status:        error
   medusa_key:
@@ -41,8 +41,8 @@ failed_ingest:
 # deletes
 
 delete_no_response:
-  institution:   uiuc
-  bitstream:     uiuc_in_medusa
+  institution:   southeast
+  bitstream:     southeast_in_medusa
   operation:     delete
   status:
   medusa_key:
@@ -53,8 +53,8 @@ delete_no_response:
   target_key:    target/horse
 
 successful_delete:
-  institution:   uiuc
-  bitstream:     uiuc_in_medusa
+  institution:   southeast
+  bitstream:     southeast_in_medusa
   operation:     delete
   status:        ok
   medusa_key:    target/cow
@@ -65,8 +65,8 @@ successful_delete:
   target_key:    target/cow
 
 failed_delete:
-  institution:   uiuc
-  bitstream:     uiuc_in_medusa
+  institution:   southeast
+  bitstream:     southeast_in_medusa
   operation:     delete
   status:        error
   medusa_key:    target/alpaca
@@ -126,11 +126,11 @@ southwest_unit1_collection1_withdrawn_1_ingest:
   staging_key:   <%= SecureRandom.hex %>
   target_key:    <%= SecureRandom.hex %>
 
-################################### uiuc #####################################
+################################### southeast #####################################
 
-uiuc_approved_in_permanent_ingest:
-  institution:   uiuc
-  bitstream:     uiuc_approved_in_permanent
+southeast_approved_in_permanent_ingest:
+  institution:   southeast
+  bitstream:     southeast_approved_in_permanent
   operation:     ingest
   status:
   medusa_key:
@@ -140,9 +140,9 @@ uiuc_approved_in_permanent_ingest:
   staging_key:   <%= SecureRandom.hex %>
   target_key:    <%= SecureRandom.hex %>
 
-uiuc_in_medusa_ingest:
-  institution:   uiuc
-  bitstream:     uiuc_in_medusa
+southeast_in_medusa_ingest:
+  institution:   southeast
+  bitstream:     southeast_in_medusa
   operation:     ingest
   status:
   medusa_key:

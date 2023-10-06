@@ -3,7 +3,7 @@ require 'test_helper'
 class RegisteredElementTest < ActiveSupport::TestCase
 
   setup do
-    @instance = registered_elements(:uiuc_dc_contributor)
+    @instance = registered_elements(:southeast_dc_contributor)
     assert @instance.valid?
   end
 
@@ -31,7 +31,7 @@ class RegisteredElementTest < ActiveSupport::TestCase
   # destroy()
 
   test "instances with attached AscribedElements cannot be destroyed" do
-    item = items(:uiuc_approved)
+    item = items(:southeast_approved)
     item.elements.build(registered_element: @instance,
                         string:             "new element").save!
     assert_raises ActiveRecord::InvalidForeignKey do
@@ -40,7 +40,7 @@ class RegisteredElementTest < ActiveSupport::TestCase
   end
 
   test "instances without attached AscribedElements can be destroyed" do
-    assert registered_elements(:uiuc_unused).destroy
+    assert registered_elements(:southeast_unused).destroy
   end
 
   # indexed_keyword_field()
@@ -110,7 +110,7 @@ class RegisteredElementTest < ActiveSupport::TestCase
   # institution
 
   test "institution cannot be set on template elements" do
-    @instance.institution = institutions(:uiuc)
+    @instance.institution = institutions(:southeast)
     @instance.template    = true
     assert !@instance.valid?
 

@@ -23,24 +23,24 @@ southwest_default:
   full_text_relevance_weight:    <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
   all_elements_relevance_weight: <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
 
-################################## uiuc #####################################
+################################## southeast #####################################
 
-uiuc_default:
-  institution:                   uiuc
+southeast_default:
+  institution:                   southeast
   name:                          Default Profile
   institution_default:           true
   full_text_relevance_weight:    <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
   all_elements_relevance_weight: <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
 
-uiuc_empty:
-  institution:                   uiuc
+southeast_empty:
+  institution:                   southeast
   name:                          Empty Profile
   institution_default:           false
   full_text_relevance_weight:    <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
   all_elements_relevance_weight: <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>
 
-uiuc_unused:
-  institution:                   uiuc
+southeast_unused:
+  institution:                   southeast
   name:                          Unused Profile
   institution_default:           false
   full_text_relevance_weight:    <%= MetadataProfileElement::DEFAULT_RELEVANCE_WEIGHT %>

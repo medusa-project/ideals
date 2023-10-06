@@ -4,60 +4,60 @@ southwest_unit1_collection1_item1:
   item:   southwest_unit1_collection1_item1
   suffix: 5000
 
-################################### uiuc ####################################
+################################### southeast ####################################
 
 # collection handles
 
-uiuc_collection1:
-  collection: uiuc_collection1
+southeast_collection1:
+  collection: southeast_collection1
   suffix:     5001
 
 # item handles
 
-uiuc_item1:
-  item:   uiuc_item1
+southeast_item1:
+  item:   southeast_item1
   suffix: 5002
 
-uiuc_approved:
-  item:   uiuc_approved
+southeast_approved:
+  item:   southeast_approved
   suffix: 5003
 
-uiuc_awaiting_ingest_into_medusa:
-  item:   uiuc_awaiting_ingest_into_medusa
+southeast_awaiting_ingest_into_medusa:
+  item:   southeast_awaiting_ingest_into_medusa
   suffix: 5004
 
-uiuc_in_medusa:
-  item:   uiuc_in_medusa
+southeast_in_medusa:
+  item:   southeast_in_medusa
   suffix: 5005
 
-uiuc_described:
-  item:   uiuc_described
+southeast_described:
+  item:   southeast_described
   suffix: 5006
 
-uiuc_embargoed:
-  item:   uiuc_embargoed
+southeast_embargoed:
+  item:   southeast_embargoed
   suffix: 5007
 
-uiuc_undescribed:
-  item:   uiuc_undescribed
+southeast_undescribed:
+  item:   southeast_undescribed
   suffix: 5008
 
-uiuc_submitting:
-  item:   uiuc_submitting
+southeast_submitting:
+  item:   southeast_submitting
   suffix: 5009
 
-uiuc_withdrawn:
-  item:   uiuc_withdrawn
+southeast_withdrawn:
+  item:   southeast_withdrawn
   suffix: 5010
 
-uiuc_buried:
-  item:   uiuc_buried
+southeast_buried:
+  item:   southeast_buried
   suffix: 5011
 
-uiuc_multiple_bitstreams:
-  item:   uiuc_multiple_bitstreams
+southeast_multiple_bitstreams:
+  item:   southeast_multiple_bitstreams
   suffix: 5012
 
-uiuc_collection1_collection1_item1:
-  item:   uiuc_collection1_collection1_item1
+southeast_collection1_collection1_item1:
+  item:   southeast_collection1_collection1_item1
   suffix: 5013

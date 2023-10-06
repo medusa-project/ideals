@@ -14,17 +14,17 @@ southwest_unit1_collection1_embargoed_all_access:
   perpetual:  false
   reason:
 
-################################## uiuc #####################################
+################################## southeast #####################################
 
-uiuc_embargoed_download:
-  item:       uiuc_embargoed
+southeast_embargoed_download:
+  item:       southeast_embargoed
   expires_at: <%= Time.now + 1.hour %>
   kind:       <%= Embargo::Kind::DOWNLOAD %>
   perpetual:  false
   reason:
 
-uiuc_embargoed_all_access:
-  item:       uiuc_embargoed
+southeast_embargoed_all_access:
+  item:       southeast_embargoed
   expires_at: <%= Time.now + 1.hour %>
   kind:       <%= Embargo::Kind::ALL_ACCESS %>
   perpetual:  false

@@ -3,7 +3,7 @@ require 'test_helper'
 class SubmissionProfileTest < ActiveSupport::TestCase
 
   setup do
-    @instance = submission_profiles(:uiuc_default)
+    @instance = submission_profiles(:southeast_default)
   end
 
   # base-level tests
@@ -21,7 +21,7 @@ class SubmissionProfileTest < ActiveSupport::TestCase
 
   test "add_required_elements() adds required elements to an instance" do
     profile = SubmissionProfile.create!(name:        "Test Profile",
-                                        institution: institutions(:uiuc))
+                                        institution: institutions(:southeast))
     profile.add_required_elements
     assert_equal profile.institution.required_elements.length,
                  profile.elements.count
@@ -30,7 +30,7 @@ class SubmissionProfileTest < ActiveSupport::TestCase
   test "add_required_elements() adds only elements of the same institution as
   the instance" do
     profile = SubmissionProfile.create!(name:        "Test Profile",
-                                        institution: institutions(:uiuc))
+                                        institution: institutions(:southeast))
     profile.add_required_elements
     profile.elements.each do |e|
       assert_equal e.registered_element.institution, profile.institution
@@ -40,7 +40,7 @@ class SubmissionProfileTest < ActiveSupport::TestCase
   # default
 
   test "setting a profile as the default sets all other instances to not-default" do
-    institution = institutions(:uiuc)
+    institution = institutions(:southeast)
     assert_equal 1, institution.submission_profiles.where(institution_default: true).count
     SubmissionProfile.create!(name:                "New Profile",
                               institution:         institution,

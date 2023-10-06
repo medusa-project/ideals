@@ -3,14 +3,14 @@ require 'test_helper'
 class MetadataProfileTest < ActiveSupport::TestCase
 
   setup do
-    @instance = metadata_profiles(:uiuc_default)
+    @instance = metadata_profiles(:southeast_default)
   end
 
   # base-level tests
 
   test "instances with dependent units cannot be destroyed" do
-    @instance = metadata_profiles(:uiuc_unused)
-    unit = units(:uiuc_unit1)
+    @instance = metadata_profiles(:southeast_unused)
+    unit = units(:southeast_unit1)
     unit.update!(metadata_profile: @instance)
     assert_raises ActiveRecord::DeleteRestrictionError do
       @instance.destroy!
@@ -37,7 +37,7 @@ class MetadataProfileTest < ActiveSupport::TestCase
   test "add_all_registered_elements() adds default elements to an instance that does
   not have any elements" do
     profile = MetadataProfile.create!(name:        "Test Profile",
-                                      institution: institutions(:uiuc))
+                                      institution: institutions(:southeast))
     profile.add_all_registered_elements
     assert_equal profile.institution.registered_elements.count,
                  profile.elements.count
@@ -46,7 +46,7 @@ class MetadataProfileTest < ActiveSupport::TestCase
   test "add_all_registered_elements() adds only elements of the same institution as
   the instance" do
     profile = MetadataProfile.create!(name:        "Test Profile",
-                                      institution: institutions(:uiuc))
+                                      institution: institutions(:southeast))
     profile.add_all_registered_elements
     profile.elements.each do |e|
       assert_equal e.registered_element.institution, profile.institution
@@ -56,7 +56,7 @@ class MetadataProfileTest < ActiveSupport::TestCase
   test "add_all_registered_elements() adds counterparts of all RegisteredElements in
   the same institution" do
     profile = MetadataProfile.create!(name:        "Test Profile",
-                                      institution: institutions(:uiuc))
+                                      institution: institutions(:southeast))
     profile.add_all_registered_elements
     assert_equal profile.institution.registered_elements.count,
                  profile.elements.count
@@ -64,7 +64,7 @@ class MetadataProfileTest < ActiveSupport::TestCase
 
   test "add_all_registered_elements() raises an error if the instance already has
   elements attached to it" do
-    profile = metadata_profiles(:uiuc_default)
+    profile = metadata_profiles(:southeast_default)
     assert_raises do
       profile.add_all_registered_elements
     end
@@ -74,7 +74,7 @@ class MetadataProfileTest < ActiveSupport::TestCase
 
   test "setting a profile as the institution default sets all other instances
   in the same institution to not-default" do
-    institution = institutions(:uiuc)
+    institution = institutions(:southeast)
     assert_equal 1, institution.metadata_profiles.where(institution_default: true).count
     MetadataProfile.create!(name:                "New Profile",
                             institution:         institution,

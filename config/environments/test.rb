@@ -67,7 +67,7 @@ Rails.application.configure do
   # config.i18n.raise_on_missing_translations = true
 
   # These correspond to the FQDNs in the institutions.yml seed file.
-  config.hosts += %w(empty.edu example.edu illinois.edu northeast.edu
+  config.hosts += %w(empty.edu example.edu northeast.edu southeast.edu
                      southwest.edu www.example.com)
 
   # Annotate rendered view with file names.

@@ -12,20 +12,20 @@ southwest_default:
   name:                Default Profile
   institution_default: true
 
-################################## uiuc #####################################
+################################## southeast #####################################
 
-uiuc_default:
-  institution:         uiuc
+southeast_default:
+  institution:         southeast
   name:                Default Profile
   institution_default: true
 
-uiuc_empty:
-  institution:         uiuc
+southeast_empty:
+  institution:         southeast
   name:                Empty Profile
   institution_default: false
 
-uiuc_unused:
-  institution:         uiuc
+southeast_unused:
+  institution:         southeast
   name:                Unused Profile
   institution_default: false
 

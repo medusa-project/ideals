@@ -3,7 +3,7 @@ require 'test_helper'
 class AscribedElementTest < ActiveSupport::TestCase
 
   setup do
-    @instance = ascribed_elements(:uiuc_described_title)
+    @instance = ascribed_elements(:southeast_described_title)
     assert @instance.valid?
   end
 
@@ -11,7 +11,7 @@ class AscribedElementTest < ActiveSupport::TestCase
 
   test "instance's associated RegisteredElement and Item must be associated
   with the same Institution" do
-    @instance.registered_element = registered_elements(:uiuc_dc_title)
+    @instance.registered_element = registered_elements(:southeast_dc_title)
     @instance.item               = items(:northeast_unit1_collection1_item1)
     assert !@instance.valid?
   end

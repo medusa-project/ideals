@@ -41,86 +41,86 @@ southwest_unit1_collection1_embargoed:
   stage:        <%= Item::Stages::APPROVED %>
   stage_reason:
 
-################################## uiuc #####################################
+################################## southeast #####################################
 
-# uiuc_collection1 items
+# southeast_collection1 items
 
-uiuc_item1: # TODO: remove this
-  institution:  uiuc
-  submitter:    uiuc
+southeast_item1: # TODO: remove this
+  institution:  southeast
+  submitter:    southeast
   stage:        <%= Item::Stages::APPROVED %>
   stage_reason:
 
-uiuc_submitting:
-  institution:  uiuc
-  submitter:    uiuc
+southeast_submitting:
+  institution:  southeast
+  submitter:    southeast
   stage:        <%= Item::Stages::SUBMITTING %>
   stage_reason:
 
-uiuc_submitted:
-  institution:  uiuc
-  submitter:    uiuc
+southeast_submitted:
+  institution:  southeast
+  submitter:    southeast
   stage:        <%= Item::Stages::SUBMITTED %>
   stage_reason:
 
-uiuc_approved:
-  institution:  uiuc
-  submitter:    uiuc
+southeast_approved:
+  institution:  southeast
+  submitter:    southeast
   stage:        <%= Item::Stages::APPROVED %>
   stage_reason:
 
-uiuc_awaiting_ingest_into_medusa:
-  institution:  uiuc
-  submitter:    uiuc
+southeast_awaiting_ingest_into_medusa:
+  institution:  southeast
+  submitter:    southeast
   stage:        <%= Item::Stages::APPROVED %>
   stage_reason:
 
-uiuc_in_medusa:
-  institution:  uiuc
-  submitter:    uiuc
+southeast_in_medusa:
+  institution:  southeast
+  submitter:    southeast
   stage:        <%= Item::Stages::APPROVED %>
   stage_reason:
 
-uiuc_described:
-  institution:  uiuc
-  submitter:    uiuc
+southeast_described:
+  institution:  southeast
+  submitter:    southeast
   stage:        <%= Item::Stages::APPROVED %>
   stage_reason:
 
-uiuc_embargoed:
-  institution:  uiuc
-  submitter:    uiuc
+southeast_embargoed:
+  institution:  southeast
+  submitter:    southeast
   stage:        <%= Item::Stages::APPROVED %>
   stage_reason:
 
-uiuc_undescribed:
-  institution:  uiuc
-  submitter:    uiuc
+southeast_undescribed:
+  institution:  southeast
+  submitter:    southeast
   stage:        <%= Item::Stages::APPROVED %>
   stage_reason:
 
-uiuc_withdrawn:
-  institution:  uiuc
-  submitter:    uiuc
+southeast_withdrawn:
+  institution:  southeast
+  submitter:    southeast
   stage:        <%= Item::Stages::WITHDRAWN %>
   stage_reason:
 
-uiuc_buried:
-  institution:  uiuc
-  submitter:    uiuc
+southeast_buried:
+  institution:  southeast
+  submitter:    southeast
   stage:        <%= Item::Stages::BURIED %>
   stage_reason:
 
-uiuc_multiple_bitstreams:
-  institution:  uiuc
-  submitter:    uiuc
+southeast_multiple_bitstreams:
+  institution:  southeast
+  submitter:    southeast
   stage:        <%= Item::Stages::APPROVED %>
   stage_reason:
 
-# uiuc_collection1_collection1 items
+# southeast_collection1_collection1 items
 
-uiuc_collection1_collection1_item1:
-  institution:  uiuc
-  submitter:    uiuc
+southeast_collection1_collection1_item1:
+  institution:  southeast
+  submitter:    southeast
   stage:        <%= Item::Stages::APPROVED %>
   stage_reason:

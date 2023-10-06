@@ -10,28 +10,28 @@ southwest_saf_new:
   imported_items:     "[]"
   task:               southwest_saf_import
 
-################################## uiuc #####################################
+################################## southeast #####################################
 
-uiuc_csv_file_new:
-  user:               uiuc_admin
-  institution:        uiuc
-  collection:         uiuc_collection1
+southeast_csv_file_new:
+  user:               southeast_admin
+  institution:        southeast
+  collection:         southeast_collection1
   format:             <%= Import::Format::CSV_FILE %>
   imported_items:     "[]"
   task:               csv_file_import
 
-uiuc_csv_package_new:
-  user:               uiuc_admin
-  institution:        uiuc
-  collection:         uiuc_collection1
+southeast_csv_package_new:
+  user:               southeast_admin
+  institution:        southeast
+  collection:         southeast_collection1
   format:             <%= Import::Format::CSV_PACKAGE %>
   imported_items:     "[]"
   task:               csv_package_import
 
-uiuc_saf_new:
-  user:               uiuc_admin
-  institution:        uiuc
-  collection:         uiuc_collection1
+southeast_saf_new:
+  user:               southeast_admin
+  institution:        southeast
+  collection:         southeast_collection1
   format:             <%= Import::Format::SAF %>
   imported_items:     "[]"
   task:               saf_import

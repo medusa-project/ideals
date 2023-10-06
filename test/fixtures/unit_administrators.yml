@@ -1,14 +1,14 @@
-uiuc_unit1_admin:
-  unit:    uiuc_unit1
-  user:    uiuc_unit1_admin
+southeast_unit1_admin:
+  unit:    southeast_unit1
+  user:    southeast_unit1_admin
   primary: true
 
-uiuc_unit2_admin:
-  unit:    uiuc_unit2
-  user:    uiuc_sysadmin
+southeast_unit2_admin:
+  unit:    southeast_unit2
+  user:    southeast_sysadmin
   primary: true
 
-uiuc_unit1_unit2_unit1:
-  unit:    uiuc_unit1_unit2_unit1
-  user:    uiuc_unit1_unit2_unit1_admin
+southeast_unit1_unit2_unit1:
+  unit:    southeast_unit1_unit2_unit1
+  user:    southeast_unit1_unit2_unit1_admin
   primary: true

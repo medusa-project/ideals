@@ -3,7 +3,7 @@ require 'test_helper'
 class PasswordResetsControllerTest < ActionDispatch::IntegrationTest
 
   setup do
-    host! institutions(:uiuc).fqdn
+    host! institutions(:southeast).fqdn
   end
 
   # get()
@@ -104,7 +104,7 @@ class PasswordResetsControllerTest < ActionDispatch::IntegrationTest
     assert_not_nil identity.reset_digest
     assert Time.zone.now - identity.reset_sent_at < 10
     assert flash['success'].start_with?("An email has been sent")
-    assert_redirected_to institutions(:uiuc).scope_url
+    assert_redirected_to institutions(:southeast).scope_url
   end
 
 end

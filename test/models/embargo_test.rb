@@ -3,7 +3,7 @@ require 'test_helper'
 class EmbargoTest < ActiveSupport::TestCase
 
   setup do
-    @instance = embargoes(:uiuc_embargoed_all_access)
+    @instance = embargoes(:southeast_embargoed_all_access)
   end
 
   # as_change_hash()
@@ -47,7 +47,7 @@ class EmbargoTest < ActiveSupport::TestCase
   # expires_at
 
   test "expires_at cannot be in the past if perpetual is false" do
-    item = items(:uiuc_item1)
+    item = items(:southeast_item1)
     e = item.embargoes.build(expires_at: 1.minute.ago,
                              perpetual:  false,
                              kind:       Embargo::Kind::ALL_ACCESS)
@@ -57,7 +57,7 @@ class EmbargoTest < ActiveSupport::TestCase
   # expires_at
 
   test "expires_at can be in the past if perpetual is true" do
-    item = items(:uiuc_item1)
+    item = items(:southeast_item1)
     e = item.embargoes.build(expires_at: 1.minute.ago,
                              perpetual:  true,
                              kind:       Embargo::Kind::ALL_ACCESS)

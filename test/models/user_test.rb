@@ -60,11 +60,11 @@ class UserTest < ActiveSupport::TestCase
         "unscoped-affiliation": "member;staff;employee",
         uid: "example",
         sn: "Boleth",
-        "org-dn": "o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu",
+        "org-dn": "o=Southeast University,dc=southeast,dc=edu",
         nickname: "",
         givenName: "Shib",
         telephoneNumber: "(888) 555-5555",
-        member: "urn:mace:uiuc.edu:urbana:library:units:ideals:library ideals admin",
+        member: "urn:mace:southeast.edu:urbana:library:units:ideals:library ideals admin",
         iTrustAffiliation: "member;staff;employee",
         departmentCode: "Example Department",
         programCode: nil,
@@ -300,7 +300,7 @@ class UserTest < ActiveSupport::TestCase
     assert_equal "Shib Boleth", user.name
     assert_equal "ShibbolethUser@example.org", user.email
     assert_equal "(888) 555-5555", user.phone
-    assert_equal institutions(:uiuc), user.institution
+    assert_equal institutions(:southeast), user.institution
     assert_equal "Example Department", user.department.name
     assert_equal Affiliation.find_by_key(Affiliation::FACULTY_STAFF_KEY),
                  user.affiliation
@@ -311,12 +311,12 @@ class UserTest < ActiveSupport::TestCase
     @user.update!(email: SHIBBOLETH_AUTH_HASH[:info][:email])
 
     user = User.from_omniauth(SHIBBOLETH_AUTH_HASH,
-                              institution: institutions(:uiuc))
+                              institution: institutions(:southeast))
     assert_equal @user, user
     assert_equal "Shib Boleth", user.name
     assert_equal "ShibbolethUser@example.org", user.email
     assert_equal "(888) 555-5555", user.phone
-    assert_equal institutions(:uiuc), user.institution
+    assert_equal institutions(:southeast), user.institution
     assert_equal "Example Department", user.department.name
     assert_equal Affiliation.find_by_key(Affiliation::FACULTY_STAFF_KEY),
                  user.affiliation
@@ -331,7 +331,7 @@ class UserTest < ActiveSupport::TestCase
           email: "user@example.org"
         }
       },
-      institution: institutions(:uiuc))
+      institution: institutions(:southeast))
   end
 
   test "from_omniauth() with an unsupported provider raises an error" do
@@ -357,7 +357,7 @@ class UserTest < ActiveSupport::TestCase
   test "belongs_to_user_group?() returns true for a user belonging to an AD
   group associated with the group" do
     skip # TODO: set up a mock AD group system for the test environment
-    user       = users(:uiuc_admin)
+    user       = users(:southeast_admin)
     user_group = user_groups(:sysadmin)
     assert user.belongs_to_user_group?(user_group)
   end
@@ -366,7 +366,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "collection_admin?() returns true when the user is a directly assigned
   administrator of the given collection" do
-    collection = collections(:uiuc_collection1)
+    collection = collections(:southeast_collection1)
     collection.administering_users << @user
     collection.save!
     assert @user.collection_admin?(collection)
@@ -374,23 +374,23 @@ class UserTest < ActiveSupport::TestCase
 
   test "collection_admin?() returns true when the user belongs to a user group
   that is allowed to administer the given unit" do
-    group = user_groups(:uiuc_unused)
+    group = user_groups(:southeast_unused)
     @user.user_groups << group
-    collection = collections(:uiuc_collection1)
+    collection = collections(:southeast_collection1)
     collection.administering_users << @user
     assert @user.collection_admin?(collection)
   end
 
   test "collection_admin?() returns false when the user is not an administrator
   of the given collection" do
-    assert !@user.collection_admin?(collections(:uiuc_collection1))
+    assert !@user.collection_admin?(collections(:southeast_collection1))
   end
 
   # collection_submitter?()
 
   test "collection_submitter?() returns true when the user is a directly
   assigned submitter in the given collection" do
-    collection = collections(:uiuc_collection1)
+    collection = collections(:southeast_collection1)
     collection.submitting_users << @user
     collection.save!
     assert @user.collection_submitter?(collection)
@@ -398,16 +398,16 @@ class UserTest < ActiveSupport::TestCase
 
   test "collection_submitter?() returns true when the user belongs to a user
   group that is allowed to submit to the given unit" do
-    group = user_groups(:uiuc_unused)
+    group = user_groups(:southeast_unused)
     @user.user_groups << group
-    collection = collections(:uiuc_collection1)
+    collection = collections(:southeast_collection1)
     collection.submitting_users << @user
     assert @user.collection_submitter?(collection)
   end
 
   test "collection_submitter?() returns false when the user is not a submitter
   in the given collection" do
-    assert !@user.collection_submitter?(collections(:uiuc_collection1))
+    assert !@user.collection_submitter?(collections(:southeast_collection1))
   end
 
   # destroy()
@@ -426,13 +426,13 @@ class UserTest < ActiveSupport::TestCase
   test "effective_collection_admin?() returns true when the user is a
   sysadmin" do
     @user      = users(:southwest_sysadmin)
-    collection = collections(:uiuc_collection1)
+    collection = collections(:southeast_collection1)
     assert @user.effective_collection_admin?(collection)
   end
 
   test "effective_collection_admin?() returns true if the user is an
   administrator of the given collection's institution" do
-    collection = collections(:uiuc_collection1)
+    collection = collections(:southeast_collection1)
     @user.administering_institutions << collection.institution
     @user.save!
     assert @user.effective_collection_admin?(collection)
@@ -440,7 +440,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "effective_collection_admin?() returns true when the user is an
   administrator of one of the collection's units" do
-    collection = collections(:uiuc_collection1)
+    collection = collections(:southeast_collection1)
     unit       = collection.primary_unit
     unit.administering_users << @user
     unit.save!
@@ -449,8 +449,8 @@ class UserTest < ActiveSupport::TestCase
 
   test "effective_collection_admin?() returns true when the user is an
   administrator of one of the given collection's parents" do
-    parent = collections(:uiuc_collection1)
-    child  = collections(:uiuc_collection1_collection1)
+    parent = collections(:southeast_collection1)
+    child  = collections(:southeast_collection1_collection1)
     parent.administering_users << @user
     parent.save!
     assert @user.effective_collection_admin?(child)
@@ -458,7 +458,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "effective_collection_admin?() returns true when the user is an
   administrator of the given collection" do
-    collection = collections(:uiuc_collection1)
+    collection = collections(:southeast_collection1)
     collection.administering_users << @user
     collection.save!
     assert @user.effective_collection_admin?(collection)
@@ -466,7 +466,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "effective_collection_admin?() returns false when the user is not an
   administrator of the given collection, nor a unit admin, nor a sysadmin" do
-    assert !@user.effective_collection_admin?(collections(:uiuc_collection1))
+    assert !@user.effective_collection_admin?(collections(:southeast_collection1))
   end
 
   # effective_institution_admin?()
@@ -479,7 +479,7 @@ class UserTest < ActiveSupport::TestCase
   test "effective_institution_admin?() returns true if the user is an
   administrator of the given institution" do
     @user       = users(:southwest_sysadmin)
-    institution = institutions(:uiuc)
+    institution = institutions(:southeast)
     @user.administering_institutions << institution
     @user.save!
     assert @user.effective_institution_admin?(institution)
@@ -502,21 +502,21 @@ class UserTest < ActiveSupport::TestCase
 
   test "effective_submittable_collections() returns all unit collections for
   unit administrators" do
-    user = users(:uiuc_unit1_unit2_unit1_admin)
+    user = users(:southeast_unit1_unit2_unit1_admin)
     assert_equal user.administering_units.count,
                  user.effective_submittable_collections.count
   end
 
   test "effective_submittable_collections() returns all administering
   collections for collection administrators" do
-    user = users(:uiuc_collection1_collection1_admin)
+    user = users(:southeast_collection1_collection1_admin)
     assert_equal user.administering_collections.count,
                  user.effective_submittable_collections.count
   end
 
   test "effective_submittable_collections() returns all submitting collections
   for collection submitters" do
-    user = users(:uiuc_collection1_collection1_submitter)
+    user = users(:southeast_collection1_collection1_submitter)
     assert_equal user.submitting_collections.count,
                  user.effective_submittable_collections.count
   end
@@ -530,13 +530,13 @@ class UserTest < ActiveSupport::TestCase
 
   test "effective_collection_submitter?() returns true when the user is a sysadmin" do
     @user      = users(:southwest_sysadmin)
-    collection = collections(:uiuc_collection1)
+    collection = collections(:southeast_collection1)
     assert @user.effective_collection_submitter?(collection)
   end
 
   test "effective_collection_submitter?() returns true when the user is an
   administrator of one of the collection's units" do
-    collection = collections(:uiuc_collection1)
+    collection = collections(:southeast_collection1)
     unit       = collection.primary_unit
     unit.administering_users << @user
     unit.save!
@@ -545,8 +545,8 @@ class UserTest < ActiveSupport::TestCase
 
   test "effective_collection_submitter?() returns true when the user is an
   administrator of one of the given collection's parents" do
-    parent = collections(:uiuc_collection1)
-    child  = collections(:uiuc_collection1_collection1)
+    parent = collections(:southeast_collection1)
+    child  = collections(:southeast_collection1_collection1)
     parent.administering_users << @user
     parent.save!
     assert @user.effective_collection_submitter?(child)
@@ -554,7 +554,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "effective_collection_submitter?() returns true when the user is an
   administrator of the given collection" do
-    collection = collections(:uiuc_collection1)
+    collection = collections(:southeast_collection1)
     collection.administering_users << @user
     collection.save!
     assert @user.effective_collection_submitter?(collection)
@@ -562,7 +562,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "effective_collection_submitter?() returns true when the user is a
   submitter in the given collection" do
-    collection = collections(:uiuc_collection1)
+    collection = collections(:southeast_collection1)
     collection.submitting_users << @user
     collection.save!
     assert @user.effective_collection_submitter?(collection)
@@ -570,20 +570,20 @@ class UserTest < ActiveSupport::TestCase
 
   test "effective_collection_submitter?() returns false when the user is not an
   administrator of the given collection, nor a unit admin, nor a sysadmin" do
-    assert !@user.effective_collection_submitter?(collections(:uiuc_collection1))
+    assert !@user.effective_collection_submitter?(collections(:southeast_collection1))
   end
 
   # effective_unit_admin?()
 
   test "effective_unit_admin?() returns true when the user is a sysadmin" do
     @user = users(:southwest_sysadmin)
-    unit  = units(:uiuc_unit1)
+    unit  = units(:southeast_unit1)
     assert @user.effective_unit_admin?(unit)
   end
 
   test "effective_unit_admin?() returns true when the user is an administrator
   of the given unit's institution" do
-    unit = units(:uiuc_unit1)
+    unit = units(:southeast_unit1)
     @user.administering_institutions << unit.institution
     @user.save!
     assert @user.effective_unit_admin?(unit)
@@ -591,8 +591,8 @@ class UserTest < ActiveSupport::TestCase
 
   test "effective_unit_admin?() returns true when the user is an administrator
   of the given unit's parent" do
-    parent = units(:uiuc_unit1)
-    child  = units(:uiuc_unit1_unit1)
+    parent = units(:southeast_unit1)
+    child  = units(:southeast_unit1_unit1)
     parent.administering_users << @user
     parent.save!
     assert @user.effective_unit_admin?(child)
@@ -600,7 +600,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "effective_unit_admin?() returns true when the user is an administrator
   of the given unit" do
-    unit = units(:uiuc_unit1)
+    unit = units(:southeast_unit1)
     unit.administering_users << @user
     unit.save!
     assert @user.effective_unit_admin?(unit)
@@ -608,7 +608,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "effective_unit_admin?() returns false when the user is not an
   administrator of the given unit" do
-    assert !@user.effective_unit_admin?(units(:uiuc_unit1))
+    assert !@user.effective_unit_admin?(units(:southeast_unit1))
   end
 
   # email
@@ -680,7 +680,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "sysadmin?() returns true when the user is a member of an AD group
   included in the sysadmin user group" do
-    @user = users(:uiuc_sysadmin)
+    @user = users(:southeast_sysadmin)
     @user.user_groups.destroy_all
     assert @user.sysadmin?
   end
@@ -703,7 +703,7 @@ class UserTest < ActiveSupport::TestCase
 
   test "unit_admin?() returns true when the user is a directly assigned
   administrator of the given unit" do
-    unit = units(:uiuc_unit1)
+    unit = units(:southeast_unit1)
     unit.administering_users << @user
     unit.save!
     assert @user.unit_admin?(unit)
@@ -711,16 +711,16 @@ class UserTest < ActiveSupport::TestCase
 
   test "unit_admin?() returns true when the user belongs to a user group that
   is allowed to administer the given unit" do
-    group = user_groups(:uiuc_unused)
+    group = user_groups(:southeast_unused)
     @user.user_groups << group
-    unit = units(:uiuc_unit1)
+    unit = units(:southeast_unit1)
     unit.administering_groups << group
     assert @user.unit_admin?(unit)
   end
 
   test "unit_admin?() returns false when the user is not an administrator of
   the given unit" do
-    assert !@user.unit_admin?(units(:uiuc_unit1))
+    assert !@user.unit_admin?(units(:southeast_unit1))
   end
 
 end

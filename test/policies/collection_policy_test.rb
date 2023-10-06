@@ -81,7 +81,7 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    collection2 = collections(:uiuc_described)
+    collection2 = collections(:southeast_described)
     policy      = CollectionPolicy.new(context, @collection)
     assert !policy.change_parent?(collection2.id)
   end
@@ -90,7 +90,7 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    collection2 = collections(:uiuc_described)
+    collection2 = collections(:southeast_described)
     policy      = CollectionPolicy.new(context, @collection)
     assert policy.change_parent?(collection2.id)
   end
@@ -101,7 +101,7 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
-    collection2 = collections(:uiuc_described)
+    collection2 = collections(:southeast_described)
     policy      = CollectionPolicy.new(context, @collection)
     assert !policy.change_parent?(collection2.id)
   end

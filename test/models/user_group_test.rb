@@ -53,14 +53,14 @@ class UserGroupTest < ActiveSupport::TestCase
   end
 
   test "all_users() returns all users belonging to an associated AD group" do
-    assert @instance.all_users.include?(users(:uiuc_sysadmin))
+    assert @instance.all_users.include?(users(:southeast_sysadmin))
   end
 
   # defines_institution
 
   test "setting a group as defining its institution sets all other instances of
   the same institution as not defining their institution" do
-    institution = institutions(:uiuc)
+    institution = institutions(:southeast)
     assert_equal 1, UserGroup.where(institution:         institution,
                                     defines_institution: true).count
     UserGroup.create!(name:                "New Group",
@@ -118,7 +118,7 @@ class UserGroupTest < ActiveSupport::TestCase
 
   test "includes?() returns true for a user belonging to a department associated
   with the instance" do
-    user                   = users(:uiuc)
+    user                   = users(:southeast)
     user.department        = departments(:basket_weaving)
     @instance.departments << user.department
 
@@ -127,7 +127,7 @@ class UserGroupTest < ActiveSupport::TestCase
 
   test "includes?() returns true for a user belonging to a department associated
   with the instance and an affiliation associated with the instance" do
-    user                    = users(:uiuc)
+    user                    = users(:southeast)
     user.department         = departments(:basket_weaving)
     user.affiliation        = affiliations(:phd_student)
     @instance.departments  << user.department

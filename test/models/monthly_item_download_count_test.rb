@@ -6,7 +6,7 @@ class MonthlyItemDownloadCountTest < ActiveSupport::TestCase
 
   test "collection_download_counts_by_item() returns correct results with no
   arguments" do
-    collection = collections(:uiuc_collection1)
+    collection = collections(:southeast_collection1)
     MonthlyItemDownloadCount.create!(institution_id: 99999, # fake but doesn't matter
                                      unit_id:        99999, # fake but doesn't matter
                                      collection_id:  collection.id,
@@ -29,7 +29,7 @@ class MonthlyItemDownloadCountTest < ActiveSupport::TestCase
 
   test "collection_download_counts_by_item() returns correct results when
   supplying start and end times" do
-    collection = collections(:uiuc_collection1)
+    collection = collections(:southeast_collection1)
     MonthlyItemDownloadCount.create!(institution_id: 99999, # fake but doesn't matter
                                      unit_id:        99999, # fake but doesn't matter
                                      collection_id:  collection.id,
@@ -58,7 +58,7 @@ class MonthlyItemDownloadCountTest < ActiveSupport::TestCase
   # compile_counts()
 
   test "compile_counts() compiles correct counts" do
-    item        = items(:uiuc_multiple_bitstreams)
+    item        = items(:southeast_multiple_bitstreams)
     start_year  = 2018
     start_month = 1
     end_year    = 2020
@@ -101,7 +101,7 @@ class MonthlyItemDownloadCountTest < ActiveSupport::TestCase
   end
 
   test "for_item() returns a correct value" do
-    item        = items(:uiuc_multiple_bitstreams)
+    item        = items(:southeast_multiple_bitstreams)
     start_year  = 2018
     start_month = 1
     end_year    = 2020
@@ -133,7 +133,7 @@ class MonthlyItemDownloadCountTest < ActiveSupport::TestCase
   # increment()
 
   test "increment() increments the count of an existing row" do
-    item  = items(:uiuc_described)
+    item  = items(:southeast_described)
     now   = Time.now
     year  = now.year
     month = now.month
@@ -145,7 +145,7 @@ class MonthlyItemDownloadCountTest < ActiveSupport::TestCase
   end
 
   test "increment() adds a new row if necessary" do
-    item  = items(:uiuc_described)
+    item  = items(:southeast_described)
     now   = Time.now
     year  = now.year
     month = now.month
@@ -162,7 +162,7 @@ class MonthlyItemDownloadCountTest < ActiveSupport::TestCase
 
   test "institution_download_counts_by_item() returns correct results with no
   arguments" do
-    institution = institutions(:uiuc)
+    institution = institutions(:southeast)
     MonthlyItemDownloadCount.create!(institution_id: institution.id,
                                      unit_id:        99999, # fake but doesn't matter
                                      collection_id:  99999, # fake but doesn't matter
@@ -185,7 +185,7 @@ class MonthlyItemDownloadCountTest < ActiveSupport::TestCase
 
   test "institution_download_counts_by_item() returns correct results when
   supplying start and end times" do
-    institution = institutions(:uiuc)
+    institution = institutions(:southeast)
     MonthlyItemDownloadCount.create!(institution_id: institution.id,
                                      unit_id:        99999, # fake but doesn't matter
                                      collection_id:  99999, # fake but doesn't matter
@@ -215,7 +215,7 @@ class MonthlyItemDownloadCountTest < ActiveSupport::TestCase
 
   test "unit_download_counts_by_item() returns correct results with no
   arguments" do
-    unit = units(:uiuc_unit1)
+    unit = units(:southeast_unit1)
     MonthlyItemDownloadCount.create!(institution_id: 99999, # fake but doesn't matter
                                      unit_id:        unit.id,
                                      collection_id:  99999, # fake but doesn't matter
@@ -238,7 +238,7 @@ class MonthlyItemDownloadCountTest < ActiveSupport::TestCase
 
   test "unit_download_counts_by_item() returns correct results when
   supplying start and end times" do
-    unit = units(:uiuc_unit1)
+    unit = units(:southeast_unit1)
     MonthlyItemDownloadCount.create!(institution_id: 99999, # fake but doesn't matter
                                      unit_id:        unit.id,
                                      collection_id:  99999, # fake but doesn't matter

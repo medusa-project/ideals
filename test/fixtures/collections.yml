@@ -30,73 +30,73 @@ southwest_unit1_empty:
   submissions_reviewed: false
   buried:               false
 
-################################## uiuc #####################################
+################################## southeast #####################################
 
-uiuc_collection1:
-  institution:          uiuc
-  metadata_profile:     uiuc_default
-  submission_profile:   uiuc_default
+southeast_collection1:
+  institution:          southeast
+  metadata_profile:     southeast_default
+  submission_profile:   southeast_default
   submissions_reviewed: true
   buried:               false
 
-uiuc_collection1_collection1:
-  institution:          uiuc
-  metadata_profile:     uiuc_default
-  submission_profile:   uiuc_default
+southeast_collection1_collection1:
+  institution:          southeast
+  metadata_profile:     southeast_default
+  submission_profile:   southeast_default
   submissions_reviewed: true
-  parent:               uiuc_collection1
+  parent:               southeast_collection1
   buried:               false
 
-uiuc_collection1_collection1_collection1:
-  institution:          uiuc
-  metadata_profile:     uiuc_default
-  submission_profile:   uiuc_default
+southeast_collection1_collection1_collection1:
+  institution:          southeast
+  metadata_profile:     southeast_default
+  submission_profile:   southeast_default
   submissions_reviewed: true
-  parent:               uiuc_collection1_collection1
+  parent:               southeast_collection1_collection1
   buried:               false
 
-uiuc_collection2:
-  institution:          uiuc
-  metadata_profile:     uiuc_default
-  submission_profile:   uiuc_default
-  submissions_reviewed: true
-  buried:               false
-
-uiuc_unit1_unit2_unit1_collection1:
-  institution:          uiuc
-  metadata_profile:     uiuc_default
-  submission_profile:   uiuc_default
+southeast_collection2:
+  institution:          southeast
+  metadata_profile:     southeast_default
+  submission_profile:   southeast_default
   submissions_reviewed: true
   buried:               false
 
-uiuc_described:
-  institution:          uiuc
+southeast_unit1_unit2_unit1_collection1:
+  institution:          southeast
+  metadata_profile:     southeast_default
+  submission_profile:   southeast_default
+  submissions_reviewed: true
+  buried:               false
+
+southeast_described:
+  institution:          southeast
   title:                Some title
   description:          Some description
-  metadata_profile:     uiuc_default
-  submission_profile:   uiuc_default
+  metadata_profile:     southeast_default
+  submission_profile:   southeast_default
   submissions_reviewed: true
   buried:               false
 
-uiuc_empty:
-  institution:          uiuc
-  metadata_profile:     uiuc_default
-  submission_profile:   uiuc_default
+southeast_empty:
+  institution:          southeast
+  metadata_profile:     southeast_default
+  submission_profile:   southeast_default
   submissions_reviewed: true
   buried:               false
 
-uiuc_undescribed:
-  institution:          uiuc
-  metadata_profile:     uiuc_default
-  submission_profile:   uiuc_default
+southeast_undescribed:
+  institution:          southeast
+  metadata_profile:     southeast_default
+  submission_profile:   southeast_default
   submissions_reviewed: true
   buried:               false
 
-uiuc_buried:
-  institution:          uiuc
+southeast_buried:
+  institution:          southeast
   title:                Some title
   description:          Some description
-  metadata_profile:     uiuc_default
-  submission_profile:   uiuc_default
+  metadata_profile:     southeast_default
+  submission_profile:   southeast_default
   submissions_reviewed: true
   buried:               true

@@ -7,9 +7,9 @@ class ZipBitstreamsJobTest < ActiveSupport::TestCase
   end
 
   test "perform() creates a correct Task" do
-    bitstreams  = [bitstreams(:uiuc_approved_in_permanent),
-                   bitstreams(:uiuc_item1_license_bundle)]
-    download    = Download.create(institution: institutions(:uiuc))
+    bitstreams  = [bitstreams(:southeast_approved_in_permanent),
+                   bitstreams(:southeast_item1_license_bundle)]
+    download    = Download.create(institution: institutions(:southeast))
     institution = institutions(:southwest)
     user        = users(:southwest)
 
@@ -27,9 +27,9 @@ class ZipBitstreamsJobTest < ActiveSupport::TestCase
   end
 
   test "perform() creates a zip of bitstreams" do
-    bitstreams = [bitstreams(:uiuc_approved_in_permanent),
-                  bitstreams(:uiuc_item1_license_bundle)]
-    download = Download.create(institution: institutions(:uiuc))
+    bitstreams = [bitstreams(:southeast_approved_in_permanent),
+                  bitstreams(:southeast_item1_license_bundle)]
+    download = Download.create(institution: institutions(:southeast))
 
     ZipBitstreamsJob.new.perform(bitstreams: bitstreams,
                                  download:   download)
@@ -42,9 +42,9 @@ class ZipBitstreamsJobTest < ActiveSupport::TestCase
 
   test "perform() assigns an existing zip file to the Download instance if
   available" do
-    institution = institutions(:uiuc)
-    bitstreams  = [bitstreams(:uiuc_approved_in_permanent),
-                   bitstreams(:uiuc_item1_license_bundle)]
+    institution = institutions(:southeast)
+    bitstreams  = [bitstreams(:southeast_approved_in_permanent),
+                   bitstreams(:southeast_item1_license_bundle)]
     download    = Download.create(institution: institution)
     ZipBitstreamsJob.new.perform(bitstreams: bitstreams,
                                  download:   download)
@@ -61,11 +61,11 @@ class ZipBitstreamsJobTest < ActiveSupport::TestCase
 
   test "perform() assigns a correct filename to the zip file when an item ID
   argument is provided" do
-    bitstreams = [bitstreams(:uiuc_approved_in_permanent),
-                  bitstreams(:uiuc_item1_license_bundle)]
+    bitstreams = [bitstreams(:southeast_approved_in_permanent),
+                  bitstreams(:southeast_item1_license_bundle)]
     item_id    = bitstreams[0].item.id
     filename   = "item-#{item_id}.zip"
-    download   = Download.create(institution: institutions(:uiuc),
+    download   = Download.create(institution: institutions(:southeast),
                                  filename: filename)
 
     ZipBitstreamsJob.new.perform(bitstreams: bitstreams,
@@ -78,9 +78,9 @@ class ZipBitstreamsJobTest < ActiveSupport::TestCase
 
   test "perform() assigns a correct filename to the zip file when an item ID
   argument is not provided" do
-    bitstreams = [bitstreams(:uiuc_approved_in_permanent),
-                  bitstreams(:uiuc_item1_license_bundle)]
-    download = Download.create(institution: institutions(:uiuc))
+    bitstreams = [bitstreams(:southeast_approved_in_permanent),
+                  bitstreams(:southeast_item1_license_bundle)]
+    download = Download.create(institution: institutions(:southeast))
 
     ZipBitstreamsJob.new.perform(bitstreams: bitstreams,
                                  download:   download)

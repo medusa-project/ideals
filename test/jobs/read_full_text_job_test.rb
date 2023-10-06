@@ -7,8 +7,8 @@ class ReadFullTextJobTest < ActiveSupport::TestCase
   end
 
   test "perform() creates a correct Task" do
-    bs   = bitstreams(:uiuc_approved_in_permanent)
-    user = users(:uiuc)
+    bs   = bitstreams(:southeast_approved_in_permanent)
+    user = users(:southeast)
 
     ReadFullTextJob.new.perform(bitstream: bs, user: user)
 
@@ -21,7 +21,7 @@ class ReadFullTextJobTest < ActiveSupport::TestCase
   end
 
   test "perform() reads full text" do
-    bs = bitstreams(:uiuc_approved_in_permanent)
+    bs = bitstreams(:southeast_approved_in_permanent)
     bs.update!(full_text_checked_at: nil,
                full_text:            nil)
 

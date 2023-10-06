@@ -187,7 +187,7 @@ class IdealsMailerTest < ActionMailer::TestCase
   # item_approved()
 
   test "item_approved() sends the expected email" do
-    item        = items(:uiuc_submitted)
+    item        = items(:southeast_submitted)
     item.handle = Handle.create!(item: item, suffix: "12345")
     email       = IdealsMailer.item_approved(item).deliver_now
     assert !ActionMailer::Base.deliveries.empty?
@@ -209,7 +209,7 @@ class IdealsMailerTest < ActionMailer::TestCase
   # item_rejected()
 
   test "item_rejected() sends the expected email" do
-    item  = items(:uiuc_submitted)
+    item  = items(:southeast_submitted)
     email = IdealsMailer.item_rejected(item).deliver_now
     assert !ActionMailer::Base.deliveries.empty?
 
@@ -234,13 +234,13 @@ class IdealsMailerTest < ActionMailer::TestCase
   # item_requires_review()
 
   test "item_requires_review() sends the expected email" do
-    item  = items(:uiuc_submitted)
+    item  = items(:southeast_submitted)
     email = IdealsMailer.item_requires_review(item).deliver_now
     assert !ActionMailer::Base.deliveries.empty?
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
-    assert_equal ["sysadmin@illinois.edu"], email.to
-    assert_equal "A new IDEALS item requires review", email.subject
+    assert_equal ["sysadmin@southeast.edu"], email.to
+    assert_equal "A new Southeast IR item requires review", email.subject
 
     assert_equal render_template("item_requires_review.txt",
                                  item_url:   "#{item.institution.scope_url}/items/#{item.id}",
@@ -255,7 +255,7 @@ class IdealsMailerTest < ActionMailer::TestCase
   # item_submitted()
 
   test "item_submitted() sends the expected email" do
-    item  = items(:uiuc_submitted)
+    item  = items(:southeast_submitted)
     email = IdealsMailer.item_submitted(item).deliver_now
     assert !ActionMailer::Base.deliveries.empty?
 

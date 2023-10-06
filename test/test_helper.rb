@@ -52,7 +52,7 @@ class ActiveSupport::TestCase
     unless provider
       if user.identity
         provider = :local
-      elsif user.institution.key == "uiuc"
+      elsif user.institution.key == "southeast"
         provider = :shibboleth
       else
         provider = :saml

@@ -465,10 +465,10 @@ southwest_thesis_degree_program:
   highwire_mapping:
   scope_note:
 
-################################### uiuc ####################################
+################################### southeast ####################################
 
-uiuc_unused:
-  institution:      uiuc
+southeast_unused:
+  institution:      southeast
   name:             unused
   label:            Unused
   uri:              http://example.org/unused
@@ -477,8 +477,8 @@ uiuc_unused:
   highwire_mapping:
   scope_note:       This element is not attached to any resources.
 
-uiuc_dc_contributor:
-  institution:      uiuc
+southeast_dc_contributor:
+  institution:      southeast
   name:             dc:contributor
   label:            Contributor
   uri:              http://purl.org/dc/elements/1.1/contributor
@@ -487,8 +487,8 @@ uiuc_dc_contributor:
   highwire_mapping:
   scope_note:
 
-uiuc_dc_contributor_advisor:
-  institution:      uiuc
+southeast_dc_contributor_advisor:
+  institution:      southeast
   name:             dc:contributor:advisor
   label:            Advisor
   uri:              http://purl.org/dc/elements/1.1/advisor
@@ -497,8 +497,8 @@ uiuc_dc_contributor_advisor:
   highwire_mapping:
   scope_note:
 
-uiuc_dc_contributor_committeeChair:
-  institution:      uiuc
+southeast_dc_contributor_committeeChair:
+  institution:      southeast
   name:             dc:contributor:committeeChair
   label:            Committee Chair
   uri:              http://purl.org/dc/elements/1.1/committeeChair
@@ -507,8 +507,8 @@ uiuc_dc_contributor_committeeChair:
   highwire_mapping:
   scope_note:
 
-uiuc_dc_coverage_spatial:
-  institution:      uiuc
+southeast_dc_coverage_spatial:
+  institution:      southeast
   name:             dc:coverage:spatial
   label:            Spatial Coverage
   uri:              http://purl.org/dc/elements/1.1/coverageSpatial
@@ -517,8 +517,8 @@ uiuc_dc_coverage_spatial:
   highwire_mapping:
   scope_note:
 
-uiuc_dc_creator:
-  institution:      uiuc
+southeast_dc_creator:
+  institution:      southeast
   name:             dc:creator
   label:            Creator
   uri:              http://purl.org/dc/elements/1.1/creator
@@ -527,8 +527,8 @@ uiuc_dc_creator:
   highwire_mapping:
   scope_note:
 
-uiuc_dc_date_issued:
-  institution:      uiuc
+southeast_dc_date_issued:
+  institution:      southeast
   name:             dc:date:issued
   label:            Date Issued
   uri:              http://purl.org/dc/elements/1.1/dateIssued
@@ -537,8 +537,8 @@ uiuc_dc_date_issued:
   highwire_mapping:
   scope_note:
 
-uiuc_dc_date_submitted:
-  institution:      uiuc
+southeast_dc_date_submitted:
+  institution:      southeast
   name:             dc:date:submitted
   label:            Date Submitted
   uri:              http://purl.org/dc/elements/1.1/dateSubmitted
@@ -547,8 +547,8 @@ uiuc_dc_date_submitted:
   highwire_mapping:
   scope_note:
 
-uiuc_dc_description:
-  institution:      uiuc
+southeast_dc_description:
+  institution:      southeast
   name:             dc:description
   label:            Description
   uri:              http://purl.org/dc/elements/1.1/description
@@ -557,8 +557,8 @@ uiuc_dc_description:
   highwire_mapping:
   scope_note:
 
-uiuc_dc_description_abstract:
-  institution:      uiuc
+southeast_dc_description_abstract:
+  institution:      southeast
   name:             dc:description:abstract
   label:            Abstract
   uri:              http://purl.org/dc/elements/1.1/abstract
@@ -567,8 +567,8 @@ uiuc_dc_description_abstract:
   highwire_mapping:
   scope_note:
 
-uiuc_dc_description_sponsorship:
-  institution:      uiuc
+southeast_dc_description_sponsorship:
+  institution:      southeast
   name:             dc:description:sponsorship
   label:            Sponsorship
   uri:              http://purl.org/dc/elements/1.1/sponsorship
@@ -577,8 +577,8 @@ uiuc_dc_description_sponsorship:
   highwire_mapping:
   scope_note:
 
-uiuc_dc_identifier:
-  institution:      uiuc
+southeast_dc_identifier:
+  institution:      southeast
   name:             dc:identifier
   label:            Identifier
   uri:              http://purl.org/dc/elements/1.1/identifier
@@ -587,8 +587,8 @@ uiuc_dc_identifier:
   highwire_mapping:
   scope_note:
 
-uiuc_dc_identifier_bibliographicCitation:
-  institution:      uiuc
+southeast_dc_identifier_bibliographicCitation:
+  institution:      southeast
   name:             dc:identifier:bibliographicCitation
   label:            Bibliographic Citation
   uri:              http://purl.org/dc/elements/1.1/bibliographicCitation
@@ -597,8 +597,8 @@ uiuc_dc_identifier_bibliographicCitation:
   highwire_mapping:
   scope_note:
 
-uiuc_dc_identifier_uri:
-  institution:      uiuc
+southeast_dc_identifier_uri:
+  institution:      southeast
   name:             dc:identifier:uri
   label:            URI
   uri:              http://purl.org/dc/elements/1.1/identifierURI
@@ -607,8 +607,8 @@ uiuc_dc_identifier_uri:
   highwire_mapping:
   scope_note:
 
-uiuc_dc_language:
-  institution:      uiuc
+southeast_dc_language:
+  institution:      southeast
   name:             dc:language
   label:            Language
   uri:              http://purl.org/dc/elements/1.1/language
@@ -617,8 +617,8 @@ uiuc_dc_language:
   highwire_mapping:
   scope_note:
 
-uiuc_dc_publisher:
-  institution:      uiuc
+southeast_dc_publisher:
+  institution:      southeast
   name:             dc:publisher
   label:            Publisher
   uri:              http://purl.org/dc/elements/1.1/publisher
@@ -627,8 +627,8 @@ uiuc_dc_publisher:
   highwire_mapping:
   scope_note:
 
-uiuc_dc_relation_ispartof:
-  institution:      uiuc
+southeast_dc_relation_ispartof:
+  institution:      southeast
   name:             dc:relation:ispartof
   label:            Is Part Of
   uri:              http://purl.org/dc/elements/1.1/ispartof
@@ -637,8 +637,8 @@ uiuc_dc_relation_ispartof:
   highwire_mapping:
   scope_note:
 
-uiuc_dc_rights:
-  institution:      uiuc
+southeast_dc_rights:
+  institution:      southeast
   name:             dc:rights
   label:            Rights
   uri:              http://purl.org/dc/elements/1.1/rights
@@ -647,8 +647,8 @@ uiuc_dc_rights:
   highwire_mapping:
   scope_note:
 
-uiuc_dc_subject:
-  institution:      uiuc
+southeast_dc_subject:
+  institution:      southeast
   name:             dc:subject
   label:            Subject
   uri:              http://purl.org/dc/elements/1.1/subject
@@ -657,8 +657,8 @@ uiuc_dc_subject:
   highwire_mapping:
   scope_note:
 
-uiuc_dc_title:
-  institution:      uiuc
+southeast_dc_title:
+  institution:      southeast
   name:             dc:title
   label:            Title
   uri:              http://purl.org/dc/elements/1.1/title
@@ -667,8 +667,8 @@ uiuc_dc_title:
   highwire_mapping:
   scope_note:
 
-uiuc_dc_type:
-  institution:      uiuc
+southeast_dc_type:
+  institution:      southeast
   name:             dc:type
   label:            Type
   uri:              http://purl.org/dc/elements/1.1/type
@@ -677,8 +677,8 @@ uiuc_dc_type:
   highwire_mapping:
   scope_note:
 
-uiuc_dc_type_genre:
-  institution:      uiuc
+southeast_dc_type_genre:
+  institution:      southeast
   name:             dc:type:genre
   label:            Genre
   uri:              http://purl.org/dc/elements/1.1/typeGenre
@@ -687,8 +687,8 @@ uiuc_dc_type_genre:
   highwire_mapping:
   scope_note:
 
-uiuc_dcterms_available:
-  institution:      uiuc
+southeast_dcterms_available:
+  institution:      southeast
   name:             dcterms:available
   label:            Date Available
   uri:              http://purl.org/dc/terms/available
@@ -697,8 +697,8 @@ uiuc_dcterms_available:
   highwire_mapping:
   scope_note:
 
-uiuc_dcterms_dateAccepted:
-  institution:      uiuc
+southeast_dcterms_dateAccepted:
+  institution:      southeast
   name:             dcterms:dateAccepted
   label:            Date Accepted
   uri:              http://purl.org/dc/terms/dateAccepted
@@ -707,8 +707,8 @@ uiuc_dcterms_dateAccepted:
   highwire_mapping:
   scope_note:
 
-uiuc_dcterms_dateSubmitted:
-  institution:      uiuc
+southeast_dcterms_dateSubmitted:
+  institution:      southeast
   name:             dcterms:dateSubmitted
   label:            Date Submitted
   uri:              http://purl.org/dc/terms/dateSubmitted
@@ -717,8 +717,8 @@ uiuc_dcterms_dateSubmitted:
   highwire_mapping:
   scope_note:
 
-uiuc_thesis_degree_department:
-  institution:      uiuc
+southeast_thesis_degree_department:
+  institution:      southeast
   name:             thesis:degree:department
   label:            Degree Department
   uri:              http://example.org/degree/department
@@ -727,8 +727,8 @@ uiuc_thesis_degree_department:
   highwire_mapping:
   scope_note:       Used by SafImporterTest
 
-uiuc_thesis_degree_discipline:
-  institution:      uiuc
+southeast_thesis_degree_discipline:
+  institution:      southeast
   name:             thesis:degree:discipline
   label:            Degree Discipline
   uri:              http://example.org/degree/discipline
@@ -737,8 +737,8 @@ uiuc_thesis_degree_discipline:
   highwire_mapping:
   scope_note:
 
-uiuc_thesis_degree_grantor:
-  institution:      uiuc
+southeast_thesis_degree_grantor:
+  institution:      southeast
   name:             thesis:degree:grantor
   label:            Degree Grantor
   uri:              http://example.org/degree/grantor
@@ -747,8 +747,8 @@ uiuc_thesis_degree_grantor:
   highwire_mapping:
   scope_note:       Used by SafImporterTest
 
-uiuc_thesis_degree_level:
-  institution:      uiuc
+southeast_thesis_degree_level:
+  institution:      southeast
   name:             thesis:degree:level
   label:            Degree Level
   uri:              http://example.org/degree/level
@@ -757,8 +757,8 @@ uiuc_thesis_degree_level:
   highwire_mapping:
   scope_note:       Used by SafImporterTest
 
-uiuc_thesis_degree_name:
-  institution:      uiuc
+southeast_thesis_degree_name:
+  institution:      southeast
   name:             thesis:degree:name
   label:            Degree Name
   uri:              http://example.org/degree/name
@@ -767,8 +767,8 @@ uiuc_thesis_degree_name:
   highwire_mapping:
   scope_note:
 
-uiuc_thesis_degree_program:
-  institution:      uiuc
+southeast_thesis_degree_program:
+  institution:      southeast
   name:             thesis:degree:program
   label:            Degree Program
   uri:              http://example.org/degree/program

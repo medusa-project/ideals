@@ -7,7 +7,7 @@ class GenerateDerivativeImageJobTest < ActiveSupport::TestCase
   end
 
   test "perform() generates a derivative image" do
-    bs = bitstreams(:uiuc_approved_in_permanent)
+    bs = bitstreams(:southeast_approved_in_permanent)
 
     GenerateDerivativeImageJob.perform_now(bs, :full, 512, :jpg)
 

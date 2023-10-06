@@ -371,7 +371,7 @@ module ApplicationHelper
     # institution. But for e.g. global pages which aren't scoped, use UIUC's
     # tag.
     institution = current_institution || Institution.find_by_key("uiuc")
-    id          = institution.google_analytics_measurement_id
+    id          = institution&.google_analytics_measurement_id
     if id.present?
       return raw("<script async src=\"https://www.googletagmanager.com/gtag/js?id=#{id}\"></script>
       <script>

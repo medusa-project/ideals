@@ -1,43 +1,43 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-uiuc_described_title:
-  item:               uiuc_described
+southeast_described_title:
+  item:               southeast_described
   string:             Some title
   uri:
-  registered_element: uiuc_dc_title
+  registered_element: southeast_dc_title
   position:           1
 
-uiuc_described_description:
-  item:               uiuc_described
+southeast_described_description:
+  item:               southeast_described
   string:             Some description
   uri:
-  registered_element: uiuc_dc_description
+  registered_element: southeast_dc_description
   position:           1
 
-uiuc_described_subject:
-  item:               uiuc_described
+southeast_described_subject:
+  item:               southeast_described
   string:             Some subject
   uri:
-  registered_element: uiuc_dc_subject
+  registered_element: southeast_dc_subject
   position:           1
 
-uiuc_in_medusa_title:
-  item:               uiuc_in_medusa
+southeast_in_medusa_title:
+  item:               southeast_in_medusa
   string:             Some title
   uri:
-  registered_element: uiuc_dc_title
+  registered_element: southeast_dc_title
   position:           1
 
-uiuc_submitting_item_title:
-  item:               uiuc_submitting
+southeast_submitting_item_title:
+  item:               southeast_submitting
   string:             Some title
   uri:
-  registered_element: uiuc_dc_title
+  registered_element: southeast_dc_title
   position:           1
 
-uiuc_submitted_item_title:
-  item:               uiuc_submitted
+southeast_submitted_item_title:
+  item:               southeast_submitted
   string:             Some title
   uri:
-  registered_element: uiuc_dc_title
+  registered_element: southeast_dc_title
   position:           1

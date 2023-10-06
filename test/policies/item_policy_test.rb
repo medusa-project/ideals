@@ -291,7 +291,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     doing_user = users(:southwest)
     context    = RequestContext.new(user:        doing_user,
                                     institution: doing_user.institution)
-    collection = collections(:uiuc_collection1)
+    collection = collections(:southeast_collection1)
     collection.administering_users << doing_user
     collection.save!
 
@@ -308,7 +308,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     doing_user = users(:southwest)
     context    = RequestContext.new(user:        doing_user,
                                     institution: doing_user.institution)
-    collection = collections(:uiuc_collection1)
+    collection = collections(:southeast_collection1)
     collection.administering_users << doing_user
     collection.save!
 
@@ -325,7 +325,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     doing_user    = users(:southwest)
     context       = RequestContext.new(user:        doing_user,
                                        institution: doing_user.institution)
-    collection               = collections(:uiuc_collection1)
+    collection               = collections(:southeast_collection1)
     unit                     = collection.primary_unit
     unit.administering_users << doing_user
     unit.save!
@@ -343,7 +343,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     doing_user    = users(:southwest)
     context       = RequestContext.new(user:        doing_user,
                                        institution: doing_user.institution)
-    collection               = collections(:uiuc_collection1)
+    collection               = collections(:southeast_collection1)
     unit                     = collection.primary_unit
     unit.administering_users << doing_user
     unit.save!
@@ -1909,7 +1909,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     doing_user = users(:southwest)
     context    = RequestContext.new(user:        doing_user,
                                     institution: doing_user.institution)
-    collection = collections(:uiuc_collection1)
+    collection = collections(:southeast_collection1)
     collection.administering_users << doing_user
     collection.save!
     @item.submitter          = users(:southwest) # somebody else
@@ -1923,7 +1923,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     doing_user = users(:southwest)
     context    = RequestContext.new(user:        doing_user,
                                     institution: doing_user.institution)
-    collection               = collections(:uiuc_collection1)
+    collection               = collections(:southeast_collection1)
     unit                     = collection.primary_unit
     unit.administering_users << doing_user
     unit.save!

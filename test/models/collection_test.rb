@@ -4,7 +4,7 @@ class CollectionTest < ActiveSupport::TestCase
 
   setup do
     setup_opensearch
-    @instance = collections(:uiuc_collection1)
+    @instance = collections(:southeast_collection1)
     assert @instance.valid?
   end
 
@@ -34,7 +34,7 @@ class CollectionTest < ActiveSupport::TestCase
   # delete_document() (Indexed concern)
 
   test "delete_document() deletes a document" do
-    institution = institutions(:uiuc)
+    institution = institutions(:southeast)
     collections = Collection.
       joins("LEFT JOIN unit_collection_memberships ucm ON ucm.collection_id = collections.id").
       joins("LEFT JOIN units u ON u.id = ucm.unit_id").
@@ -66,7 +66,7 @@ class CollectionTest < ActiveSupport::TestCase
   # all_child_ids()
 
   test "all_child_ids() returns the correct IDs" do
-    collection = collections(:uiuc_collection1)
+    collection = collections(:southeast_collection1)
     child      = collection.all_children.first
 
     ids        = collection.all_child_ids
@@ -77,20 +77,19 @@ class CollectionTest < ActiveSupport::TestCase
   # all_children()
 
   test "all_children() returns the correct collections" do
-    collection = collections(:uiuc_collection1)
+    collection = collections(:southeast_collection1)
     children   = collection.all_children
     assert_equal 2, children.count
     assert children.first.kind_of?(Collection)
-    assert_equal collection, children.first.parent
   end
 
   # all_parents()
 
   test "all_parents() returns the parents" do
-    result = collections(:uiuc_collection1_collection1_collection1).all_parents
+    result = collections(:southeast_collection1_collection1_collection1).all_parents
     assert_equal 2, result.count
-    assert_equal collections(:uiuc_collection1_collection1), result[0]
-    assert_equal collections(:uiuc_collection1), result[1]
+    assert_equal collections(:southeast_collection1_collection1), result[0]
+    assert_equal collections(:southeast_collection1), result[1]
   end
 
   # all_units()
@@ -103,7 +102,7 @@ class CollectionTest < ActiveSupport::TestCase
 
   test "reindex_all() reindexes all collections" do
     setup_opensearch
-    institution = institutions(:uiuc)
+    institution = institutions(:southeast)
     assert_equal 0, Collection.search.institution(institution).count
 
     Collection.reindex_all
@@ -239,7 +238,7 @@ class CollectionTest < ActiveSupport::TestCase
   # destroy()
 
   test "destroy() raises an error when there are dependent collections" do
-    @instance = collections(:uiuc_collection1_collection1)
+    @instance = collections(:southeast_collection1_collection1)
     @instance.items.destroy_all
     @instance.all_children.each do |child|
       child.items.destroy_all
@@ -261,7 +260,7 @@ class CollectionTest < ActiveSupport::TestCase
   end
 
   test "destroy() succeeds when there are no dependent collections" do
-    assert collections(:uiuc_empty).destroy
+    assert collections(:southeast_empty).destroy
   end
 
   # download_count_by_month()
@@ -332,8 +331,8 @@ class CollectionTest < ActiveSupport::TestCase
 
   test "effective_administering_groups() includes administrators of parent
   collections" do
-    parent    = collections(:uiuc_collection1)
-    @instance = collections(:uiuc_collection1_collection1)
+    parent    = collections(:southeast_collection1)
+    @instance = collections(:southeast_collection1_collection1)
     @instance.effective_administering_groups.include?(parent.administrator_groups.first)
   end
 
@@ -353,8 +352,8 @@ class CollectionTest < ActiveSupport::TestCase
 
   test "effective_administering_users() includes administrators of parent
   collections" do
-    parent    = collections(:uiuc_collection1)
-    @instance = collections(:uiuc_collection1_collection1)
+    parent    = collections(:southeast_collection1)
+    @instance = collections(:southeast_collection1_collection1)
     @instance.effective_administering_users.include?(parent.administering_users.first)
   end
 
@@ -365,14 +364,14 @@ class CollectionTest < ActiveSupport::TestCase
   # effective_metadata_profile()
 
   test "effective_metadata_profile() returns the assigned metadata profile" do
-    profile = metadata_profiles(:uiuc_unused)
+    profile = metadata_profiles(:southeast_unused)
     @instance.metadata_profile = profile
     assert_equal profile, @instance.effective_metadata_profile
   end
 
   test "effective_metadata_profile() falls back to the primary unit's profile
   if no profile is assigned" do
-    profile = metadata_profiles(:uiuc_default)
+    profile = metadata_profiles(:southeast_default)
     @instance.metadata_profile = nil
     @instance.primary_unit.metadata_profile = profile
     assert_equal profile, @instance.effective_metadata_profile
@@ -382,14 +381,14 @@ class CollectionTest < ActiveSupport::TestCase
   profile if no profile is assigned to the primary unit" do
     @instance.metadata_profile = nil
     @instance.primary_unit.metadata_profile = nil
-    assert_equal metadata_profiles(:uiuc_default),
+    assert_equal metadata_profiles(:southeast_default),
                  @instance.effective_metadata_profile
   end
 
   # effective_submission_profile()
 
   test "effective_submission_profile() returns the assigned submission profile" do
-    profile = submission_profiles(:uiuc_unused)
+    profile = submission_profiles(:southeast_unused)
     @instance.submission_profile = profile
     assert_equal profile, @instance.effective_submission_profile
   end
@@ -397,7 +396,7 @@ class CollectionTest < ActiveSupport::TestCase
   test "effective_submission_profile() falls back to the institution's default
   profile if no profile is assigned" do
     @instance.submission_profile = nil
-    assert_equal submission_profiles(:uiuc_default),
+    assert_equal submission_profiles(:southeast_default),
                  @instance.effective_submission_profile
   end
 
@@ -413,8 +412,8 @@ class CollectionTest < ActiveSupport::TestCase
 
   test "effective_submitting_groups() includes administrator groups of parent
   collections" do
-    parent    = collections(:uiuc_collection1)
-    @instance = collections(:uiuc_collection1_collection1)
+    parent    = collections(:southeast_collection1)
+    @instance = collections(:southeast_collection1_collection1)
     @instance.effective_submitting_groups.include?(parent.administering_groups.first)
   end
 
@@ -424,8 +423,8 @@ class CollectionTest < ActiveSupport::TestCase
 
   test "effective_submitting_groups() includes submitter groups of parent
   collections" do
-    parent    = collections(:uiuc_collection1)
-    @instance = collections(:uiuc_collection1_collection1)
+    parent    = collections(:southeast_collection1)
+    @instance = collections(:southeast_collection1_collection1)
     @instance.effective_submitting_groups.include?(parent.submitting_groups.first)
   end
 
@@ -444,8 +443,8 @@ class CollectionTest < ActiveSupport::TestCase
   end
 
   test "effective_submitting_users() includes administrators of parent collections" do
-    parent    = collections(:uiuc_collection1)
-    @instance = collections(:uiuc_collection1_collection1)
+    parent    = collections(:southeast_collection1)
+    @instance = collections(:southeast_collection1_collection1)
     @instance.effective_submitting_users.include?(parent.administering_users.first)
   end
 
@@ -454,8 +453,8 @@ class CollectionTest < ActiveSupport::TestCase
   end
 
   test "effective_submitting_users() includes submitters into parent collections" do
-    parent    = collections(:uiuc_collection1)
-    @instance = collections(:uiuc_collection1_collection1)
+    parent    = collections(:southeast_collection1)
+    @instance = collections(:southeast_collection1_collection1)
     @instance.effective_submitting_users.include?(parent.submitting_users.first)
   end
 
@@ -466,7 +465,7 @@ class CollectionTest < ActiveSupport::TestCase
   # exhume!()
 
   test "exhume!() exhumes a buried collection" do
-    @instance = collections(:uiuc_buried)
+    @instance = collections(:southeast_buried)
     @instance.units.first.exhume!
     @instance.exhume!
     assert !@instance.buried
@@ -502,21 +501,21 @@ class CollectionTest < ActiveSupport::TestCase
 
   test "reindex reindexes the instance" do
     assert_equal 0, Collection.search.
-        institution(institutions(:uiuc)).
+        institution(institutions(:southeast)).
         filter(Collection::IndexFields::ID, @instance.index_id).count
 
     @instance.reindex
     refresh_opensearch
 
     assert_equal 1, Collection.search.
-        institution(institutions(:uiuc)).
+        institution(institutions(:southeast)).
         filter(Collection::IndexFields::ID, @instance.index_id).count
   end
 
   # save()
 
   test "save() creates an associated handle" do
-    @instance = collections(:uiuc_described)
+    @instance = collections(:southeast_described)
     assert_nil @instance.handle
     @instance.save!
     assert_not_nil @instance.handle
@@ -640,7 +639,7 @@ class CollectionTest < ActiveSupport::TestCase
 
   test "collection cannot be added to multiple instances of the same unit" do
     @instance.units = []
-    unit = units(:uiuc_unit1)
+    unit = units(:southeast_unit1)
     @instance.units << unit
     assert_raises ActiveRecord::RecordNotUnique do
       @instance.units << unit

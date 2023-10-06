@@ -70,64 +70,64 @@ southwest_shibboleth:
   phone:       (888) 555-1234
   enabled:     true
 
-################################### uiuc ###################################
+################################### southeast ###################################
 
-uiuc:
+southeast:
   name:        Shib Boleth, Esq.
-  email:       shib@illinois.edu
+  email:       shib@southeast.edu
   phone:       (888) 555-1234
   enabled:     true
-  institution: uiuc
+  institution: southeast
 
-uiuc2:
-  institution: uiuc
-  name:        UIUC Normal User 2
-  email:       user2@illinois.edu
+southeast2:
+  institution: southeast
+  name:        Southeast Normal User 2
+  email:       user2@southeast.edu
   phone:       (888) 555-1234
   enabled:     true
 
-uiuc_admin:
-  institution: uiuc
-  name:        UIUC Institution Admin
-  email:       instadmin@illinois.edu
+southeast_admin:
+  institution: southeast
+  name:        Southeast Institution Admin
+  email:       instadmin@southeast.edu
   phone:       (888) 555-1235
   enabled:     true
   user_groups:
-    - uiuc_admins
+    - southeast_admins
 
-uiuc_sysadmin:
-  institution: uiuc
-  name:        UIUC Sysadmin
-  email:       sysadmin@illinois.edu
+southeast_sysadmin:
+  institution: southeast
+  name:        Southeast Sysadmin
+  email:       sysadmin@southeast.edu
   phone:       (888) 555-1235
   enabled:     true
   user_groups:
     - sysadmin
 
-uiuc_collection1_collection1_admin:
-  institution: uiuc
+southeast_collection1_collection1_admin:
+  institution: southeast
   name:        Collection1 Collection1 Administrator
-  email:       uiuc_collection1_collection1_admin@illinois.edu
+  email:       southeast_collection1_collection1_admin@southeast.edu
   phone:       (888) 555-1234
   enabled:     true
 
-uiuc_collection1_collection1_submitter:
-  institution: uiuc
+southeast_collection1_collection1_submitter:
+  institution: southeast
   name:        Collection1 Collection1 Submitter
-  email:       phil@illinois.edu
+  email:       phil@southeast.edu
   phone:       (888) 555-1234
   enabled:     true
 
-uiuc_unit1_admin:
-  institution: uiuc
+southeast_unit1_admin:
+  institution: southeast
   name:        Unit1 Admin
-  email:       uiuc_unit1_admin@illinois.edu
+  email:       southeast_unit1_admin@southeast.edu
   phone:       (888) 555-1234
   enabled:     true
 
-uiuc_unit1_unit2_unit1_admin:
-  institution: uiuc
+southeast_unit1_unit2_unit1_admin:
+  institution: southeast
   name:        Unit1 Unit2 Unit1 Admin
-  email:       uiuc_unit1_unit2_unit1_admin@illinois.edu
+  email:       southeast_unit1_unit2_unit1_admin@southeast.edu
   phone:       (888) 555-1234
   enabled:     true

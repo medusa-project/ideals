@@ -5,7 +5,7 @@ class UnitTest < ActiveSupport::TestCase
   setup do
     setup_opensearch
     clear_message_queues
-    @instance = units(:uiuc_unit1)
+    @instance = units(:southeast_unit1)
   end
 
   # bulk_reindex() (Indexed concern)
@@ -20,7 +20,7 @@ class UnitTest < ActiveSupport::TestCase
   # delete_document() (Indexed concern)
 
   test "delete_document() deletes a document" do
-    institution = institutions(:uiuc)
+    institution = institutions(:southeast)
     units       = Unit.where(institution: institution)
     units.each(&:reindex)
     refresh_opensearch
@@ -50,7 +50,7 @@ class UnitTest < ActiveSupport::TestCase
 
   test "reindex_all() reindexes all units" do
     setup_opensearch
-    institution = institutions(:uiuc)
+    institution = institutions(:southeast)
     assert_equal 0, Unit.search.
       institution(institution).
       include_children(true).
@@ -71,7 +71,7 @@ class UnitTest < ActiveSupport::TestCase
   # all_child_ids()
 
   test "all_child_ids() returns the correct units" do
-    unit  = units(:uiuc_unit1)
+    unit  = units(:southeast_unit1)
     child = unit.all_children.first
     ids   = unit.all_child_ids
     assert_equal 3, ids.count
@@ -81,7 +81,7 @@ class UnitTest < ActiveSupport::TestCase
   # all_children()
 
   test "all_children() returns the correct units" do
-    unit     = units(:uiuc_unit1)
+    unit     = units(:southeast_unit1)
     children = unit.all_children
     assert_equal 3, children.count
     assert children.first.kind_of?(Unit)
@@ -90,10 +90,10 @@ class UnitTest < ActiveSupport::TestCase
   # all_parents()
 
   test "all_parents() returns the parents" do
-    result = units(:uiuc_unit1_unit2_unit1).all_parents
+    result = units(:southeast_unit1_unit2_unit1).all_parents
     assert_equal 2, result.count
-    assert_equal units(:uiuc_unit1_unit2), result[0]
-    assert_equal units(:uiuc_unit1), result[1]
+    assert_equal units(:southeast_unit1_unit2), result[0]
+    assert_equal units(:southeast_unit1), result[1]
   end
 
   # as_indexed_json()
@@ -194,7 +194,7 @@ class UnitTest < ActiveSupport::TestCase
   end
 
   test "child?() returns true for child units" do
-    assert units(:uiuc_unit1_unit2).child?
+    assert units(:southeast_unit1_unit2).child?
   end
 
   # create_event() (Auditable concern)
@@ -207,7 +207,7 @@ class UnitTest < ActiveSupport::TestCase
 
   test "destroy() raises an error when there are dependent units" do
     assert_raises ActiveRecord::DeleteRestrictionError do
-      units(:uiuc_unit1_unit2).destroy!
+      units(:southeast_unit1_unit2).destroy!
     end
   end
 
@@ -218,7 +218,7 @@ class UnitTest < ActiveSupport::TestCase
   end
 
   test "destroy() succeeds when there are no dependent units or collections" do
-    assert units(:uiuc_empty).destroy
+    assert units(:southeast_empty).destroy
   end
 
   # download_count_by_month()
@@ -280,21 +280,21 @@ class UnitTest < ActiveSupport::TestCase
   # effective_administering_groups()
 
   test "effective_administering_groups() returns the correct users" do
-    groups = units(:uiuc_unit1_unit2_unit1).effective_administering_groups
+    groups = units(:southeast_unit1_unit2_unit1).effective_administering_groups
     assert_equal 2, groups.length
   end
 
   # effective_administering_users()
 
   test "effective_administering_users() returns the correct users" do
-    admins = units(:uiuc_unit1_unit2_unit1).effective_administering_users
+    admins = units(:southeast_unit1_unit2_unit1).effective_administering_users
     assert_equal 2, admins.length
   end
 
   # effective_metadata_profile()
 
   test "effective_metadata_profile() returns the assigned metadata profile" do
-    profile = metadata_profiles(:uiuc_unused)
+    profile = metadata_profiles(:southeast_unused)
     @instance.metadata_profile = profile
     assert_equal profile, @instance.effective_metadata_profile
   end
@@ -302,14 +302,14 @@ class UnitTest < ActiveSupport::TestCase
   test "effective_metadata_profile() falls back to the institution's default
   profile if no profile is assigned" do
     @instance.metadata_profile = nil
-    assert_equal metadata_profiles(:uiuc_default),
+    assert_equal metadata_profiles(:southeast_default),
                  @instance.effective_metadata_profile
   end
 
   # exhume!()
 
   test "exhume!() exhumes a buried unit" do
-    @instance = units(:uiuc_buried)
+    @instance = units(:southeast_buried)
     @instance.exhume!
     assert !@instance.buried
   end
@@ -329,7 +329,7 @@ class UnitTest < ActiveSupport::TestCase
   test "move_to() raises an error if an institution is not provided" do
     assert_raises ArgumentError do
       @instance.move_to(institution: nil,
-                        user:        users(:uiuc_sysadmin))
+                        user:        users(:southeast_sysadmin))
     end
   end
 
@@ -344,7 +344,7 @@ class UnitTest < ActiveSupport::TestCase
   institution" do
     assert_raises ArgumentError do
       @instance.move_to(institution: @instance.institution,
-                        user:        users(:uiuc_sysadmin))
+                        user:        users(:southeast_sysadmin))
     end
   end
 
@@ -355,7 +355,7 @@ class UnitTest < ActiveSupport::TestCase
     Unit.create!(institution: institution, title: @instance.title)
     assert_raises do
       @instance.move_to(institution: institution,
-                        user:        users(:uiuc_sysadmin))
+                        user:        users(:southeast_sysadmin))
     end
   end
 
@@ -363,7 +363,7 @@ class UnitTest < ActiveSupport::TestCase
     setup_s3
     institution = institutions(:northeast)
     @instance.move_to(institution: institution,
-                      user:        users(:uiuc_sysadmin))
+                      user:        users(:southeast_sysadmin))
     ([@instance] + @instance.units).each do |child|
       assert_equal institution, child.institution
     end
@@ -375,7 +375,7 @@ class UnitTest < ActiveSupport::TestCase
     assert @instance.administrators.count > 0
     assert @instance.administrator_groups.count > 0
     @instance.move_to(institution: institutions(:northeast),
-                      user:        users(:uiuc_sysadmin))
+                      user:        users(:southeast_sysadmin))
     assert_equal 0, @instance.administrators.count
     assert_equal 0, @instance.administrator_groups.count
   end
@@ -384,7 +384,7 @@ class UnitTest < ActiveSupport::TestCase
     setup_s3
     institution = institutions(:northeast)
     @instance.move_to(institution: institution,
-                      user:        users(:uiuc_sysadmin))
+                      user:        users(:southeast_sysadmin))
     ([@instance] + @instance.units).each do |unit|
       unit.collections.each do |collection|
         assert_equal institution, collection.institution
@@ -409,7 +409,7 @@ class UnitTest < ActiveSupport::TestCase
     assert submitter_count > 0
 
     @instance.move_to(institution: institution,
-                      user:        users(:uiuc_sysadmin))
+                      user:        users(:southeast_sysadmin))
     ([@instance] + @instance.units).each do |unit|
       unit.collections.each do |collection|
         assert_equal 0, collection.administrators.count
@@ -426,7 +426,7 @@ class UnitTest < ActiveSupport::TestCase
     dest_institution_count_1 = dest_institution.registered_elements.count
     assert src_institution_count_1 > dest_institution_count_1
     @instance.move_to(institution: dest_institution,
-                      user:        users(:uiuc_sysadmin))
+                      user:        users(:southeast_sysadmin))
 
     src_institution_count_2  = src_institution.registered_elements.count
     dest_institution_count_2 = dest_institution.registered_elements.count
@@ -438,7 +438,7 @@ class UnitTest < ActiveSupport::TestCase
     setup_s3
     institution = institutions(:northeast)
     @instance.move_to(institution: institution,
-                      user:        users(:uiuc_sysadmin))
+                      user:        users(:southeast_sysadmin))
     ([@instance] + @instance.units).each do |unit|
       unit.collections.each do |collection|
         collection.items.each do |item|
@@ -453,7 +453,7 @@ class UnitTest < ActiveSupport::TestCase
     setup_s3
     institution = institutions(:northeast)
     @instance.move_to(institution: institution,
-                      user:        users(:uiuc_sysadmin))
+                      user:        users(:southeast_sysadmin))
     ([@instance] + @instance.units).each do |unit|
       unit.collections.each do |collection|
         collection.items.each do |item|
@@ -478,7 +478,7 @@ class UnitTest < ActiveSupport::TestCase
 
     institution = institutions(:northeast)
     @instance.move_to(institution: institution,
-                      user:        users(:uiuc_sysadmin))
+                      user:        users(:southeast_sysadmin))
     ([@instance] + @instance.units).each do |unit|
       unit.collections.each do |collection|
         collection.items.each do |item|
@@ -492,7 +492,7 @@ class UnitTest < ActiveSupport::TestCase
     setup_s3
     institution = institutions(:northeast)
     @instance.move_to(institution: institution,
-                      user:        users(:uiuc_sysadmin))
+                      user:        users(:southeast_sysadmin))
     ([@instance] + @instance.units).each do |unit|
       unit.collections.each do |collection|
         collection.items.each do |item|
@@ -508,7 +508,7 @@ class UnitTest < ActiveSupport::TestCase
     setup_s3
     institution = institutions(:northeast)
     @instance.move_to(institution: institution,
-                      user:        users(:uiuc_sysadmin))
+                      user:        users(:southeast_sysadmin))
     ([@instance] + @instance.units).each do |unit|
       unit.collections.each do |collection|
         collection.items.each do |item|
@@ -526,7 +526,7 @@ class UnitTest < ActiveSupport::TestCase
     ingest_queue = institution.outgoing_message_queue
     delete_queue = @instance.institution.outgoing_message_queue
     @instance.move_to(institution: institution,
-                      user:        users(:uiuc_sysadmin))
+                      user:        users(:southeast_sysadmin))
     ([@instance] + @instance.units).each do |unit|
       unit.collections.each do |collection|
         collection.items.each do |item|
@@ -593,7 +593,7 @@ class UnitTest < ActiveSupport::TestCase
   end
 
   test "primary_administrator cannot be set on child units" do
-    unit = units(:uiuc_unit1_unit2)
+    unit = units(:southeast_unit1_unit2)
     assert unit.valid?
     unit.primary_administrator = users(:southwest_sysadmin)
     unit.reload
@@ -604,7 +604,7 @@ class UnitTest < ActiveSupport::TestCase
 
   test "reindex reindexes the instance" do
     assert_equal 0, Unit.search.
-        institution(institutions(:uiuc)).
+        institution(institutions(:southeast)).
         filter(Unit::IndexFields::ID, @instance.index_id).
         count
 
@@ -612,7 +612,7 @@ class UnitTest < ActiveSupport::TestCase
     refresh_opensearch
 
     assert_equal 1, Unit.search.
-        institution(institutions(:uiuc)).
+        institution(institutions(:southeast)).
         filter(Unit::IndexFields::ID, @instance.index_id).
         count
   end
@@ -624,7 +624,7 @@ class UnitTest < ActiveSupport::TestCase
   end
 
   test "root_parent() returns the root parent for child units" do
-    assert_equal @instance, units(:uiuc_unit1_unit2).root_parent
+    assert_equal @instance, units(:southeast_unit1_unit2).root_parent
   end
 
   # save()

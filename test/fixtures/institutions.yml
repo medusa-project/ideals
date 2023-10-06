@@ -42,6 +42,26 @@ northeast:
   administering_groups:
     - northeast_admins
 
+southeast:
+  key:                            southeast
+  fqdn:                           southeast.edu
+  name:                           Southeast University
+  service_name:                   Southeast IR
+  shibboleth_org_dn:              o=Southeast University,dc=southeast,dc=edu
+  shibboleth_extra_attributes:    "<%= JSON.generate(%w(eppn unscoped-affiliation uid sn org-dn givenName member telephoneNumber iTrustAffiliation departmentName programCode levelCode overwriteUserAttrs)).gsub('"', '\"') %>"
+  main_website_url:               https://southeast.edu
+  feedback_email:                 feedback@southeast.edu
+  outgoing_message_queue:         southeast_to_nowhere
+  incoming_message_queue:         nowhere_to_southeast
+  title_element:                  southeast_dc_title
+  author_element:                 southeast_dc_creator
+  date_approved_element:          southeast_dcterms_dateAccepted
+  date_submitted_element:         southeast_dcterms_dateSubmitted
+  handle_uri_element:             southeast_dc_identifier
+  deposit_form_disagreement_help: Sample text
+  administering_groups:
+    - southeast_admins
+
 southwest:
   key:                            southwest
   fqdn:                           southwest.edu
@@ -64,24 +84,3 @@ southwest:
   deposit_form_disagreement_help: Sample text
   administering_groups:
     - southwest_admins
-
-uiuc:
-  key:                            uiuc
-  fqdn:                           illinois.edu
-  name:                           University of Illinois at Urbana-Champaign
-  service_name:                   IDEALS
-  shibboleth_org_dn:              o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu
-  shibboleth_extra_attributes:    "<%= JSON.generate(%w(eppn unscoped-affiliation uid sn org-dn givenName member telephoneNumber iTrustAffiliation departmentName programCode levelCode overwriteUserAttrs)).gsub('"', '\"') %>"
-  main_website_url:               https://illinois.edu
-  feedback_email:                 feedback@fakeuiuc.edu
-  welcome_html:                   <h1>Welcome to IDEALS</h1>
-  outgoing_message_queue:         ideals_to_medusa
-  incoming_message_queue:         medusa_to_ideals
-  title_element:                  uiuc_dc_title
-  author_element:                 uiuc_dc_creator
-  date_approved_element:          uiuc_dcterms_dateAccepted
-  date_submitted_element:         uiuc_dcterms_dateSubmitted
-  handle_uri_element:             uiuc_dc_identifier
-  deposit_form_disagreement_help: Sample text
-  administering_groups:
-    - uiuc_admins

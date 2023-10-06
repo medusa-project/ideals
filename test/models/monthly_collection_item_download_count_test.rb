@@ -5,7 +5,7 @@ class MonthlyCollectionItemDownloadCountTest < ActiveSupport::TestCase
   # compile_counts()
 
   test "compile_counts() compiles correct counts" do
-    item        = items(:uiuc_multiple_bitstreams)
+    item        = items(:southeast_multiple_bitstreams)
     collection  = item.primary_collection
     start_year  = 2018
     start_month = 1
@@ -50,7 +50,7 @@ class MonthlyCollectionItemDownloadCountTest < ActiveSupport::TestCase
   end
 
   test "for_collection() returns a correct value" do
-    item        = items(:uiuc_multiple_bitstreams)
+    item        = items(:southeast_multiple_bitstreams)
     collection  = item.primary_collection
     start_year  = 2018
     start_month = 1
@@ -86,7 +86,7 @@ class MonthlyCollectionItemDownloadCountTest < ActiveSupport::TestCase
   # increment()
 
   test "increment() increments the count of an existing row" do
-    collection = collections(:uiuc_collection1)
+    collection = collections(:southeast_collection1)
     now        = Time.now
     year       = now.year
     month      = now.month
@@ -98,7 +98,7 @@ class MonthlyCollectionItemDownloadCountTest < ActiveSupport::TestCase
   end
 
   test "increment() adds a new row if necessary" do
-    collection = collections(:uiuc_collection1)
+    collection = collections(:southeast_collection1)
     now        = Time.now
     year       = now.year
     month      = now.month
@@ -125,7 +125,7 @@ class MonthlyCollectionItemDownloadCountTest < ActiveSupport::TestCase
   end
 
   test "sum_for_unit() returns a correct count when including children" do
-    unit          = units(:uiuc_unit1)
+    unit          = units(:southeast_unit1)
     collection    = Collection.create!(institution:  unit.institution,
                                        title:        "Root Collection",
                                        primary_unit: unit)
@@ -162,7 +162,7 @@ class MonthlyCollectionItemDownloadCountTest < ActiveSupport::TestCase
   end
 
   test "sum_for_unit() returns a correct count when not including children" do
-    unit          = units(:uiuc_unit1)
+    unit          = units(:southeast_unit1)
     collection    = Collection.create!(institution:  unit.institution,
                                        title:        "Root Collection",
                                        primary_unit: unit)

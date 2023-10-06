@@ -230,7 +230,7 @@ class ElementNamespacesControllerTest < ActionDispatch::IntegrationTest
     get new_element_namespace_path,
         params: {
           element_namespace: {
-            institution_id: institutions(:uiuc).id
+            institution_id: institutions(:southeast).id
           }
         }
     assert_response :ok

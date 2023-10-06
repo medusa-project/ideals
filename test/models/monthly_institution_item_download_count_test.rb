@@ -5,7 +5,7 @@ class MonthlyInstitutionItemDownloadCountTest < ActiveSupport::TestCase
   # compile_counts()
 
   test "compile_counts() compiles correct counts" do
-    item        = items(:uiuc_multiple_bitstreams)
+    item        = items(:southeast_multiple_bitstreams)
     institution = item.primary_collection.primary_unit.institution
     start_year  = 2018
     start_month = 1
@@ -50,7 +50,7 @@ class MonthlyInstitutionItemDownloadCountTest < ActiveSupport::TestCase
   end
 
   test "for_institution() returns a correct value" do
-    institution = institutions(:uiuc)
+    institution = institutions(:southeast)
     start_year  = 2018
     start_month = 1
     end_year    = 2019

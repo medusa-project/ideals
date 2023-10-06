@@ -112,7 +112,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_admin)
     import  = Import.new(user:        user,
                          institution: user.institution,
-                         collection:  collections(:uiuc_collection1),
+                         collection:  collections(:southeast_collection1),
                          format:      Import::Format::CSV_FILE)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -184,7 +184,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_admin)
     import  = Import.new(user:        user,
                          institution: user.institution,
-                         collection:  collections(:uiuc_collection1),
+                         collection:  collections(:southeast_collection1),
                          format:      Import::Format::CSV_FILE)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -257,7 +257,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_admin)
     import  = Import.new(user:        user,
                          institution: user.institution,
-                         collection:  collections(:uiuc_collection1),
+                         collection:  collections(:southeast_collection1),
                          format:      Import::Format::CSV_FILE)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -320,7 +320,7 @@ class ImportPolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_admin)
     import  = Import.new(user:        user,
                          institution: user.institution,
-                         collection:  collections(:uiuc_collection1),
+                         collection:  collections(:southeast_collection1),
                          format:      Import::Format::CSV_FILE)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)

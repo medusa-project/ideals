@@ -16,7 +16,7 @@ class SafImporterTest < ActiveSupport::TestCase
     package = File.join(PACKAGES_PATH, "missing_content_file")
     assert_raises IOError do
       @instance.import_from_path(pathname:           package,
-                                 primary_collection: collections(:uiuc_collection1),
+                                 primary_collection: collections(:southeast_collection1),
                                  mapfile_path:       Tempfile.new("test"))
     end
   end
@@ -26,7 +26,7 @@ class SafImporterTest < ActiveSupport::TestCase
     package = File.join(PACKAGES_PATH, "missing_file_on_content_file_line")
     assert_raises IOError do
       @instance.import_from_path(pathname:           package,
-                                 primary_collection: collections(:uiuc_collection1),
+                                 primary_collection: collections(:southeast_collection1),
                                  mapfile_path:       Tempfile.new("test"))
     end
   end
@@ -36,7 +36,7 @@ class SafImporterTest < ActiveSupport::TestCase
     package = File.join(PACKAGES_PATH, "illegal_content_file_flag")
     assert_raises IOError do
       @instance.import_from_path(pathname:           package,
-                                 primary_collection: collections(:uiuc_collection1),
+                                 primary_collection: collections(:southeast_collection1),
                                  mapfile_path:       Tempfile.new("test"))
     end
   end
@@ -46,7 +46,7 @@ class SafImporterTest < ActiveSupport::TestCase
     package = File.join(PACKAGES_PATH, "missing_file")
     assert_raises IOError do
       @instance.import_from_path(pathname:           package,
-                                 primary_collection: collections(:uiuc_collection1),
+                                 primary_collection: collections(:southeast_collection1),
                                  mapfile_path:       Tempfile.new("test"))
     end
   end
@@ -55,7 +55,7 @@ class SafImporterTest < ActiveSupport::TestCase
     package = File.join(PACKAGES_PATH, "missing_dublin_core")
     assert_raises IOError do
       @instance.import_from_path(pathname:           package,
-                                 primary_collection: collections(:uiuc_collection1),
+                                 primary_collection: collections(:southeast_collection1),
                                  mapfile_path:       Tempfile.new("test"))
     end
   end
@@ -65,7 +65,7 @@ class SafImporterTest < ActiveSupport::TestCase
     package = File.join(PACKAGES_PATH, "illegal_metadata_element")
     assert_raises IOError do
       @instance.import_from_path(pathname:           package,
-                                 primary_collection: collections(:uiuc_collection1),
+                                 primary_collection: collections(:southeast_collection1),
                                  mapfile_path:       Tempfile.new("test"))
     end
   end
@@ -73,7 +73,7 @@ class SafImporterTest < ActiveSupport::TestCase
   test "import_from_path() creates correct items" do
     package = File.join(PACKAGES_PATH, "valid_item")
     @instance.import_from_path(pathname:           package,
-                               primary_collection: collections(:uiuc_collection1),
+                               primary_collection: collections(:southeast_collection1),
                                mapfile_path:       Tempfile.new("test"))
 
     # Test the created item's immediate properties
@@ -124,7 +124,7 @@ class SafImporterTest < ActiveSupport::TestCase
   test "import_from_path() supports a content file named contents" do
     package = File.join(PACKAGES_PATH, "valid_item_2")
     @instance.import_from_path(pathname:           package,
-                               primary_collection: collections(:uiuc_collection1),
+                               primary_collection: collections(:southeast_collection1),
                                mapfile_path:       Tempfile.new("test"))
 
     # Test the created item's immediate properties
@@ -161,7 +161,7 @@ class SafImporterTest < ActiveSupport::TestCase
   test "import_from_path() supports uppercase content file keys" do
     package = File.join(PACKAGES_PATH, "valid_item_2")
     @instance.import_from_path(pathname:           package,
-                               primary_collection: collections(:uiuc_collection1),
+                               primary_collection: collections(:southeast_collection1),
                                mapfile_path:       Tempfile.new("test"))
 
     # Test the created item's immediate properties
@@ -200,7 +200,7 @@ class SafImporterTest < ActiveSupport::TestCase
     Tempfile.open("test") do |mapfile|
       assert_raises IOError do
         @instance.import_from_path(pathname:           package,
-                                   primary_collection: collections(:uiuc_collection1),
+                                   primary_collection: collections(:southeast_collection1),
                                    mapfile_path:       mapfile.path)
       end
       contents = mapfile.read
@@ -211,7 +211,7 @@ class SafImporterTest < ActiveSupport::TestCase
   test "import_from_path() trims whitespace from metadata element values" do
     package = File.join(PACKAGES_PATH, "valid_item_2")
     @instance.import_from_path(pathname:           package,
-                               primary_collection: collections(:uiuc_collection1),
+                               primary_collection: collections(:southeast_collection1),
                                mapfile_path:       Tempfile.new("test"))
 
     item = Item.order(created_at: :desc).limit(1).first
@@ -225,7 +225,7 @@ class SafImporterTest < ActiveSupport::TestCase
     package = File.join(PACKAGES_PATH, "valid_item")
     Tempfile.open("test") do |mapfile|
       @instance.import_from_path(pathname:           package,
-                                 primary_collection: collections(:uiuc_collection1),
+                                 primary_collection: collections(:southeast_collection1),
                                  mapfile_path:       mapfile)
       # Get the created item
       item = Item.order(created_at: :desc).limit(1).first
@@ -238,7 +238,7 @@ class SafImporterTest < ActiveSupport::TestCase
     task    = Task.create!(name: "TestImport", status_text: "Lorem Ipsum")
     Tempfile.open("test") do |mapfile|
       @instance.import_from_path(pathname:           package,
-                                 primary_collection: collections(:uiuc_collection1),
+                                 primary_collection: collections(:southeast_collection1),
                                  mapfile_path:       mapfile,
                                  task:               task)
     end
@@ -252,7 +252,7 @@ class SafImporterTest < ActiveSupport::TestCase
     Tempfile.open("test") do |mapfile|
       assert_raises do
         @instance.import_from_path(pathname:           package,
-                                   primary_collection: collections(:uiuc_collection1),
+                                   primary_collection: collections(:southeast_collection1),
                                    mapfile_path:       mapfile,
                                    task:               task)
       end
@@ -270,7 +270,7 @@ class SafImporterTest < ActiveSupport::TestCase
           file.write("item_1\t100/100\n")
         end
         @instance.import_from_path(pathname:           package,
-                                   primary_collection: collections(:uiuc_collection1),
+                                   primary_collection: collections(:southeast_collection1),
                                    mapfile_path:       mapfile)
       ensure
         mapfile.close
