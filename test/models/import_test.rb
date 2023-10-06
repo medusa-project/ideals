@@ -19,6 +19,7 @@ class ImportTest < ActiveSupport::TestCase
   end
 
   teardown do
+    @instance.delete_file
     teardown_s3
   end
 
