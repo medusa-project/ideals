@@ -22,6 +22,19 @@ namespace :bitstreams do
     end
   end
 
+  # This works only for bitstreams that exist in both the production and local
+  # environments with the same ID, such as ones that have been exported from
+  # DSpace into both environments.
+  desc "Copy all of a collection's bitstream files from production into the local instance"
+  task :copy_collection_from_prod, [:collection_id] => :environment do |task, args|
+    collection = Collection.find(args[:collection_id])
+    collection.items.each do |item|
+      item.bitstreams.each do |bs|
+        copy_bitstream_from_prod(bs.id)
+      end
+    end
+  end
+
   desc "Copy a bitstream's file from production into the local instance"
   task :copy_from_prod, [:bitstream_id] => :environment do |task, args|
     copy_bitstream_from_prod(args[:bitstream_id])
