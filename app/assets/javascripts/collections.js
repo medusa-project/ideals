@@ -135,7 +135,7 @@ const CollectionView = {
                     // download status page which will get inserted into the modal body.
                     const url = "/collections/" + collection_id + "/all-files.zip";
                     $.get(url, function(data) {
-                        new IDEALS.UIUtils.DownloadPanel(modal_body, data);
+                        new IDEALS.UIUtils.DownloadPanel(modal, data);
                     });
                 });
 

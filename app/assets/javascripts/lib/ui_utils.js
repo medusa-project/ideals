@@ -306,11 +306,12 @@ IDEALS.UIUtils.DatePicker = function(yearField, monthMenu, dayMenu) {
 };
 
 /**
- * @param modal_body {jQuery}
+ * @param modal {jQuery}
  * @param html {String}
  * @constructor
  */
-IDEALS.UIUtils.DownloadPanel = function(modal_body, html) {
+IDEALS.UIUtils.DownloadPanel = function(modal, html) {
+    const modal_body = modal.find(".modal-body");
     modal_body.html(html);
     // Repeatedly check the download status, updating the modal
     // body HTML. Stop checking when the HTML contains a
@@ -328,7 +329,7 @@ IDEALS.UIUtils.DownloadPanel = function(modal_body, html) {
             clearInterval(status_check_interval);
         }
     }, 4000);
-    modal_body.on("hide.bs.modal", function() {
+    modal.on("hide.bs.modal", function() {
         clearInterval(status_check_interval);
     });
 };

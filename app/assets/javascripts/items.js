@@ -322,7 +322,7 @@ const ItemView = {
                 // download status page which will get inserted into the modal body.
                 const url = ROOT_URL + "/items/" + item_id + "/bitstreams.zip";
                 $.get(url, function (data) {
-                    new IDEALS.UIUtils.DownloadPanel(modal_body, data);
+                    new IDEALS.UIUtils.DownloadPanel(modal, data);
                 });
             });
         });
