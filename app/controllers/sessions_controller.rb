@@ -40,9 +40,9 @@ class SessionsController < ApplicationController
     user = User.from_omniauth(auth, institution: current_institution)
 
     if !user&.enabled
-      unauthorized("This user account is disabled.") and return
+      unauthorized(message: "This user account is disabled.") and return
     elsif user.institution != current_institution && !user.sysadmin?
-      unauthorized("You must log in via your home institution's domain.") and return
+      unauthorized(message: "You must log in via your home institution's domain.") and return
     end
 
     begin
@@ -84,7 +84,14 @@ class SessionsController < ApplicationController
     end
   end
 
-  def unauthorized(message = nil)
+
+  private
+
+  def return_url
+    session[:login_return_url] || current_institution&.scope_url || root_url
+  end
+
+  def unauthorized(message: nil)
     message ||= "You are not authorized to log in. "\
                 "If this problem persists, please contact us."
     if request.xhr?
@@ -93,13 +100,6 @@ class SessionsController < ApplicationController
       flash['error'] = message
       redirect_to return_url, allow_other_host: true
     end
-  end
-
-
-  private
-
-  def return_url
-    session[:login_return_url] || current_institution&.scope_url || root_url
   end
 
 end
