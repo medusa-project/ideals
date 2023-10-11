@@ -2,6 +2,14 @@ require 'test_helper'
 
 class ImportJobTest < ActiveSupport::TestCase
 
+  setup do
+    setup_s3
+  end
+
+  teardown do
+    teardown_s3
+  end
+
   test "perform() associates a correct Task to the import" do
     fixture = file_fixture("csv/new.csv")
     import  = imports(:southeast_csv_file_new)
