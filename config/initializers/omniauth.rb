@@ -46,8 +46,7 @@ Rails.application.config.middleware.use OmniAuth::Builder do
   provider :identity,
            model:                  LocalIdentity,
            fields:                 [:email, :name],
-           locate_conditions:      -> (req) { { model.auth_key => req['auth_key']&.downcase } },
-           on_failed_registration: WelcomeController.action(:on_failed_registration) # TODO: we aren't using this
+           locate_conditions:      -> (req) { { model.auth_key => req['auth_key']&.downcase } }
 
   # The Shibboleth (UIUC) developer provider is available only in development
   # and test.

@@ -55,10 +55,6 @@ class WelcomeController < ApplicationController
     end
   end
 
-  def on_failed_registration
-    # TODO: move this
-  end
-
 
   private
 
