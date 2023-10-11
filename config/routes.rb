@@ -6,7 +6,7 @@ Rails.application.routes.draw do
   match "/auth/:provider/callback", to: "sessions#create", via: [:get, :post]
   match "/auth/failure", to: "sessions#auth_failed", as: :auth_failed, via: [:get, :post]
   match "/logout", to: "sessions#destroy", as: :logout, via: :all
-  match "/netid-login", to: "sessions#new_netid", as: :netid_login, via: [:get, :post]
+  match "/netid-login", to: "sessions#new_netid", as: :netid_login, via: :get
 
   match "/about", to: "welcome#about", via: :get, as: "about"
   match '/all-events', to: "events#index_all", via: :get, as: "all_events"
