@@ -539,9 +539,11 @@ class User < ApplicationRecord
     # UIS accounts will not have an org DN--eventually these users will be
     # converted into OpenAthens/SAML users and moved into the UIS space, and we
     # will fall back to nil here instead of UIUC.
-    self.institution = org_dn.present? ?
-                         Institution.find_by_shibboleth_org_dn(org_dn) :
-                         Institution.find_by_key("uiuc")
+    unless self.institution
+      self.institution = org_dn.present? ?
+                           Institution.find_by_shibboleth_org_dn(org_dn) :
+                           Institution.find_by_key("uiuc")
+    end
     self.phone       = auth.dig("extra", "raw_info", "telephoneNumber")
     self.affiliation = Affiliation.from_shibboleth(auth)
     dept             = auth.dig("extra", "raw_info", "departmentCode")

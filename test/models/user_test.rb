@@ -316,7 +316,8 @@ class UserTest < ActiveSupport::TestCase
     assert_equal "Shib Boleth", user.name
     assert_equal "ShibbolethUser@example.org", user.email
     assert_equal "(888) 555-5555", user.phone
-    assert_equal institutions(:southeast), user.institution
+    # the institution shouldn't change
+    assert_equal institutions(:southwest), user.institution
     assert_equal "Example Department", user.department.name
     assert_equal Affiliation.find_by_key(Affiliation::FACULTY_STAFF_KEY),
                  user.affiliation
