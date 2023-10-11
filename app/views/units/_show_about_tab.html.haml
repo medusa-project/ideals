@@ -85,23 +85,4 @@
 
 %hr
 
-- if policy(@unit).new_collection?
-  .btn-group.float-end{role: "group"}
-    -# Add Collection button
-    %button.btn.btn-light.add-collection{"data-bs-target": "#add-collection-modal",
-                                         "data-bs-toggle": "modal",
-                                         type:             "button"}
-      %i.fa.fa-plus
-      Add Collection
-
-%h2 Collections
-
-- if @collections.any?
-  = resource_list(@collections, use_resource_host: false)
-- elsif current_user&.effective_unit_admin?(@unit)
-  .alert.alert-warning
-    = icon_for(:warning)
-    This unit does not contain any collections. Items cannot be added to it
-    until a collection has been added.
-- else
-  %p This unit does not contain any collections.
+= render partial: "show_collections_tab", locals: { show_title: true }

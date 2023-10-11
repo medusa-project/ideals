@@ -330,6 +330,20 @@ class UnitsController < ApplicationController
   end
 
   ##
+  # Renders HTML for the collections tab in show-unit view.
+  #
+  # Responds to `GET /units/:id/collections`
+  #
+  def show_collections
+    @collections = Collection.search.
+      institution(@unit.institution).
+      filter(Collection::IndexFields::PRIMARY_UNIT, @unit.id).
+      order("#{Collection::IndexFields::TITLE}.sort").
+      limit(999)
+    render partial: "show_collections_tab"
+  end
+
+  ##
   # Renders HTML for the items tab in show-unit view.
   #
   # Responds to `GET /units/:id/items`

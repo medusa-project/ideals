@@ -253,6 +253,8 @@ Rails.application.routes.draw do
     match "/access", to: "units#show_access", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/bury", to: "units#bury", via: :post
+    match "/collections", to: "units#show_collections", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/exhume", to: "units#exhume", via: :post
     match "/items", to: "units#show_items", via: :get
     match "/statistics", to: "units#show_statistics", via: :get,

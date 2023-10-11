@@ -67,6 +67,13 @@ const UnitView = {
             });
         });
 
+        $("#collections-tab").on("show.bs.tab", function() {
+            const url = ROOT_URL + "/units/" + unitID + "/collections";
+            $.get(url, function(data) {
+                $("#collections-tab-content").html(data);
+            });
+        });
+
         $("#items-tab").on("show.bs.tab", function() {
             const url = ROOT_URL + "/units/" + unitID + "/items";
             $.get(url, function(data) {

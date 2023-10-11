@@ -23,6 +23,14 @@
                                       "aria-selected":  "true"}
       = icon_for(Item)
       Items
+    - if policy(@unit).show_collections?
+      %button#collections-tab.nav-link{"data-bs-target": "#collections-tab-content",
+                                       "data-bs-toggle": "pill",
+                                       role:             "tab",
+                                       "aria-controls":  "collections-tab-content",
+                                       "aria-selected":  "false"}
+        = icon_for(Collection)
+        Collections
     - if policy(@unit).show_review_submissions?
       %button#review-submissions-tab.nav-link{"data-bs-target": "#review-submissions-tab-content",
                                               "data-bs-toggle": "pill",
@@ -80,6 +88,10 @@
     - if policy(@unit).show_about?
       #about-tab-content.tab-pane.fade{"aria-labelledby": "about-tab",
                                        role:              "tabpanel"}
+        = spinner
+    - if policy(@unit).show_collections?
+      #collections-tab-content.tab-pane.fade{"aria-labelledby": "collections-tab",
+                                             role:              "tabpanel"}
         = spinner
     - if policy(@unit).show_review_submissions?
       #review-submissions-tab-content.tab-pane.fade{role:              "tabpanel",

@@ -720,6 +720,29 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_select(".edit-administering-users", false)
   end
 
+  # show_collections()
+
+  test "show_collections() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get unit_collections_path(units(:southeast_unit1))
+    assert_response :not_found
+  end
+
+  test "show_collections() returns HTTP 404 for non-XHR requests" do
+    get unit_collections_path(units(:southeast_unit1))
+    assert_response :not_found
+  end
+
+  test "show_collections() returns HTTP 200 for XHR requests" do
+    get unit_collections_path(units(:southeast_unit1)), xhr: true
+    assert_response :ok
+  end
+
+  test "show_collections() returns HTTP 410 for a buried unit" do
+    get unit_collections_path(units(:southeast_buried)), xhr: true
+    assert_response :gone
+  end
+
   # show_items()
 
   test "show_items() returns HTTP 404 for unscoped requests" do
