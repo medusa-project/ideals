@@ -145,11 +145,11 @@ class Collection < ApplicationRecord
 
   validate :validate_parent
   validate :validate_primary_unit
-  validate :validate_buried, if: -> { buried }
-  validate :validate_exhumed, if: -> { !buried }
+  validate :validate_bury, if: -> { buried }
+  validate :validate_exhume, if: -> { !buried }
 
   before_create :inherit_properties
-  before_destroy :validate_empty
+  before_destroy :validate_destroy
 
   ##
   # @return [Enumerable<Integer>] IDs of all collections that are children of
@@ -492,7 +492,7 @@ class Collection < ApplicationRecord
   # Ensures that a buried collection does not contain any sub-collections or
   # items.
   #
-  def validate_buried
+  def validate_bury
     if buried
       if items.where.not(stage: Item::Stages::BURIED).count > 0
         errors.add(:base, "This collection cannot be deleted, as it contains "\
@@ -507,10 +507,10 @@ class Collection < ApplicationRecord
   end
 
   ##
-  # Ensures that the unit cannot be destroyed unless it is empty of
+  # Ensures that the collection cannot be destroyed unless it is empty of
   # subcollections and items.
   #
-  def validate_empty
+  def validate_destroy
     if self.collections.count > 0
       errors.add(:collections, "must not exist in order for a collection to be deleted")
       throw(:abort)
@@ -524,7 +524,7 @@ class Collection < ApplicationRecord
   # Ensures that at least one owning unit of an exhumed collection is not
   # buried.
   #
-  def validate_exhumed
+  def validate_exhume
     if !buried && buried_changed? && units.where.not(buried: true).count == 0
       errors.add(:base, "This collection cannot be undeleted, as all of its "\
                         "owning units are deleted.")

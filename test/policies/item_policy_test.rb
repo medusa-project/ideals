@@ -77,6 +77,56 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert !policy.approve?
   end
 
+  # bury?()
+
+  test "bury?() does not authorize a nil user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @item.institution)
+    policy = ItemPolicy.new(context, @item)
+    assert !policy.bury?
+  end
+
+  test "bury?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.bury?
+  end
+
+  test "bury?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @item.institution)
+    policy  = ItemPolicy.new(context, @item)
+    assert policy.bury?
+  end
+
+  test "bury?() authorizes institution admins" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @item.institution)
+    policy  = ItemPolicy.new(context, @item)
+    assert policy.bury?
+  end
+
+  test "bury?() does not authorize anyone else" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @item.institution)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.bury?
+  end
+
+  test "bury?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @item.institution,
+                                 role_limit:  Role::COLLECTION_SUBMITTER)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.bury?
+  end
+
   # create?()
 
   test "create?() does not authorize a nil user" do
@@ -157,82 +207,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     policy  = ItemPolicy.new(context, @item)
     assert !policy.create?
   end
-
-  # delete?()
-
-  test "delete?() does not authorize a nil user" do
-    context = RequestContext.new(user:        nil,
-                                 institution: @item.institution)
-    policy  = ItemPolicy.new(context, @item)
-    assert !policy.delete?
-  end
-
-  test "delete?() does not authorize an incorrect scope" do
-    context = RequestContext.new(user:        users(:southwest_admin),
-                                 institution: institutions(:northeast))
-    policy  = ItemPolicy.new(context, @item)
-    assert !policy.delete?
-  end
-
-  test "delete?() authorizes sysadmins" do
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: @item.institution)
-    policy  = ItemPolicy.new(context, @item)
-    assert policy.delete?
-  end
-
-  test "delete?() authorizes institution admins" do
-    user    = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: @item.institution)
-    policy  = ItemPolicy.new(context, @item)
-    assert policy.delete?
-  end
-
-  test "delete?() authorizes the submission owner if the item is submitting" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: @item.institution)
-
-    @item.submitter = user
-    @item.stage     = Item::Stages::SUBMITTING
-
-    policy = ItemPolicy.new(context, @item)
-    assert policy.delete?
-  end
-
-  test "delete?() does not authorize the submission owner if the item is not
-  submitting" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: @item.institution)
-
-    @item.submitter = user
-    @item.stage     = Item::Stages::APPROVED
-
-    policy = ItemPolicy.new(context, @item)
-    assert !policy.delete?
-  end
-
-  test "delete?() does not authorize anyone else" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: @item.institution)
-    policy  = ItemPolicy.new(context, @item)
-    assert !policy.delete?
-  end
-
-  test "delete?() respects role limits" do
-    # sysadmin user limited to an insufficient role
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: @item.institution,
-                                 role_limit:  Role::LOGGED_IN)
-    policy  = ItemPolicy.new(context, @item)
-    assert !policy.delete?
-  end
-
+  
   # delete_bitstreams?()
 
   test "delete_bitstreams?() does not authorize a nil user" do
@@ -372,6 +347,81 @@ class ItemPolicyTest < ActiveSupport::TestCase
                                  role_limit:  Role::COLLECTION_SUBMITTER)
     policy  = ItemPolicy.new(context, @item)
     assert !policy.delete_bitstreams?
+  end
+
+  # destroy?()
+
+  test "destroy?() does not authorize a nil user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @item.institution)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.destroy?
+  end
+
+  test "destroy?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.destroy?
+  end
+
+  test "destroy?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @item.institution)
+    policy  = ItemPolicy.new(context, @item)
+    assert policy.destroy?
+  end
+
+  test "destroy?() authorizes institution admins" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @item.institution)
+    policy  = ItemPolicy.new(context, @item)
+    assert policy.destroy?
+  end
+
+  test "destroy?() authorizes the submission owner if the item is submitting" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @item.institution)
+
+    @item.submitter = user
+    @item.stage     = Item::Stages::SUBMITTING
+
+    policy = ItemPolicy.new(context, @item)
+    assert policy.destroy?
+  end
+
+  test "destroy?() does not authorize the submission owner if the item is not
+  submitting" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @item.institution)
+
+    @item.submitter = user
+    @item.stage     = Item::Stages::APPROVED
+
+    policy = ItemPolicy.new(context, @item)
+    assert !policy.destroy?
+  end
+
+  test "destroy?() does not authorize anyone else" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @item.institution)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.destroy?
+  end
+
+  test "destroy?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @item.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.destroy?
   end
 
   # download_counts?()
@@ -764,6 +814,56 @@ class ItemPolicyTest < ActiveSupport::TestCase
                                  role_limit:  Role::COLLECTION_SUBMITTER)
     policy  = ItemPolicy.new(context, @item)
     assert !policy.edit_withdrawal?
+  end
+
+  # exhume?()
+
+  test "exhume?() does not authorize a nil user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @item.institution)
+    policy = ItemPolicy.new(context, @item)
+    assert !policy.exhume?
+  end
+
+  test "exhume?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.exhume?
+  end
+
+  test "exhume?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @item.institution)
+    policy  = ItemPolicy.new(context, @item)
+    assert policy.exhume?
+  end
+
+  test "exhume?() authorizes institution admins" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @item.institution)
+    policy  = ItemPolicy.new(context, @item)
+    assert policy.exhume?
+  end
+
+  test "exhume?() does not authorize anyone else" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @item.institution)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.exhume?
+  end
+
+  test "exhume?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @item.institution,
+                                 role_limit:  Role::COLLECTION_SUBMITTER)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.exhume?
   end
 
   # export?()
@@ -1799,57 +1899,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     policy  = ItemPolicy.new(context, items(:southwest_unit1_collection1_embargoed))
     assert !policy.statistics?
   end
-
-  # undelete?()
-
-  test "undelete?() does not authorize a nil user" do
-    context = RequestContext.new(user:        nil,
-                                 institution: @item.institution)
-    policy = ItemPolicy.new(context, @item)
-    assert !policy.undelete?
-  end
-
-  test "undelete?() does not authorize an incorrect scope" do
-    context = RequestContext.new(user:        users(:southwest_admin),
-                                 institution: institutions(:northeast))
-    policy  = ItemPolicy.new(context, @item)
-    assert !policy.undelete?
-  end
-
-  test "undelete?() authorizes sysadmins" do
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: @item.institution)
-    policy  = ItemPolicy.new(context, @item)
-    assert policy.undelete?
-  end
-
-  test "undelete?() authorizes institution admins" do
-    user    = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: @item.institution)
-    policy  = ItemPolicy.new(context, @item)
-    assert policy.undelete?
-  end
-
-  test "undelete?() does not authorize anyone else" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: @item.institution)
-    policy  = ItemPolicy.new(context, @item)
-    assert !policy.undelete?
-  end
-
-  test "undelete?() respects role limits" do
-    # sysadmin user limited to an insufficient role
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: @item.institution,
-                                 role_limit:  Role::COLLECTION_SUBMITTER)
-    policy  = ItemPolicy.new(context, @item)
-    assert !policy.undelete?
-  end
-
+  
   # update?()
 
   test "update?() does not authorize a nil user" do

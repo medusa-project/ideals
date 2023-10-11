@@ -6,6 +6,56 @@ class UnitPolicyTest < ActiveSupport::TestCase
     @unit = units(:southwest_unit1)
   end
 
+  # bury?()
+
+  test "bury?() returns false with a nil user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @unit.institution)
+    policy = UnitPolicy.new(context, @unit)
+    assert !policy.bury?
+  end
+
+  test "bury?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.bury?
+  end
+
+  test "bury?() is restrictive by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.bury?
+  end
+
+  test "bury?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UnitPolicy.new(context, @unit)
+    assert policy.bury?
+  end
+
+  test "bury?() authorizes institution admins" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UnitPolicy.new(context, @unit)
+    assert policy.bury?
+  end
+
+  test "bury?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.bury?
+  end
+
   # change_parent?()
 
   test "change_parent?() returns false with a nil user" do
@@ -195,54 +245,54 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert !policy.create?
   end
 
-  # delete?()
+  # destroy?()
 
-  test "delete?() returns false with a nil user" do
+  test "destroy?() returns false with a nil user" do
     context = RequestContext.new(user:        nil,
                                  institution: @unit.institution)
     policy = UnitPolicy.new(context, @unit)
-    assert !policy.delete?
+    assert !policy.destroy?
   end
 
-  test "delete?() does not authorize an incorrect scope" do
+  test "destroy?() does not authorize an incorrect scope" do
     context = RequestContext.new(user:        users(:southwest_admin),
                                  institution: institutions(:northeast))
     policy  = UnitPolicy.new(context, @unit)
-    assert !policy.delete?
+    assert !policy.destroy?
   end
 
-  test "delete?() is restrictive by default" do
+  test "destroy?() is restrictive by default" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
-    assert !policy.delete?
+    assert !policy.destroy?
   end
 
-  test "delete?() authorizes sysadmins" do
+  test "destroy?() authorizes sysadmins" do
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
-    assert policy.delete?
+    assert policy.destroy?
   end
 
-  test "delete?() authorizes institution admins" do
+  test "destroy?() authorizes institution admins" do
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UnitPolicy.new(context, @unit)
-    assert policy.delete?
+    assert policy.destroy?
   end
 
-  test "delete?() respects role limits" do
+  test "destroy?() respects role limits" do
     # sysadmin user limited to an insufficient role
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
     policy  = UnitPolicy.new(context, @unit)
-    assert !policy.delete?
+    assert !policy.destroy?
   end
 
   # edit_administering_groups?()
@@ -411,6 +461,56 @@ class UnitPolicyTest < ActiveSupport::TestCase
                                  role_limit:  Role::LOGGED_IN)
     policy  = UnitPolicy.new(context, @unit)
     assert !policy.edit_properties?
+  end
+
+  # exhume?()
+
+  test "exhume?() returns false with a nil user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @unit.institution)
+    policy = UnitPolicy.new(context, @unit)
+    assert !policy.exhume?
+  end
+
+  test "exhume?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.exhume?
+  end
+
+  test "exhume?() is restrictive by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.exhume?
+  end
+
+  test "exhume?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UnitPolicy.new(context, @unit)
+    assert policy.exhume?
+  end
+
+  test "exhume?() authorizes institution admins" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UnitPolicy.new(context, @unit)
+    assert policy.exhume?
+  end
+
+  test "exhume?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = UnitPolicy.new(context, @unit)
+    assert !policy.exhume?
   end
 
   # export_items?()
@@ -992,57 +1092,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
     policy  = UnitPolicy.new(context, @unit)
     assert policy.statistics_by_range?
   end
-
-  # undelete?()
-
-  test "undelete?() returns false with a nil user" do
-    context = RequestContext.new(user:        nil,
-                                 institution: @unit.institution)
-    policy = UnitPolicy.new(context, @unit)
-    assert !policy.undelete?
-  end
-
-  test "undelete?() does not authorize an incorrect scope" do
-    context = RequestContext.new(user:        users(:southwest_admin),
-                                 institution: institutions(:northeast))
-    policy  = UnitPolicy.new(context, @unit)
-    assert !policy.undelete?
-  end
-
-  test "undelete?() is restrictive by default" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = UnitPolicy.new(context, @unit)
-    assert !policy.undelete?
-  end
-
-  test "undelete?() authorizes sysadmins" do
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = UnitPolicy.new(context, @unit)
-    assert policy.undelete?
-  end
-
-  test "undelete?() authorizes institution admins" do
-    user    = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = UnitPolicy.new(context, @unit)
-    assert policy.undelete?
-  end
-
-  test "undelete?() respects role limits" do
-    # sysadmin user limited to an insufficient role
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::LOGGED_IN)
-    policy  = UnitPolicy.new(context, @unit)
-    assert !policy.undelete?
-  end
-
+  
   # update?()
 
   test "update?() returns false with a nil user" do

@@ -5,7 +5,7 @@ class CollectionsController < ApplicationController
   include Search
 
   before_action :ensure_institution_host
-  before_action :ensure_logged_in, only: [:all_files, :create, :delete,
+  before_action :ensure_logged_in, only: [:all_files, :bury, :create, :destroy,
                                           :edit_administering_groups,
                                           :edit_administering_users,
                                           :edit_collection_membership,
@@ -13,13 +13,12 @@ class CollectionsController < ApplicationController
                                           :edit_submitting_groups,
                                           :edit_submitting_users,
                                           :edit_unit_membership,
-                                          :edit_user_access, :new,
+                                          :edit_user_access, :exhume, :new,
                                           :show_access,
-                                          :show_review_submissions, :undelete,
-                                          :update]
+                                          :show_review_submissions, :update]
   before_action :set_collection, except: [:create, :index, :new]
   before_action :redirect_scope, only: :show
-  before_action :check_buried, except: [:create, :index, :show, :undelete]
+  before_action :check_buried, except: [:create, :exhume, :index, :new, :show]
   before_action :authorize_collection, except: [:create, :index, :new]
   before_action :store_location, only: [:index, :show]
 
@@ -43,6 +42,35 @@ class CollectionsController < ApplicationController
           head :no_content
         end
       end
+    end
+  end
+
+  ##
+  # "Buries" (does **not** delete) a collection.
+  #
+  # Burial is an incomplete form of deletion that leaves behind a tombstone
+  # record. Buried collections can be {exhume exhumed}.
+  #
+  # Responds to `POST /collections/:id/bury`
+  #
+  # @see exhume
+  #
+  def bury
+    primary_unit = @collection.primary_unit
+    parent       = @collection.parent
+    title        = @collection.title
+    begin
+      ActiveRecord::Base.transaction do
+        @collection.bury!
+      end
+    rescue => e
+      flash['error'] = "#{e}"
+      redirect_to @collection
+    else
+      RefreshOpensearchJob.perform_later
+      toast!(title:   "Collection deleted",
+             message: "The collection \"#{title}\" has been deleted.")
+      redirect_to(parent || primary_unit)
     end
   end
 
@@ -92,19 +120,19 @@ class CollectionsController < ApplicationController
   end
 
   ##
-  # Buries--does **not** delete--a collection.
+  # Permanently deletes a collection.
   #
-  # Responds to `POST /collections/:id/delete`
+  # Responds to `DELETE /collections/:id`
   #
-  # @see undelete
+  # @see bury
   #
-  def delete
+  def destroy
     primary_unit = @collection.primary_unit
     parent       = @collection.parent
     title        = @collection.title
     begin
       ActiveRecord::Base.transaction do
-        @collection.bury!
+        @collection.destroy!
       end
     rescue => e
       flash['error'] = "#{e}"
@@ -185,6 +213,27 @@ class CollectionsController < ApplicationController
   def edit_user_access
     render partial: "collections/user_access_form",
            locals: { collection: @collection }
+  end
+
+  ##
+  # Exhumes/un-buries a buried collection.
+  #
+  # Responds to `POST /collections/:id/exhume`
+  #
+  # @see bury
+  #
+  def exhume
+    ActiveRecord::Base.transaction do
+      @collection.exhume!
+    end
+  rescue => e
+    flash['error'] = "#{e}"
+  else
+    RefreshOpensearchJob.perform_later
+    toast!(title:   "Collection undeleted",
+           message: "The collection \"#{@collection.title}\" has been undeleted.")
+  ensure
+    redirect_to @collection
   end
 
   ##
@@ -437,27 +486,6 @@ class CollectionsController < ApplicationController
                   filename: "collection_#{@collection.id}_statistics.csv"
       end
     end
-  end
-
-  ##
-  # Exhumes a buried collection.
-  #
-  # Responds to `POST /collections/:id/undelete`
-  #
-  # @see delete
-  #
-  def undelete
-    ActiveRecord::Base.transaction do
-      @collection.exhume!
-    end
-  rescue => e
-    flash['error'] = "#{e}"
-  else
-    RefreshOpensearchJob.perform_later
-    toast!(title:   "Collection undeleted",
-           message: "The collection \"#{@collection.title}\" has been undeleted.")
-  ensure
-    redirect_to @collection
   end
 
   ##

@@ -29,16 +29,16 @@ class ItemsController < ApplicationController
   end
 
   ##
-  # "Buries" (does **not** delete) an [Item].
+  # "Buries" (does **not** delete) an {Item}.
   #
   # Burial is an incomplete form of deletion that leaves behind a tombstone
-  # record. Buried items can be exhumed via {undelete}.
+  # record. Buried items can be {exhume exhumed}.
   #
-  # Responds to `POST /items/:id/delete`
+  # Responds to `POST /items/:id/bury`
   #
-  # @see undelete
+  # @see exhume
   #
-  def delete
+  def bury
     collection = @item.primary_collection
     begin
       @item.bury!
@@ -48,6 +48,29 @@ class ItemsController < ApplicationController
       RefreshOpensearchJob.perform_later
       toast!(title:   "Item deleted",
              message: "The item \"#{@item.title}\" has been deleted.")
+    ensure
+      redirect_to collection || root_url
+    end
+  end
+
+  ##
+  # Permanently deletes an item.
+  #
+  # Responds to `DELETE /items/:id`
+  #
+  # @see bury
+  #
+  def destroy
+    collection = @item.effective_primary_collection
+    title      = @item.title
+    begin
+      @item.destroy!
+    rescue => e
+      flash['error'] = "#{e}"
+    else
+      RefreshOpensearchJob.perform_later
+      toast!(title:   "Item deleted",
+             message: "The item \"#{title}\" has been deleted.")
     ensure
       redirect_to collection || root_url
     end
@@ -136,6 +159,28 @@ class ItemsController < ApplicationController
   def edit_withdrawal
     render partial: "items/withdrawal_form",
            locals: { item: @item }
+  end
+
+  ##
+  # Exhumes/un-buries a buried item, restoring it to the
+  # {Item::Stages::APPROVED approved stage}.
+  #
+  # Responds to `POST /items/:id/exhume`
+  #
+  # @see bury
+  #
+  def exhume
+    ActiveRecord::Base.transaction do
+      @item.exhume!
+    end
+  rescue => e
+    flash['error'] = "#{e}"
+  else
+    RefreshOpensearchJob.perform_later
+    toast!(title:   "Item undeleted",
+           message: "The item \"#{@item.title}\" has been undeleted.")
+  ensure
+    redirect_to @item
   end
 
   ##
@@ -333,26 +378,6 @@ class ItemsController < ApplicationController
   #
   def statistics
     render partial: "statistics_form"
-  end
-
-  ##
-  # Un-buries/exhumes a buried item, restoring it to the
-  # {Item::Stages::APPROVED approved stage}.
-  #
-  # Responds to `POST /items/:id/undelete`
-  #
-  # @see delete
-  #
-  def undelete
-    @item.exhume!
-  rescue => e
-    flash['error'] = "#{e}"
-  else
-    RefreshOpensearchJob.perform_later
-    toast!(title:   "Item undeleted",
-           message: "The item \"#{@item.title}\" has been undeleted.")
-  ensure
-    redirect_to @item
   end
 
   ##

@@ -1,13 +1,32 @@
 .btn-group.float-end{role: "group"}
-  - if !@unit.buried && policy(@unit).delete?
-    = link_to(unit_delete_path(@unit), class: 'btn btn-danger',
-                                       method: :post,
-                                       "data-confirm": "Are you sure you want to delete this unit?") do
-      %i.fa.fa-trash
-      Delete
-  - elsif @unit.buried && policy(@unit).undelete?
-    = link_to(unit_undelete_path(@unit), class: 'btn btn-danger',
-                                         method: :post,
-                                         "data-confirm": "Are you sure you want to undelete this unit?") do
-      %i.fa.fa-trash-restore
-      Undelete
+  .dropdown
+    %button.btn.btn-light.dropdown-toggle{type:             "button",
+                                          "data-bs-toggle": "dropdown",
+                                          "aria-expanded":  "false"}
+      %i.fa.fa-ellipsis-h
+      Actions
+    %ul.dropdown-menu
+      - if !@unit.buried && policy(@unit).bury?
+        %li
+          = link_to(unit_bury_path(@unit),
+                    class:          "dropdown-item",
+                    method:         :post,
+                    "data-confirm": "Are you sure you want to delete this unit?") do
+            %i.fa.fa-trash
+            Delete
+      - if policy(@unit).destroy?
+        %li
+          = link_to(unit_path(@unit),
+                    class:          "dropdown-item",
+                    method:         :delete,
+                    "data-confirm": "Are you sure you want to permanently delete this unit? This cannot be undone.") do
+            %i.fa.fa-trash
+            Delete Permanently
+      - if @unit.buried? && policy(@unit).exhume?
+        %li
+          = link_to(unit_exhume_path(@unit),
+                    class:          "dropdown-item",
+                    method:         :post,
+                    "data-confirm": "Are you sure you want to undelete this unit?") do
+            %i.fa.fa-trash-restore
+            Undelete

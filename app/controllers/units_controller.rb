@@ -5,17 +5,45 @@ class UnitsController < ApplicationController
   include Search
 
   before_action :ensure_institution_host
-  before_action :ensure_logged_in, only: [:create, :delete,
+  before_action :ensure_logged_in, only: [:bury, :create, :destroy,
                                           :edit_administering_groups,
                                           :edit_administering_users,
                                           :edit_membership, :edit_properties,
-                                          :new, :show_access, :undelete,
-                                          :update]
+                                          :exhume, :new, :show_access, :update]
   before_action :set_unit, except: [:create, :index, :new]
   before_action :redirect_scope, only: :show
-  before_action :check_buried, except: [:create, :index, :new, :show, :undelete]
+  before_action :check_buried, except: [:create, :exhume, :index, :new, :show]
   before_action :authorize_unit, except: [:create, :index, :new]
   before_action :store_location, only: [:index, :show]
+
+  ##
+  # "Buries" (does **not** delete) a unit.
+  #
+  # Burial is an incomplete form of deletion that leaves behind a tombstone
+  # record. Buried units can be {exhume exhumed}.
+  #
+  # Responds to `POST /units/:id/bury`
+  #
+  # @see exhume
+  #
+  def bury
+    unit_institution = @unit.institution
+    ActiveRecord::Base.transaction do
+      @unit.bury!
+    end
+  rescue => e
+    flash['error'] = "#{e}"
+    redirect_to @unit
+  else
+    RefreshOpensearchJob.perform_later
+    toast!(title:   "Unit deleted",
+           message: "The unit \"#{@unit.title}\" has been deleted.")
+    if current_institution == unit_institution
+      redirect_to(@unit.parent || units_path)
+    else
+      redirect_to(@unit.parent || institution_path(unit_institution))
+    end
+  end
 
   ##
   # Renders a partial for the expandable unit list used in {index}. Has the
@@ -95,16 +123,16 @@ class UnitsController < ApplicationController
   end
 
   ##
-  # Buries--does **not** delete--a unit.
+  # Permanently deletes a unit.
   #
-  # Responds to `POST /units/:id/delete`
+  # Responds to `DELETE /units/:id`
   #
-  # @see undelete
+  # @see bury
   #
-  def delete
+  def destroy
     unit_institution = @unit.institution
     ActiveRecord::Base.transaction do
-      @unit.bury!
+      @unit.destroy!
     end
   rescue => e
     flash['error'] = "#{e}"
@@ -154,6 +182,28 @@ class UnitsController < ApplicationController
   #
   def edit_properties
     render partial: "units/properties_form", locals: { unit: @unit }
+  end
+
+  ##
+  # Exhumes/un-buries a buried unit.
+  #
+  # Responds to `POST /units/:id/exhume`
+  #
+  # @see bury
+  #
+  def exhume
+    ActiveRecord::Base.transaction do
+      @unit.exhume!
+    end
+  rescue => e
+    flash['error'] = "#{e}"
+    redirect_to @unit
+  else
+    RefreshOpensearchJob.perform_later
+    toast!(title:   "Unit undeleted",
+           message: "The unit \"#{@unit.title}\" has been undeleted.")
+  ensure
+    redirect_to @unit
   end
 
   ##
@@ -389,27 +439,6 @@ class UnitsController < ApplicationController
                   filename: "unit_#{@unit.id}_statistics.csv"
       end
     end
-  end
-
-  ##
-  # Exhumes a buried unit.
-  #
-  # Responds to `POST /units/:id/undelete`
-  #
-  # @see delete
-  #
-  def undelete
-    ActiveRecord::Base.transaction do
-      @unit.exhume!
-    end
-  rescue => e
-    flash['error'] = "#{e}"
-  else
-    RefreshOpensearchJob.perform_later
-    toast!(title:   "Unit undeleted",
-           message: "The unit \"#{@unit.title}\" has been undeleted.")
-  ensure
-    redirect_to @unit
   end
 
   ##

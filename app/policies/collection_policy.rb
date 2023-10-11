@@ -22,6 +22,10 @@ class CollectionPolicy < ApplicationPolicy
     export_items
   end
 
+  def bury
+    destroy
+  end
+
   ##
   # Invoked from {CollectionsController#update} to ensure that a user cannot
   # move a collection to another collection of which s/he is not an effective
@@ -53,7 +57,7 @@ class CollectionPolicy < ApplicationPolicy
     effective_admin
   end
 
-  def delete
+  def destroy
     if !@user
       return LOGGED_OUT_RESULT
     elsif effective_sysadmin?(@user, @role_limit)
@@ -95,6 +99,10 @@ class CollectionPolicy < ApplicationPolicy
 
   def edit_unit_membership
     update
+  end
+
+  def exhume
+    bury
   end
 
   def export_items
@@ -167,10 +175,6 @@ class CollectionPolicy < ApplicationPolicy
   #
   def submit_item
     effective_submitter
-  end
-
-  def undelete
-    delete
   end
 
   def update

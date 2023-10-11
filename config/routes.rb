@@ -13,14 +13,15 @@ Rails.application.routes.draw do
   match '/all-invitees', to: "invitees#index_all", via: :get, as: "all_invitees"
   match '/all-tasks', to: "tasks#index_all", via: :get, as: "all_tasks"
   match '/all-users', to: "users#index_all", via: :get, as: "all_users"
-  resources :collections, except: [:destroy, :edit] do
+  resources :collections, except: :edit do
     # These all render content for the main tab panes in show-unit view via XHR.
     match "/about", to: "collections#show_about", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/access", to: "collections#show_access", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/all-files", to: "collections#all_files", via: :get
-    match "/delete", to: "collections#delete", via: :post # different from destroy--see method doc
+    match "/bury", to: "collections#bury", via: :post
+    match "/exhume", to: "collections#exhume", via: :post
     match "/items", to: "collections#show_items", via: :get
     match "/review-submissions", to: "collections#show_review_submissions", via: :get,
           constraints: lambda { |request| request.xhr? }
@@ -51,7 +52,6 @@ Rails.application.routes.draw do
     match "/item-download-counts", to: "collections#item_download_counts", via: :get
     match "/statistics-by-range", to: "collections#statistics_by_range", via: :get
     match "/submit", to: "submissions#new", via: :get
-    match "/undelete", to: "collections#undelete", via: :post
   end
   match "/contact", to: "welcome#contact", via: :post,
         constraints: lambda { |request| request.xhr? }
@@ -178,7 +178,7 @@ Rails.application.routes.draw do
   match "/items/export", to: "items#export", via: [:get, :post]
   match "/items/review", to: "items#review", via: :get
   match "/items/process_review", to: "items#process_review", via: :post
-  resources :items, except: [:destroy, :new] do
+  resources :items, except: :new do
     match "/approve", to: "items#approve", via: :patch
     resources :bitstreams do
       match "/data", to: "bitstreams#data", via: :get
@@ -187,8 +187,9 @@ Rails.application.routes.draw do
       match "/viewer", to: "bitstreams#viewer", via: :get,
             constraints: lambda { |request| request.xhr? }
     end
-    match "/delete", to: "items#delete", via: :post # different from destroy--see method doc
+    match "/bury", to: "items#bury", via: :post
     match "/download-counts", to: "items#download_counts", via: :get
+    match "/exhume", to: "items#exhume", via: :post
     match "/edit-embargoes", to: "items#edit_embargoes", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-membership", to: "items#edit_membership", via: :get,
@@ -206,7 +207,6 @@ Rails.application.routes.draw do
     match "/reject", to: "items#reject", via: :patch
     match "/statistics", to: "items#statistics", via: :get,
           constraints: lambda { |request| request.xhr? }
-    match "/undelete", to: "items#undelete", via: :post
     match "/upload-bitstreams", to: "items#upload_bitstreams", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/withdraw", to: "items#withdraw", via: :patch
@@ -247,13 +247,13 @@ Rails.application.routes.draw do
   match "/submit", to: "submissions#new", via: :get
   resources :tasks, only: [:index, :show]
   match "/template-elements", to: "registered_elements#index_template", via: :get
-  resources :units, except: [:destroy, :edit] do
+  resources :units, except: :edit do
     match "/about", to: "units#show_about", via: :get,
           constraints: lambda { |request| request.xhr? }
-    # These all render content for the main tab panes in show-unit view via XHR.
     match "/access", to: "units#show_access", via: :get,
           constraints: lambda { |request| request.xhr? }
-    match "/delete", to: "units#delete", via: :post # different from destroy--see method doc
+    match "/bury", to: "units#bury", via: :post
+    match "/exhume", to: "units#exhume", via: :post
     match "/items", to: "units#show_items", via: :get
     match "/statistics", to: "units#show_statistics", via: :get,
           constraints: lambda { |request| request.xhr? }
@@ -277,7 +277,6 @@ Rails.application.routes.draw do
     match "/statistics-by-range", to: "units#statistics_by_range", via: :get
     match "/submissions-in-progress", to: "units#show_submissions_in_progress", via: :get,
           constraints: lambda { |request| request.xhr? }
-    match "/undelete", to: "units#undelete", via: :post
   end
   match "/usage", to: "usage#index", via: :get
   match "/usage/files", to: "usage#files", via: :get,

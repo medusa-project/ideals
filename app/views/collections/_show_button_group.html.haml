@@ -1,8 +1,32 @@
 .btn-group.float-end{role: "group"}
-  -# Delete button
-  - if policy(@collection).delete?
-    = link_to(collection_delete_path(@collection), class: 'btn btn-danger',
-                                                   method: :post,
-                                                   "data-confirm": "Are you sure you want to delete this collection?") do
-      %i.fa.fa-trash
-      Delete
+  .dropdown
+    %button.btn.btn-light.dropdown-toggle{type:             "button",
+                                          "data-bs-toggle": "dropdown",
+                                          "aria-expanded":  "false"}
+      %i.fa.fa-ellipsis-h
+      Actions
+    %ul.dropdown-menu
+      - if !@collection.buried && policy(@collection).bury?
+        %li
+          = link_to(collection_bury_path(@collection),
+                    class:          "dropdown-item",
+                    method:         :post,
+                    "data-confirm": "Are you sure you want to delete this collection?") do
+            %i.fa.fa-trash
+            Delete
+      - if policy(@collection).destroy?
+        %li
+          = link_to(collection_path(@collection),
+                    class:          "dropdown-item",
+                    method:         :delete,
+                    "data-confirm": "Are you sure you want to permanently delete this collection? This cannot be undone.") do
+            %i.fa.fa-trash
+            Delete Permanently
+      - if @collection.buried? && policy(@collection).exhume?
+        %li
+          = link_to(collection_exhume_path(@collection),
+                    class:          "dropdown-item",
+                    method:         :post,
+                    "data-confirm": "Are you sure you want to undelete this collection?") do
+            %i.fa.fa-trash-restore
+            Undelete

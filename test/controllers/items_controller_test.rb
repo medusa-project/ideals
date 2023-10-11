@@ -78,46 +78,90 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert !ActionMailer::Base.deliveries.empty?
   end
 
-  # delete()
+  # bury()
 
-  test "delete() returns HTTP 404 for unscoped requests" do
+  test "bury() returns HTTP 404 for unscoped requests" do
     host! ::Configuration.instance.main_host
     item = items(:southeast_item1)
-    post item_delete_path(item)
+    post item_bury_path(item)
     assert_response :not_found
   end
 
-  test "delete() redirects to root page for logged-out users" do
+  test "bury() redirects to root page for logged-out users" do
     item = items(:southeast_item1)
-    post item_delete_path(item)
+    post item_bury_path(item)
     assert_redirected_to item.institution.scope_url
   end
 
-  test "delete() returns HTTP 403 for unauthorized users" do
+  test "bury() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:southeast))
-    post item_delete_path(items(:southeast_item1))
+    post item_bury_path(items(:southeast_item1))
     assert_response :forbidden
   end
 
-  test "delete() buries the item" do
+  test "bury() buries the item" do
     log_in_as(users(:southeast_admin))
     item = items(:southeast_submitting)
-    post item_delete_path(item)
+    post item_bury_path(item)
     item.reload
     assert item.buried?
   end
 
-  test "delete() returns HTTP 302 for an existing item" do
+  test "bury() returns HTTP 302 for an existing item" do
     log_in_as(users(:southeast_admin))
     submission = items(:southeast_item1)
     expected   = submission.primary_collection
-    post item_delete_path(submission)
+    post item_bury_path(submission)
     assert_redirected_to expected
   end
 
-  test "delete() returns HTTP 404 for a missing item" do
+  test "bury() returns HTTP 404 for a missing item" do
     log_in_as(users(:southeast_admin))
-    post item_delete_path "/items/99999"
+    post item_bury_path "/items/99999"
+    assert_response :not_found
+  end
+
+  # destroy()
+
+  test "destroy() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    item = items(:southeast_item1)
+    delete item_path(item)
+    assert_response :not_found
+  end
+
+  test "destroy() redirects to root page for logged-out users" do
+    item = items(:southeast_item1)
+    delete item_path(item)
+    assert_redirected_to item.institution.scope_url
+  end
+
+  test "destroy() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southeast))
+    delete item_path(items(:southeast_item1))
+    assert_response :forbidden
+  end
+
+  test "destroy() destroys the item" do
+    log_in_as(users(:southeast_admin))
+    item = items(:southeast_submitting)
+    delete item_path(item)
+    assert_raises ActiveRecord::RecordNotFound do
+      item.reload
+    end
+  end
+
+  test "destroy() returns HTTP 302 for an existing item" do
+    log_in_as(users(:southeast_admin))
+    submission = items(:southeast_item1)
+    expected   = submission.primary_collection
+    delete item_path(submission)
+    assert_redirected_to expected
+  end
+
+  test "destroy() returns HTTP 404 for a missing item" do
+    log_in_as(users(:southeast_admin))
+    delete "/items/99999"
     assert_response :not_found
   end
 
@@ -346,6 +390,48 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     item = items(:southeast_item1)
     get item_edit_withdrawal_path(item), xhr: true
     assert_response :ok
+  end
+
+  # exhume()
+
+  test "exhume() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    item = items(:southeast_buried)
+    post item_exhume_path(item)
+    assert_response :not_found
+  end
+
+  test "exhume() redirects to root page for logged-out users" do
+    item = items(:southeast_buried)
+    post item_exhume_path(item)
+    assert_redirected_to item.institution.scope_url
+  end
+
+  test "exhume() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southeast))
+    post item_exhume_path(items(:southeast_buried))
+    assert_response :forbidden
+  end
+
+  test "exhume() buries the item" do
+    log_in_as(users(:southeast_admin))
+    item = items(:southeast_buried)
+    post item_exhume_path(item)
+    item.reload
+    assert !item.buried?
+  end
+
+  test "exhume() returns HTTP 302 for an existing item" do
+    log_in_as(users(:southeast_admin))
+    item = items(:southeast_buried)
+    post item_exhume_path(item)
+    assert_redirected_to item
+  end
+
+  test "exhume() returns HTTP 404 for a missing item" do
+    log_in_as(users(:southeast_admin))
+    post "/items/99999/exhume"
+    assert_response :not_found
   end
 
   # export()
@@ -728,48 +814,6 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     log_in_as(users(:southeast_admin))
     get item_statistics_path(items(:southeast_item1)), xhr: true
     assert_response :ok
-  end
-
-  # undelete()
-
-  test "undelete() returns HTTP 404 for unscoped requests" do
-    host! ::Configuration.instance.main_host
-    item = items(:southeast_buried)
-    post item_undelete_path(item)
-    assert_response :not_found
-  end
-
-  test "undelete() redirects to root page for logged-out users" do
-    item = items(:southeast_buried)
-    post item_undelete_path(item)
-    assert_redirected_to item.institution.scope_url
-  end
-
-  test "undelete() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:southeast))
-    post item_undelete_path(items(:southeast_buried))
-    assert_response :forbidden
-  end
-
-  test "undelete() buries the item" do
-    log_in_as(users(:southeast_admin))
-    item = items(:southeast_buried)
-    post item_undelete_path(item)
-    item.reload
-    assert !item.buried?
-  end
-
-  test "undelete() returns HTTP 302 for an existing item" do
-    log_in_as(users(:southeast_admin))
-    item = items(:southeast_buried)
-    post item_undelete_path(item)
-    assert_redirected_to item
-  end
-
-  test "undelete() returns HTTP 404 for a missing item" do
-    log_in_as(users(:southeast_admin))
-    post "/items/99999/undelete"
-    assert_response :not_found
   end
 
   # update()

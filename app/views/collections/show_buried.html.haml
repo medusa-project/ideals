@@ -2,10 +2,11 @@
 - provide :title, @collection.title
 
 .btn-group.float-end{role: "group"}
-  - if policy(@collection).undelete?
-    = link_to(collection_undelete_path(@collection), class:          "btn btn-danger",
-                                                     method:         :post,
-                                                     "data-confirm": "Are you sure you want to undelete this collection?") do
+  - if policy(@collection).exhume?
+    = link_to(collection_exhume_path(@collection),
+              class:          "btn btn-danger",
+              method:         :post,
+              "data-confirm": "Are you sure you want to undelete this collection?") do
       %i.fa.fa-trash-restore
       Undelete
 

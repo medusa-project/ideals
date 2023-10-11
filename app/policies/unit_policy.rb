@@ -39,6 +39,10 @@ class UnitPolicy < ApplicationPolicy
                   "destination parent unit." }
   end
 
+  def bury
+    destroy
+  end
+
   def children
     index
   end
@@ -70,7 +74,7 @@ class UnitPolicy < ApplicationPolicy
                   "the unit resides." }
   end
 
-  def delete
+  def destroy
     # (Note that the unit must also be empty of collections and child
     # units; this is validated in the model.)
     create
@@ -90,6 +94,10 @@ class UnitPolicy < ApplicationPolicy
 
   def edit_properties
     update
+  end
+
+  def exhume
+    destroy
   end
 
   def export_items
@@ -168,10 +176,6 @@ class UnitPolicy < ApplicationPolicy
 
   def statistics_by_range
     show_statistics
-  end
-
-  def undelete
-    delete
   end
 
   def update

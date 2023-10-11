@@ -50,6 +50,10 @@ class ItemPolicy < ApplicationPolicy
     review
   end
 
+  def bury
+    exhume
+  end
+
   def create
     if !@user
       return LOGGED_OUT_RESULT
@@ -69,7 +73,22 @@ class ItemPolicy < ApplicationPolicy
       reason: "You do not have permission to submit to this collection." }
   end
 
-  def delete
+  def delete_bitstreams
+    if !@user
+      return LOGGED_OUT_RESULT
+    elsif effective_sysadmin?(@user, @role_limit)
+      return AUTHORIZED_RESULT
+    elsif @ctx_institution != @item.institution
+      return WRONG_SCOPE_RESULT
+    elsif @item.stage == Item::Stages::SUBMITTING
+      return update
+    elsif effective_institution_admin?(@user, @ctx_institution, @role_limit)
+      return AUTHORIZED_RESULT
+    end
+    NOT_INSTITUTION_ADMIN_RESULT
+  end
+
+  def destroy
     if !@user
       return LOGGED_OUT_RESULT
     elsif effective_sysadmin?(@user, @role_limit)
@@ -81,21 +100,6 @@ class ItemPolicy < ApplicationPolicy
       return AUTHORIZED_RESULT
     elsif (@role_limit >= Role::COLLECTION_SUBMITTER) &&
       @user == @item.submitter && @item.submitting?
-      return AUTHORIZED_RESULT
-    end
-    NOT_INSTITUTION_ADMIN_RESULT
-  end
-
-  def delete_bitstreams
-    if !@user
-      return LOGGED_OUT_RESULT
-    elsif effective_sysadmin?(@user, @role_limit)
-      return AUTHORIZED_RESULT
-    elsif @ctx_institution != @item.institution
-      return WRONG_SCOPE_RESULT
-    elsif @item.stage == Item::Stages::SUBMITTING
-      return update
-    elsif effective_institution_admin?(@user, @ctx_institution, @role_limit)
       return AUTHORIZED_RESULT
     end
     NOT_INSTITUTION_ADMIN_RESULT
@@ -125,6 +129,20 @@ class ItemPolicy < ApplicationPolicy
 
   def edit_withdrawal
     withdraw
+  end
+
+  def exhume
+    if !@user
+      return LOGGED_OUT_RESULT
+    elsif effective_sysadmin?(@user, @role_limit)
+      return AUTHORIZED_RESULT
+    elsif @ctx_institution != @item.institution
+      return WRONG_SCOPE_RESULT
+    elsif (@role_limit >= Role::INSTITUTION_ADMINISTRATOR) &&
+      @user.effective_institution_admin?(@item.institution)
+      return AUTHORIZED_RESULT
+    end
+    NOT_INSTITUTION_ADMIN_RESULT
   end
 
   def export
@@ -314,20 +332,6 @@ class ItemPolicy < ApplicationPolicy
     return { authorized: false,
              reason:     "This item has been deleted." } if @item.buried?
     show
-  end
-
-  def undelete
-    if !@user
-      return LOGGED_OUT_RESULT
-    elsif effective_sysadmin?(@user, @role_limit)
-      return AUTHORIZED_RESULT
-    elsif @ctx_institution != @item.institution
-      return WRONG_SCOPE_RESULT
-    elsif (@role_limit >= Role::INSTITUTION_ADMINISTRATOR) &&
-      @user.effective_institution_admin?(@item.institution)
-      return AUTHORIZED_RESULT
-    end
-    NOT_INSTITUTION_ADMIN_RESULT
   end
 
   def update

@@ -189,7 +189,7 @@ class Item < ApplicationRecord
 
   before_save :email_after_submission, :prune_duplicate_elements
   before_update :set_stage_reason
-  before_destroy :restrict_in_archive_deletion
+  before_destroy :restrict_in_archive_deletion, :destroy_bitstreams
 
   validates :temp_embargo_kind, inclusion: { in: Embargo::Kind::all },
                                 allow_blank: true
@@ -198,7 +198,7 @@ class Item < ApplicationRecord
   validates :temp_embargo_type, inclusion: { in: %w(open institution closed) },
                                 allow_blank: true
   validates :stage, inclusion: { in: Stages.all }
-  validate :validate_exhumed, if: -> { stage != Item::Stages::BURIED }
+  validate :validate_exhume, if: -> { stage != Item::Stages::BURIED }
   validate :validate_submission_includes_bitstreams,
            :validate_submission_includes_required_elements
   validate :validate_primary_bitstream
@@ -873,6 +873,14 @@ class Item < ApplicationRecord
     end
   end
 
+  ##
+  # Calls {destroy} on each dependent {Bitstream}. We can't rely on the
+  # cascading foreign key because it doesn't trigger callbacks.
+  #
+  def destroy_bitstreams
+    self.bitstreams.each(&:destroy!)
+  end
+
   def email_after_submission
     # This ivar helps prevent duplicate sends.
     if !@email_sent_after_submission &&
@@ -941,7 +949,7 @@ class Item < ApplicationRecord
   # Ensures that at least one owning collection is not buried when the stage
   # changes from {Stages::BURIED} to something else.
   #
-  def validate_exhumed
+  def validate_exhume
     if stage_was == Stages::BURIED && stage != Stages::BURIED &&
       collections.where.not(buried: true).count == 0
       errors.add(:base, "This item cannot be undeleted, as all of its "\

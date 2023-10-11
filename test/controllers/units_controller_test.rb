@@ -12,6 +12,82 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     log_out
   end
 
+  # bury()
+
+  test "bury() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    unit = units(:southeast_unit1)
+    post unit_bury_path(unit)
+    assert_response :not_found
+  end
+
+  test "bury() redirects to root page for logged-out users" do
+    unit = units(:southeast_unit1)
+    post unit_bury_path(unit)
+    assert_redirected_to unit.institution.scope_url
+  end
+
+  test "bury() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southeast))
+    unit = units(:southeast_unit1)
+    post unit_bury_path(unit)
+    assert_response :forbidden
+  end
+
+  test "bury() returns HTTP 410 for a buried unit" do
+    log_in_as(users(:southeast_admin))
+    unit = units(:southeast_buried)
+    post unit_bury_path(unit)
+    assert_response :gone
+  end
+
+  test "bury() buries the unit" do
+    log_in_as(users(:southeast_admin))
+    # choose a unit with no dependent collections or units to make setup easier
+    unit = units(:southeast_empty)
+    post unit_bury_path(unit)
+    unit.reload
+    assert unit.buried
+  end
+
+  test "bury() redirects to the unit when the bury fails" do
+    log_in_as(users(:southeast_admin))
+    unit = units(:southeast_unit1)
+    post unit_bury_path(unit)
+    assert_redirected_to unit_path(unit)
+  end
+
+  test "bury() redirects to the parent unit, if available, when the bury
+  succeeds" do
+    log_in_as(users(:southeast_admin))
+    unit = units(:southeast_unit1_unit1)
+    post unit_bury_path(unit)
+    assert_redirected_to unit_path(unit.parent)
+  end
+
+  test "bury() redirects to the units path if the unit is in the current
+  institution's scope and there is no parent unit and the bury succeeds" do
+    log_in_as(users(:southeast_admin))
+    unit = units(:southeast_empty)
+    post unit_bury_path(unit)
+    assert_redirected_to units_path
+  end
+
+  test "bury() redirects to the owning institution if the unit is in a
+  different institution than the current institution's scope and there is no
+  parent unit and the bury succeeds" do
+    log_in_as(users(:southeast_sysadmin))
+    unit = units(:southwest_unit2)
+    post unit_bury_path(unit)
+    assert_redirected_to institution_path(unit.institution)
+  end
+
+  test "bury() returns HTTP 404 for a missing unit" do
+    log_in_as(users(:southeast_admin))
+    post "/units/bogus/bury"
+    assert_response :not_found
+  end
+
   # children()
 
   test "children() returns HTTP 404 for unscoped requests" do
@@ -145,79 +221,73 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
   end
 
-  # delete()
+  # destroy()
 
-  test "delete() returns HTTP 404 for unscoped requests" do
+  test "destroy() returns HTTP 404 for unscoped requests" do
     host! ::Configuration.instance.main_host
     unit = units(:southeast_unit1)
-    post unit_delete_path(unit)
+    delete unit_path(unit)
     assert_response :not_found
   end
 
-  test "delete() redirects to root page for logged-out users" do
+  test "destroy() redirects to root page for logged-out users" do
     unit = units(:southeast_unit1)
-    post unit_delete_path(unit)
+    delete unit_path(unit)
     assert_redirected_to unit.institution.scope_url
   end
 
-  test "delete() returns HTTP 403 for unauthorized users" do
+  test "destroy() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:southeast))
     unit = units(:southeast_unit1)
-    post unit_delete_path(unit)
+    delete unit_path(unit)
     assert_response :forbidden
   end
 
-  test "delete() returns HTTP 410 for a buried unit" do
-    log_in_as(users(:southeast_admin))
-    unit = units(:southeast_buried)
-    post unit_delete_path(unit)
-    assert_response :gone
-  end
-
-  test "delete() buries the unit" do
+  test "destroy() destroys the unit" do
     log_in_as(users(:southeast_admin))
     # choose a unit with no dependent collections or units to make setup easier
     unit = units(:southeast_empty)
-    post unit_delete_path(unit)
-    unit.reload
-    assert unit.buried
+    delete unit_path(unit)
+    assert_raises ActiveRecord::RecordNotFound do
+      unit.reload
+    end
   end
 
-  test "delete() redirects to the unit when the delete fails" do
+  test "destroy() redirects to the unit when the destroy fails" do
     log_in_as(users(:southeast_admin))
     unit = units(:southeast_unit1)
-    post unit_delete_path(unit)
+    delete unit_path(unit)
     assert_redirected_to unit_path(unit)
   end
 
-  test "delete() redirects to the parent unit, if available, when the delete
+  test "destroy() redirects to the parent unit, if available, when the destroy
   succeeds" do
     log_in_as(users(:southeast_admin))
     unit = units(:southeast_unit1_unit1)
-    post unit_delete_path(unit)
+    delete unit_path(unit)
     assert_redirected_to unit_path(unit.parent)
   end
 
-  test "delete() redirects to the units path if the unit is in the current
-  institution's scope and there is no parent unit and the delete succeeds" do
+  test "destroy() redirects to the units path if the unit is in the current
+  institution's scope and there is no parent unit and the destroy succeeds" do
     log_in_as(users(:southeast_admin))
     unit = units(:southeast_empty)
-    post unit_delete_path(unit)
+    delete unit_path(unit)
     assert_redirected_to units_path
   end
 
-  test "delete() redirects to the owning institution if the unit is in a
+  test "destroy() redirects to the owning institution if the unit is in a
   different institution than the current institution's scope and there is no
-  parent unit and the delete succeeds" do
+  parent unit and the destroy succeeds" do
     log_in_as(users(:southeast_sysadmin))
     unit = units(:southwest_unit2)
-    post unit_delete_path(unit)
+    delete unit_path(unit)
     assert_redirected_to institution_path(unit.institution)
   end
 
-  test "delete() returns HTTP 404 for a missing unit" do
+  test "destroy() returns HTTP 404 for a missing unit" do
     log_in_as(users(:southeast_admin))
-    post "/units/bogus/delete"
+    delete "/units/bogus"
     assert_response :not_found
   end
 
@@ -391,6 +461,50 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     unit = units(:southeast_unit1)
     get unit_edit_properties_path(unit), xhr: true
     assert_response :ok
+  end
+
+  # exhume()
+
+  test "exhume() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    unit = units(:southeast_unit1)
+    post unit_exhume_path(unit)
+    assert_response :not_found
+  end
+
+  test "exhume() redirects to root page for logged-out users" do
+    unit = units(:southeast_unit1)
+    post unit_exhume_path(unit)
+    assert_redirected_to unit.institution.scope_url
+  end
+
+  test "exhume() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southeast))
+    unit = units(:southeast_unit1)
+    post unit_exhume_path(unit)
+    assert_response :forbidden
+  end
+
+  test "exhume() exhumes the unit" do
+    log_in_as(users(:southeast_admin))
+    # choose a unit with no dependent collections or units to make setup easier
+    unit = units(:southeast_buried)
+    post unit_exhume_path(unit)
+    unit.reload
+    assert !unit.buried
+  end
+
+  test "exhume() redirects to the unit" do
+    log_in_as(users(:southeast_admin))
+    unit = units(:southeast_unit1_unit1)
+    post unit_exhume_path(unit)
+    assert_redirected_to unit
+  end
+
+  test "exhume() returns HTTP 404 for a missing unit" do
+    log_in_as(users(:southeast_admin))
+    post "/units/bogus/exhume"
+    assert_response :not_found
   end
 
   # index()
@@ -789,51 +903,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
     get unit_statistics_by_range_path(units(:southeast_buried)), xhr: true
     assert_response :gone
   end
-
-  # undelete()
-
-  test "undelete() returns HTTP 404 for unscoped requests" do
-    host! ::Configuration.instance.main_host
-    unit = units(:southeast_unit1)
-    post unit_undelete_path(unit)
-    assert_response :not_found
-  end
-
-  test "undelete() redirects to root page for logged-out users" do
-    unit = units(:southeast_unit1)
-    post unit_undelete_path(unit)
-    assert_redirected_to unit.institution.scope_url
-  end
-
-  test "undelete() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:southeast))
-    unit = units(:southeast_unit1)
-    post unit_undelete_path(unit)
-    assert_response :forbidden
-  end
-
-  test "undelete() exhumes the unit" do
-    log_in_as(users(:southeast_admin))
-    # choose a unit with no dependent collections or units to make setup easier
-    unit = units(:southeast_buried)
-    post unit_undelete_path(unit)
-    unit.reload
-    assert !unit.buried
-  end
-
-  test "undelete() redirects to the unit" do
-    log_in_as(users(:southeast_admin))
-    unit = units(:southeast_unit1_unit1)
-    post unit_undelete_path(unit)
-    assert_redirected_to unit
-  end
-
-  test "undelete() returns HTTP 404 for a missing unit" do
-    log_in_as(users(:southeast_admin))
-    post "/units/bogus/undelete"
-    assert_response :not_found
-  end
-
+  
   # update()
 
   test "update() returns HTTP 404 for unscoped requests" do

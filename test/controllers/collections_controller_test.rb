@@ -57,6 +57,71 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response 302
   end
 
+  # bury()
+
+  test "bury() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    collection = collections(:southeast_collection1)
+    post collection_bury_path(collection)
+    assert_response :not_found
+  end
+
+  test "bury() redirects to root page for logged-out users" do
+    collection = collections(:southeast_collection1)
+    post collection_bury_path(collection)
+    assert_redirected_to collection.institution.scope_url
+  end
+
+  test "bury() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southeast))
+    post collection_bury_path(collections(:southeast_collection1))
+    assert_response :forbidden
+  end
+
+  test "bury() returns HTTP 410 for a buried collection" do
+    log_in_as(users(:southeast_admin))
+    post collection_bury_path(collections(:southeast_buried))
+    assert_response :gone
+  end
+
+  test "bury() buries the collection" do
+    log_in_as(users(:southeast_admin))
+    collection = collections(:southeast_empty)
+    post collection_bury_path(collection)
+    collection.reload
+    assert collection.buried
+  end
+
+  test "bury() redirects to the collection when the bury fails" do
+    log_in_as(users(:southeast_admin))
+    collection = collections(:southeast_collection1)
+    post collection_bury_path(collection) # fails because collection is not empty
+    assert_redirected_to collection
+  end
+
+  test "bury() redirects to the parent collection, if available, for an
+  existing collection" do
+    log_in_as(users(:southeast_admin))
+    collection = collections(:southeast_collection1_collection1_collection1)
+    post collection_bury_path(collection)
+    assert_redirected_to collection.parent
+  end
+
+  test "bury() redirects to the primary unit, if there is no parent
+  collection, for an existing collection" do
+    log_in_as(users(:southeast_admin))
+    collection   = collections(:southeast_empty)
+    primary_unit = collection.primary_unit
+    post collection_bury_path(collection)
+    assert_redirected_to primary_unit
+  end
+
+  test "bury() returns HTTP 404 for a missing collections" do
+    log_in_as(users(:southeast_admin))
+    post "/collections/bogus/bury"
+    assert_response :not_found
+  end
+
   # children()
 
   test "children() returns HTTP 404 for unscoped requests" do
@@ -175,68 +240,63 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
   end
 
-  # delete()
+  # destroy()
 
-  test "delete() returns HTTP 404 for unscoped requests" do
+  test "destroy() returns HTTP 404 for unscoped requests" do
     host! ::Configuration.instance.main_host
     collection = collections(:southeast_collection1)
-    post collection_delete_path(collection)
+    delete collection_path(collection)
     assert_response :not_found
   end
 
-  test "delete() redirects to root page for logged-out users" do
+  test "destroy() redirects to root page for logged-out users" do
     collection = collections(:southeast_collection1)
-    post collection_delete_path(collection)
+    delete collection_path(collection)
     assert_redirected_to collection.institution.scope_url
   end
 
-  test "delete() returns HTTP 403 for unauthorized users" do
+  test "destroy() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:southeast))
-    post collection_delete_path(collections(:southeast_collection1))
+    delete collection_path(collections(:southeast_collection1))
     assert_response :forbidden
   end
 
-  test "delete() returns HTTP 410 for a buried collection" do
-    log_in_as(users(:southeast_admin))
-    post collection_delete_path(collections(:southeast_buried))
-    assert_response :gone
-  end
-
-  test "delete() buries the collection" do
+  test "destroy() destroys the collection" do
     log_in_as(users(:southeast_admin))
     collection = collections(:southeast_empty)
-    post collection_delete_path(collection)
-    collection.reload
-    assert collection.buried
+    delete collection_path(collection)
+    assert_raises ActiveRecord::RecordNotFound do
+      collection.reload
+    end
   end
 
-  test "delete() redirects to the collection when the delete fails" do
+  test "destroy() redirects to the collection when the destroy fails" do
     log_in_as(users(:southeast_admin))
     collection = collections(:southeast_collection1)
-    post collection_delete_path(collection) # fails because collection is not empty
+    delete collection_path(collection) # fails because collection is not empty
     assert_redirected_to collection
   end
 
-  test "delete() redirects to the parent collection, if available, for an
+  test "destroy() redirects to the parent collection, if available, for an
   existing collection" do
     log_in_as(users(:southeast_admin))
     collection = collections(:southeast_collection1_collection1_collection1)
-    post collection_delete_path(collection)
+    delete collection_path(collection)
     assert_redirected_to collection.parent
   end
 
-  test "delete() redirects to the primary unit, if there is no parent
+  test "destroy() redirects to the primary unit, if there is no parent
   collection, for an existing collection" do
     log_in_as(users(:southeast_admin))
     collection   = collections(:southeast_empty)
     primary_unit = collection.primary_unit
-    post collection_delete_path(collection)
+    delete collection_path(collection)
     assert_redirected_to primary_unit
   end
 
-  test "delete() returns HTTP 404 for a missing collections" do
+  test "destroy() returns HTTP 404 for a missing collections" do
     log_in_as(users(:southeast_admin))
-    post "/collections/bogus/delete"
+    delete "/collections/bogus"
     assert_response :not_found
   end
 
@@ -539,6 +599,56 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     collection = collections(:southeast_buried)
     get collection_edit_unit_membership_path(collection), xhr: true
     assert_response :gone
+  end
+
+  # exhume()
+
+  test "exhume() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    collection = collections(:southeast_buried)
+    post collection_exhume_path(collection)
+    assert_response :not_found
+  end
+
+  test "exhume() redirects to root page for logged-out users" do
+    collection = collections(:southeast_buried)
+    post collection_exhume_path(collection)
+    assert_redirected_to collection.institution.scope_url
+  end
+
+  test "exhume() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southeast))
+    post collection_exhume_path(collections(:southeast_buried))
+    assert_response :forbidden
+  end
+
+  test "exhume() exhumes the collection" do
+    log_in_as(users(:southeast_admin))
+    collection = collections(:southeast_buried)
+    collection.units.first.exhume!
+    post collection_exhume_path(collection)
+    collection.reload
+    assert !collection.buried
+  end
+
+  test "exhume() redirects to the collection when the exhume fails" do
+    log_in_as(users(:southeast_admin))
+    collection = collections(:southeast_collection1)
+    post collection_exhume_path(collection) # fails because collection is not empty
+    assert_redirected_to collection
+  end
+
+  test "exhume() redirects to the collection" do
+    log_in_as(users(:southeast_admin))
+    collection = collections(:southeast_buried)
+    post collection_exhume_path(collection)
+    assert_redirected_to collection
+  end
+
+  test "exhume() returns HTTP 404 for a missing collections" do
+    log_in_as(users(:southeast_admin))
+    post "/collections/bogus/exhume"
+    assert_response :not_found
   end
 
   # index()
@@ -963,57 +1073,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     get collection_path(collections(:southeast_buried)), xhr: true
     assert_response :gone
   end
-
-  # undelete()
-
-  test "undelete() returns HTTP 404 for unscoped requests" do
-    host! ::Configuration.instance.main_host
-    collection = collections(:southeast_buried)
-    post collection_undelete_path(collection)
-    assert_response :not_found
-  end
-
-  test "undelete() redirects to root page for logged-out users" do
-    collection = collections(:southeast_buried)
-    post collection_undelete_path(collection)
-    assert_redirected_to collection.institution.scope_url
-  end
-
-  test "undelete() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:southeast))
-    post collection_undelete_path(collections(:southeast_buried))
-    assert_response :forbidden
-  end
-
-  test "undelete() exhumes the collection" do
-    log_in_as(users(:southeast_admin))
-    collection = collections(:southeast_buried)
-    collection.units.first.exhume!
-    post collection_undelete_path(collection)
-    collection.reload
-    assert !collection.buried
-  end
-
-  test "undelete() redirects to the collection when the undelete fails" do
-    log_in_as(users(:southeast_admin))
-    collection = collections(:southeast_collection1)
-    post collection_undelete_path(collection) # fails because collection is not empty
-    assert_redirected_to collection
-  end
-
-  test "undelete() redirects to the collection" do
-    log_in_as(users(:southeast_admin))
-    collection = collections(:southeast_buried)
-    post collection_undelete_path(collection)
-    assert_redirected_to collection
-  end
-
-  test "undelete() returns HTTP 404 for a missing collections" do
-    log_in_as(users(:southeast_admin))
-    post "/collections/bogus/undelete"
-    assert_response :not_found
-  end
-
+  
   # update()
 
   test "update() returns HTTP 404 for unscoped requests" do

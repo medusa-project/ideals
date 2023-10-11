@@ -562,9 +562,9 @@ class ItemTest < ActiveSupport::TestCase
     deposit_agreement = "This is the deposit agreement. It is intentionally "\
                         "longer than 80 columns in order to check the word "\
                         "wrapping."
-    item = items(:southeast_submitting)
+    item                                         = items(:southeast_submitting)
     item.primary_collection.submissions_reviewed = false
-    item.deposit_agreement = deposit_agreement
+    item.deposit_agreement                       = deposit_agreement
     item.complete_submission
 
     bs = item.bitstreams.find{ |b| b.filename == "license.txt" }
@@ -640,12 +640,26 @@ class ItemTest < ActiveSupport::TestCase
   end
 
   test "destroy() destroys dependent AscribedElements" do
-    item = items(:southeast_described)
+    item     = items(:southeast_described)
     elements = item.elements
     assert elements.count > 0
     item.destroy!
     elements.each do |element|
       assert element.destroyed?
+    end
+  end
+
+  test "destroy() destroys dependent Bitstreams" do
+    item           = items(:southeast_approved)
+    bitstreams     = item.bitstreams
+    bitstream_keys = bitstreams.map(&:effective_key)
+    assert bitstreams.count > 0
+    item.destroy!
+    bitstreams.each do |bitstream|
+      assert bitstream.destroyed?
+    end
+    bitstream_keys.each do |key|
+      assert !ObjectStore.instance.object_exists?(key: key)
     end
   end
 

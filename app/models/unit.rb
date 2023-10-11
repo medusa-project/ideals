@@ -84,10 +84,10 @@ class Unit < ApplicationRecord
           source: :user
 
   validates :title, presence: true
-  validate :validate_buried, if: -> { buried }
+  validate :validate_bury, if: -> { buried }
   validate :validate_parent, :validate_primary_administrator
 
-  before_destroy :validate_empty
+  before_destroy :validate_destroy
 
   ##
   # @return [Enumerable<Integer>] IDs of all units that are children of the
@@ -516,7 +516,7 @@ class Unit < ApplicationRecord
   ##
   # Ensures that a buried unit does not contain any collections.
   #
-  def validate_buried
+  def validate_bury
     if buried
       if units.where.not(buried: true).count > 0
         errors.add(:base, "This unit cannot be deleted, as it contains at "\
@@ -533,7 +533,7 @@ class Unit < ApplicationRecord
   ##
   # Ensures that the unit cannot be destroyed unless it is empty.
   #
-  def validate_empty
+  def validate_destroy
     if self.units.count > 0
       errors.add(:units, "must not exist in order for a unit to be deleted")
       throw(:abort)
