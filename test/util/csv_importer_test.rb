@@ -4,7 +4,12 @@ class CsvImporterTest < ActiveSupport::TestCase
 
   setup do
     setup_opensearch
+    setup_s3
     @instance = CsvImporter.new
+  end
+
+  teardown do
+    teardown_s3
   end
 
   # import()
