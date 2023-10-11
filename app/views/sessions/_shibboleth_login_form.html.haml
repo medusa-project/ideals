@@ -11,6 +11,9 @@
         alt: "University of Illinois Logo"
     %i.fa.fa-sign-in-alt
     &nbsp;Log in with Illinois NetID
+    - if Rails.env.development?
+      %br
+      (NONFUNCTIONAL IN DEVELOPMENT)
 
   %p.mt-4
     %a{href:             "#",
