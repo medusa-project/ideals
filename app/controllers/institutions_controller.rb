@@ -217,9 +217,9 @@ class InstitutionsController < ApplicationController
   # Responds to `GET /institutions/invite-administrator`
   #
   def invite_administrator
-    invitee = Invitee.new(institution:       @institution,
-                          institution_admin: true)
-    render partial: "invitees/new_form", locals: { invitee: invitee }
+    @invitee = Invitee.new(institution:       @institution,
+                           institution_admin: true)
+    render partial: "invitees/new_form"
   end
 
   ##
