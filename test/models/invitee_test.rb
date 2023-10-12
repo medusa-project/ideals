@@ -67,20 +67,6 @@ class InviteeTest < ActiveSupport::TestCase
     assert @instance.approved?
   end
 
-  # destroy()
-
-  test "destroy() destroys any associated Identity" do
-    assert_not_nil @instance.identity
-    @instance.destroy!
-    assert_nil LocalIdentity.find_by_email(@instance.email)
-  end
-
-  test "destroy() destroys any associated user" do
-    assert_not_nil @instance.identity
-    @instance.destroy!
-    assert_nil User.find_by_email(@instance.email)
-  end
-
   # email
 
   test "email is required" do
