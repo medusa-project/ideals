@@ -324,7 +324,7 @@ class ApplicationController < ActionController::Base
         if count > 0
           @list.items << {
               message: "Review #{count} #{"item".pluralize(count)}",
-              url:     items_review_path
+              url:     review_items_path
           }
           @list.total_items += count
         end

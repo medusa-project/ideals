@@ -1,18 +1,17 @@
 Rails.application.routes.draw do
-  root 'welcome#index'
-  get '/', to: 'welcome#index'
+  root "welcome#index"
+  get "/", to: "welcome#index"
 
-  # authentication routes
+  # Authentication routes
   match "/auth/:provider/callback", to: "sessions#create", via: [:get, :post]
   match "/auth/failure", to: "sessions#auth_failed", as: :auth_failed, via: [:get, :post]
   match "/logout", to: "sessions#destroy", as: :logout, via: :all
   match "/netid-login", to: "sessions#new_netid", as: :netid_login, via: :get
 
+  # About
   match "/about", to: "welcome#about", via: :get, as: "about"
-  match '/all-events', to: "events#index_all", via: :get, as: "all_events"
-  match '/all-invitees', to: "invitees#index_all", via: :get, as: "all_invitees"
-  match '/all-tasks', to: "tasks#index_all", via: :get, as: "all_tasks"
-  match '/all-users', to: "users#index_all", via: :get, as: "all_users"
+
+  # Collections
   resources :collections, except: :edit do
     # These all render content for the main tab panes in show-unit view via XHR.
     match "/about", to: "collections#show_about", via: :get,
@@ -53,25 +52,44 @@ Rails.application.routes.draw do
     match "/statistics-by-range", to: "collections#statistics_by_range", via: :get
     match "/submit", to: "submissions#new", via: :get
   end
+
+  # Contact form
   match "/contact", to: "welcome#contact", via: :post,
         constraints: lambda { |request| request.xhr? }
+
+  # Theme route
   match "/custom-styles", to: "stylesheets#show", via: :get
-  # This is an old DSpace route.
-  match "/dspace-oai/request", to: redirect('/oai-pmh', status: 301), via: :all
+
+  # Downloads
   resources :downloads, only: :show, param: :key do
     match "/file", to: "downloads#file", via: :get, as: "file"
   end
+
+  # Element Namespaces
   resources :element_namespaces, path: "element-namespaces", except: :show
+
+  # Events
+  match "/all-events", to: "events#index_all", via: :get, as: "all_events"
   resources :events, only: [:index, :show]
+
+  # File Formats
   resources :file_formats, path: "file-formats", only: :index
-  match '/global-user-groups', to: "user_groups#index_global", via: :get,
-        as: "global_user_groups"
+
+  # Handle
   match "/handle/:prefix/:suffix", to: "handles#redirect", via: :get, as: "redirect_handle"
+
+  # Health Check
   match "/health", to: "health#index", via: :get, as: "health"
+
+  # Imports
   resources :imports do
     match "/complete-upload", to: "imports#complete_upload", via: :post
   end
+
+  # Index Pages
   resources :index_pages, path: "index-pages"
+
+  # Institutions
   resources :institutions, except: [:edit, :update], param: :key do
     # These all render content for the main tab panes in show-unit view via XHR.
     match "/access", to: "institutions#show_access", via: :get,
@@ -166,6 +184,9 @@ Rails.application.routes.draw do
     match "/settings", to: "institutions#update_settings", via: [:patch, :post]
     match "/statistics-by-range", to: "institutions#statistics_by_range", via: :get
   end
+
+  # Invitees
+  match "/all-invitees", to: "invitees#index_all", via: :get, as: "all_invitees"
   match "/register", to: "invitees#register", via: :get
   resources :invitees, except: [:update] do
     collection do
@@ -176,10 +197,14 @@ Rails.application.routes.draw do
     match "/reject", to: "invitees#reject", via: [:patch, :post]
     match "/resend-email", to: "invitees#resend_email", via: [:patch, :post]
   end
-  match "/items/export", to: "items#export", via: [:get, :post]
-  match "/items/review", to: "items#review", via: :get
-  match "/items/process_review", to: "items#process_review", via: :post
+
+  # Items
   resources :items, except: :new do
+    collection do
+      match "/export", to: "items#export", via: [:get, :post]
+      match "/review", to: "items#review", via: :get
+      match "/process_review", to: "items#process_review", via: :post
+    end
     match "/approve", to: "items#approve", via: :patch
     resources :bitstreams do
       match "/data", to: "bitstreams#data", via: :get
@@ -212,6 +237,8 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/withdraw", to: "items#withdraw", via: :patch
   end
+
+  # Local Identities
   resources :local_identities, only: [:update], path: "identities" do
     match "/edit-password", to: "local_identities#edit_password", via: :get,
           constraints: lambda { |request| request.xhr? }
@@ -221,33 +248,63 @@ Rails.application.routes.draw do
     match "/update-password", to: "local_identities#update_password", via: [:patch, :post],
           constraints: lambda { |request| request.xhr? }
   end
+
+  # Messages
   resources :messages, only: [:index, :show] do
     match "/resend", to: "messages#resend", via: :post
   end
+
+  # Metadata Profiles
   resources :metadata_profiles, path: "metadata-profiles" do
     match "/clone", to: "metadata_profiles#clone", via: :post
     resources :metadata_profile_elements, path: "elements", except: [:index, :show]
   end
-  match '/oai-pmh', to: 'oai_pmh#handle', via: %w(get post), as: 'oai_pmh'
+
+  # OAI-PMH Endpoint
+  match "/dspace-oai/request", to: redirect("/oai-pmh", status: 301), via: :all
+  match "/oai-pmh", to: "oai_pmh#handle", via: %w(get post), as: "oai_pmh"
+
+  # Prebuilt Searches
   resources :prebuilt_searches, path: "prebuilt-searches"
+
+  # Recent Items
   match "/recent-items", to: "items#recent", via: :get, as: "recent_items"
+
+  # Reset Password
   match "/reset-password", to: "password_resets#get", via: :get
   match "/reset-password", to: "password_resets#post", via: :post
+
+  # Registered Elements
   resources :registered_elements, except: :show, path: "elements"
+
+  # Robots
   match "/robots", to: "robots#show", via: :get
+
+  # Settings
   match "/settings", to: "settings#index", via: :get
   match "/settings", to: "settings#update", via: :patch
+
+  # Submission Profiles
   resources :submission_profiles, path: "submission-profiles" do
     match "/clone", to: "submission_profiles#clone", via: :post
     resources :submission_profile_elements, path: "elements", except: [:index, :show]
   end
+
+  # Submissions
+  match "/submit", to: "submissions#new", via: :get
   resources :submissions, except: [:index, :show] do
     match "/complete", to: "submissions#complete", via: :post
     match "/status", to: "submissions#status", via: :get
   end
-  match "/submit", to: "submissions#new", via: :get
+
+  # Tasks
+  match "/all-tasks", to: "tasks#index_all", via: :get, as: "all_tasks"
   resources :tasks, only: [:index, :show]
+
+  # Template Elements
   match "/template-elements", to: "registered_elements#index_template", via: :get
+
+  # Units
   resources :units, except: :edit do
     match "/about", to: "units#show_about", via: :get,
           constraints: lambda { |request| request.xhr? }
@@ -281,11 +338,17 @@ Rails.application.routes.draw do
     match "/submissions-in-progress", to: "units#show_submissions_in_progress", via: :get,
           constraints: lambda { |request| request.xhr? }
   end
+
+  # Usage
   match "/usage", to: "usage#index", via: :get
   match "/usage/files", to: "usage#files", via: :get,
         constraints: lambda { |request| request.xhr? }
   match "/usage/items", to: "usage#items", via: :get,
         constraints: lambda { |request| request.xhr? }
+
+  # User Groups
+  match "/global-user-groups", to: "user_groups#index_global", via: :get,
+        as: "global_user_groups"
   resources :user_groups, path: "user-groups" do
     match "/edit-ad-groups", to: "user_groups#edit_ad_groups", via: :get,
           constraints: lambda { |request| request.xhr? }
@@ -300,6 +363,9 @@ Rails.application.routes.draw do
     match "/edit-users", to: "user_groups#edit_users", via: :get,
           constraints: lambda { |request| request.xhr? }
   end
+
+  # Users
+  match "/all-users", to: "users#index_all", via: :get, as: "all_users"
   resources :users, only: [:index, :show] do
     match "/disable", to: "users#disable", via: :patch
     match "/enable", to: "users#enable", via: :patch
@@ -322,6 +388,8 @@ Rails.application.routes.draw do
     match "/update-properties", to: "users#update_properties", via: [:patch, :post],
           constraints: lambda { |request| request.xhr? }
   end
+
+  # Vocabularies
   resources :vocabularies do
     resources :vocabulary_terms, path: "terms", except: [:index, :show]
     match "/terms/import", to: "vocabulary_terms#import", via: [:get, :post]

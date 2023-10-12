@@ -253,7 +253,7 @@ module ItemsHelper
   # @see ApplicationHelper#resource_list
   #
   def review_list(items, show_tree_headings: true)
-    html = form_tag(items_process_review_path, method: :post, id: "review-form") do
+    html = form_tag(process_review_items_path, method: :post, id: "review-form") do
       form = StringIO.new
       form << hidden_field_tag("verb", ""); # value set to approve or reject by JS
       prev_unit = prev_collection = nil

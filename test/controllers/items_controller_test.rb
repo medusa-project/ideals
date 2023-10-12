@@ -438,30 +438,30 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   test "export() returns HTTP 404 for unscoped requests" do
     host! ::Configuration.instance.main_host
-    get items_export_path
+    get export_items_path
     assert_response :not_found
   end
 
   test "export() via GET redirects to root page for logged-out users" do
-    get items_export_path
+    get export_items_path
     assert_redirected_to @institution.scope_url
   end
 
   test "export() via GET returns HTTP 403 for unauthorized users" do
     log_in_as(users(:southeast))
-    get items_export_path
+    get export_items_path
     assert_response :forbidden
   end
 
   test "export() via GET returns HTTP 200 for authorized users" do
     log_in_as(users(:southeast_admin))
-    get items_export_path
+    get export_items_path
     assert_response :ok
   end
 
   test "export() via POST returns HTTP 400 for an empty handles argument" do
     log_in_as(users(:southeast_admin))
-    post items_export_path, params: {
+    post export_items_path, params: {
       handles: "",
       elements: ["dc:title"]
     }
@@ -470,7 +470,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   test "export() via POST returns HTTP 400 for an empty elements argument" do
     log_in_as(users(:southeast_admin))
-    post items_export_path, params: {
+    post export_items_path, params: {
       handles: "1/2",
       elements: []
     }
@@ -479,7 +479,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   test "export() via POST returns HTTP 400 for an invalid handles argument" do
     log_in_as(users(:southeast_admin))
-    post items_export_path, params: {
+    post export_items_path, params: {
       handles: "bogus/3",
       elements: ["dc:title"]
     }
@@ -488,7 +488,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   test "export() via POST exports CSV" do
     log_in_as(users(:southeast_admin))
-    post items_export_path, params: {
+    post export_items_path, params: {
       handles: handles(:southeast_collection1).to_s,
       elements: ["dc:title"]
     }
@@ -577,36 +577,36 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   test "process_review() returns HTTP 404 for unscoped requests" do
     host! ::Configuration.instance.main_host
-    post items_process_review_path
+    post process_review_items_path
     assert_response :not_found
   end
 
   test "process_review() redirects to root page for logged-out users" do
-    post items_process_review_path
+    post process_review_items_path
     assert_redirected_to @institution.scope_url
   end
 
   test "process_review() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:southeast))
-    post items_process_review_path
+    post process_review_items_path
     assert_response :forbidden
   end
 
   test "process_review() redirects to the review page for authorized users" do
     log_in_as(users(:southeast_admin))
-    post items_process_review_path
-    assert_redirected_to items_review_path
+    post process_review_items_path
+    assert_redirected_to review_items_path
   end
 
   test "process_review() approves items" do
     log_in_as(users(:southeast_admin))
     item = items(:southeast_submitted)
-    post items_process_review_path,
+    post process_review_items_path,
          params: {
              items: [item.id],
              verb: "approve"
          }
-    assert_redirected_to items_review_path
+    assert_redirected_to review_items_path
     item.reload
     assert_equal Item::Stages::APPROVED, item.stage
   end
@@ -615,7 +615,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     item = items(:southeast_submitted)
     assert_nil item.handle
     log_in_as(users(:southeast_admin))
-    post items_process_review_path,
+    post process_review_items_path,
          params: {
              items: [item.id],
              verb: "approve"
@@ -627,12 +627,12 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   test "process_review() rejects items" do
     log_in_as(users(:southeast_admin))
     item = items(:southeast_submitted)
-    post items_process_review_path,
+    post process_review_items_path,
          params: {
              items: [item.id],
              verb: "reject"
          }
-    assert_redirected_to items_review_path
+    assert_redirected_to review_items_path
     item.reload
     assert_equal Item::Stages::REJECTED, item.stage
   end
@@ -699,24 +699,24 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
 
   test "review() returns HTTP 404 for unscoped requests" do
     host! ::Configuration.instance.main_host
-    get items_review_path
+    get review_items_path
     assert_response :not_found
   end
 
   test "review() redirects to root page for logged-out users" do
-    get items_review_path
+    get review_items_path
     assert_redirected_to @institution.scope_url
   end
 
   test "review() returns HTTP 403 for unauthorized users" do
     log_in_as(users(:southeast))
-    get items_review_path
+    get review_items_path
     assert_response :forbidden
   end
 
   test "review() returns HTTP 200" do
     log_in_as(users(:southeast_admin))
-    get items_review_path
+    get review_items_path
     assert_response :ok
   end
 

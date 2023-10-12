@@ -197,7 +197,7 @@ class IdealsMailer < ApplicationMailer
   def item_requires_review(item)
     @institution      = item.institution
     @item_url         = item_url(item, host: @institution.scope_url)
-    @review_url       = items_review_url(host: @institution.scope_url)
+    @review_url       = review_items_url(host: @institution.scope_url)
     collection        = item.effective_primary_collection
     recipient_emails  = Set.new
     recipient_emails += (collection&.administering_users || []).map(&:email)

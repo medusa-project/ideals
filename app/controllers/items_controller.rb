@@ -296,11 +296,11 @@ class ItemsController < ApplicationController
                message: "#{params[:items].length} items have been rejected.")
       else
         flash['error'] = "Unrecognized verb (this is probably a bug)"
-        redirect_back fallback_location: items_review_path and return
+        redirect_back fallback_location: review_items_path and return
       end
       RefreshOpensearchJob.perform_later
     end
-    redirect_back fallback_location: items_review_path
+    redirect_back fallback_location: review_items_path
   end
 
   ##
