@@ -180,17 +180,11 @@ class SubmissionsController < ApplicationController
   # {Item::Stages::SUBMITTING submission process}.
   #
   def check_submitting
-    unless @item.submitting?
-      flash['error'] = "This item has already been submitted."
-      redirect_to item_path(@item)
-    end
+    redirect_to item_path(@item) unless @item.submitting?
   end
 
   def check_submitted
-    unless @item.submitted?
-      flash['error'] = "This item is not in a submitted state."
-      redirect_to item_path(@item)
-    end
+    redirect_to item_path(@item) unless @item.submitted?
   end
 
   ##
