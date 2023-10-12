@@ -10,7 +10,8 @@
   .mb-3
     = f.label :email, "Email", class: "required"
     = f.text_field :email, class: "form-control"
-    .text-muted
+    %p.form-text
+      = icon_for(:info)
       An email containing a link to the registration form will be sent
       to this address.
 
