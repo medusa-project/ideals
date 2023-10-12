@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_10_05_150551) do
+ActiveRecord::Schema[7.0].define(version: 2023_10_12_012616) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -427,10 +427,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_05_150551) do
     t.datetime "updated_at", null: false
     t.text "note", null: false
     t.string "approval_state", default: "pending", null: false
-    t.bigint "inviting_user_id"
     t.bigint "institution_id"
     t.boolean "institution_admin", default: false, null: false
     t.text "rejection_reason"
+    t.bigint "inviting_user_id"
     t.index ["email"], name: "index_invitees_on_email", unique: true
     t.index ["institution_id"], name: "index_invitees_on_institution_id"
     t.index ["inviting_user_id"], name: "index_invitees_on_inviting_user_id"
