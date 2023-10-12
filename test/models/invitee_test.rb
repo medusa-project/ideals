@@ -32,6 +32,14 @@ class InviteeTest < ActiveSupport::TestCase
     assert invitee.expires_at - Invitee::EXPIRATION - Time.now < 10.seconds
   end
 
+  test "create() ensures that email is unique among Users" do
+    user = users(:southwest)
+    Invitee.destroy_all
+    assert_raises ActiveRecord::RecordInvalid do
+      Invitee.create!(email: user.email, note: "Test")
+    end
+  end
+
   # approve()
 
   test "approve() updates the approval state" do

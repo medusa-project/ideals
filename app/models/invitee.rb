@@ -77,8 +77,10 @@ class Invitee < ApplicationRecord
 
   before_create -> { self.expires_at = EXPIRATION.from_now }
 
-  validates :email, presence: true, uniqueness: true
+  validates :email, presence: true # uniqueness is validated in a custom method
   validates :note, presence: true
+
+  validate :validate_email_uniqueness, on: :create
 
   ##
   # Approves a user-initiated self-invite.
@@ -204,6 +206,17 @@ class Invitee < ApplicationRecord
                               password_confirmation: password,
                               invitee:               self)
       end
+    end
+  end
+
+  ##
+  # Supplement to the built-in email validation that also ensures that the
+  # email has not been taken by any {User}s.
+  #
+  def validate_email_uniqueness
+    if Invitee.where.not(id: self.id).where(email: self.email).exists? ||
+      User.where(email: self.email).exists?
+      errors.add(:email, "has already been taken")
     end
   end
 
