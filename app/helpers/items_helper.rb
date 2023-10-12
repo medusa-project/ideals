@@ -345,6 +345,13 @@ module ItemsHelper
     html <<     "<h5 class=\"mt-0 mb-0\">"
     html <<       link_to(title, item_url)
     html <<     "</h5>"
+    collection = item.effective_primary_collection
+    if collection
+      html << link_to(collection) do
+        icon_for(collection) + " " + collection.title
+      end
+      html << "<br>"
+    end
     if item.submitter
       html << link_to(item.submitter) do
         icon_for(item.submitter) + " " + item.submitter.name
