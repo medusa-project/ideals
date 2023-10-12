@@ -289,7 +289,7 @@ class User < ApplicationRecord
   # @see #effective_collection_admin?
   #
   def collection_admin?(collection)
-    return true if collection.administrators.where(user_id: self.id).count > 0
+    return true if collection.administrators.where(user_id: self.id).exists?
     collection.administering_groups.each do |group|
       return true if self.belongs_to_user_group?(group)
     end
@@ -303,7 +303,7 @@ class User < ApplicationRecord
   # @see #effective_collection_submitter?
   #
   def collection_submitter?(collection)
-    return true if collection.submitters.where(user_id: self.id).count > 0
+    return true if collection.submitters.where(user_id: self.id).exists?
     collection.submitting_groups.each do |group|
       return true if self.belongs_to_user_group?(group)
     end
@@ -409,7 +409,7 @@ class User < ApplicationRecord
   def institution_admin?(institution)
     return false unless institution
     # Check for a directly assigned administrator.
-    return true if institution.administrators.where(user_id: self.id).count > 0
+    return true if institution.administrators.where(user_id: self.id).exists?
     # Check for membership in an administering user group.
     institution.administering_groups.each do |group|
       return true if self.belongs_to_user_group?(group)
@@ -456,7 +456,7 @@ class User < ApplicationRecord
   # @see effective_unit_admin?
   #
   def unit_admin?(unit)
-    return true if unit.administrators.where(user_id: self.id).count > 0
+    return true if unit.administrators.where(user_id: self.id).exists?
     unit.administering_groups.each do |group|
       return true if self.belongs_to_user_group?(group)
     end

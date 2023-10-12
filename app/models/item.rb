@@ -692,7 +692,7 @@ class Item < ApplicationRecord
   #                   will return `false`.
   #
   def exists_in_medusa?
-    self.bitstreams.where.not(medusa_uuid: nil).count > 0
+    self.bitstreams.where.not(medusa_uuid: nil).exists?
   end
 
   def ingest_into_medusa

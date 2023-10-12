@@ -4,7 +4,7 @@
       = link_to(collection_submit_path(@collection), class: "btn btn-light", role: "button") do
         %i.fas.fa-plus
         Submit Item To This Collection
-  - if @items.count > 0 && policy(@collection).export_items?
+  - if @items.exists? && policy(@collection).export_items?
     .btn-group{role: "group"}
       %button#export-button.btn.btn-light.dropdown-toggle{type:             "button",
                                                           "data-bs-toggle": "dropdown",

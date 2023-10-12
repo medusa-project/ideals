@@ -371,7 +371,7 @@ class Bitstream < ApplicationRecord
   #                   instance.
   #
   def authorized_by?(user_group)
-    self.item.bitstream_authorizations.where(user_group: user_group).count > 0
+    self.item.bitstream_authorizations.where(user_group: user_group).exists?
   end
 
   ##
@@ -552,7 +552,7 @@ class Bitstream < ApplicationRecord
   #
   def has_full_text?
     return false if full_text_checked_at.blank?
-    FullText.where(bitstream_id: self.id).count > 0
+    FullText.where(bitstream_id: self.id).exists?
   end
 
   ##
@@ -716,7 +716,7 @@ class Bitstream < ApplicationRecord
   # @return [Boolean]
   #
   def submitted_for_ingest?
-    self.messages.where(operation: Message::Operation::INGEST).count > 0
+    self.messages.where(operation: Message::Operation::INGEST).exists?
   end
 
   ##

@@ -494,11 +494,11 @@ class Collection < ApplicationRecord
   #
   def validate_bury
     if buried
-      if items.where.not(stage: Item::Stages::BURIED).count > 0
+      if items.where.not(stage: Item::Stages::BURIED).exists?
         errors.add(:base, "This collection cannot be deleted, as it contains "\
                           "at least one item.")
         throw(:abort)
-      elsif collections.where.not(buried: true).count > 0
+      elsif collections.where.not(buried: true).exists?
         errors.add(:base, "This collection cannot be deleted, as it contains "\
                           "at least one child collection.")
         throw(:abort)
@@ -511,10 +511,10 @@ class Collection < ApplicationRecord
   # subcollections and items.
   #
   def validate_destroy
-    if self.collections.count > 0
+    if self.collections.exists?
       errors.add(:collections, "must not exist in order for a collection to be deleted")
       throw(:abort)
-    elsif self.items.count > 0
+    elsif self.items.exists?
       errors.add(:items, "must not exist in order for a collection to be deleted")
       throw(:abort)
     end

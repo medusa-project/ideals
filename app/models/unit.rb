@@ -518,11 +518,11 @@ class Unit < ApplicationRecord
   #
   def validate_bury
     if buried
-      if units.where.not(buried: true).count > 0
+      if units.where.not(buried: true).exists?
         errors.add(:base, "This unit cannot be deleted, as it contains at "\
                           "least one child unit.")
         throw(:abort)
-      elsif collections.where.not(buried: true).count > 0
+      elsif collections.where.not(buried: true).exists?
         errors.add(:base, "This unit cannot be deleted, as it contains at "\
                           "least one collection.")
         throw(:abort)
@@ -534,10 +534,10 @@ class Unit < ApplicationRecord
   # Ensures that the unit cannot be destroyed unless it is empty.
   #
   def validate_destroy
-    if self.units.count > 0
+    if self.units.exists?
       errors.add(:units, "must not exist in order for a unit to be deleted")
       throw(:abort)
-    elsif self.collections.count > 0
+    elsif self.collections.exists?
       errors.add(:collections, "must not exist in order for a unit to be deleted")
       throw(:abort)
     end

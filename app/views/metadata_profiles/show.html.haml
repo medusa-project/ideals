@@ -165,13 +165,13 @@
   - unless @profile.global?
     #units.tab-pane.fade{role:              "tabpanel",
                          "aria-labelledby": "units-tab"}
-      - if @units.count > 0
+      - if @units.exists?
         = resource_list(@units)
       - else
         This metadata profile is not directly assigned to any units.
     #collections.tab-pane.fade{role:              "tabpanel",
                                "aria-labelledby": "collections-tab"}
-      - if @collections.count > 0
+      - if @collections.exists?
         = resource_list(@collections)
       - else
         This metadata profile is not directly assigned to any collections.

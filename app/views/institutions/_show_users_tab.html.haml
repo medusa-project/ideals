@@ -1,4 +1,4 @@
-- if @institution.users.count > 0
+- if @institution.users.exists?
   %ul
     - @institution.users.order(:name).each do |user|
       %li

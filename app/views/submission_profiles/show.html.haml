@@ -102,7 +102,7 @@
   - unless @profile.institution_default
     #collections.tab-pane.fade{role: "tabpanel",
                                "aria-labelledby": "collections-tab"}
-      - if @collections.count > 0
+      - if @collections.exists?
         = resource_list(@collections)
       - else
         This submission profile is not in use by any collections.
