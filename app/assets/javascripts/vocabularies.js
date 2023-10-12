@@ -35,7 +35,7 @@ const VocabularyView = {
         const ROOT_URL = $('input[name="root_url"]').val();
 
         $('button.edit-vocabulary').on("click",
-            Vocabularies.EditVocabularyClickHandler);
+            VocabulariesView.EditVocabularyClickHandler);
         $("button.add-term").on("click", function() {
             const vocabulary_id = $(this).data("vocabulary-id");
             const url           = ROOT_URL + "/vocabularies/" + vocabulary_id +
