@@ -367,6 +367,8 @@ Rails.application.routes.draw do
   # Users
   match "/all-users", to: "users#index_all", via: :get, as: "all_users"
   resources :users, only: [:index, :show] do
+    match "/credentials", to: "users#show_credentials", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/disable", to: "users#disable", via: :patch
     match "/enable", to: "users#enable", via: :patch
     match "/logins", to: "users#show_logins", via: :get,

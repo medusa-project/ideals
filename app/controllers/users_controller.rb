@@ -85,6 +85,13 @@ class UsersController < ApplicationController
   end
 
   ##
+  # Responds to `GET /users/:id/credentials` (XHR only)
+  #
+  def show_credentials
+    render partial: "show_credentials_tab"
+  end
+
+  ##
   # Responds to `GET /users/:id/logins` (XHR only)
   #
   def show_logins

@@ -51,6 +51,10 @@ class UserPolicy < ApplicationPolicy
     institution_admin_or_same_user
   end
 
+  def show_credentials
+    institution_admin_or_same_user
+  end
+
   def show_logins
     show
   end

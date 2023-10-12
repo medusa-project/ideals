@@ -57,6 +57,13 @@ const UserView = {
                         $("#edit-properties-modal .modal-body").html(data);
                     });
                 });
+            });
+        }).trigger("show.bs.tab");
+
+        $("#credentials-tab").on("show.bs.tab", function() {
+            const url = ROOT_URL + "/users/" + userID + "/credentials";
+            $.get(url, function (data) {
+                $("#credentials-tab-content").html(data);
                 $("button.change-password").on("click", function() {
                     const id = $(this).data("identity-id");
                     const url = ROOT_URL + "/identities/" + id + "/edit-password";
