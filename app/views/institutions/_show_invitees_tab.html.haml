@@ -21,6 +21,7 @@
                      permitted_params: @permitted_params,
                      window:           @window }
 
-= render partial: "invitees/add_modal", locals: { invitee: @new_invitee }
+= render partial: "shared/xhr_modal",
+         locals: { id: "add-invitee-modal", title: "Invite User" }
 = render partial: "shared/xhr_modal",
          locals: { id: "reject-modal", title: "Reject Invitee" }

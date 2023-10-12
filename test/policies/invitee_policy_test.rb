@@ -376,11 +376,11 @@ class InviteePolicyTest < ActiveSupport::TestCase
 
   # new?()
 
-  test "new?() returns true with a nil user" do
+  test "new?() returns false with a nil user" do
     context = RequestContext.new(user:        nil,
                                  institution: @invitee.institution)
     policy = InviteePolicy.new(context, @invitee)
-    assert policy.new?
+    assert !policy.new?
   end
 
   test "new?() does not authorize an incorrect scope" do
@@ -390,7 +390,7 @@ class InviteePolicyTest < ActiveSupport::TestCase
     assert !policy.new?
   end
 
-  test "new?() does not authorize logged-in users" do
+  test "new?() does not authorize non-sysadmins" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -398,11 +398,70 @@ class InviteePolicyTest < ActiveSupport::TestCase
     assert !policy.new?
   end
 
-  test "new?() authorizes non-logged-in users" do
+  test "new?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InviteePolicy.new(context, @invitee)
+    assert policy.new?
+  end
+
+  test "new?() authorizes administrators of the same institution" do
+    user = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InviteePolicy.new(context, @invitee)
+    assert policy.new?
+  end
+
+  test "new?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = InviteePolicy.new(context, @invitee)
+    assert !policy.new?
+  end
+
+  test "new?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InviteePolicy.new(context, @invitee)
+    assert !policy.new?
+  end
+
+  # register?()
+
+  test "register?() returns true with a nil user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @invitee.institution)
+    policy = InviteePolicy.new(context, @invitee)
+    assert policy.register?
+  end
+
+  test "register?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = InviteePolicy.new(context, @invitee)
+    assert !policy.register?
+  end
+
+  test "register?() does not authorize logged-in users" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = InviteePolicy.new(context, @invitee)
+    assert !policy.register?
+  end
+
+  test "register?() authorizes non-logged-in users" do
     context = RequestContext.new(user:        nil,
                                  institution: institutions(:southeast))
     policy  = InviteePolicy.new(context, @invitee)
-    assert policy.new?
+    assert policy.register?
   end
 
   # reject?()

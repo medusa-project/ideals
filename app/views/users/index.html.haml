@@ -4,9 +4,9 @@
 -if policy(User).invite?
   .btn-group.float-end{role: "group"}
     -# Invite button
-    %button.btn.btn-light{"data-bs-target": "#invite-user-modal",
-                          "data-bs-toggle": "modal",
-                          type:             "button"}
+    %button.btn.btn-light.add-invitee{"data-bs-target": "#add-invitee-modal",
+                                      "data-bs-toggle": "modal",
+                                      type:             "button"}
       %i.fa.fa-plus
       Invite User
 
@@ -21,4 +21,5 @@
 #users-list
   = render partial: "users", locals: { institution_column: false }
 
-= render partial: "invitees/add_modal", locals: { invitee: @new_invitee }
+= render partial: "shared/xhr_modal",
+         locals: { id: "add-invitee-modal", title: "Invite User" }

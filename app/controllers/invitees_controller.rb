@@ -7,8 +7,8 @@
 class InviteesController < ApplicationController
 
   before_action :ensure_institution_host
-  before_action :ensure_logged_in, except: [:create_unsolicited, :new]
-  before_action :ensure_logged_out, only: [:create_unsolicited, :new]
+  before_action :ensure_logged_in, except: [:create_unsolicited, :register]
+  before_action :ensure_logged_out, only: [:create_unsolicited, :register]
   before_action :set_invitee, only: [:approve, :destroy, :edit, :reject,
                                      :resend_email, :show]
   before_action :authorize_invitee, only: [:approve, :destroy, :edit, :reject,
@@ -34,10 +34,9 @@ class InviteesController < ApplicationController
 
   ##
   # Handles input from the invite-user form (institution admins only). This is
-  # one of two entry points of local-identity users into the system, the other
-  # being {create_unsolicited}.
+  # one of two entry points for invitees, the other being {create_unsolicited}.
   #
-  # Responds to `POST /invitees` (XHR only).
+  # Responds to `POST /invitees`.
   #
   # @see create_unsolicited
   #
@@ -63,10 +62,9 @@ class InviteesController < ApplicationController
 
   ##
   # Handles input from the public account-request form. This is one of two
-  # entry points of local-identity users into the system, the other being
-  # {create}.
+  # entry points for invitees, the other being {create}.
   #
-  # Responds to `POST /invitees/create`.
+  # Responds to `POST /invitees/create-unsolicited`.
   #
   # @see create
   #
@@ -82,7 +80,7 @@ class InviteesController < ApplicationController
       end
     rescue => e
       flash['error'] = "#{e}"
-      redirect_to new_invitee_url
+      redirect_to register_path
     else
       flash['success'] = "Thanks for requesting an account! We will review "\
           "your request and act on it as soon as possible. When we do, we'll "\
@@ -141,16 +139,35 @@ class InviteesController < ApplicationController
   end
 
   ##
-  # Renders the account-request form, which is only accessible by logged-out
-  # users. This is one of two pathways into the registration form, the other
-  # being an invite from a sysadmin. {create_unsolicited} handles the form
-  # submission.
+  # Renders the invite-user form, which is only accessible by logged-in
+  # institution admins. {create} handles the form submission.
   #
   # Responds to `GET /invitees/new`
   #
+  # @see register
+  #
   def new
+    authorize Invitee
+    if params.dig(:invitee, :institution_id).blank?
+      render plain: "Missing institution ID", status: :bad_request
+      return
+    end
     @invitee = Invitee.new(expires_at: Time.zone.now + 1.year)
-    authorize(@invitee)
+    render partial: "new_form"
+  end
+
+  ##
+  # The logged-out counterpart to {new} which renders the account-request form.
+  # This is one of two pathways into the registration form, the other being an
+  # invite from a sysadmin which goes to {new}. {create_unsolicited} handles
+  # the form submission.
+  #
+  # Responds to `GET /invitees/register`
+  #
+  # @see new
+  #
+  def register
+    @invitee = Invitee.new(expires_at: Time.zone.now + 1.year)
   end
 
   ##

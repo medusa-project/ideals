@@ -1,9 +1,21 @@
 const InviteesView = {
 
+    AddInviteeClickHandler: function() {
+        const ROOT_URL      = $("input[name=root_url]").val();
+        const institutionID = $("input[name=institution_id]").val();
+        const url           = ROOT_URL + "/invitees/new?" +
+            "invitee%5Binstitution_id%5D=" + institutionID;
+        $.get(url, function (data) {
+            $("#add-invitee-modal .modal-body").html(data);
+        });
+    },
+
     /**
      * Handles list-invitees view.
      */
     initialize: function() {
+        $("button.add-invitee").on("click", this.AddInviteeClickHandler);
+
         const InviteeFilterForm = function() {
             const ROOT_URL    = $("input[name=root_url]").val();
             const form        = $("#invitees-form");

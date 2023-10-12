@@ -4,6 +4,8 @@
 const UsersView = {
 
     initialize: function() {
+        $("button.add-invitee").on("click", InviteesView.AddInviteeClickHandler);
+
         const filterDiv = $("#user-filter");
 
         const refreshUsers = function () {

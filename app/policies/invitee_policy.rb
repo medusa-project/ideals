@@ -51,6 +51,10 @@ class InviteePolicy < ApplicationPolicy
   end
 
   def new
+    create
+  end
+
+  def register
     logged_out
   end
 

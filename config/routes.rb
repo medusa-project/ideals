@@ -166,9 +166,10 @@ Rails.application.routes.draw do
     match "/settings", to: "institutions#update_settings", via: [:patch, :post]
     match "/statistics-by-range", to: "institutions#statistics_by_range", via: :get
   end
+  match "/register", to: "invitees#register", via: :get
   resources :invitees, except: [:update] do
     collection do
-      match "/create", to: "invitees#create_unsolicited", via: :post,
+      match "/create-unsolicited", to: "invitees#create_unsolicited", via: :post,
             as: "create_unsolicited"
     end
     match "/approve", to: "invitees#approve", via: [:patch, :post]

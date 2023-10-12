@@ -1,9 +1,9 @@
-= form_for(invitee, url: invitees_path, remote: true) do |f|
+= form_for(@invitee, url: invitees_path, remote: true) do |f|
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
-  = f.hidden_field :institution_admin, value: invitee.institution_admin
-  = f.hidden_field :institution_id, value: invitee.institution_id
+  = f.hidden_field :institution_admin, value: f.object.institution_admin
+  = f.hidden_field :institution_id, value: f.object.institution_id
   = f.hidden_field :inviting_user_id, value: current_user.id
   = f.hidden_field :note, value: "Invited by #{current_user.name} (#{current_user.email})"
 

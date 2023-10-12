@@ -1,12 +1,14 @@
 - provide :body_id, "list_invitees"
 - provide :title, "Invitees"
 
--if policy(User).invite?
+= hidden_field_tag :institution_id, current_institution.id
+
+- if policy(User).invite?
   .btn-group.float-end{role: "group"}
     -# Invite button
-    %button.btn.btn-light{"data-bs-target": "#invite-user-modal",
-                          "data-bs-toggle": "modal",
-                          type:             "button"}
+    %button.add-invitee.btn.btn-light{"data-bs-target": "#add-invitee-modal",
+                                      "data-bs-toggle": "modal",
+                                      type:             "button"}
       %i.fa.fa-plus
       Invite User
 
@@ -26,6 +28,7 @@
                      permitted_params: @permitted_params,
                      window:           @window }
 
-= render partial: "add_modal", locals: { invitee: @new_invitee }
+= render partial: "shared/xhr_modal",
+         locals: { id: "add-invitee-modal", title: "Invite User" }
 = render partial: "shared/xhr_modal",
          locals: { id: "reject-modal", title: "Reject Invitee" }

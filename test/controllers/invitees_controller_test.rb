@@ -3,8 +3,9 @@ require 'test_helper'
 class InviteesControllerTest < ActionDispatch::IntegrationTest
 
   setup do
-    @invitee = invitees(:southwest_pending)
-    host! @invitee.institution.fqdn
+    @invitee     = invitees(:southwest_pending)
+    @institution = @invitee.institution
+    host! @institution.fqdn
   end
 
   # approve()
@@ -119,7 +120,7 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
              note: "This is a new invitee"
            }
          }
-    assert_redirected_to new_invitee_path
+    assert_redirected_to register_path
   end
 
   test "create_unsolicited() sets the flash and redirects back upon an
@@ -138,7 +139,7 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
            }
          }
     assert flash['error'].start_with?("Incorrect math question response")
-    assert_redirected_to new_invitee_path
+    assert_redirected_to register_path
   end
 
   test "create_unsolicited() sets the flash and redirects if all arguments are
@@ -317,14 +318,54 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  test "new() redirects to root path for logged-in users" do
-    log_in_as(users(:southwest))
+  test "new() redirects to root path for logged-out users" do
     get new_invitee_path
+    assert_redirected_to @institution.scope_url
+  end
+
+  test "new() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    get new_invitee_path, params: {
+      invitee: {
+        institution_id: 0
+      }
+    }
+    assert_response :forbidden
+  end
+
+  test "new() returns HTTP 400 for a missing institution_id argument" do
+    log_in_as(users(:southwest_admin))
+    get new_invitee_path
+    assert_response :bad_request
+  end
+
+  test "new() returns HTTP 200 for institution administrators" do
+    user = users(:southwest_admin)
+    log_in_as(user)
+    get new_invitee_path, params: {
+      invitee: {
+        institution_id: user.institution.id
+      }
+    }
+    assert_response :ok
+  end
+
+  # register()
+
+  test "register() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get register_path
+    assert_response :not_found
+  end
+
+  test "register() redirects to root path for logged-in users" do
+    log_in_as(users(:southwest))
+    get register_path
     assert_redirected_to root_path
   end
 
-  test "new() returns HTTP 200 for logged-out users" do
-    get new_invitee_path
+  test "register() returns HTTP 200 for logged-out users" do
+    get register_path
     assert_response :ok
   end
 
