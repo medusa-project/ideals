@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_10_12_012616) do
+ActiveRecord::Schema[7.0].define(version: 2023_10_12_013354) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -862,7 +862,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_12_012616) do
   add_foreign_key "invitees", "users", column: "inviting_user_id", on_update: :cascade, on_delete: :cascade
   add_foreign_key "items", "institutions", on_update: :cascade, on_delete: :restrict
   add_foreign_key "items", "users", column: "submitter_id", on_update: :cascade, on_delete: :nullify
-  add_foreign_key "local_identities", "invitees", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "local_identities", "invitees", on_update: :cascade, on_delete: :nullify
   add_foreign_key "logins", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "logins", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "messages", "institutions", on_update: :cascade, on_delete: :cascade
@@ -894,7 +894,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_12_012616) do
   add_foreign_key "user_groups_users", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "users", "affiliations", on_update: :cascade, on_delete: :nullify
   add_foreign_key "users", "institutions", on_update: :cascade, on_delete: :restrict
-  add_foreign_key "users", "local_identities", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "users", "local_identities", on_update: :cascade, on_delete: :nullify
   add_foreign_key "vocabularies", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "vocabulary_terms", "vocabularies", on_update: :cascade, on_delete: :cascade
 end
