@@ -426,6 +426,13 @@ class AbstractRelation
   end
 
   ##
+  # @return [Boolean]
+  #
+  def exists?
+    count > 0
+  end
+
+  ##
   # @return [Enumerable<Facet>] Result facets.
   #
   def facets
