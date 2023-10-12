@@ -89,6 +89,7 @@ class SubmissionsController < ApplicationController
   rescue => e
     flash['error'] = "#{e}"
   else
+    RefreshOpensearchJob.perform_later
     flash['success'] = "Your submission has been canceled."
   ensure
     redirect_to @item.institution.scope_url, allow_other_host: true
