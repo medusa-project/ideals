@@ -69,13 +69,4 @@ class InviteePolicy < ApplicationPolicy
     approve
   end
 
-
-  private
-
-  def logged_out
-    @user.nil? ? AUTHORIZED_RESULT :
-      { authorized: false,
-        reason: "You cannot perform this action while logged in." }
-  end
-
 end
