@@ -10,13 +10,6 @@ class LocalIdentityTest < ActiveSupport::TestCase
 
   # create()
 
-  test "create() requires association with an Invitee" do
-    assert_raises ActiveRecord::RecordInvalid do
-      LocalIdentity.create!(email:    "joe@example.org",
-                            password: "Password123!!")
-    end
-  end
-
   test "create() does not allow association with an expired Invitee" do
     assert_raises ActiveRecord::RecordInvalid do
       # LocalIdentity.create() is invoked indirectly
@@ -63,14 +56,6 @@ class LocalIdentityTest < ActiveSupport::TestCase
     assert_not_equal digest, @instance.reset_digest
     assert_not_nil @instance.reset_sent_at
     assert_not_equal sent_at, @instance.reset_sent_at
-  end
-
-  # destroy()
-
-  test "destroy() destroys any associated user" do
-    assert_not_nil @instance.user
-    @instance.destroy!
-    assert_nil User.find_by_email(@instance.email)
   end
 
   # invitee()

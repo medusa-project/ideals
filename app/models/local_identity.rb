@@ -47,7 +47,7 @@ class LocalIdentity < OmniAuth::Identity::Models::ActiveRecord
 
   attr_accessor :activation_token, :registration_token, :reset_token
 
-  belongs_to :invitee, inverse_of: :identity
+  belongs_to :invitee, inverse_of: :identity, optional: true
   has_one :user, inverse_of: :identity
 
   validates :email, presence: true, length: { maximum: 255 },
