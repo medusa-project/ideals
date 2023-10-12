@@ -982,7 +982,6 @@ class Bitstream < ApplicationRecord
   def validate_original_filename_immutability
     if self.original_filename_changed? && self.original_filename_was.present?
       errors.add(:original_filename, "cannot be changed")
-      throw :abort
     end
   end
 
@@ -995,7 +994,6 @@ class Bitstream < ApplicationRecord
       if bs.filename == filename
         errors.add(:filename, "cannot be the same as another file attached "\
                               "to the same item")
-        throw :abort
       end
     end
   end

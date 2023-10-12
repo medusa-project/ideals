@@ -89,7 +89,6 @@ class PrebuiltSearch < ApplicationRecord
   def validate_ordering_element_institution
     if self.ordering_element && self.ordering_element.institution != self.institution
       errors.add(:ordering_element, "must be in the same institution")
-      throw(:abort)
     end
   end
 

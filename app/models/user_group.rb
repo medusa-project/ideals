@@ -188,7 +188,6 @@ class UserGroup < ApplicationRecord
   def validate_sysadmin_group
     if self.key == SYSADMIN_KEY && self.institution_id.present?
       errors.add(:key, "cannot be that of the system administrator group")
-      throw :abort
     end
   end
 

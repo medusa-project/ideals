@@ -497,11 +497,9 @@ class Collection < ApplicationRecord
       if items.where.not(stage: Item::Stages::BURIED).exists?
         errors.add(:base, "This collection cannot be deleted, as it contains "\
                           "at least one item.")
-        throw(:abort)
       elsif collections.where.not(buried: true).exists?
         errors.add(:base, "This collection cannot be deleted, as it contains "\
                           "at least one child collection.")
-        throw(:abort)
       end
     end
   end
@@ -528,7 +526,6 @@ class Collection < ApplicationRecord
     if !buried && buried_changed? && units.where.not(buried: true).count == 0
       errors.add(:base, "This collection cannot be undeleted, as all of its "\
                         "owning units are deleted.")
-      throw(:abort)
     end
   end
 
@@ -540,10 +537,8 @@ class Collection < ApplicationRecord
     if self.parent_id.present?
       if self.id.present? && self.parent_id == self.id
         errors.add(:parent_id, "cannot be set to the same collection")
-        throw(:abort)
       elsif all_children.map(&:id).include?(self.parent_id)
         errors.add(:parent_id, "cannot be set to a child collection")
-        throw(:abort)
       end
     end
   end
@@ -554,7 +549,6 @@ class Collection < ApplicationRecord
   def validate_primary_unit
     if unit_collection_memberships.any? && !primary_unit
       errors.add(:primary_unit, "is not set")
-      throw(:abort)
     end
   end
 

@@ -521,11 +521,9 @@ class Unit < ApplicationRecord
       if units.where.not(buried: true).exists?
         errors.add(:base, "This unit cannot be deleted, as it contains at "\
                           "least one child unit.")
-        throw(:abort)
       elsif collections.where.not(buried: true).exists?
         errors.add(:base, "This unit cannot be deleted, as it contains at "\
                           "least one collection.")
-        throw(:abort)
       end
     end
   end
@@ -551,10 +549,8 @@ class Unit < ApplicationRecord
     if self.parent_id.present?
       if self.id.present? && self.parent_id == self.id
         errors.add(:parent_id, "cannot be set to the same unit")
-        throw(:abort)
       elsif all_children.map(&:id).include?(self.parent_id)
         errors.add(:parent_id, "cannot be set to a child unit")
-        throw(:abort)
       end
     end
   end
@@ -566,7 +562,6 @@ class Unit < ApplicationRecord
   def validate_primary_administrator
     if self.parent_id.present? && self.primary_administrator.present?
       errors.add(:primary_administrator, "cannot be set on child units")
-      throw(:abort)
     end
   end
 

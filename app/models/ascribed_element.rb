@@ -138,7 +138,6 @@ class AscribedElement < ApplicationRecord
     reg_e = self.registered_element
     if ins && reg_e && ins.id != reg_e.institution_id
       errors.add(:base, "Registered element and item must be of the same institution")
-      throw(:abort)
     end
   end
 

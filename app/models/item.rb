@@ -954,7 +954,6 @@ class Item < ApplicationRecord
       collections.where.not(buried: true).count == 0
       errors.add(:base, "This item cannot be undeleted, as all of its "\
                         "owning collections are deleted.")
-      throw(:abort)
     end
   end
 
@@ -962,7 +961,6 @@ class Item < ApplicationRecord
     primary_count = self.bitstreams.count(&:primary)
     if primary_count > 1
       errors.add(:bitstreams, "has more than one primary bitstream")
-      throw(:abort)
     end
   end
 
@@ -970,7 +968,6 @@ class Item < ApplicationRecord
     if stage_was == Stages::SUBMITTING && stage == Stages::SUBMITTED &&
         bitstreams.length < 1
       errors.add(:bitstreams, "is empty")
-      throw(:abort)
     end
   end
 
@@ -978,7 +975,6 @@ class Item < ApplicationRecord
     if stage_was == Stages::SUBMITTING && stage == Stages::SUBMITTED &&
         !required_elements_present?
       errors.add(:elements, "is missing required elements")
-      throw(:abort)
     end
   end
 

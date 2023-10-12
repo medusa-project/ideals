@@ -152,7 +152,6 @@ class MetadataProfileElement < ApplicationRecord
     if institution && reg_e && institution.id != reg_e.institution_id
       errors.add(:base, "Registered element and owning metadata profile must "\
                         "be of the same institution")
-      throw(:abort)
     end
   end
 

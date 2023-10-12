@@ -120,7 +120,6 @@ class SubmissionProfileElement < ApplicationRecord
     if profile && reg_e && profile.id != reg_e.institution_id
       errors.add(:base, "Registered element and owning submission profile must "\
                         "be of the same institution")
-      throw(:abort)
     end
   end
 
