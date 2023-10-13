@@ -93,7 +93,7 @@ class User < ApplicationRecord
         invitee = Invitee.create!(email:          email,
                                   institution:    institution,
                                   approval_state: Invitee::ApprovalState::APPROVED,
-                                  note:           "Created as a sysadmin "\
+                                  purpose:        "Created as a sysadmin "\
                                                   "manually, bypassing the "\
                                                   "invitation process")
       end

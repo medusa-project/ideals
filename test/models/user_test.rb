@@ -234,7 +234,7 @@ class UserTest < ActiveSupport::TestCase
     email       = "newuser@southwest.edu"
     institution = institutions(:southwest)
     Invitee.create!(email:       email,
-                    note:        "hello world",
+                    purpose:     "hello world",
                     institution: institution)
     user = User.from_omniauth(
       {

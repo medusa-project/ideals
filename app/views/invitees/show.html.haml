@@ -14,7 +14,7 @@
   %dt Invited By
   %dd= @invitee.inviting_user ? link_to(@invitee.inviting_user.name, @invitee.inviting_user) : "Self-Invited"
   %dt Purpose
-  %dd= @invitee.note
+  %dd= @invitee.purpose
   %dt Approval State
   %dd
     - case @invitee.approval_state

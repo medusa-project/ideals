@@ -18,8 +18,8 @@ class UserRegistrationTest < ActionDispatch::IntegrationTest
         correct_answer_hash: Digest::MD5.hexdigest("5" + ApplicationHelper::CAPTCHA_SALT),
         answer: "5",
         invitee: {
-          email: "newuser@example.org",
-          note:  "Testing"
+          email:   "newuser@example.org",
+          purpose: "Testing"
         }
       }
       assert ActionMailer::Base.deliveries[0].text_part.body.include?("Thanks for requesting an account with")

@@ -220,7 +220,7 @@ class InviteesController < ApplicationController
   def invitee_params
     params.require(:invitee).permit(:email, :institution_admin,
                                     :institution_id, :inviting_user_id,
-                                    :note, :rejection_reason)
+                                    :purpose, :rejection_reason)
   end
 
   def set_invitee

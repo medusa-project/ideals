@@ -59,8 +59,8 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
          xhr: true,
          params: {
              invitee: {
-                 email: "",
-                 note: "This is a new invitee"
+                 email:   "",
+                 purpose: "This is a new invitee"
              }
          }
     assert_response :bad_request
@@ -78,8 +78,8 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
            xhr: true,
            params: {
                invitee: {
-                   email: email,
-                   note: "This is a new invitee"
+                   email:   email,
+                   purpose: "This is a new invitee"
                }
            }
       invitee = Invitee.find_by_email(email)
@@ -94,8 +94,8 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
          xhr: true,
          params: {
              invitee: {
-                 email: "new@example.edu",
-                 note: "This is a new invitee"
+                 email:   "new@example.edu",
+                 purpose: "This is a new invitee"
              }
          }
     assert_response :ok
@@ -116,8 +116,8 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
            correct_answer_hash: Digest::MD5.hexdigest("5" + ApplicationHelper::CAPTCHA_SALT),
            answer: "5",
            invitee: {
-             email: "", # invalid
-             note: "This is a new invitee"
+             email:   "", # invalid
+             purpose: "This is a new invitee"
            }
          }
     assert_redirected_to register_path
@@ -134,8 +134,8 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
            correct_answer_hash: Digest::MD5.hexdigest("5" + ApplicationHelper::CAPTCHA_SALT),
            answer: "7", # WRONG!
            invitee: {
-             email: email,
-             note: "This is a new invitee"
+             email:   email,
+             purpose: "This is a new invitee"
            }
          }
     assert flash['error'].start_with?("Incorrect math question response")
@@ -150,8 +150,8 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
            correct_answer_hash: Digest::MD5.hexdigest("5" + ApplicationHelper::CAPTCHA_SALT),
            answer: "5",
            invitee: {
-             email: "new@example.edu",
-             note: "This is a new invitee"
+             email:   "new@example.edu",
+             purpose: "This is a new invitee"
            }
          }
     assert flash['success'].start_with?("Thanks for requesting")
@@ -170,8 +170,8 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
              correct_answer_hash: Digest::MD5.hexdigest("5" + ApplicationHelper::CAPTCHA_SALT),
              answer: "5",
              invitee: {
-               email: email,
-               note: "This is a new invitee"
+               email:   email,
+               purpose: "This is a new invitee"
              }
            }
     end

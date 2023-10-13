@@ -44,7 +44,7 @@
 # * `inviting_user_id`  Foreign key to {User} indicating the user who invited
 #                       the invitee to register. This is null in the case of
 #                       "self-invited" invitees.
-# * `note`              Contains the "purpose" that the user entered when
+# * `purpose`           Contains the "purpose" that the user entered when
 #                       requesting an account. For users who were invited and
 #                       did not request their account, this is autofilled with
 #                       such a notice.
@@ -78,7 +78,7 @@ class Invitee < ApplicationRecord
   before_create -> { self.expires_at = EXPIRATION.from_now }
 
   validates :email, presence: true # uniqueness is validated in a custom method
-  validates :note, presence: true
+  validates :purpose, presence: true
 
   validate :validate_email_uniqueness, on: :create
 

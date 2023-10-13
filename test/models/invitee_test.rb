@@ -21,14 +21,14 @@ class InviteeTest < ActiveSupport::TestCase
   # create()
 
   test "create() sets approval_state" do
-    invitee = Invitee.create!(email: "new@example.org",
-                              note: "New note")
+    invitee = Invitee.create!(email:   "new@example.org",
+                              purpose: "New note")
     assert_equal Invitee::ApprovalState::PENDING, invitee.approval_state
   end
 
   test "create() sets expires_at" do
-    invitee = Invitee.create!(email: "new@example.org",
-                              note: "New note")
+    invitee = Invitee.create!(email:   "new@example.org",
+                              purpose: "New note")
     assert invitee.expires_at - Invitee::EXPIRATION - Time.now < 10.seconds
   end
 
@@ -36,7 +36,7 @@ class InviteeTest < ActiveSupport::TestCase
     user = users(:southwest)
     Invitee.destroy_all
     assert_raises ActiveRecord::RecordInvalid do
-      Invitee.create!(email: user.email, note: "Test")
+      Invitee.create!(email: user.email, purpose: "Test")
     end
   end
 
@@ -79,7 +79,7 @@ class InviteeTest < ActiveSupport::TestCase
 
   test "email must be unique" do
     assert_raises ActiveRecord::RecordInvalid do
-      Invitee.create!(email: @instance.email, note: "Test")
+      Invitee.create!(email: @instance.email, purpose: "Test")
     end
   end
 
@@ -115,16 +115,6 @@ class InviteeTest < ActiveSupport::TestCase
     end
   end
 
-  # note
-
-  test "note is required" do
-    @instance.note = nil
-    assert !@instance.valid?
-
-    @instance.note = ""
-    assert !@instance.valid?
-  end
-
   # pending?()
 
   test "pending?() returns false if approval_state is not set to pending" do
@@ -135,6 +125,16 @@ class InviteeTest < ActiveSupport::TestCase
   test "pending?() returns true if approval_state is set to pending" do
     @instance.approval_state = Invitee::ApprovalState::PENDING
     assert @instance.pending?
+  end
+
+  # purpose
+
+  test "purpose is required" do
+    @instance.purpose = nil
+    assert !@instance.valid?
+
+    @instance.purpose = ""
+    assert !@instance.valid?
   end
 
   # reject()

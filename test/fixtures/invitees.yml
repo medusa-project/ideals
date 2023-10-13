@@ -4,7 +4,7 @@ northeast:
   institution:       northeast
   email:             user@northeast.edu
   approval_state:    <%= Invitee::ApprovalState::APPROVED %>
-  note:              Sample note
+  purpose:           Sample note
   rejection_reason:
   expires_at:        <%= Time.now + Invitee::EXPIRATION %>
   institution_admin: false
@@ -13,7 +13,7 @@ northeast_admin:
   institution:       northeast
   email:             admin@northeast.edu
   approval_state:    <%= Invitee::ApprovalState::APPROVED %>
-  note:              Sample note
+  purpose:           Sample note
   rejection_reason:
   expires_at:        <%= Time.now + Invitee::EXPIRATION %>
   institution_admin: false
@@ -24,7 +24,7 @@ southwest:
   institution:       southwest
   email:             user@southwest.edu
   approval_state:    <%= Invitee::ApprovalState::APPROVED %>
-  note:              Sample note
+  purpose:           Sample note
   rejection_reason:
   expires_at:        <%= Time.now + Invitee::EXPIRATION %>
   institution_admin: false
@@ -33,7 +33,7 @@ southwest_admin:
   institution:       southwest
   email:             admin@southwest.edu
   approval_state:    <%= Invitee::ApprovalState::APPROVED %>
-  note:              Sample note
+  purpose:           Sample note
   rejection_reason:
   expires_at:        <%= Time.now + Invitee::EXPIRATION %>
   institution_admin: false
@@ -42,7 +42,7 @@ southwest_sysadmin:
   institution:       southwest
   email:             sysadmin@southwest.edu
   approval_state:    <%= Invitee::ApprovalState::APPROVED %>
-  note:              Sample note
+  purpose:           Sample note
   rejection_reason:
   expires_at:        <%= Time.now + Invitee::EXPIRATION %>
   institution_admin: false
@@ -51,7 +51,7 @@ southwest_approved:
   institution:       southwest
   email:             approved-invitee@southwest.edu
   approval_state:    <%= Invitee::ApprovalState::APPROVED %>
-  note:              Sample note
+  purpose:           Sample note
   rejection_reason:
   expires_at:        <%= Time.now + Invitee::EXPIRATION %>
   institution_admin: false
@@ -60,7 +60,7 @@ southwest_pending:
   institution:       southwest
   email:             pending@southwest.edu
   approval_state:    <%= Invitee::ApprovalState::PENDING %>
-  note:              This invitee is pending.
+  purpose:           This invitee is pending.
   rejection_reason:
   expires_at:        <%= Time.now + Invitee::EXPIRATION %>
   institution_admin: false
@@ -71,7 +71,7 @@ southeast:
   institution:       southeast
   email:             shib@southeast.edu
   approval_state:    <%= Invitee::ApprovalState::APPROVED %>
-  note:              Sample note
+  purpose:           Sample note
   rejection_reason:
   expires_at:        <%= Time.now + Invitee::EXPIRATION %>
   institution_admin: false
@@ -80,7 +80,7 @@ southeast2:
   institution:       southeast
   email:             user2@southeast.edu
   approval_state:    <%= Invitee::ApprovalState::APPROVED %>
-  note:              Sample note
+  purpose:           Sample note
   rejection_reason:
   expires_at:        <%= Time.now + Invitee::EXPIRATION %>
   institution_admin: false
@@ -89,7 +89,7 @@ southeast_admin:
   institution:       southeast
   email:             instadmin@southeast.edu
   approval_state:    <%= Invitee::ApprovalState::APPROVED %>
-  note:              Sample note
+  purpose:           Sample note
   rejection_reason:
   expires_at:        <%= Time.now + Invitee::EXPIRATION %>
   institution_admin: false
@@ -98,7 +98,7 @@ southeast_sysadmin:
   institution:       southeast
   email:             sysadmin@southeast.edu
   approval_state:    <%= Invitee::ApprovalState::APPROVED %>
-  note:              Sample note
+  purpose:           Sample note
   rejection_reason:
   expires_at:        <%= Time.now + Invitee::EXPIRATION %>
   institution_admin: false
@@ -107,7 +107,7 @@ southeast_unit1_admin:
   institution:       southeast
   email:             southeast_unit1_admin@southeast.edu
   approval_state:    <%= Invitee::ApprovalState::APPROVED %>
-  note:              Sample note
+  purpose:           Sample note
   rejection_reason:
   expires_at:        <%= Time.now + Invitee::EXPIRATION %>
   institution_admin: false
@@ -116,7 +116,7 @@ southeast_unit1_unit2_unit1_admin:
   institution:       southeast
   email:             southeast_unit1_unit2_unit1_admin@southeast.edu
   approval_state:    <%= Invitee::ApprovalState::APPROVED %>
-  note:              Sample note
+  purpose:           Sample note
   rejection_reason:
   expires_at:        <%= Time.now + Invitee::EXPIRATION %>
   institution_admin: false
@@ -125,7 +125,7 @@ southeast_collection1_collection1_admin:
   institution:       southeast
   email:             southeast_collection1_collection1_admin@southeast.edu
   approval_state:    <%= Invitee::ApprovalState::APPROVED %>
-  note:              Sample note
+  purpose:           Sample note
   rejection_reason:
   expires_at:        <%= Time.now + Invitee::EXPIRATION %>
   institution_admin: false
@@ -134,7 +134,7 @@ southeast_collection1_collection1_submitter:
   institution:       southeast
   email:             southeast_collection1_collection1_submitter@southeast.edu
   approval_state:    <%= Invitee::ApprovalState::APPROVED %>
-  note:              Sample note
+  purpose:           Sample note
   rejection_reason:
   expires_at:        <%= Time.now + Invitee::EXPIRATION %>
   institution_admin: false
