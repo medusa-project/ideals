@@ -241,7 +241,7 @@ class Institution < ApplicationRecord
   has_many :users
   has_many :vocabularies
 
-  serialize :shibboleth_extra_attributes, JSON
+  serialize :shibboleth_extra_attributes, coder: JSON
 
   validates :feedback_email, allow_blank: true, length: {maximum: 255},
             format: {with: StringUtils::EMAIL_REGEX}

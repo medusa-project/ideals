@@ -54,7 +54,7 @@ gem "omniauth-shibboleth"
 gem "pg"
 # Our application server
 gem "puma"
-gem "rails", "~> 7.0"
+gem "rails", "~> 7.1"
 # Use SCSS for stylesheets
 gem "sassc"
 gem "sprockets-rails"

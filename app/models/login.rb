@@ -47,7 +47,7 @@ class Login < ApplicationRecord
   belongs_to :institution
   belongs_to :user
 
-  serialize :auth_hash, JSON
+  serialize :auth_hash, coder: JSON
 
   validates :provider, inclusion: { in: Provider.all }
 

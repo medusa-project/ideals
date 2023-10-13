@@ -166,7 +166,7 @@ class Bitstream < ApplicationRecord
   validate :validate_original_filename_immutability
   validate :validate_unique_filename
 
-  serialize :archived_files, JSON
+  serialize :archived_files, coder: JSON
 
   LOGGER = CustomLogger.new(Bitstream)
 

@@ -53,7 +53,7 @@ class Import < ApplicationRecord
   belongs_to :task, optional: true # an importer will assign this
   belongs_to :user, optional: true
 
-  serialize :imported_items, JSON
+  serialize :imported_items, coder: JSON
 
   before_save :delete_file, if: -> { task&.succeeded? }
   before_destroy :delete_file
