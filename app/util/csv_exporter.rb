@@ -26,14 +26,20 @@ class CsvExporter
     if units.empty? && collections.empty?
       raise ArgumentError, "No units or collections specified."
     end
+    # Add all children to the units bucket.
+    all_units = Set.new
+    units.each do |unit|
+      all_units << unit
+      all_units += unit.all_children
+    end
     # Compile a list of collection IDs from which to export items.
     collection_ids = Set.new
-    units.each do |unit|
+    all_units.each do |unit|
       collection_ids += unit.collections.pluck(:id)
     end
     collections.each do |collection|
       collection_ids << collection.id
-      collection_ids += collection.all_children.pluck(:id)
+      collection_ids += collection.all_child_ids
     end
     # Compile a list of elements to include.
     if elements.empty?

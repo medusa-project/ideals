@@ -26,6 +26,22 @@ class CsvExporterTest < ActiveSupport::TestCase
                  rows[0]
   end
 
+  test "export() includes child units" do
+    unit            = units(:southeast_unit1)
+    all_units       = [unit]
+    all_units      += unit.all_children
+    all_collections = Set.new
+    all_units.each do |u|
+      all_collections += u.collections
+    end
+    all_items        = all_collections.map(&:items).flatten
+    csv              = @instance.export(units: [unit])
+    rows             = CSV.parse(csv)
+    assert_equal 1 + all_items.length, rows.length
+    assert_equal CsvImporter::REQUIRED_COLUMNS + %w[dc:title dc:description dc:subject],
+                 rows[0]
+  end
+
   test "export() includes child collections" do
     collection       = collections(:southeast_collection1)
     all_collections  = [collection]
