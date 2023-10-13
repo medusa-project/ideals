@@ -32,6 +32,7 @@
 #                          {create_reset_digest}. Works exactly the same way as
 #                          {activation_digest}.
 # * `reset_sent_at`:       Time that {reset_digest} was generated.
+# * `user_id`              Foreign key to {User}.
 # * `updated_at`:          Managed by ActiveRecord.
 #
 # @see https://github.com/omniauth/omniauth-identity
@@ -48,7 +49,7 @@ class LocalIdentity < OmniAuth::Identity::Models::ActiveRecord
   attr_accessor :activation_token, :registration_token, :reset_token
 
   belongs_to :invitee, inverse_of: :identity, optional: true
-  has_one :user, inverse_of: :identity
+  belongs_to :user, inverse_of: :identity
 
   validates :email, presence: true, length: { maximum: 255 },
             format: { with: StringUtils::EMAIL_REGEX },

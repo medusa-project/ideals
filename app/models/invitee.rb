@@ -192,7 +192,7 @@ class Invitee < ApplicationRecord
 
   private
 
-  def associate_or_create_identity
+  def associate_or_create_identity # TODO: redesign as associate_or_create_user
     unless self.identity
       id = LocalIdentity.find_by(email: self.email)
       if id
@@ -201,10 +201,15 @@ class Invitee < ApplicationRecord
         # A password is required, so just set a random one. It will be updated
         # during registration.
         password = LocalIdentity.random_password
+        user     = User.find_by_email(self.email) ||
+          User.create!(email:       self.email,
+                       name:        self.email,
+                       institution: self.institution)
         LocalIdentity.create!(email:                 self.email,
                               password:              password,
                               password_confirmation: password,
-                              invitee:               self)
+                              invitee:               self,
+                              user:                  user)
       end
     end
   end

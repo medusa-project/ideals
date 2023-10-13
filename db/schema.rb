@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_10_13_154545) do
+ActiveRecord::Schema[7.1].define(version: 2023_10_13_195355) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -463,9 +463,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_13_154545) do
     t.datetime "updated_at", null: false
     t.string "registration_digest"
     t.string "lowercase_email", null: false
+    t.bigint "user_id"
     t.index ["email"], name: "index_local_identities_on_email", unique: true
     t.index ["invitee_id"], name: "index_local_identities_on_invitee_id"
     t.index ["lowercase_email"], name: "index_local_identities_on_lowercase_email", unique: true
+    t.index ["user_id"], name: "index_local_identities_on_user_id", unique: true
   end
 
   create_table "logins", force: :cascade do |t|
@@ -774,14 +776,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_13_154545) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "phone"
-    t.bigint "local_identity_id"
     t.bigint "affiliation_id"
     t.bigint "institution_id", null: false
     t.boolean "enabled", default: true, null: false
     t.index ["affiliation_id"], name: "index_users_on_affiliation_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["institution_id"], name: "index_users_on_institution_id"
-    t.index ["local_identity_id"], name: "index_users_on_local_identity_id"
     t.index ["name"], name: "index_users_on_name"
   end
 
@@ -863,6 +863,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_13_154545) do
   add_foreign_key "items", "institutions", on_update: :cascade, on_delete: :restrict
   add_foreign_key "items", "users", column: "submitter_id", on_update: :cascade, on_delete: :nullify
   add_foreign_key "local_identities", "invitees", on_update: :cascade, on_delete: :nullify
+  add_foreign_key "local_identities", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "logins", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "logins", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "messages", "institutions", on_update: :cascade, on_delete: :cascade
@@ -894,7 +895,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_13_154545) do
   add_foreign_key "user_groups_users", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "users", "affiliations", on_update: :cascade, on_delete: :nullify
   add_foreign_key "users", "institutions", on_update: :cascade, on_delete: :restrict
-  add_foreign_key "users", "local_identities", on_update: :cascade, on_delete: :nullify
   add_foreign_key "vocabularies", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "vocabulary_terms", "vocabularies", on_update: :cascade, on_delete: :cascade
 end

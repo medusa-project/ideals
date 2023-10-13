@@ -19,20 +19,17 @@
 #
 # # Attributes
 #
-# * `created_at`        Managed by ActiveRecord.
-# * `email`             Email address.
-# * `enabled`           Whether the user is able to log in.
-# * `institution_id`    Foreign key to {Institution} representing the
-#                       institution of which the instance is a member. All non-
-#                       sysadmin users can only log into and browse around
-#                       their home institution's space in the IR.
-# * `local_identity_id` Foreign key to {LocalIdentity}. Used only with local
-#                       identity authentication; set during processing of the
-#                       registration form.
-# * `name`              The user's name in whatever format they choose to
-#                       provide it.
-# * `phone`             The user's phone number.
-# * `updated_at:        Managed by ActiveRecord.
+# * `created_at`     Managed by ActiveRecord.
+# * `email`          Email address.
+# * `enabled`        Whether the user is able to log in.
+# * `institution_id` Foreign key to {Institution} representing the institution
+#                    of which the instance is a member. All non-sysadmin users
+#                    can only log into and browse around their home
+#                    institution's space in the IR.
+# * `name`           The user's name in whatever format they choose to provide
+#                    it.
+# * `phone`          The user's phone number.
+# * `updated_at:     Managed by ActiveRecord.
 #
 class User < ApplicationRecord
 
@@ -40,11 +37,10 @@ class User < ApplicationRecord
 
   # Only Shibboleth users will have one of these.
   belongs_to :affiliation, optional: true
-  belongs_to :identity, class_name: "LocalIdentity",
-             foreign_key: "local_identity_id", inverse_of: :user, optional: true
   belongs_to :institution, optional: true
   # Only Shibboleth users will have one of these.
   has_one :department
+  has_one :identity, class_name: "LocalIdentity", inverse_of: :user
   has_many :collection_administrators, class_name: "CollectionAdministrator"
   has_many :events
   has_many :institution_administrators
@@ -73,7 +69,6 @@ class User < ApplicationRecord
   validates :name, presence: true
 
   before_save :sync_identity_properties
-  before_destroy :destroy_identity
 
   ##
   # This is used for quickly creating local administrators in development. It
@@ -87,6 +82,7 @@ class User < ApplicationRecord
   # @return [User]
   #
   def self.create_local(email:, password:, institution:, name: nil)
+    user = nil
     ActiveRecord::Base.transaction do
       invitee = Invitee.find_by_email(email)
       unless invitee
@@ -97,17 +93,19 @@ class User < ApplicationRecord
                                                   "manually, bypassing the "\
                                                   "invitation process")
       end
-      identity = LocalIdentity.find_by_email(email)
-      unless identity
-        identity = LocalIdentity.create!(email:                 email,
-                                         password:              password,
-                                         password_confirmation: password,
-                                         invitee:               invitee)
-      end
-      identity.build_user(email:       email,
+      user = User.create!(email:       email,
                           institution: institution,
                           name:        name || email)
+      identity = LocalIdentity.find_by_email(email)
+      unless identity
+        LocalIdentity.create!(user:                  user,
+                              email:                 email,
+                              password:              password,
+                              password_confirmation: password,
+                              invitee:               invitee)
+      end
     end
+    user
   end
 
   ##
@@ -465,10 +463,6 @@ class User < ApplicationRecord
 
 
   private
-
-  def destroy_identity
-    LocalIdentity.destroy_by(email: self.email)
-  end
 
   ##
   # Updates the relevant properties of the associated {LocalIdentity} to match

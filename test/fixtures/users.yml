@@ -10,7 +10,6 @@
 
 northeast:
   institution: northeast
-  identity:    northeast
   name:        Northeast University Normal User
   email:       user@northeast.edu
   phone:       (888) 555-1234
@@ -18,7 +17,6 @@ northeast:
 
 northeast_admin:
   institution: northeast
-  identity:    northeast
   name:        Northeast.edu Institution Administrator
   email:       admin@northeast.edu
   phone:       (888) 555-1235
@@ -30,7 +28,6 @@ northeast_admin:
 
 southwest:
   institution: southwest
-  identity:    southwest
   name:        Southwest University Normal User
   email:       user@southwest.edu
   phone:       (888) 555-1234
@@ -38,7 +35,6 @@ southwest:
 
 southwest_admin:
   institution: southwest
-  identity:    southwest_admin
   name:        Southwest University Institution Administrator
   email:       admin@southwest.edu
   phone:       (888) 555-1235
@@ -48,7 +44,6 @@ southwest_admin:
 
 southwest_sysadmin:
   institution: southwest
-  identity:    southwest_sysadmin
   name:        Southwest University System Administrator
   email:       sysadmin@southwest.edu
   phone:       (888) 555-1235
