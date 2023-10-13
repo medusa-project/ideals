@@ -206,22 +206,38 @@ class ItemsController < ApplicationController
         flash['error'] = "No handles provided."
         render "export", status: :bad_request and return
       end
-      handles         = handles_str.split(",")
-      handle_suffixes = handles.map{ |h| h.split("/").last.strip }
-      handles         = Handle.where(suffix: handle_suffixes)
-      collections     = handles.select{ |h| h.collection_id.present? }.
-        map(&:collection).
-        select{ |c| c.institution == current_institution }
-      units           = handles.select{ |h| h.unit_id.present? }.
-        map(&:unit).
-        select{ |c| c.institution == current_institution }
-      if collections.empty? && units.empty?
-        flash['error'] = "The handles provided do not correspond to valid units or collections."
+      handles            = handles_str.split(",")
+      handle_suffixes    = handles.map{ |h| h.split("/").last.strip }
+      handles            = Handle.where(suffix: handle_suffixes)
+      collection_handles = handles.select{ |h| h.collection_id.present? }
+      unit_handles       = handles.select{ |h| h.unit_id.present? }
+      if collection_handles.length + unit_handles.length < handles.length
+        flash['error'] = "Some of the provided handles are not unit or "\
+                         "collection handles."
         render "export", status: :bad_request and return
       end
-      csv             = CsvExporter.new.export(units:       units,
-                                               collections: collections,
-                                               elements:    elements)
+
+      # Retrieve the Collections and Units that correspond to the handles.
+      collections = collection_handles.map(&:collection)
+      units       = unit_handles.map(&:unit)
+      if collections.empty? && units.empty?
+        flash['error'] = "The handles provided do not correspond to valid "\
+                         "units or collections."
+        render "export", status: :bad_request and return
+      end
+
+      collections.select!{ |c| c.institution == current_institution }
+      units.select!{ |u| u.institution == current_institution }
+      if collections.length < collection_handles.length ||
+        units.length < unit_handles.length
+        flash['error'] = "One or more of the units or collections whose "\
+                         "handles you provide reside in a different institution."
+        render "export", status: :forbidden and return
+      end
+
+      csv = CsvExporter.new.export(units:       units,
+                                   collections: collections,
+                                   elements:    elements)
       send_data csv,
                 type:        "text/csv",
                 disposition: "attachment",

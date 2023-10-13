@@ -486,17 +486,33 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
   end
 
+  test "export() via POST returns HTTP 400 for handles that are not unit or
+  collection handles" do
+    log_in_as(users(:southeast_admin))
+    handle = handles(:southeast_item1)
+    post export_items_path, params: {
+      handles: handle.handle,
+      elements: ["dc:title"]
+    }
+    assert_response :bad_request
+  end
+
   test "export() via POST exports CSV" do
     log_in_as(users(:southeast_admin))
     post export_items_path, params: {
-      handles: handles(:southeast_collection1).to_s,
+      handles: handles(:southeast_collection1).handle,
       elements: ["dc:title"]
     }
     assert response.body.start_with?("id,")
   end
 
   test "export() via POST does not include content from other institutions" do
-    # TODO: write this
+    log_in_as(users(:southeast_admin))
+    post export_items_path, params: {
+      handles: handles(:southwest_unit1_collection1).handle,
+      elements: ["dc:title"]
+    }
+    assert_response :forbidden
   end
 
   # file_navigator()

@@ -1,5 +1,9 @@
 ################################ southwest ##################################
 
+southwest_unit1_collection1:
+  collection: southwest_unit1_collection1
+  suffix:     5014
+
 southwest_unit1_collection1_item1:
   item:   southwest_unit1_collection1_item1
   suffix: 5000
