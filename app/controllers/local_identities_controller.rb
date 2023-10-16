@@ -14,7 +14,6 @@ class LocalIdentitiesController < ApplicationController
                                             :update_password]
   before_action :pre_validate_password_reset, only: [:new_password,
                                                      :reset_password]
-  before_action :setup_registration_view, only: :register
   before_action :pre_validate_registration, only: [:register, :update]
   before_action :validate_current_password, only: :update_password
 
@@ -46,6 +45,7 @@ class LocalIdentitiesController < ApplicationController
   #
   def register
     @token = params[:token]
+    @user  = User.new
   end
 
   ##
@@ -71,7 +71,7 @@ class LocalIdentitiesController < ApplicationController
 
   ##
   # Handles {register registration form} submissions. Invoked only once per
-  # unique [LocalIdentity] instance.
+  # unique {LocalIdentity} instance.
   #
   # Responds to `PATCH/PUT /identities/:id`.
   #
@@ -79,28 +79,23 @@ class LocalIdentitiesController < ApplicationController
     begin
       raise "Incorrect math question response. Please try again." unless check_captcha
       user = @identity.user
-      unless user
-        user = @identity.build_user(email:          @identity.email,
-                                    name:           @identity.email,
-                                    institution_id: @identity.invitee.institution_id)
-        user.save!
-      end
-      if @identity.invitee.institution_admin &&
+      if @identity.user.invitee.institution_admin &&
           !user.institution.administering_users.include?(user)
         user.institution.administering_users << user
         user.institution.save!
       end
       @identity.update!(identity_params)
+      @identity.update!(registration_digest: nil)
       @identity.send_post_registration_email
     rescue => e
       flash['error'] = "#{e}"
       redirect_to local_identity_register_path(@identity, token: params[:token])
     else
       flash['success'] = "Thanks for registering for "\
-                         "#{@identity.invitee.institution.service_name}! "\
+                         "#{@identity.user.institution.service_name}! "\
                          "You may now log in."
-      redirect_to @identity.invitee.institution.scope_url,
-                  allow_other_host: true # TODO: remove this and fix tests
+      redirect_to @identity.user.institution.scope_url,
+                  allow_other_host: true
     end
   end
 
@@ -153,7 +148,11 @@ class LocalIdentitiesController < ApplicationController
   end
 
   def pre_validate_registration
-    unless @identity.authenticated?(:registration, params[:token])
+    if @identity.registration_digest.blank?
+      # Prevent access to the registration form by users with no registration
+      # digest.
+      redirect_to root_url and return
+    elsif !@identity.authenticated?(:registration, params[:token])
       flash['error'] = "Invalid registration link."
       redirect_to root_url and return
     end
@@ -161,10 +160,6 @@ class LocalIdentitiesController < ApplicationController
 
   def set_identity
     @identity = LocalIdentity.find(params[:id] || params[:local_identity_id])
-  end
-
-  def setup_registration_view
-    @user = User.new
   end
 
   def validate_current_password

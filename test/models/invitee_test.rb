@@ -21,14 +21,16 @@ class InviteeTest < ActiveSupport::TestCase
   # create()
 
   test "create() sets approval_state" do
-    invitee = Invitee.create!(email:   "new@example.org",
-                              purpose: "New note")
+    invitee = Invitee.create!(institution: institutions(:southwest),
+                              email:       "new@example.org",
+                              purpose:     "New note")
     assert_equal Invitee::ApprovalState::PENDING, invitee.approval_state
   end
 
   test "create() sets expires_at" do
-    invitee = Invitee.create!(email:   "new@example.org",
-                              purpose: "New note")
+    invitee = Invitee.create!(institution: institutions(:southwest),
+                              email:       "new@example.org",
+                              purpose:     "New note")
     assert invitee.expires_at - Invitee::EXPIRATION - Time.now < 10.seconds
   end
 

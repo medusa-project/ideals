@@ -51,6 +51,7 @@
 # * `rejection_reason`  Contains the reason entered by an administrator who has
 #                       rejected the invitee.
 # * `updated_at`        Managed by ActiveRecord.
+# * `user_id`           Foreign key to the invited {User}.
 #
 class Invitee < ApplicationRecord
 
@@ -71,9 +72,9 @@ class Invitee < ApplicationRecord
 
   EXPIRATION = 1.year
 
-  has_one :identity, class_name: "LocalIdentity", inverse_of: :invitee
-  belongs_to :institution, optional: true
+  belongs_to :institution
   belongs_to :inviting_user, class_name: "User", optional: true
+  belongs_to :user, optional: true
 
   before_create -> { self.expires_at = EXPIRATION.from_now }
 
@@ -89,7 +90,7 @@ class Invitee < ApplicationRecord
   # @see reject
   #
   def approve
-    associate_or_create_identity
+    associate_or_create_user
     self.update!(approval_state: ApprovalState::APPROVED)
     send_approval_email
   end
@@ -118,7 +119,7 @@ class Invitee < ApplicationRecord
   # @see reject
   #
   def invite
-    associate_or_create_identity
+    associate_or_create_user
     self.update!(approval_state: ApprovalState::APPROVED)
     send_invited_email
   end
@@ -146,17 +147,17 @@ class Invitee < ApplicationRecord
     unless approved?
       raise "An approval email can only be sent to an approved invitee."
     end
-    associate_or_create_identity
-    self.identity.create_registration_digest
-    self.identity.send_approval_email
+    associate_or_create_user
+    self.user.identity.create_registration_digest
+    self.user.identity.send_approval_email
   end
 
   def send_invited_email
     unless approved?
       raise "An invite email can only be sent to an approved invitee."
     end
-    self.identity.create_registration_digest
-    self.identity.send_invited_email
+    self.user.identity.create_registration_digest
+    self.user.identity.send_invited_email
   end
 
   ##
@@ -192,25 +193,26 @@ class Invitee < ApplicationRecord
 
   private
 
-  def associate_or_create_identity # TODO: redesign as associate_or_create_user
-    unless self.identity
-      id = LocalIdentity.find_by(email: self.email)
-      if id
-        self.update!(identity: id)
-      else
-        # A password is required, so just set a random one. It will be updated
-        # during registration.
-        password = LocalIdentity.random_password
-        user     = User.find_by_email(self.email) ||
-          User.create!(email:       self.email,
-                       name:        self.email,
-                       institution: self.institution)
-        LocalIdentity.create!(email:                 self.email,
-                              password:              password,
-                              password_confirmation: password,
-                              invitee:               self,
-                              user:                  user)
-      end
+  def associate_or_create_user
+    return if self.user
+
+    user = User.find_by_email(self.email) ||
+      User.create!(email:       self.email,
+                   name:        self.email,
+                   institution: self.institution)
+    self.update!(user: user) if self.user != user
+
+    identity = LocalIdentity.find_by(email: self.email)
+    if identity
+      identity.update!(user: user)
+    else
+      # A password is required, so just set a random one. It will be updated
+      # during registration.
+      password = LocalIdentity.random_password
+      LocalIdentity.create!(email:                 self.email,
+                            password:              password,
+                            password_confirmation: password,
+                            user:                  user)
     end
   end
 

@@ -89,7 +89,7 @@ class LocalIdentityTest < ActiveSupport::TestCase
   test "password_reset_url() returns a correct URL" do
     @instance.create_reset_digest
     expected = sprintf("http://%s/identities/%d/reset-password?token=%s",
-                       @instance.invitee.institution.fqdn,
+                       @instance.user.institution.fqdn,
                        @instance.id,
                        @instance.reset_token)
     assert_equal expected, @instance.password_reset_url
@@ -106,7 +106,7 @@ class LocalIdentityTest < ActiveSupport::TestCase
   test "registration_url() returns a correct URL" do
     @instance.create_registration_digest
     expected = sprintf("http://%s/identities/%d/register?token=%s",
-                       @instance.invitee.institution.fqdn,
+                       @instance.user.institution.fqdn,
                        @instance.id,
                        @instance.registration_token)
     assert_equal expected, @instance.registration_url

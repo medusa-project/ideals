@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_10_13_195355) do
+ActiveRecord::Schema[7.1].define(version: 2023_10_13_204225) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -431,9 +431,11 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_13_195355) do
     t.boolean "institution_admin", default: false, null: false
     t.text "rejection_reason"
     t.bigint "inviting_user_id"
+    t.bigint "user_id"
     t.index ["email"], name: "index_invitees_on_email", unique: true
     t.index ["institution_id"], name: "index_invitees_on_institution_id"
     t.index ["inviting_user_id"], name: "index_invitees_on_inviting_user_id"
+    t.index ["user_id"], name: "index_invitees_on_user_id", unique: true
   end
 
   create_table "items", force: :cascade do |t|
@@ -457,7 +459,6 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_13_195355) do
     t.string "email", null: false
     t.string "password_digest"
     t.string "reset_digest"
-    t.bigint "invitee_id"
     t.datetime "reset_sent_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -465,7 +466,6 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_13_195355) do
     t.string "lowercase_email", null: false
     t.bigint "user_id"
     t.index ["email"], name: "index_local_identities_on_email", unique: true
-    t.index ["invitee_id"], name: "index_local_identities_on_invitee_id"
     t.index ["lowercase_email"], name: "index_local_identities_on_lowercase_email", unique: true
     t.index ["user_id"], name: "index_local_identities_on_user_id", unique: true
   end
@@ -860,9 +860,9 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_13_195355) do
   add_foreign_key "institutions", "registered_elements", column: "title_element_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "invitees", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "invitees", "users", column: "inviting_user_id", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "invitees", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "items", "institutions", on_update: :cascade, on_delete: :restrict
   add_foreign_key "items", "users", column: "submitter_id", on_update: :cascade, on_delete: :nullify
-  add_foreign_key "local_identities", "invitees", on_update: :cascade, on_delete: :nullify
   add_foreign_key "local_identities", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "logins", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "logins", "users", on_update: :cascade, on_delete: :cascade

@@ -8,14 +8,12 @@
 ################################ northeast ##################################
 
 northeast:
-  invitee:         northeast
   user:            northeast
   email:           user@northeast.edu
   lowercase_email: user@northeast.edu
   password_digest: <%= password_digest %>
 
 northeast_admin:
-  invitee:         northeast_admin
   user:            northeast_admin
   email:           admin@northeast.edu
   lowercase_email: admin@northeast.edu
@@ -24,21 +22,18 @@ northeast_admin:
 ################################ southwest ##################################
 
 southwest:
-  invitee:         southwest
   user:            southwest
   email:           user@southwest.edu
   lowercase_email: user@southwest.edu
   password_digest: <%= password_digest %>
 
 southwest_admin:
-  invitee:         southwest_admin
   user:            southwest_admin
   email:           admin@southwest.edu
   lowercase_email: admin@southwest.edu
   password_digest: <%= password_digest %>
 
 southwest_sysadmin:
-  invitee:         southwest_sysadmin
   user:            southwest_sysadmin
   email:           sysadmin@southwest.edu
   lowercase_email: sysadmin@southwest.edu

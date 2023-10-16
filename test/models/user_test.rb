@@ -91,7 +91,7 @@ class UserTest < ActiveSupport::TestCase
     assert invitee.approved?
 
     # check the LocalIdentity
-    identity = invitee.identity
+    identity = user.identity
     assert_equal email, identity.email
 
     # check the User
@@ -646,6 +646,12 @@ class UserTest < ActiveSupport::TestCase
 
   test "institution_admin?() returns false for a nil argument" do
     assert !@user.institution_admin?(nil)
+  end
+
+  # invitee()
+
+  test "invitee() returns the associated Invitee" do
+    assert @user.invitee.kind_of?(Invitee)
   end
 
   # name

@@ -124,6 +124,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
 
   test "register() redirects and sets the flash if a token is not provided" do
     identity = local_identities(:southwest)
+    identity.create_registration_digest
     get local_identity_register_path(identity)
     assert_equal "Invalid registration link.", flash['error']
     assert_redirected_to root_url
@@ -132,6 +133,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
   test "register() redirects and sets the flash if an invalid token is
   provided" do
     identity = local_identities(:southwest)
+    identity.create_registration_digest
     get local_identity_register_path(identity, token: "bogus")
     assert_equal "Invalid registration link.", flash['error']
     assert_redirected_to root_url
@@ -263,6 +265,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
 
   test "update() sets the flash and redirects if no token is provided" do
     identity = local_identities(:southwest)
+    identity.create_registration_digest
     patch local_identity_path(identity),
           params: {
             honey_email: "",
@@ -281,9 +284,34 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_url
   end
 
+  test "update() redirects if the instance has no registration digest" do
+    identity = local_identities(:southwest)
+    identity.update!(registration_digest: nil)
+    token    = identity.registration_token
+    password = LocalIdentity.random_password
+
+    patch local_identity_path(identity),
+          params: {
+            token: token,
+            honey_email: "",
+            correct_answer_hash: Digest::MD5.hexdigest("5" + ApplicationHelper::CAPTCHA_SALT),
+            answer: "5",
+            local_identity: {
+              password:              password,
+              password_confirmation: password,
+              user_attributes: {
+                name:  "New Name",
+                phone: "555-555-5555"
+              }
+            }
+          }
+    assert_redirected_to root_url
+  end
+
   test "update() sets the flash and redirects if an invalid token is
   provided" do
     identity = local_identities(:southwest)
+    identity.create_registration_digest
     patch local_identity_path(identity),
           params: {
               token: "bogus",
@@ -378,8 +406,8 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
             }
           }
     assert flash['success'].start_with?("Thanks for registering for "\
-        "#{identity.invitee.institution.service_name}")
-    assert_redirected_to identity.invitee.institution.scope_url
+        "#{identity.user.institution.service_name}")
+    assert_redirected_to identity.user.institution.scope_url
   end
 
   test "update() updates the instance and sends an email if all arguments
@@ -408,6 +436,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
               }
             }
       identity.reload
+      assert_nil identity.registration_digest
       user = identity.user
       assert_equal name, user.name
       assert_equal phone, user.phone
@@ -419,7 +448,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
   test "update() makes the user an institution administrator if directed to by
   the Invitee instance" do
     identity = local_identities(:southwest)
-    identity.invitee.update!(institution_admin: true)
+    identity.user.invitee.update!(institution_admin: true)
     identity.create_registration_digest
     token    = identity.registration_token
     name     = "New Name"

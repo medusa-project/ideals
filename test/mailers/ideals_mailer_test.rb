@@ -48,7 +48,7 @@ class IdealsMailerTest < ActionMailer::TestCase
 
   test "account_registered() sends the expected email" do
     identity    = local_identities(:southwest)
-    institution = identity.invitee.institution
+    institution = identity.user.institution
 
     email = IdealsMailer.account_registered(identity).deliver_now
     assert !ActionMailer::Base.deliveries.empty?

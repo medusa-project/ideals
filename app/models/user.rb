@@ -101,8 +101,7 @@ class User < ApplicationRecord
         LocalIdentity.create!(user:                  user,
                               email:                 email,
                               password:              password,
-                              password_confirmation: password,
-                              invitee:               invitee)
+                              password_confirmation: password)
       end
     end
     user
@@ -413,6 +412,14 @@ class User < ApplicationRecord
       return true if self.belongs_to_user_group?(group)
     end
     false
+  end
+
+  ##
+  # @return [Invitee]
+  #
+  def invitee
+    @invitee = Invitee.find_by_email(self.email) unless @invitee
+    @invitee
   end
 
   ##

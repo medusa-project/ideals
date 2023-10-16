@@ -86,8 +86,8 @@ class PasswordResetsControllerTest < ActionDispatch::IntegrationTest
                                purpose:     "Note",
                                institution: institutions(:northeast),
                                expires_at:  Time.now + 1.hour)
-    invitee.send(:associate_or_create_identity)
-    identity = invitee.identity
+    invitee.send(:associate_or_create_user)
+    identity = invitee.user.identity
     identity.update!(email:                 email,
                      password:              password,
                      password_confirmation: password)

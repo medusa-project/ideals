@@ -51,7 +51,7 @@ class IdealsMailer < ApplicationMailer
   #
   def account_approved(identity)
     @identity    = identity
-    @institution = @identity.invitee.institution
+    @institution = @identity.user.institution
     mail(to:      @identity.email,
          subject: "Register your #{@institution.service_name} account")
   end
@@ -76,7 +76,7 @@ class IdealsMailer < ApplicationMailer
   #
   def account_registered(identity)
     @identity    = identity
-    @institution = @identity.invitee.institution
+    @institution = @identity.user.institution
     mail(to:      @identity.email,
          subject: "Welcome to #{@institution.service_name}!")
   end
@@ -156,7 +156,7 @@ class IdealsMailer < ApplicationMailer
   #
   def invited(identity)
     @identity    = identity
-    @institution = @identity.invitee.institution
+    @institution = @identity.user.institution
     mail(to:      @identity.email,
          subject: "Register for an account with #{@institution.service_name}")
   end
@@ -227,7 +227,7 @@ class IdealsMailer < ApplicationMailer
   #
   def password_reset(identity)
     @identity    = identity
-    @institution = @identity.invitee.institution
+    @institution = @identity.user.institution
     mail(to:      @identity.email,
          subject: "Reset your #{@institution.service_name} password")
   end
