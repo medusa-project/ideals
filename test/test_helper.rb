@@ -49,6 +49,9 @@ class ActiveSupport::TestCase
   #                          local is assumed; otherwise :shibboleth.
   #
   def log_in_as(user, provider = nil)
+    raise "User is nil" if user.nil?
+    raise "User is disabled" unless user.enabled
+    raise "User is not persisted" unless user.persisted?
     unless provider
       if user.identity
         provider = :local
