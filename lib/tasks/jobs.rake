@@ -13,8 +13,12 @@ namespace :jobs do
 
   desc 'Run a test job'
   task :test => :environment do
-    SleepJob.perform_later(duration: 30)
-    puts "Job enqueued. You should see a new task in the tasks list at /tasks."
+    if Rails.application.config.active_job.queue_adapter == :async
+      puts "The :async ActiveJob adapter doesn't work with rake tasks. Exiting."
+    else
+      SleepJob.perform_later(duration: 30)
+      "Job enqueued. You should see a new task appear at /tasks."
+    end
   end
 
 end
