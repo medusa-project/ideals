@@ -1,5 +1,5 @@
 # config valid for current version and patch releases of Capistrano
-lock "~> 3.16.0"
+lock "~> 3.18.0"
 
 set :application, 'ideals'
 set :repo_url, 'https://github.com/medusa-project/ideals.git'
