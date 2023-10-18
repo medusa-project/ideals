@@ -5,8 +5,7 @@ Institution.create!(key:               "uiuc",
                     fqdn:              "www.ideals.illinois.edu",
                     service_name:      "IDEALS",
                     feedback_email:    "IDEALS @ Illinois <ideals@library.illinois.edu>",
-                    shibboleth_org_dn: "o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu",
-                    default:           true)
+                    shibboleth_org_dn: "o=University of Illinois at Urbana-Champaign,dc=uiuc,dc=edu")
 
 ############################## User groups #################################
 
