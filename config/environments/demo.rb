@@ -60,11 +60,12 @@ Rails.application.configure do
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store
 
-  # Although the docs advise against using the async adapter in production,
-  # it's probably sufficient for the very limited work we ask of it, and it
-  # keeps the application simpler.
-  config.active_job.queue_adapter = :async
-  config.active_job.queue_name_prefix = "ideals_demo"
+  # Use a real queuing backend for Active Job (and separate queues per environment).
+  config.active_job.queue_adapter = :good_job
+  config.active_job.queue_name_prefix = "kumquat_demo"
+  config.good_job.execution_mode = :external
+  config.good_job.retry_on_unhandled_error = false
+  config.good_job.preserve_job_records = false
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).

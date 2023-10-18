@@ -20,6 +20,8 @@ gem "amqp_helper", "~>0.2.0", git: "https://github.com/medusa-project/amqp_helpe
 gem "csv"
 # Provides all of our icons.
 gem "font-awesome-sass", "~> 5"
+# Our ActiveJob queue
+gem "good_job"
 # All HTML templates are written in HAML
 gem "haml-rails"
 # Application HTTP client
