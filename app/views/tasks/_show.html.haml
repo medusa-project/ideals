@@ -11,6 +11,9 @@
   %dd= task.name
   %dt Database ID
   %dd= task.id
+  %dt Job ID
+  %dd
+    %code= task.job_id
   %dt Status
   %dd= task_status_badge(task)
   %dt Progress
