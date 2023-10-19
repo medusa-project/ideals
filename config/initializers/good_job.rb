@@ -1,1 +1,0 @@
-GoodJob.logger = Rails.logger

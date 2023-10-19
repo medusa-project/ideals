@@ -323,9 +323,9 @@ In development, the async adapter is used to run jobs. This adapter simply runs
 them in a separate thread within one of the web server's worker processes. This
 adapter works automatically with no configuration.
 
-In demo and production, the [good_job](https://github.com/bensheldon/good_job)
-adapter is used to run jobs. This adapter relies on several database tables
-(starting with `good_job_`) and runs in a separate process.
+In demo and production, the [delayed_job](https://github.com/collectiveidea/delayed_job)
+adapter is used to run jobs. The job worker relies on database tables and runs
+in a separate process.
 
 Examining the job classes in `app/jobs`, one will notice that most of their
 `perform()` methods create a Task instance before doing anything. This object

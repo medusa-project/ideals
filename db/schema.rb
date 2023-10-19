@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_10_19_145144) do
+ActiveRecord::Schema[7.1].define(version: 2023_10_19_211436) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -144,6 +144,21 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_19_145144) do
     t.index ["submission_profile_id"], name: "index_collections_on_submission_profile_id"
   end
 
+  create_table "delayed_jobs", force: :cascade do |t|
+    t.integer "priority", default: 0, null: false
+    t.integer "attempts", default: 0, null: false
+    t.text "handler", null: false
+    t.text "last_error"
+    t.datetime "run_at"
+    t.datetime "locked_at"
+    t.datetime "failed_at"
+    t.string "locked_by"
+    t.string "queue"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["priority", "run_at"], name: "delayed_jobs_priority"
+  end
+
   create_table "departments", force: :cascade do |t|
     t.string "name", null: false
     t.bigint "user_group_id"
@@ -264,41 +279,6 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_19_145144) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["bitstream_id"], name: "index_full_texts_on_bitstream_id", unique: true
-  end
-
-  create_table "good_job_batches", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.text "description"
-    t.jsonb "serialized_properties"
-    t.text "on_finish"
-    t.text "on_success"
-    t.text "on_discard"
-    t.text "callback_queue_name"
-    t.integer "callback_priority"
-    t.datetime "enqueued_at"
-    t.datetime "discarded_at"
-    t.datetime "finished_at"
-  end
-
-  create_table "good_job_executions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.uuid "active_job_id", null: false
-    t.text "job_class"
-    t.text "queue_name"
-    t.jsonb "serialized_params"
-    t.datetime "scheduled_at"
-    t.datetime "finished_at"
-    t.text "error"
-    t.integer "error_event", limit: 2
-    t.index ["active_job_id", "created_at"], name: "index_good_job_executions_on_active_job_id_and_created_at"
-  end
-
-  create_table "good_job_processes", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.jsonb "state"
   end
 
   create_table "good_job_settings", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

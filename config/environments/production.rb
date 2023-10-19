@@ -61,11 +61,8 @@ Rails.application.configure do
   # config.cache_store = :mem_cache_store
 
   # Use a real queuing backend for Active Job (and separate queues per environment).
-  config.active_job.queue_adapter = :good_job
+  config.active_job.queue_adapter = :delayed_job
   config.active_job.queue_name_prefix = "ideals_production"
-  config.good_job.execution_mode = :external
-  config.good_job.retry_on_unhandled_error = false
-  config.good_job.preserve_job_records = false
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).
