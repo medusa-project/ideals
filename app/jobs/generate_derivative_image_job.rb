@@ -20,8 +20,13 @@ class GenerateDerivativeImageJob < ApplicationJob
                        status_text:   "Generating #{region}/#{size} #{format} "\
                                       "derivative image for #{bs.filename} "\
                                       "(item ID #{bs.item_id})")
-    bs.send(:generate_image_derivative,
-            region: region, size: size, format: format)
+    Timeout::timeout(60) do
+      bs.send(:generate_image_derivative,
+              region: region, size: size, format: format)
+    end
+  rescue Timeout::Error => e
+    bs.update!(known_derivative_error: true)
+    throw e
   end
 
 end
