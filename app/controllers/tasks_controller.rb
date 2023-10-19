@@ -64,7 +64,7 @@ class TasksController < ApplicationController
                                         [:status_text, :status])
     @start            = [@permitted_params[:start].to_i.abs, MAX_START].min
     @window           = window_size
-    @tasks            = Task.all.order(created_at: :desc)
+    @tasks            = Task.all.order(created_at: :desc, status: :asc)
     if institution
       @tasks = @tasks.where(institution: institution)
     end
