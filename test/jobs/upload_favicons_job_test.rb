@@ -13,7 +13,7 @@ class UploadFaviconsJobTest < ActiveSupport::TestCase
 
       institution = institutions(:southwest)
       user        = users(:southwest)
-      UploadFaviconsJob.new.perform(master_favicon_path: path,
+      UploadFaviconsJob.perform_now(master_favicon_path: path,
                                     institution:         institution,
                                     user:                user)
 

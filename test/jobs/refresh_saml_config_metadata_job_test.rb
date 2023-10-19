@@ -5,7 +5,7 @@ class RefreshSamlConfigMetadataJobTest < ActiveSupport::TestCase
   test "perform() creates a correct Task" do
     institution = institutions(:southwest)
     user        = users(:southwest)
-    RefreshSamlConfigMetadataJob.new.perform(institution: institution,
+    RefreshSamlConfigMetadataJob.perform_now(institution: institution,
                                              user:        user)
 
     task = Task.all.order(created_at: :desc).limit(1).first
@@ -21,17 +21,17 @@ class RefreshSamlConfigMetadataJobTest < ActiveSupport::TestCase
     institution = institutions(:southwest)
     institution.update!(saml_idp_signing_cert: nil)
 
-    RefreshSamlConfigMetadataJob.new.perform(institution: institution)
+    RefreshSamlConfigMetadataJob.perform_now(institution: institution)
     # This is tested more thoroughly in the tests of Institution
     assert_not_nil institution.saml_idp_signing_cert
   end
 
   test "perform() updates an institution's metadata from a local XML file" do
     institution = institutions(:southwest)
-    institution.update!(sso_federation:         Institution::SSOFederation::NONE,
-                        saml_idp_signing_cert:  nil)
+    institution.update!(sso_federation:        Institution::SSOFederation::NONE,
+                        saml_idp_signing_cert: nil)
 
-    RefreshSamlConfigMetadataJob.new.perform(institution:       institution,
+    RefreshSamlConfigMetadataJob.perform_now(institution:       institution,
                                              configuration_xml: file_fixture("southwest_saml.xml"))
     # This is tested more thoroughly in the tests of Institution
     assert_not_nil institution.saml_idp_signing_cert

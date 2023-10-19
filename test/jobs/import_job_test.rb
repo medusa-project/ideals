@@ -20,7 +20,7 @@ class ImportJobTest < ActiveSupport::TestCase
                                     path: fixture)
 
     user = users(:southwest)
-    ImportJob.new.perform(import: import, user: user)
+    ImportJob.perform_now(import: import, user: user)
     import.reload
 
     task = import.task
@@ -42,7 +42,7 @@ class ImportJobTest < ActiveSupport::TestCase
                                     path: fixture)
 
     submitter = users(:southeast)
-    ImportJob.new.perform(import: import, user: submitter)
+    ImportJob.perform_now(import: import, user: submitter)
 
     assert !File.exist?(import.file)
   end
@@ -56,7 +56,7 @@ class ImportJobTest < ActiveSupport::TestCase
     ObjectStore.instance.put_object(key:  import.file_key,
                                     path: fixture)
 
-    format = ImportJob.new.perform(import: import)
+    format = ImportJob.perform_now(import: import)
     assert_equal Import::Format::CSV_FILE, format
   end
 
@@ -70,7 +70,7 @@ class ImportJobTest < ActiveSupport::TestCase
     ObjectStore.instance.put_object(key:  import.file_key,
                                     path: csv_package)
 
-    format = ImportJob.new.perform(import: import)
+    format = ImportJob.perform_now(import: import)
     assert_equal Import::Format::CSV_PACKAGE, format
   end
 
@@ -84,7 +84,7 @@ class ImportJobTest < ActiveSupport::TestCase
     ObjectStore.instance.put_object(key:  import.file_key,
                                     path: saf_package)
 
-    format = ImportJob.new.perform(import: import)
+    format = ImportJob.perform_now(import: import)
     assert_equal Import::Format::SAF, format
   end
 

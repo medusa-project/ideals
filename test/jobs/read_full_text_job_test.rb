@@ -10,7 +10,7 @@ class ReadFullTextJobTest < ActiveSupport::TestCase
     bs   = bitstreams(:southeast_approved_in_permanent)
     user = users(:southeast)
 
-    ReadFullTextJob.new.perform(bitstream: bs, user: user)
+    ReadFullTextJob.perform_now(bitstream: bs, user: user)
 
     task = Task.all.order(created_at: :desc).limit(1).first
     assert_equal "ReadFullTextJob", task.name

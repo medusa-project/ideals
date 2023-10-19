@@ -16,7 +16,7 @@ class ImportVocabularyTermsJobTest < ActiveSupport::TestCase
   test "perform() creates a correct Task" do
     vocabulary = vocabularies(:southwest_one)
     user       = users(:southwest)
-    ImportVocabularyTermsJob.new.perform(vocabulary: vocabulary,
+    ImportVocabularyTermsJob.perform_now(vocabulary: vocabulary,
                                          pathname:   @csv_path,
                                          user:       user)
 
@@ -34,7 +34,7 @@ class ImportVocabularyTermsJobTest < ActiveSupport::TestCase
     vocabulary    = vocabularies(:southwest_one)
     user          = users(:southwest)
     initial_count = VocabularyTerm.count
-    ImportVocabularyTermsJob.new.perform(vocabulary: vocabulary,
+    ImportVocabularyTermsJob.perform_now(vocabulary: vocabulary,
                                          pathname:   @csv_path,
                                          user:       user)
 

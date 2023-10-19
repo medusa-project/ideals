@@ -464,7 +464,10 @@ class Bitstream < ApplicationRecord
     key   = derivative_image_key(region: region, size: size, format: :jpg)
     unless store.object_exists?(key: key)
       if generate_async
-        GenerateDerivativeImageJob.perform_later(self, region, size, :jpg)
+        GenerateDerivativeImageJob.perform_later(bitstream: self,
+                                                 region:    region,
+                                                 size:      size,
+                                                 format:    :jpg)
         return nil
       else
         generate_image_derivative(region: region, size: size, format: :jpg)

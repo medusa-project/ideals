@@ -36,6 +36,7 @@
 #                      institution under which the task is executing. Used for
 #                      scoped tasks view and not always relevant, so may be
 #                      null.
+# * `job_id`           ID of the associated ActiveJob.
 # * `name`             Consistent name for the task, common across all tasks
 #                      that do the same thing. The name of an {ApplicationJob}
 #                      subclass would be an example of a good name.

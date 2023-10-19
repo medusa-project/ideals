@@ -13,7 +13,7 @@ class ZipBitstreamsJobTest < ActiveSupport::TestCase
     institution = institutions(:southwest)
     user        = users(:southwest)
 
-    ZipBitstreamsJob.new.perform(bitstreams:  bitstreams,
+    ZipBitstreamsJob.perform_now(bitstreams:  bitstreams,
                                  download:    download,
                                  institution: institution,
                                  user:        user)
@@ -31,7 +31,7 @@ class ZipBitstreamsJobTest < ActiveSupport::TestCase
                   bitstreams(:southeast_item1_license_bundle)]
     download = Download.create(institution: institutions(:southeast))
 
-    ZipBitstreamsJob.new.perform(bitstreams: bitstreams,
+    ZipBitstreamsJob.perform_now(bitstreams: bitstreams,
                                  download:   download)
 
     download.reload
@@ -46,7 +46,7 @@ class ZipBitstreamsJobTest < ActiveSupport::TestCase
     bitstreams  = [bitstreams(:southeast_approved_in_permanent),
                    bitstreams(:southeast_item1_license_bundle)]
     download    = Download.create(institution: institution)
-    ZipBitstreamsJob.new.perform(bitstreams: bitstreams,
+    ZipBitstreamsJob.perform_now(bitstreams: bitstreams,
                                  download:   download)
 
     download = Download.create(institution: institution)
@@ -82,7 +82,7 @@ class ZipBitstreamsJobTest < ActiveSupport::TestCase
                   bitstreams(:southeast_item1_license_bundle)]
     download = Download.create(institution: institutions(:southeast))
 
-    ZipBitstreamsJob.new.perform(bitstreams: bitstreams,
+    ZipBitstreamsJob.perform_now(bitstreams: bitstreams,
                                  download:   download)
 
     download.reload

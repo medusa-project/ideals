@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_10_18_142406) do
+ActiveRecord::Schema[7.1].define(version: 2023_10_19_145144) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -778,8 +778,12 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_18_142406) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "institution_id"
+    t.string "job_id"
+    t.string "queue"
     t.index ["created_at"], name: "index_tasks_on_created_at"
     t.index ["institution_id"], name: "index_tasks_on_institution_id"
+    t.index ["job_id"], name: "index_tasks_on_job_id", unique: true
+    t.index ["queue"], name: "index_tasks_on_queue"
     t.index ["started_at"], name: "index_tasks_on_started_at"
     t.index ["status"], name: "index_tasks_on_status"
     t.index ["stopped_at"], name: "index_tasks_on_stopped_at"

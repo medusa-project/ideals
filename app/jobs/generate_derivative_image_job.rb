@@ -1,35 +1,27 @@
+# frozen_string_literal: true
+
 class GenerateDerivativeImageJob < ApplicationJob
 
-  queue_as :public
+  QUEUE = ApplicationJob::Queue::PUBLIC
+
+  queue_as QUEUE
 
   ##
-  # @param args [Array] Four-element array with [Bitstream] at position 0 and
-  #                     region, size, and format elements in the remaining
-  #                     positions in the same format as the arguments to
-  #                     {Bitstream#generate_image_derivative}.
+  # @param args [Hash] Hash with `:bitstream`, `:region`, `:size`, and
+  #                    `:format` keys.
   #
-  def perform(*args)
-    bs     = args[0]
-    region = args[1]
-    size   = args[2]
-    format = args[3]
+  def perform(**args)
+    bs     = args[:bitstream]
+    region = args[:region]
+    size   = args[:size]
+    format = args[:format]
 
-    task = Task.create!(name:          self.class.name,
-                        indeterminate: true,
-                        institution:   bs.institution,
-                        started_at:    Time.now,
-                        status_text:   "Generating #{region}/#{size} #{format} "\
-                                       "derivative image for #{bs.filename} "\
-                                       "(item ID #{bs.item_id})")
-    begin
-      bs.send(:generate_image_derivative,
-              region: region, size: size, format: format)
-    rescue => e
-      task.fail(detail:    e.message,
-                backtrace: e.backtrace)
-    else
-      task.succeed
-    end
+    self.task&.update!(indeterminate: true,
+                       status_text:   "Generating #{region}/#{size} #{format} "\
+                                      "derivative image for #{bs.filename} "\
+                                      "(item ID #{bs.item_id})")
+    bs.send(:generate_image_derivative,
+            region: region, size: size, format: format)
   end
 
 end

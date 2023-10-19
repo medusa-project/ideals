@@ -2,7 +2,9 @@
 
 class ZipBitstreamsJob < ApplicationJob
 
-  queue_as :public
+  QUEUE = ApplicationJob::Queue::PUBLIC
+
+  queue_as QUEUE
 
   ##
   # Creates a zip file containing the given bitstreams and uploads it to the
@@ -14,18 +16,15 @@ class ZipBitstreamsJob < ApplicationJob
   # attribute is updated to reflect the filename of the zip within the
   # application bucket.
   #
-  # @param args [Array<Hash>] One-element array containing a Hash. The hash has
-  #                           a `:bitstreams` key containing an array of
-  #                           {Bitstream}s; a `:download` key pointing to a
-  #                           {Download} instance; an `:item_id` key; and a
-  #                           `:user` key.
+  # @param args [Hash] Hash with a `:bitstreams` key containing an array of
+  #                    {Bitstream}s; a `:download` key pointing to a {Download}
+  #                    instance; an `:item_id` key; and a `:user` key.
   # @see ZipItemsJob
   #
-  def perform(*args)
-    bitstreams  = args[0][:bitstreams]
-    download    = args[0][:download]
-    item_id     = args[0][:item_id]
-    user        = args[0][:user]
+  def perform(**args)
+    bitstreams  = args[:bitstreams]
+    download    = args[:download]
+    item_id     = args[:item_id]
     institution = nil
     if item_id
       filename    = "item-#{item_id}.zip"
@@ -33,26 +32,17 @@ class ZipBitstreamsJob < ApplicationJob
     else
       filename = "#{SecureRandom.hex[0..15]}.zip"
     end
-    task       = Task.create!(name:          self.class.name,
-                              download:      download,
-                              institution:   institution,
-                              user:          user,
-                              indeterminate: false,
-                              started_at:    Time.now,
-                              status_text:   "Creating zip file")
-    begin
-      ActiveRecord::Base.transaction do
-        download.update!(filename: filename)
-        Bitstream.create_zip_file(bitstreams: bitstreams,
-                                  dest_key:   download.object_key,
-                                  item_id:    item_id,
-                                  task:       task)
-      end
-    rescue => e
-      task.fail(detail:    e.message,
-                backtrace: e.backtrace)
-    else
-      task.succeed
+    self.task&.update!(download:    download,
+                       institution: institution,
+                       started_at:  Time.now,
+                       status_text: "Creating zip file")
+
+    ActiveRecord::Base.transaction do
+      download.update!(filename: filename)
+      Bitstream.create_zip_file(bitstreams: bitstreams,
+                                dest_key:   download.object_key,
+                                item_id:    item_id,
+                                task:       self.task)
     end
   end
 

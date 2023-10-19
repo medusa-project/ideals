@@ -7,11 +7,12 @@ class ZipItemsJobTest < ActiveSupport::TestCase
   end
 
   test "perform() creates a correct Task" do
-    item_ids    = [items(:southeast_approved).id, items(:southeast_multiple_bitstreams).id]
-    download    = Download.create(institution: institutions(:southeast))
+    item_ids    = [items(:southeast_approved).id,
+                   items(:southeast_multiple_bitstreams).id]
+    download    = Download.create!(institution: institutions(:southeast))
     institution = institutions(:southeast)
     user        = users(:southeast)
-    ZipItemsJob.new.perform(item_ids:    item_ids,
+    ZipItemsJob.perform_now(item_ids:    item_ids,
                             download:    download,
                             institution: institution,
                             user:        user)
@@ -25,22 +26,23 @@ class ZipItemsJobTest < ActiveSupport::TestCase
   end
 
   test "perform() creates a zip file" do
-    item_ids = [items(:southeast_approved).id, items(:southeast_multiple_bitstreams).id]
-    download = Download.create(institution: institutions(:southeast))
-    ZipItemsJob.new.perform(item_ids: item_ids,
+    item_ids = [items(:southeast_approved).id,
+                items(:southeast_multiple_bitstreams).id]
+    download = Download.create!(institution: institutions(:southeast))
+    ZipItemsJob.perform_now(item_ids: item_ids,
                             download: download)
 
     download.reload
-    bucket = ::Configuration.instance.storage[:bucket]
-    assert S3Client.instance.head_object(bucket: bucket,
+    assert S3Client.instance.head_object(bucket: ObjectStore::BUCKET,
                                          key:    download.object_key).content_length > 0
   end
 
   test "perform() assigns a correct filename to the zip file" do
-    item_ids = [items(:southeast_approved).id, items(:southeast_multiple_bitstreams).id]
-    download = Download.create(institution: institutions(:southeast))
+    item_ids = [items(:southeast_approved).id,
+                items(:southeast_multiple_bitstreams).id]
+    download = Download.create!(institution: institutions(:southeast))
 
-    ZipItemsJob.new.perform(item_ids: item_ids,
+    ZipItemsJob.perform_now(item_ids: item_ids,
                             download: download)
 
     download.reload
