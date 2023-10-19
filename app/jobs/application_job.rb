@@ -97,9 +97,15 @@ class ApplicationJob < ActiveJob::Base
 
   def create_task
     unless Task.find_by_job_id(self.job_id)
+      if arguments[0].respond_to?(:dig)
+        user        = arguments[0].dig(:user)
+        institution = arguments[0].dig(:institution)
+      else
+        user = institution = nil
+      end
       Task.create!(name:        self.class.name,
-                   user:        arguments[0].dig(:user),
-                   institution: arguments[0].dig(:institution),
+                   user:        user,
+                   institution: institution,
                    status_text: "Waiting...",
                    job_id:      self.job_id,
                    queue:       self.class::QUEUE)
