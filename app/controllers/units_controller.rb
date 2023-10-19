@@ -309,6 +309,7 @@ class UnitsController < ApplicationController
     @num_submitted_items = @unit.submitted_item_count
     @collections         = Collection.search.
       institution(@unit.institution).
+      include_children(false).
       filter(Collection::IndexFields::PRIMARY_UNIT, @unit.id).
       order("#{Collection::IndexFields::TITLE}.sort").
       limit(999)
@@ -337,6 +338,7 @@ class UnitsController < ApplicationController
   def show_collections
     @collections = Collection.search.
       institution(@unit.institution).
+      include_children(false).
       filter(Collection::IndexFields::PRIMARY_UNIT, @unit.id).
       order("#{Collection::IndexFields::TITLE}.sort").
       limit(999)
