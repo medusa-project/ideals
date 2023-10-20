@@ -38,7 +38,7 @@
 #
 class LocalIdentity < OmniAuth::Identity::Models::ActiveRecord
 
-  PASSWORD_MIN_LENGTH             = 8
+  PASSWORD_MIN_LENGTH             = 12
   PASSWORD_MIN_UPPERCASE_LETTERS  = 1
   PASSWORD_MIN_LOWERCASE_LETTERS  = 1
   PASSWORD_MIN_NUMBERS            = 1
