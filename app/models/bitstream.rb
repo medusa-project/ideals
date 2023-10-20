@@ -88,9 +88,6 @@
 #                           bitstreams in the {Bundle#CONTENT content bundle}
 #                           in a supported format typically get checked.
 # * `item_id`:              Foreign key to {Item}.
-# * `known_derivative_error` If true, an error occurred the last time a
-#                           derivative generation attempt was made, indicating
-#                           that another attempt may be futile.
 # * `length`:               Size in bytes.
 # * `medusa_key`:           Full object key within the Medusa S3 bucket. Set
 #                           only once the bitstream has been ingested into
@@ -792,7 +789,6 @@ class Bitstream < ApplicationRecord
   # @param format [Symbol]
   #
   def generate_image_derivative(region:, size:, format:)
-    return if self.known_derivative_error
     target_key      = derivative_image_key(region: region,
                                            size:   size,
                                            format: format)
@@ -847,7 +843,6 @@ class Bitstream < ApplicationRecord
   # @see generate_image_derivative
   #
   def generate_pdf_derivative(as_file: false)
-    return if self.known_derivative_error
     if self.format.derivative_generator != "libreoffice"
       raise "This instance cannot be converted to PDF."
     end
