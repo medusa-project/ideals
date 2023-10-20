@@ -63,7 +63,7 @@ class Task < ApplicationRecord
     # @return [Enumerable<String>]
     #
     def self.all
-      self.constants.map{ |k| const_get(k) }
+      self.constants.map{ |k| const_get(k) }.sort
     end
 
     ##
