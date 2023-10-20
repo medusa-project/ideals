@@ -833,7 +833,7 @@ class Bitstream < ApplicationRecord
       LOGGER.warn("generate_image_derivative(): #{e}")
       raise e
     ensure
-      FileUtils.rm(source_tempfile)
+      FileUtils.rm(source_tempfile) if source_tempfile
       FileUtils.rm(deriv_path) rescue nil
     end
   end
