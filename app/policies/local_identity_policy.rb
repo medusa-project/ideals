@@ -18,8 +18,16 @@ class LocalIdentityPolicy < ApplicationPolicy
     @identity        = identity
   end
 
+  def create
+    effective_sysadmin(@user, @role_limit)
+  end
+
   def edit_password
     user_matches_identity
+  end
+
+  def new
+    create
   end
 
   def new_password

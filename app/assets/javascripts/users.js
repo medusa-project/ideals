@@ -71,6 +71,13 @@ const UserView = {
                         $("#change-password-modal .modal-body").html(data);
                     });
                 });
+                $("button.create-local-identity").on("click", function() {
+                    const id = $(this).data("user-id");
+                    const url = ROOT_URL + "/users/" + id + "/identities/new";
+                    $.get(url, function(data) {
+                        $("#create-local-identity-modal .modal-body").html(data);
+                    });
+                });
             });
         }).trigger("show.bs.tab");
 

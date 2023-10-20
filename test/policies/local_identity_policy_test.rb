@@ -6,6 +6,39 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
     @identity = local_identities(:southwest)
   end
 
+  # create?()
+
+  test "create?() returns false with a nil user" do
+    policy = LocalIdentityPolicy.new(nil, LocalIdentity)
+    assert !policy.create?
+  end
+
+  test "create?() does not authorize non-sysadmins" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = LocalIdentityPolicy.new(context, LocalIdentity)
+    assert !policy.create?
+  end
+
+  test "create?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = LocalIdentityPolicy.new(context, LocalIdentity)
+    assert policy.create?
+  end
+
+  test "create?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = LocalIdentityPolicy.new(context, LocalIdentity)
+    assert !policy.create?
+  end
+
   # edit_password?()
 
   test "edit_password?() returns false with a nil request context" do
@@ -56,6 +89,39 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
                                  role_limit:  Role::LOGGED_IN)
     policy  = LocalIdentityPolicy.new(context, @identity)
     assert !policy.edit_password?
+  end
+
+  # new?()
+
+  test "new?() returns false with a nil user" do
+    policy = LocalIdentityPolicy.new(nil, LocalIdentity)
+    assert !policy.new?
+  end
+
+  test "new?() does not authorize non-sysadmins" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = LocalIdentityPolicy.new(context, LocalIdentity)
+    assert !policy.new?
+  end
+
+  test "new?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = LocalIdentityPolicy.new(context, LocalIdentity)
+    assert policy.new?
+  end
+
+  test "new?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = LocalIdentityPolicy.new(context, LocalIdentity)
+    assert !policy.new?
   end
 
   # new_password?()

@@ -1,0 +1,24 @@
+-# frozen_string_literal: true
+
+= form_for(@identity, url: user_local_identities_path(@identity.user), remote: true) do |f|
+  .error-messages
+    -# populated via ajax by shared/_validation_messages.js.erb
+
+  .alert.alert-info
+    = icon_for(:info)
+    A local password will enable you to log into other institutions' spaces as
+    a system administrator.
+
+  = render partial: "password_requirements"
+
+  .mb-3
+    = f.label :password
+    = f.password_field :password, class: "form-control", required: true
+  .mb-3
+    = f.label :password_confirmation
+    = f.password_field :password_confirmation, class: "form-control", required: true
+
+  .clearfix
+    .float-end
+      %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel
+      = f.submit("Set Local Password", class: "btn btn-primary")

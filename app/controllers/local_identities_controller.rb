@@ -7,9 +7,12 @@
 class LocalIdentitiesController < ApplicationController
 
   before_action :ensure_institution_host
-  before_action :ensure_logged_in, only: [:edit_password, :update_password]
-  before_action :ensure_logged_out, except: [:edit_password, :update_password]
-  before_action :set_identity
+  before_action :ensure_logged_in, only: [:create, :edit_password, :new,
+                                          :update_password]
+  before_action :ensure_logged_out, except: [:create, :new, :edit_password,
+                                             :update_password]
+  before_action :set_identity, except: [:create, :new]
+  before_action :set_user, only: [:create, :new]
   before_action :authorize_identity, only: [:edit_password, :register, :update,
                                             :update_password]
   before_action :pre_validate_password_reset, only: [:new_password,
@@ -18,10 +21,51 @@ class LocalIdentitiesController < ApplicationController
   before_action :validate_current_password, only: :update_password
 
   ##
+  # Accepts data POSTed from the form rendered by {new} (sysadmins only).
+  #
+  # Responds to `POST /users/:id/identities`
+  #
+  def create
+    if @user.identity
+      raise "This user already has an associated local identity."
+    end
+    identity = LocalIdentity.new(user:                  @user,
+                                 email:                 @user.email,
+                                 password:              identity_password_params[:password],
+                                 password_confirmation: identity_password_params[:password_confirmation])
+    authorize(identity)
+    identity.save!
+  rescue => e
+    render partial: "shared/validation_messages",
+           locals:  { object: identity&.errors&.any? ? identity : e },
+           status:  :bad_request
+  else
+    toast!(title:   "Credentials set",
+           message: "Local credentials have been set.")
+    render "shared/reload"
+  end
+
+  ##
   # Responds to `GET /identities/:id/edit-password` (XHR only)
   #
   def edit_password
     render partial: "local_identities/password_form",
+           locals: { identity: @identity }
+  end
+
+  ##
+  # Renders the form on the show-user page for creating a new local identity
+  # (sysadmins only). Sysadmins normally log in via some other method (like
+  # SAML) but still need the ability to log into other institutions' domains,
+  # which they wouldn't be able to do via any other method than local password
+  # authentication.
+  #
+  # Responds to `GET /users/:id/identities/new`.
+  #
+  def new
+    @identity = LocalIdentity.new(user: @user)
+    authorize(@identity)
+    render partial: "local_identities/create_form",
            locals: { identity: @identity }
   end
 
@@ -160,6 +204,10 @@ class LocalIdentitiesController < ApplicationController
 
   def set_identity
     @identity = LocalIdentity.find(params[:id] || params[:local_identity_id])
+  end
+
+  def set_user
+    @user = User.find(params[:user_id])
   end
 
   def validate_current_password
