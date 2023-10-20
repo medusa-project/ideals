@@ -9,7 +9,7 @@
 
 = hidden_field_tag(:limit, @limit)
 
-= render partial: "filter_form"
+= render partial: "filter_form", locals: { show_institution: false }
 
 #tasks-list
   = render partial: "tasks", locals: { show_institution: false }

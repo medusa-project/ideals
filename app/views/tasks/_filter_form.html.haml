@@ -1,7 +1,21 @@
+-#
+-# Accepts the following locals:
+-#
+-# show_institution [Boolean]
+-#
+
 .card.mb-3
   #task-filter.card-body
     = form_tag(request.path, method: :get, class: "form-inline") do
       .row
+        - if show_institution
+          .col
+            = label_tag("institution_id", "Institution", class: "form-label")
+            = select_tag("institution_id",
+                         options_for_select(Institution.order(:name).pluck(:name, :id)),
+                         include_blank: true,
+                         class: "form-select")
+
         .col
           = label_tag("queue", "Queue", class: "form-label")
           = select_tag("queue",
