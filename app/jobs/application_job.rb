@@ -23,8 +23,9 @@
 class ApplicationJob < ActiveJob::Base
 
   class Queue
-    ADMIN  = :admin
-    PUBLIC = :public
+    ADMIN             = :admin
+    PUBLIC            = :public
+    PUBLIC_SEQUENTIAL = :public_sequential
 
     def self.all
       self.constants.map{ |c| self.const_get(c) }

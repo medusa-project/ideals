@@ -2,7 +2,12 @@
 
 class GenerateDerivativeImageJob < ApplicationJob
 
-  QUEUE = ApplicationJob::Queue::PUBLIC
+  # This job needs to run sequentially because it may ultimately invoke
+  # `soffice` which will hang both itself and the job (blocking the queue) if
+  # there is another `soffice` process running. We don't know for sure that
+  # it's going to run `soffice` (it only will for Office formats) but there is
+  # no way to tell at this point.
+  QUEUE = ApplicationJob::Queue::PUBLIC_SEQUENTIAL
 
   queue_as QUEUE
 
@@ -20,13 +25,8 @@ class GenerateDerivativeImageJob < ApplicationJob
                        status_text:   "Generating #{region}/#{size} #{format} "\
                                       "derivative image for #{bs.filename} "\
                                       "(item ID #{bs.item_id})")
-    Timeout::timeout(60) do
-      bs.send(:generate_image_derivative,
-              region: region, size: size, format: format)
-    end
-  rescue Timeout::Error => e
-    bs.update!(known_derivative_error: true)
-    throw e
+    bs.send(:generate_image_derivative,
+            region: region, size: size, format: format)
   end
 
 end
