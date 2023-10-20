@@ -96,20 +96,25 @@ class ApplicationJob < ActiveJob::Base
   private
 
   def create_task
-    unless Task.find_by_job_id(self.job_id)
-      if arguments[0].respond_to?(:dig)
-        user        = arguments[0].dig(:user)
-        institution = arguments[0].dig(:institution)
-      else
-        user = institution = nil
-      end
-      Task.create!(name:        self.class.name,
-                   user:        user,
-                   institution: institution,
-                   status_text: "Waiting...",
-                   job_id:      self.job_id,
-                   queue:       self.class::QUEUE)
+    if arguments[0].respond_to?(:dig)
+      user        = arguments[0].dig(:user)
+      institution = arguments[0].dig(:institution)
+    else
+      user = institution = nil
     end
+    Task.create!(name:        self.class.name,
+                 user:        user,
+                 institution: institution,
+                 status_text: "Waiting...",
+                 job_id:      self.job_id,
+                 queue:       self.class::QUEUE)
+  rescue ActiveRecord::RecordNotUnique
+    # job_id is violating a uniqueness constraint. Assuming that job_id is a
+    # UUID, this can only mean that a Task corresponding to this job has
+    # already been created due to the ActiveJob engine having called its
+    # after_enqueue callback(s) (and therefore this method) multiple times,
+    # which is probably a bug, but one that can be worked around by rescuing
+    # this.
   end
 
   ##
