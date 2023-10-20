@@ -61,15 +61,18 @@ class TasksController < ApplicationController
   def setup_index(institution = nil)
     @permitted_params = params.permit(Search::RESULTS_PARAMS +
                                         Search::SIMPLE_SEARCH_PARAMS +
-                                        [:status_text, :status])
+                                        [:queue, :status, :status_text])
     @start            = [@permitted_params[:start].to_i.abs, MAX_START].min
     @window           = window_size
-    @tasks            = Task.all.order(created_at: :desc, status: :asc)
+    @tasks            = Task.all.order(created_at: :desc)
     if institution
       @tasks = @tasks.where(institution: institution)
     end
     if @permitted_params[:q].present?
       @tasks = @tasks.where("LOWER(status_text) LIKE ?", "%#{@permitted_params[:q]&.downcase}%")
+    end
+    if @permitted_params[:queue].present?
+      @tasks = @tasks.where(queue: @permitted_params[:queue])
     end
     if @permitted_params[:status].present?
       @tasks = @tasks.where(status: @permitted_params[:status])

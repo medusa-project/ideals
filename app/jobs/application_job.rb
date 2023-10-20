@@ -30,6 +30,19 @@ class ApplicationJob < ActiveJob::Base
     def self.all
       self.constants.map{ |c| self.const_get(c) }
     end
+
+    def self.to_s(queue)
+      case queue
+      when Queue::ADMIN
+        "Admin"
+      when Queue::PUBLIC
+        "Public"
+      when Queue::PUBLIC_SEQUENTIAL
+        "Public Sequential"
+      else
+        self.to_s
+      end
+    end
   end
 
   attr_writer :task

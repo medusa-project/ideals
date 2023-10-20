@@ -3,6 +3,13 @@
     = form_tag(request.path, method: :get, class: "form-inline") do
       .row
         .col
+          = label_tag("queue", "Queue", class: "form-label")
+          = select_tag("queue",
+                       options_for_select(ApplicationJob::Queue.all.map{ |t| [ApplicationJob::Queue::to_s(t), t] }),
+                       include_blank: true,
+                       class: "form-select")
+
+        .col
           = label_tag("q", "Status Text", class: "form-label")
           = filter_field
 
