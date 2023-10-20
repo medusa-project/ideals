@@ -550,12 +550,12 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     patch user_update_properties_path(user),
           xhr: true,
           params: {
-              user: {
-                  phone: "555-5155"
-              }
+            user: {
+              name: "New Name"
+            }
           }
     user.reload
-    assert_equal "555-5155", user.phone
+    assert_equal "New Name", user.name
   end
 
   test "update_properties() returns HTTP 200" do
@@ -564,9 +564,9 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     patch user_update_properties_path(user),
           xhr: true,
           params: {
-              user: {
-                  phone: "555-5155"
-              }
+            user: {
+              name: "New Name"
+            }
           }
     assert_response :ok
   end

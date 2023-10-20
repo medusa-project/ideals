@@ -12,14 +12,12 @@ northeast:
   institution: northeast
   name:        Northeast University Normal User
   email:       user@northeast.edu
-  phone:       (888) 555-1234
   enabled:     true
 
 northeast_admin:
   institution: northeast
   name:        Northeast.edu Institution Administrator
   email:       admin@northeast.edu
-  phone:       (888) 555-1235
   enabled:     true
   user_groups:
     - northeast_admins
@@ -30,14 +28,12 @@ southwest:
   institution: southwest
   name:        Southwest University Normal User
   email:       user@southwest.edu
-  phone:       (888) 555-1234
   enabled:     true
 
 southwest_admin:
   institution: southwest
   name:        Southwest University Institution Administrator
   email:       admin@southwest.edu
-  phone:       (888) 555-1235
   enabled:     true
   user_groups:
     - southwest_admins
@@ -46,7 +42,6 @@ southwest_sysadmin:
   institution: southwest
   name:        Southwest University System Administrator
   email:       sysadmin@southwest.edu
-  phone:       (888) 555-1235
   enabled:     true
   user_groups:
     - sysadmin
@@ -55,14 +50,12 @@ southwest_saml:
   institution: southwest
   name:        Southwest University SAML User
   email:       saml@southwest.edu
-  phone:       (888) 555-1234
   enabled:     true
 
 southwest_shibboleth:
   institution: southwest
   name:        Southwest University Shibboleth User
   email:       shib@southwest.edu
-  phone:       (888) 555-1234
   enabled:     true
 
 ################################### southeast ###################################
@@ -70,7 +63,6 @@ southwest_shibboleth:
 southeast:
   name:        Shib Boleth, Esq.
   email:       shib@southeast.edu
-  phone:       (888) 555-1234
   enabled:     true
   institution: southeast
 
@@ -78,14 +70,12 @@ southeast2:
   institution: southeast
   name:        Southeast Normal User 2
   email:       user2@southeast.edu
-  phone:       (888) 555-1234
   enabled:     true
 
 southeast_admin:
   institution: southeast
   name:        Southeast Institution Admin
   email:       instadmin@southeast.edu
-  phone:       (888) 555-1235
   enabled:     true
   user_groups:
     - southeast_admins
@@ -94,7 +84,6 @@ southeast_sysadmin:
   institution: southeast
   name:        Southeast Sysadmin
   email:       sysadmin@southeast.edu
-  phone:       (888) 555-1235
   enabled:     true
   user_groups:
     - sysadmin
@@ -103,26 +92,22 @@ southeast_collection1_collection1_admin:
   institution: southeast
   name:        Collection1 Collection1 Administrator
   email:       southeast_collection1_collection1_admin@southeast.edu
-  phone:       (888) 555-1234
   enabled:     true
 
 southeast_collection1_collection1_submitter:
   institution: southeast
   name:        Collection1 Collection1 Submitter
   email:       phil@southeast.edu
-  phone:       (888) 555-1234
   enabled:     true
 
 southeast_unit1_admin:
   institution: southeast
   name:        Unit1 Admin
   email:       southeast_unit1_admin@southeast.edu
-  phone:       (888) 555-1234
   enabled:     true
 
 southeast_unit1_unit2_unit1_admin:
   institution: southeast
   name:        Unit1 Unit2 Unit1 Admin
   email:       southeast_unit1_unit2_unit1_admin@southeast.edu
-  phone:       (888) 555-1234
   enabled:     true

@@ -126,7 +126,7 @@ class LocalIdentitiesController < ApplicationController
 
   def identity_params
     params.require(:local_identity).permit(:password, :password_confirmation,
-                                           user_attributes: [:name, :phone])
+                                           user_attributes: [:name])
   end
 
   def identity_password_params

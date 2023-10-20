@@ -33,8 +33,6 @@
   %dd= @user.name
   %dt Email
   %dd= link_to(@user.email, "mailto:#{@user.email}")
-  %dt Phone
-  %dd= @user.phone.present? ? link_to(@user.phone, "tel:#{@user.phone}") : "Unknown"
   %dt Institution
   %dd
     - if @user.institution

@@ -21,9 +21,6 @@
   .mb-3
     = f.label :email, class: "required"
     = f.email_field :email, class: "form-control"
-  .mb-3
-    = f.label :phone
-    = f.phone_field :phone, class: "form-control"
 
   - if policy(user).change_institution?
     .mb-3

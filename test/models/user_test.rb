@@ -63,7 +63,6 @@ class UserTest < ActiveSupport::TestCase
         "org-dn": "o=Southeast University,dc=southeast,dc=edu",
         nickname: "",
         givenName: "Shib",
-        telephoneNumber: "(888) 555-5555",
         member: "urn:mace:southeast.edu:urbana:library:units:ideals:library ideals admin",
         iTrustAffiliation: "member;staff;employee",
         departmentCode: "Example Department",
@@ -98,7 +97,6 @@ class UserTest < ActiveSupport::TestCase
     assert_equal identity, user.identity
     assert_equal email, user.email
     assert_equal name, user.name
-    assert_nil user.phone
     assert_equal institution, user.institution
     assert !user.sysadmin?
   end
@@ -256,7 +254,6 @@ class UserTest < ActiveSupport::TestCase
                                      institution: institution)
     assert_equal "First Last", user.name
     assert_equal "OpenAthensUser@example.org", user.email
-    assert_nil user.phone
     assert_equal institution, user.institution
   end
 
@@ -270,7 +267,6 @@ class UserTest < ActiveSupport::TestCase
     user = User.from_omniauth(SAML_AUTH_HASH, institution: institution)
     assert_equal "First Last", user.name
     assert_equal "OpenAthensUser@example.org", user.email
-    assert_nil user.phone
   end
 
   test "from_omniauth() populates the correct email from a SAML NameID" do
@@ -299,7 +295,6 @@ class UserTest < ActiveSupport::TestCase
                               institution: institutions(:southwest))
     assert_equal "Shib Boleth", user.name
     assert_equal "ShibbolethUser@example.org", user.email
-    assert_equal "(888) 555-5555", user.phone
     assert_equal institutions(:southeast), user.institution
     assert_equal "Example Department", user.department.name
     assert_equal Affiliation.find_by_key(Affiliation::FACULTY_STAFF_KEY),
@@ -315,7 +310,6 @@ class UserTest < ActiveSupport::TestCase
     assert_equal @user, user
     assert_equal "Shib Boleth", user.name
     assert_equal "ShibbolethUser@example.org", user.email
-    assert_equal "(888) 555-5555", user.phone
     # the institution shouldn't change
     assert_equal institutions(:southwest), user.institution
     assert_equal "Example Department", user.department.name

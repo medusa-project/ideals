@@ -98,8 +98,7 @@ class UserRegistrationTest < ActionDispatch::IntegrationTest
       token: token,
       local_identity: {
         user_attributes: {
-          name:  "New User",
-          phone: "555-5555"
+          name: "New User"
         },
         password:              "Password01!",
         password_confirmation: "Password01!"

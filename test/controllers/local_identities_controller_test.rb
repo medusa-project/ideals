@@ -275,8 +275,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
               password: "MyNewPassword123!",
               password_confirmation: "MyNewPassword123!",
               user_attributes: {
-                name: "New Name",
-                phone: "555-555-5555"
+                name: "New Name"
               }
             }
           }
@@ -300,8 +299,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
               password:              password,
               password_confirmation: password,
               user_attributes: {
-                name:  "New Name",
-                phone: "555-555-5555"
+                name:  "New Name"
               }
             }
           }
@@ -322,8 +320,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
                   password: "MyNewPassword123!",
                   password_confirmation: "MyNewPassword123!",
                   user_attributes: {
-                      name: "New Name",
-                      phone: "555-555-5555"
+                      name: "New Name"
                   }
               }
           }
@@ -347,8 +344,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
                   password: "MyNewPassword123!",
                   password_confirmation: "ThisDoesNotMatch123!",
                   user_attributes: {
-                      name: "New Name",
-                      phone: "555-555-5555"
+                      name: "New Name"
                   }
               }
           }
@@ -362,7 +358,6 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
     identity.create_registration_digest
     token    = identity.registration_token
     name     = "New Name"
-    phone    = "555-555-5555"
     password = LocalIdentity.random_password
 
     patch local_identity_path(identity),
@@ -375,8 +370,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
               password: password,
               password_confirmation: password,
               user_attributes: {
-                name:     name,
-                phone:    phone
+                name: name
               }
             }
           }
@@ -400,8 +394,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
               password:              password,
               password_confirmation: password,
               user_attributes: {
-                name:  "New Name",
-                phone: "555-555-5555"
+                name: "New Name"
               }
             }
           }
@@ -412,12 +405,11 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
 
   test "update() updates the instance and sends an email if all arguments
   are valid" do
-    identity    = local_identities(:southwest)
+    identity = local_identities(:southwest)
     identity.create_registration_digest
-    token       = identity.registration_token
-    name        = "New Name"
-    phone       = "555-555-5555"
-    password    = LocalIdentity.random_password
+    token    = identity.registration_token
+    name     = "New Name"
+    password = LocalIdentity.random_password
 
     assert_emails 1 do
       patch local_identity_path(identity),
@@ -430,8 +422,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
                 password: password,
                 password_confirmation: password,
                 user_attributes: {
-                  name:  name,
-                  phone: phone
+                  name: name
                 }
               }
             }
@@ -439,7 +430,6 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
       assert_nil identity.registration_digest
       user = identity.user
       assert_equal name, user.name
-      assert_equal phone, user.phone
       assert_equal @institution, user.institution
       assert !user.institution_admin?(@institution)
     end
@@ -452,7 +442,6 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
     identity.create_registration_digest
     token    = identity.registration_token
     name     = "New Name"
-    phone    = "555-555-5555"
     password = LocalIdentity.random_password
 
     patch local_identity_path(identity),
@@ -465,8 +454,7 @@ class LocalIdentitiesControllerTest < ActionDispatch::IntegrationTest
               password: password,
               password_confirmation: password,
               user_attributes: {
-                name:  name,
-                phone: phone
+                name: name
               }
             }
           }

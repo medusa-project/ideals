@@ -28,7 +28,6 @@
 #                    institution's space in the IR.
 # * `name`           The user's name in whatever format they choose to provide
 #                    it.
-# * `phone`          The user's phone number.
 # * `updated_at:     Managed by ActiveRecord.
 #
 class User < ApplicationRecord
@@ -499,14 +498,13 @@ class User < ApplicationRecord
     self.institution ||= institution
     case institution.saml_email_location
     when Institution::SAMLEmailLocation::ATTRIBUTE
-      self.email       = attrs[institution.saml_email_attribute]&.first
+      self.email = attrs[institution.saml_email_attribute]&.first
     else
-      self.email       = auth[:uid]
+      self.email = auth[:uid]
     end
-    self.name          = [attrs[institution.saml_first_name_attribute]&.first,
-                          attrs[institution.saml_last_name_attribute]&.first].join(" ").strip
-    self.name          = self.email if self.name.blank?
-    self.phone         = attrs['phoneNumber']&.first # TODO: fix this or stop collecting phone numbers
+    self.name = [attrs[institution.saml_first_name_attribute]&.first,
+                 attrs[institution.saml_last_name_attribute]&.first].join(" ").strip
+    self.name = self.email if self.name.blank?
     begin
       self.save!
     rescue => e
@@ -545,7 +543,6 @@ class User < ApplicationRecord
                            Institution.find_by_shibboleth_org_dn(org_dn) :
                            Institution.find_by_key("uiuc")
     end
-    self.phone       = auth.dig("extra", "raw_info", "telephoneNumber")
     self.affiliation = Affiliation.from_shibboleth(auth)
     dept             = auth.dig("extra", "raw_info", "departmentCode")
     self.department  = Department.create!(name: dept) if dept

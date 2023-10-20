@@ -69,7 +69,6 @@ Rails.application.config.middleware.use OmniAuth::Builder do
         nickname
         givenName
         member
-        telephoneNumber
         iTrustAffiliation
         departmentName
         programCode

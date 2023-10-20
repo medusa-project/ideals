@@ -213,7 +213,7 @@ class UsersController < ApplicationController
   end
 
   def properties_params
-    params.require(:user).permit(:email, :institution_id, :name, :phone)
+    params.require(:user).permit(:email, :institution_id, :name)
   end
 
   def setup_index(institution)
