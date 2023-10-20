@@ -100,8 +100,8 @@ class UserRegistrationTest < ActionDispatch::IntegrationTest
         user_attributes: {
           name: "New User"
         },
-        password:              "Password01!",
-        password_confirmation: "Password01!"
+        password:              "MyNewPassword01!",
+        password_confirmation: "MyNewPassword01!"
       },
       # captcha fields
       honey_email:         "",
