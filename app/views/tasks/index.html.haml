@@ -12,7 +12,7 @@
 = render partial: "filter_form"
 
 #tasks-list
-  = render partial: "tasks"
+  = render partial: "tasks", locals: { show_institution: false }
 
 = render partial: "shared/xhr_modal",
          locals: { id: "show-task-modal",

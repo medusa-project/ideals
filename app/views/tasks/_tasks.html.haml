@@ -1,3 +1,9 @@
+-#
+-# Accepts the following locals:
+-#
+-# show_institution [Boolean]
+-#
+
 - pagination = paginate(count: @count, page: @current_page, per_page: @window,
                         permitted_params: @permitted_params)
 
@@ -9,7 +15,9 @@
   %table.table
     %thead
       %tr
-        %th Queue
+        - if show_institution
+          %th Institution
+        %th User
         %th Description
         %th Status
         %th Progress
@@ -18,8 +26,17 @@
     %tbody
       - @tasks.each do |task|
         %tr{"data-id": task.id}
+          - if show_institution
+            %td
+              - if task.institution
+                = link_to(task.institution) do
+                  = icon_for(task.institution)
+                  = task.institution.name
           %td
-            %code= task.queue
+            - if task.user
+              = link_to(task.user) do
+                = icon_for(task.user)
+                = task.user.name
           %td
             = link_to(task.status_text, '#', data: { 'bs-toggle': 'modal',
                                                      'bs-target': '#show-task-modal',

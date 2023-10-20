@@ -18,7 +18,7 @@ class TasksController < ApplicationController
     setup_index(current_institution)
     respond_to do |format|
       format.html
-      format.js { render partial: "tasks" }
+      format.js { render partial: "tasks", locals: { show_institution: false } }
     end
   end
 
@@ -32,7 +32,7 @@ class TasksController < ApplicationController
     setup_index
     respond_to do |format|
       format.html
-      format.js { render partial: "tasks" }
+      format.js { render partial: "tasks", locals: { show_institution: true } }
     end
   end
 
