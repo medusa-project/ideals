@@ -19,6 +19,9 @@
   %dt Progress
   %dd
     = (task.indeterminate && task.percent_complete < 1) ? "Indeterminate" : (task.percent_complete * 100).round(1).to_s + "%"
+  %dt Queue
+  %dd
+    %code= task.queue
   %dt User
   %dd
     - if task.user

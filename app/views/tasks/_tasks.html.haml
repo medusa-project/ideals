@@ -9,6 +9,7 @@
   %table.table
     %thead
       %tr
+        %th Queue
         %th
         %th Status
         %th Progress
@@ -17,6 +18,8 @@
     %tbody
       - @tasks.each do |task|
         %tr{"data-id": task.id}
+          %td
+            %code= task.queue
           %td
             = link_to(task.status_text, '#', data: { 'bs-toggle': 'modal',
                                                      'bs-target': '#show-task-modal',
