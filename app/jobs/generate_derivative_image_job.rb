@@ -22,6 +22,7 @@ class GenerateDerivativeImageJob < ApplicationJob
     format = args[:format]
 
     self.task&.update!(indeterminate: true,
+                       institution:   bs.institution,
                        status_text:   "Generating #{region}/#{size} #{format} "\
                                       "derivative image for #{bs.filename} "\
                                       "[item ID #{bs.item_id}] [bitstream ID #{bs.id}]")
