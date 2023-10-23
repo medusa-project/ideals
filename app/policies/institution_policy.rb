@@ -122,11 +122,11 @@ class InstitutionPolicy < ApplicationPolicy
     # An alternate approach could be to add another access level beyond
     # sysadmin, like super admin, and make us at UIUC super admins while CARLI
     # remains sysadmins, and make UIUC super admin-only.
-    if @institution.key == "uiuc" && (@ctx_institution.key != "uiuc" || @user.institution.key != "uiuc")
+    if @institution.key == "uiuc" && @user.institution.key != "uiuc"
       return {
         authorized: false,
-        reason:     "Only UIUC administrators (via the UIUC scope) are " +
-                    "allowed to access this institution."
+        reason:     "Only UIUC administrators are allowed to access this " +
+                    "institution."
       }
     end
     effective_institution_admin(@user, @institution, @role_limit)
