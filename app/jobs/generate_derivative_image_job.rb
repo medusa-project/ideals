@@ -26,8 +26,9 @@ class GenerateDerivativeImageJob < ApplicationJob
                        status_text:   "Generating #{region}/#{size} #{format} "\
                                       "derivative image for #{bs.filename} "\
                                       "[item ID #{bs.item_id}] [bitstream ID #{bs.id}]")
-    bs.send(:generate_image_derivative,
-            region: region, size: size, format: format)
+    DerivativeGenerator.new(bs).generate_image_derivative(region: region,
+                                                          size:   size,
+                                                          format: format)
   end
 
 end

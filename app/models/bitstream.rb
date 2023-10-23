@@ -68,20 +68,24 @@
 #
 # # Attributes
 #
-# * `archived_files`        Contains a serialized array of archived files
+# * `archived_files`:       Contains a serialized array of archived files
 #                           contained within zip-format bitstreams, in the
 #                           format returned by {#archived_files}.
-# * `bundle`                One of the {Bundle} constant values.
-# * `bundle_position`       Zero-based position (order) of the bitstream
+# * `bundle`:               One of the {Bundle} constant values.
+# * `bundle_position`:      Zero-based position (order) of the bitstream
 #                           relative to other bitstreams in the same bundle and
 #                           attached to the same {Item}.
 # * `created_at`:           Managed by ActiveRecord.
+# * `derivative_generation_attempted_at`: The last time derivative generation
+#                           was attempted.
+# * `derivative_generation_succeeded`: Whether the last derivative generation
+#                           attempt was successful.
 # * `description`:          Description.
 # * `filename`:             Filename of the bitstream. This may be (and usually
 #                           is) the same as {original_filename}, but may be
 #                           different if the bitstream/file was renamed after
 #                           ingest.
-# * `full_text_checked_at`  Date/time that the bitstream's content was last
+# * `full_text_checked_at`: Date/time that the bitstream's content was last
 #                           checked for full text. When this is set,
 #                           {full_text} may or may not contain anything, but
 #                           when it's not set, it certainly doesn't. Only
@@ -99,7 +103,7 @@
 #                           This may or may not be the same as {filename}.
 # * `permanent_key`:        Object key in the application S3 bucket, which is
 #                           set after the owning {Item} has been approved.
-# * `primary`               Whether the instance is the primary bitstream of
+# * `primary`:              Whether the instance is the primary bitstream of
 #                           the owning {Item}. An item may have zero or one
 #                           primary bitstreams.
 # * `role`:                 One of the {Role} constant values indicating the
@@ -170,7 +174,7 @@ class Bitstream < ApplicationRecord
 
   LOGGER = CustomLogger.new(Bitstream)
 
-  INSTITUTION_KEY_PREFIX = "institutions"
+  INSTITUTION_KEY_PREFIX = "institutions" # TODO: move this to ObjectStore
 
   ##
   # Contains constants corresponding to the allowed values of {bundle}.
@@ -389,13 +393,7 @@ class Bitstream < ApplicationRecord
   end
 
   def delete_derivatives
-    begin
-      ObjectStore.instance.delete_objects(key_prefix: derivative_key_prefix)
-    rescue Aws::S3::Errors::NoSuchBucket
-      # This would hopefully only happen because of a test environment
-      # misconfiguration. In any case, it's safe to assume that if the bucket
-      # doesn't exist, there is nothing to delete. TODO: does this really need to be rescued?
-    end
+    DerivativeGenerator.new(self).delete_derivatives
   end
 
   ##
@@ -443,58 +441,6 @@ class Bitstream < ApplicationRecord
     self.update!(staging_key: nil)
   rescue Aws::S3::Errors::NotFound
     # nothing we can do
-  end
-
-  ##
-  # @param region [Symbol] `:full` or `:square`.
-  # @param size [Integer]  Power-of-2 size constraint (128, 256, 512, etc.)
-  # @param generate_async [Boolean] Whether to generate the derivative (if
-  #                                 necessary) asynchronously. If true, and the
-  #                                 image has not already been generated, nil
-  #                                 is returned.
-  # @return [String] Public URL for a derivative image with the given
-  #                  characteristics. If no such image exists, it is generated
-  #                  automatically.
-  #
-  def derivative_image_url(region: :full, size:, generate_async: false)
-    unless has_representative_image?
-      raise "Derivatives are not supported for this format."
-    end
-    store = ObjectStore.instance
-    key   = derivative_image_key(region: region, size: size, format: :jpg)
-    unless store.object_exists?(key: key)
-      if generate_async
-        GenerateDerivativeImageJob.perform_later(bitstream: self,
-                                                 region:    region,
-                                                 size:      size,
-                                                 format:    :jpg)
-        return nil
-      else
-        generate_image_derivative(region: region, size: size, format: :jpg)
-      end
-    end
-    store.presigned_download_url(key: key, expires_in: 1.hour.to_i)
-  end
-
-  ##
-  # @return [String] Public URL for a derivative PDF with the given
-  #                  characteristics. If no such image exists, it is generated
-  #                  automatically.
-  #
-  def derivative_pdf_url
-    store  = ObjectStore.instance
-    expiry = 1.hour.to_i
-    format = self.format
-    if format.media_type == "application/pdf"
-      return store.presigned_download_url(key:        self.effective_key,
-                                          expires_in: expiry)
-    elsif format.derivative_generator != "libreoffice"
-      raise "This instance cannot be converted to PDF."
-    end
-
-    key = derivative_pdf_key
-    generate_pdf_derivative unless store.object_exists?(key: key)
-    store.presigned_download_url(key: key, expires_in: expiry)
   end
 
   ##
@@ -750,125 +696,11 @@ class Bitstream < ApplicationRecord
 
   private
 
-  ##
-  # @param region [Symbol] `:full` or `:square`.
-  # @param size [Integer]  Size of a square to fit within.
-  # @param format [Symbol] Format extension with no leading dot.
-  # @return [String]
-  #
-  def derivative_image_key(region:, size:, format:)
-    [derivative_key_prefix, region.to_s, size.to_s,
-     "default.#{format}"].join("/")
-  end
-
-  ##
-  # @return [String]
-  #
-  def derivative_pdf_key
-    [derivative_key_prefix, "pdf", "pdf.pdf"].join("/")
-  end
-
-  def derivative_key_prefix
-    [INSTITUTION_KEY_PREFIX, self.institution.key, "derivatives", self.id].join("/")
-  end
-
   def ensure_primary_uniqueness
     if self.primary
       self.item.bitstreams.
         where.not(id: self.id).
         update_all(primary: false)
-    end
-  end
-
-  ##
-  # Downloads the object into a temp file, writes a derivative image into
-  # another temp file, and saves it to the application S3 bucket.
-  #
-  # @param region [Symbol]
-  # @param size [Integer]
-  # @param format [Symbol]
-  #
-  def generate_image_derivative(region:, size:, format:)
-    target_key      = derivative_image_key(region: region,
-                                           size:   size,
-                                           format: format)
-    source_tempfile = nil
-    deriv_path      = nil
-    begin
-      Dir.mktmpdir do |tmpdir|
-        case self.format.derivative_generator
-        when "imagemagick"
-          source_tempfile = download_to_temp_file.path
-        when "libreoffice"
-          # LibreOffice can convert to images itself, but it doesn't offer very
-          # much control over cropping, DPI, etc. Therefore we use it to
-          # convert to PDF and then go from there with ImageMagick.
-          source_tempfile = generate_pdf_derivative(as_file: true)
-        else
-          raise "No derivative generator for this format."
-        end
-
-        deriv_path = File.join(tmpdir,
-                               "#{File.basename(source_tempfile)}-#{region}-#{size}.#{format}")
-        crop       = (region == :square) ? "-gravity center -crop 1:1" : ""
-        command    = "convert #{source_tempfile}[0] "\
-                     "#{crop} "\
-                     "-resize #{size}x#{size} "\
-                     "-background white "\
-                     "-alpha remove "\
-                     "#{deriv_path}"
-        result     = system(command)
-        status     = $?.exitstatus
-        raise "Command returned status code #{status}: #{command}" unless result
-
-        File.open(deriv_path, "rb") do |file|
-          ObjectStore.instance.put_object(key: target_key, file: file)
-        end
-      end
-    rescue => e
-      LOGGER.warn("generate_image_derivative(): #{e}")
-      raise e
-    ensure
-      FileUtils.rm(source_tempfile) if source_tempfile
-      FileUtils.rm(deriv_path) rescue nil
-    end
-  end
-
-  ##
-  # Downloads the object into a temp file, writes a derivative PDF into another
-  # temp file, and saves it to the application S3 bucket. This is used for
-  # converting PDF-like formats (e.g. Microsoft Office) formats into PDFs.
-  #
-  # param as_file [Boolean] If true, the PDF is returned as a file path.
-  # @see generate_image_derivative
-  #
-  def generate_pdf_derivative(as_file: false)
-    if self.format.derivative_generator != "libreoffice"
-      raise "This instance cannot be converted to PDF."
-    end
-    source_tempfile = download_to_temp_file
-    begin
-      tmpdir          = File.dirname(source_tempfile)
-      command         = "soffice --headless --convert-to pdf "\
-        "#{source_tempfile.path} "\
-        "--outdir #{tmpdir}"
-      output, status = Open3.capture2e(command)
-      if status != 0
-        raise "Command returned status code #{status}: #{command}\n\nOutput: #{output}"
-      end
-
-      pdf_path = File.join(tmpdir,
-                           File.basename(source_tempfile).gsub(/#{File.extname(source_tempfile)}\z/, ".pdf"))
-      if as_file
-        return pdf_path
-      else
-        File.open(pdf_path, "rb") do |file|
-          ObjectStore.instance.put_object(key:  derivative_pdf_key,
-                                          file: file)
-        end
-      end
-    ensure
-      source_tempfile.unlink
     end
   end
 

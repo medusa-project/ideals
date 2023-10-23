@@ -14,7 +14,9 @@ class GenerateDerivativeImageJobTest < ActiveSupport::TestCase
                                            size:      512,
                                            format:    :jpg)
 
-    key = bs.send(:derivative_image_key, region: :full, size: 512, format: :jpg)
+    key = DerivativeGenerator.new(bs).derivative_image_key(region: :full,
+                                                           size:   512,
+                                                           format: :jpg)
     assert ObjectStore.instance.object_exists?(key: key)
   end
 

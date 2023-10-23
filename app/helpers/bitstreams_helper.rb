@@ -9,11 +9,11 @@ module BitstreamsHelper
   # {FileFormat} registry.
   #
   # @param bitstream [Bitstream]
-  # @param region [Symbol] See {Bitstream#derivative_image_url}.
-  # @param size [Integer] See {Bitstream#derivative_image_url}. This is the
-  #                       literal size of the image; the `img` tag has no
-  #                       `width` or `height` attribute and must be sized via
-  #                       CSS.
+  # @param region [Symbol] See {DerivativeGenerator#derivative_image_url}.
+  # @param size [Integer] See {DerivativeGenerator#derivative_image_url}. This
+  #                       is the literal size of the image; the `img` tag has
+  #                       no `width` or `height` attribute and must be sized
+  #                       via CSS.
   # @param generate_async [Boolean]
   # @param attrs [Hash] Additional tag attributes.
   # @return [String] HTML `img` tag.

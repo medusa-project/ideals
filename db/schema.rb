@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_10_23_153318) do
+ActiveRecord::Schema[7.1].define(version: 2023_10_23_184129) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -76,7 +76,11 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_23_153318) do
     t.integer "bundle_position"
     t.string "filename", null: false
     t.text "archived_files"
+    t.boolean "derivative_generation_succeeded"
+    t.datetime "derivative_generation_attempted_at"
     t.index ["bundle"], name: "index_bitstreams_on_bundle"
+    t.index ["derivative_generation_attempted_at"], name: "index_bitstreams_on_derivative_generation_attempted_at"
+    t.index ["derivative_generation_succeeded"], name: "index_bitstreams_on_derivative_generation_succeeded"
     t.index ["filename"], name: "index_bitstreams_on_filename"
     t.index ["full_text_checked_at"], name: "index_bitstreams_on_full_text_checked_at"
     t.index ["item_id"], name: "index_bitstreams_on_item_id"

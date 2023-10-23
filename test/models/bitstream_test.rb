@@ -321,14 +321,13 @@ class BitstreamTest < ActiveSupport::TestCase
     end
 
     # generate a couple of derivatives
-    @instance.derivative_image_url(size: 45)
-    @instance.derivative_image_url(size: 50)
+    generator = DerivativeGenerator.new(@instance)
+    generator.generate_image_derivative(region: :full, size: 45, format: :jpg)
+    generator.generate_image_derivative(region: :full, size: 50, format: :jpg)
 
     # check that they exist
-    key1 = @instance.send(:derivative_image_key,
-                          region: :full, size: 45, format: :jpg)
-    key2 = @instance.send(:derivative_image_key,
-                          region: :full, size: 50, format: :jpg)
+    key1 = generator.derivative_image_key(region: :full, size: 45, format: :jpg)
+    key2 = generator.derivative_image_key(region: :full, size: 50, format: :jpg)
     assert store.object_exists?(key: key1)
     assert store.object_exists?(key: key2)
 
@@ -472,68 +471,6 @@ class BitstreamTest < ActiveSupport::TestCase
     assert_nil @instance.staging_key
   end
 
-  # derivative_image_url()
-
-  test "derivative_image_url() with an unsupported format raises an error" do
-    @instance.filename          = "cats.bogus"
-    @instance.original_filename = "cats.bogus"
-    assert_raises do
-      @instance.derivative_image_url(size: 45)
-    end
-  end
-
-  test "derivative_image_url() generates a correct URL using ImageMagick" do
-    # upload the source image to the staging area of the application S3 bucket
-    File.open(file_fixture("escher_lego.png"), "r") do |file|
-      @instance.upload_to_staging(file)
-    end
-
-    url = @instance.derivative_image_url(size: 45)
-
-    client   = HTTPClient.new
-    response = client.get(url)
-    assert_equal 200, response.code
-    assert response.headers['Content-Length'].to_i > 1000
-  end
-
-  test "derivative_image_url() generates a correct URL using LibreOffice" do
-    @instance = bitstreams(:southwest_unit1_collection1_item1_doc)
-
-    url = @instance.derivative_image_url(size: 45)
-
-    client   = HTTPClient.new
-    response = client.get(url)
-    assert_equal 200, response.code
-    assert response.headers['Content-Length'].to_i > 800
-  end
-
-  # derivative_pdf_url()
-
-  test "derivative_pdf_url() raises an error for a bitstream that can't be
-  represented as PDF" do
-    assert_raises do
-      @instance.derivative_pdf_url
-    end
-  end
-
-  test "derivative_pdf_url() returns the URL of a PDF for a bitstream that is
-  already a PDF" do
-    @instance = bitstreams(:southwest_unit1_collection1_item1_pdf)
-    url      = @instance.derivative_pdf_url
-    response = HTTPClient.new.get(url)
-    assert_equal 200, response.code
-    assert response.headers['Content-Length'].to_i > 800
-  end
-
-  test "derivative_pdf_url() returns the URL of a PDF for a bitstream that can
-  be converted into PDF" do
-    @instance = bitstreams(:southwest_unit1_collection1_item1_doc)
-    url      = @instance.derivative_pdf_url
-    response = HTTPClient.new.get(url)
-    assert_equal 200, response.code
-    assert response.headers['Content-Length'].to_i > 800
-  end
-
   # destroy()
 
   test "destroy() deletes the corresponding file from the staging area of the
@@ -563,8 +500,10 @@ class BitstreamTest < ActiveSupport::TestCase
   test "destroy() deletes corresponding derivatives" do
     @instance  = bitstreams(:southeast_submitted_in_staging)
     store      = ObjectStore.instance
-    key_prefix = @instance.send(:derivative_key_prefix)
-    @instance.derivative_image_url(size: 256) # generate a derivative
+    generator  = DerivativeGenerator.new(@instance)
+    key_prefix = generator.derivative_key_prefix
+
+    generator.derivative_image_url(size: 256) # generate a derivative
 
     assert store.objects(key_prefix: key_prefix).count > 0
 
