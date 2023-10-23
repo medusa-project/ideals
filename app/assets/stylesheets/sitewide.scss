@@ -1,6 +1,17 @@
 // This stylesheet contains styles for elements that may appear in multiple
 // views.
 
+@font-face {
+  font-family: 'Oswald';
+  src: font_url('Oswald-Regular.eot');
+  src: local('☺'),
+  font_url('Oswald-Regular.woff') format('woff'),
+  font_url('Oswald-Regular.ttf') format('truetype'),
+  font_url('Oswald-Regular.svg') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
 html {
   overflow-x: hidden;
 }
@@ -72,6 +83,7 @@ html {
 }
 
 h1 {
+  font-family: "Oswald", sans-serif;
   line-height: 1.1em;
   small {
     font-size: 0.6em;
