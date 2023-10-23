@@ -5,8 +5,9 @@
     = current_institution.name
     Single Sign-On
 
-  %p.mt-4
-    %a{href:             "#",
-       "data-bs-target": "#login-carousel",
-       "data-bs-slide":  "next"}
-      Use local credentials
+  - if current_institution&.local_auth_enabled
+    %p.mt-4
+      %a{href:             "#",
+         "data-bs-target": "#login-carousel",
+         "data-bs-slide":  "next"}
+        Use local credentials
