@@ -2,7 +2,18 @@
 
 class SessionsController < ApplicationController
 
-  skip_before_action :verify_authenticity_token, except: :new_netid
+  skip_before_action :verify_authenticity_token, except: [:new_admin,
+                                                          :new_netid]
+
+  ##
+  # Provides a login form for sysadmins only.
+  #
+  # Responds to `GET /admin`
+  #
+  def new_admin
+    redirect_to root_path if logged_in?
+    session[:login_failure_url] = admin_login_url
+  end
 
   ##
   # Redirects to the Shibboleth login flow. Responds to
@@ -88,7 +99,10 @@ class SessionsController < ApplicationController
   private
 
   def return_url
-    session[:login_return_url] || current_institution&.scope_url || root_url
+    session[:login_failure_url] ||
+      session[:login_return_url] ||
+      current_institution&.scope_url ||
+      root_url
   end
 
   def unauthorized(message: nil)

@@ -1,0 +1,15 @@
+%h1 Log In
+
+= form_tag "/auth/identity/callback" do
+  .mb-3.row
+    %label.col-sm-4.col-form-label{for: :auth_key} Email
+    .col-sm-8
+      = email_field_tag :auth_key, nil, class: "form-control"
+  .mb-3.row
+    %label.col-sm-4.col-form-label{for: :password} Password
+    .col-sm-8
+      = password_field_tag :password, nil, class: "form-control"
+
+  %button.btn.btn-primary.me-3{type: "submit"}
+    %i.fa.fa-sign-in-alt
+    &nbsp;Log In

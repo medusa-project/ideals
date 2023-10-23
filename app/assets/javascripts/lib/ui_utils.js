@@ -787,18 +787,23 @@ IDEALS.UIUtils.NonNetIDLoginForm = function() {
         flash.hide();
     });
     form.find("input[name=auth_key]").on("keyup", function() {
-        const submitButton = form.find("button[type=submit]");
-        if ($(this).val().endsWith("@illinois.edu")) {
-            flash.removeClass("alert-success")
-                .addClass("alert-danger")
-                .text("This login method will not work with an @illinois.edu " +
-                    "email addresses. Use the \"Log in with Illinois " +
-                    "NetID\" button instead.")
-                .show();
-            submitButton.prop("disabled", true);
-        } else {
-            flash.hide();
-            submitButton.prop("disabled", false);
+        // Ensure that @illinois.edu emails are not used for local auth at
+        // UIUC.
+        const institutionKey = $("input[name=institution_key]").val();
+        if (institutionKey === "uiuc") {
+            const submitButton = form.find("button[type=submit]");
+            if ($(this).val().endsWith("@illinois.edu")) {
+                flash.removeClass("alert-success")
+                    .addClass("alert-danger")
+                    .text("This login method will not work with an @illinois.edu " +
+                        "email address. Use the \"Log in with Illinois " +
+                        "NetID\" button instead.")
+                    .show();
+                submitButton.prop("disabled", true);
+            } else {
+                flash.hide();
+                submitButton.prop("disabled", false);
+            }
         }
     });
     form.find("button[type=submit]").on("click", function(event) {

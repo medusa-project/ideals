@@ -136,9 +136,22 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to institution.scope_url
   end
 
+  # new_admin()
+
+  test "new_admin() returns HTTP 200 when not logged in" do
+    get admin_login_path
+    assert_response :ok
+  end
+
+  test "new_admin() redirects to the root URL when logged in" do
+    log_in_as(users(:southwest_sysadmin))
+    get admin_login_path
+    assert_redirected_to root_url
+  end
+
   # new_netid()
 
-  test "new_netid() redirects to netid login path" do
+  test "new_netid() redirects to the NetID login path" do
     get netid_login_path
     assert_redirected_to @institution.scope_url + "/auth/developer"
   end
