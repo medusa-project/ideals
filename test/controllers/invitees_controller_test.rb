@@ -66,6 +66,20 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
     assert_response :bad_request
   end
 
+  test "create() returns HTTP 400 for an existing user" do
+    log_in_as(users(:southwest_sysadmin))
+
+    post invitees_path,
+         xhr: true,
+         params: {
+           invitee: {
+             email:   users(:southwest).email,
+             purpose: "This shouldn't work"
+           }
+         }
+    assert_response :bad_request
+  end
+
   test "create() creates an approved instance and sends an email if all
   arguments are valid" do
     log_in_as(users(:southwest_sysadmin))
@@ -117,6 +131,20 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
            answer: "5",
            invitee: {
              email:   "", # invalid
+             purpose: "This is a new invitee"
+           }
+         }
+    assert_redirected_to register_path
+  end
+
+  test "create_unsolicited() redirects back for an existing user" do
+    post create_unsolicited_invitees_path,
+         params: {
+           honey_email: "",
+           correct_answer_hash: Digest::MD5.hexdigest("5" + ApplicationHelper::CAPTCHA_SALT),
+           answer: "5",
+           invitee: {
+             email:   users(:southwest).email,
              purpose: "This is a new invitee"
            }
          }
