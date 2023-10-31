@@ -1,5 +1,25 @@
 namespace :medusa do
 
+  desc "Check for bitstreams missing from Medusa"
+  task :audit => :environment do
+    bitstreams = Bitstream.
+      joins(item: [:institution]).
+      where.not("institutions.outgoing_message_queue": nil).
+      where.not("bitstreams.medusa_uuid": nil)
+    count      = bitstreams.count
+    progress   = Progress.new(count)
+
+    Bitstream.uncached do
+      bitstreams.find_each.with_index do |bitstream, index|
+        progress.report(index, "Auditing bitstreams in Medusa")
+        if Medusa::Client.instance.class_of_uuid(bitstream.medusa_uuid) != Medusa::File
+          puts "Unexpected class for bitstream #{bitstream.id}"
+          return
+        end
+      end
+    end
+  end
+
   desc "Delete a file"
   task :delete, [:uuid] => :environment do |task, args|
     Bitstream.find_by_medusa_uuid(args[:uuid]).delete_from_medusa
