@@ -54,7 +54,9 @@ namespace :medusa do
 
     desc "Resend Medusa messages with no response"
     task :retry_no_response => :environment do
-      Message.where(status: nil).each(&:resend)
+      Message.where(status: nil).
+        where.not(bitstream_id: nil).
+        each(&:resend)
     end
 
   end
