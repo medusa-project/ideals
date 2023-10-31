@@ -1301,6 +1301,17 @@ wav:
   category: audio
   icon: file-audio-o
   viewer_method: audio_tag_for
+webp:
+  short_name: WebP
+  long_name: WebP
+  extensions:
+    - webp
+  media_types:
+    - image/webp
+  category: image
+  icon: file-image-o
+  derivative_generator: imagemagick
+  viewer_method: image_tag_for
 wma:
   short_name: WMA
   long_name: Windows Media Audio
@@ -1389,6 +1400,17 @@ xml:
   category: code
   icon: file-code-o
   viewer_method: xml_viewer_for
+xps:
+  short_name: XPS
+  long_name: Open XML Paper Specification
+  extensions:
+    - xps
+    - oxps
+  media_types:
+    - application/oxps
+    - application/vnd.ms-xpsdocument
+  category: document
+  icon: file-text-o
 xsd:
   short_name: XSD
   long_name: XML Schema
