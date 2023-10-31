@@ -26,9 +26,10 @@ module BitstreamsHelper
     path = nil
     if bitstream.has_representative_image?
       begin
-        path = bitstream.derivative_image_url(region:         region,
-                                              size:           size,
-                                              generate_async: generate_async)
+        generator = DerivativeGenerator.new(bitstream)
+        path      = generator.derivative_image_url(region:         region,
+                                                   size:           size,
+                                                   generate_async: generate_async)
         svg  = false
       rescue
         # The object may not exist, or something else is wrong, but we can't
