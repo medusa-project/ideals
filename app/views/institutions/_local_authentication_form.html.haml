@@ -14,6 +14,10 @@
       %label.form-check-label{for: "local-auth-enabled"}
         Enabled
 
+    .form-check
+      = f.check_box :allow_user_registration, class: "form-check-input"
+      = f.label :allow_user_registration, "Allow User Registration", class: "form-check-label"
+
   .clearfix
     .float-end
       %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel

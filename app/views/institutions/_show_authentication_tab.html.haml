@@ -42,6 +42,9 @@
       %dt Enabled
       %dd
         = boolean(@institution.local_auth_enabled, style: :word)
+      %dt User Registration Allowed
+      %dd
+        = boolean(@institution.allow_user_registration, style: :word)
 
   #saml-tab-pane.tab-pane.fade{role:              "tabpanel",
                                "aria-labelledby": "saml-tab",

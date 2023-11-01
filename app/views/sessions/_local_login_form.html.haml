@@ -40,5 +40,6 @@
     %i.fa.fa-sign-in-alt
     &nbsp;Log In
 
-  New user?
-  = link_to("Sign up now.", register_path)
+  - if current_institution&.allow_user_registration
+    New user?
+    = link_to("Sign up now.", register_path)

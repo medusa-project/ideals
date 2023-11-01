@@ -148,6 +148,16 @@ class InviteePolicyTest < ActiveSupport::TestCase
     assert !policy.create_unsolicited?
   end
 
+  test "create_unsolicited?() does not authorize users when the current
+  institution does not allow user registration" do
+    institution = institutions(:southeast)
+    institution.update!(allow_user_registration: false)
+    context = RequestContext.new(user:        nil,
+                                 institution: institution)
+    policy  = InviteePolicy.new(context, @invitee)
+    assert !policy.create_unsolicited?
+  end
+
   test "create_unsolicited?() authorizes non-logged-in users" do
     context = RequestContext.new(user:        nil,
                                  institution: institutions(:southeast))
@@ -457,7 +467,18 @@ class InviteePolicyTest < ActiveSupport::TestCase
     assert !policy.register?
   end
 
-  test "register?() authorizes non-logged-in users" do
+  test "register?() does not authorize users when the current institution does
+  not allow user registration" do
+    institution = institutions(:southeast)
+    institution.update!(allow_user_registration: false)
+    context = RequestContext.new(user:        nil,
+                                 institution: institution)
+    policy  = InviteePolicy.new(context, @invitee)
+    assert !policy.register?
+  end
+
+  test "register?() authorizes non-logged-in users when the current institution
+  allows user registration" do
     context = RequestContext.new(user:        nil,
                                  institution: institutions(:southeast))
     policy  = InviteePolicy.new(context, @invitee)

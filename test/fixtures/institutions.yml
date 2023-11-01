@@ -18,6 +18,7 @@ empty:
   date_submitted_element:         empty_dcterms_dateSubmitted
   handle_uri_element:             empty_dc_identifier
   deposit_form_disagreement_help: Sample text
+  allow_user_registration:        true
 
 northeast:
   key:                            northeast
@@ -41,6 +42,7 @@ northeast:
   deposit_form_disagreement_help: Sample text
   administering_groups:
     - northeast_admins
+  allow_user_registration:        true
 
 southeast:
   key:                            southeast
@@ -61,6 +63,7 @@ southeast:
   deposit_form_disagreement_help: Sample text
   administering_groups:
     - southeast_admins
+  allow_user_registration:        true
 
 southwest:
   key:                            southwest
@@ -84,3 +87,4 @@ southwest:
   deposit_form_disagreement_help: Sample text
   administering_groups:
     - southwest_admins
+  allow_user_registration:        true

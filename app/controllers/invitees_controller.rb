@@ -168,6 +168,7 @@ class InviteesController < ApplicationController
   #
   def register
     @invitee = Invitee.new(expires_at: Time.zone.now + 1.year)
+    authorize(@invitee)
   end
 
   ##

@@ -123,6 +123,21 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  test "create_unsolicited() returns HTTP 403 when the institution does not
+  allow user registration" do
+    @institution.update!(allow_user_registration: false)
+    post create_unsolicited_invitees_path, params: {
+      honey_email: "",
+      correct_answer_hash: Digest::MD5.hexdigest("5" + ApplicationHelper::CAPTCHA_SALT),
+      answer: "5",
+      invitee: {
+        email:   "new@example.edu",
+        purpose: "This is a new invitee"
+      }
+    }
+    assert_response :forbidden
+  end
+
   test "create_unsolicited() redirects back for illegal arguments" do
     post create_unsolicited_invitees_path,
          params: {
@@ -392,7 +407,15 @@ class InviteesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_path
   end
 
-  test "register() returns HTTP 200 for logged-out users" do
+  test "register() returns HTTP 403 when the institution does not allow
+  user registration" do
+    @institution.update!(allow_user_registration: false)
+    get register_path
+    assert_response :forbidden
+  end
+
+  test "register() returns HTTP 200 for logged-out users when the institution
+  allows user registration" do
     get register_path
     assert_response :ok
   end

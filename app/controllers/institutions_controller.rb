@@ -902,6 +902,7 @@ class InstitutionsController < ApplicationController
                                         :deposit_form_collection_help,
                                         :deposit_form_disagreement_help,
                                         # Authentication tab
+                                        :allow_user_registration,
                                         :local_auth_enabled,
                                         :saml_auth_enabled,
                                         :saml_auto_cert_rotation,

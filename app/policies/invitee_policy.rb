@@ -31,7 +31,7 @@ class InviteePolicy < ApplicationPolicy
   end
 
   def create_unsolicited
-    logged_out
+    register
   end
 
   def destroy
@@ -55,7 +55,13 @@ class InviteePolicy < ApplicationPolicy
   end
 
   def register
-    logged_out
+    result = logged_out
+    return result unless result[:authorized]
+    unless @ctx_institution.allow_user_registration
+      return { authorized: false,
+               reason: "User registration is not allowed." }
+    end
+    AUTHORIZED_RESULT
   end
 
   def reject

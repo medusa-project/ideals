@@ -10,6 +10,8 @@
 # # Attributes
 #
 # * `active_link_color`                 Theme active hyperlink color.
+# * `allow_user_registration`           Whether prospective users are allowed
+#                                       to self-register.
 # * `author_element_id`                 Foreign key to {RegisteredElement}
 #                                       designating an element to treat as the
 #                                       author element.
