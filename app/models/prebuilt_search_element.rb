@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Encapsulates a {RegisteredElement}-query term pair attached to a
 # {PrebuiltSearch}.

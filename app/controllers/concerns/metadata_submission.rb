@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Concern to be included by controllers that handle user form submission of
 # metadata.

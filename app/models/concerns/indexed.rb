@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Concern to be included by models that get indexed in OpenSearch. Provides
 # almost all of the functionality they need except for {as_indexed_json}, which

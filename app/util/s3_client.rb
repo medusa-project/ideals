@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Wraps an {Aws::S3::Client}, adding some convenience methods and forwarding
 # all other method calls to it.

@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 ##
-# Contrary to its name, this class doesn't actually directly update an [Item].
+# Contrary to its name, this class doesn't actually directly update an {Item}.
 # Instead, {execute} executes a block which contains item-updating code.
 # This enables complex and multi-step updates while still building a correct
-# [Event].
+# {Event}.
 #
 class UpdateItemCommand < Command
 

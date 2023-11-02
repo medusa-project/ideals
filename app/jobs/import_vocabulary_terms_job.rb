@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ImportVocabularyTermsJob < ApplicationJob
 
   QUEUE = ApplicationJob::Queue::ADMIN

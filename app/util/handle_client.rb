@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # @see https://wiki.illinois.edu/wiki/display/scrs/Handle+Server
 # @see https://hdl.handle.net/20.1000/113

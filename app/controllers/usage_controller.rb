@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Handles global, sysadmin-level usage statistics.
 #

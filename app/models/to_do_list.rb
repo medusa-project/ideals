@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Supports a simple to-do list. For example:
 #

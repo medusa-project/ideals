@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Encapsulates an AD group associated with a [UserGroup]. Users' membership
 # in one of these groups may be checked to determine inclusion in the group.

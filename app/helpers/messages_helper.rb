@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module MessagesHelper
 
   def badge_for_message_operation(operation)

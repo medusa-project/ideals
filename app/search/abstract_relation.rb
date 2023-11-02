@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Abstract base class for type-specific "relations." These are inspired by, and
 # conceptually the same as, {ActiveRecord::Relation}, and serve the dual

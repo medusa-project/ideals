@@ -1,5 +1,6 @@
 # frozen_string_literal: true
-#
+
+##
 # When a {RegisteredElement} name is in `prefix:name` format, this class maps
 # the prefix to a URI for use in XML and linked data. Institutions may
 # customize their own element namespaces, which must be unique among an

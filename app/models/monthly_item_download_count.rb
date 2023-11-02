@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # This is a reporting model/table that enables more efficient queries for
 # monthly item download counts than the alternative, which would be to query
@@ -17,15 +19,15 @@
 # of its owning entities.
 #
 # * `collection_id`  Soft foreign key to the primary collection of the
-#                    [Item].
+#                    {Item}.
 # * `count`          Download count.
 # * `created_at`     Managed by ActiveRecord.
 # * `institution_id` Soft foreign key to the institution of the primary
-#                    unit of the primary collection of the [Item].
-# * `item_id`        Soft foreign key to [Item].
+#                    unit of the primary collection of the {Item}.
+# * `item_id`        Soft foreign key to {Item}.
 # * `month`          Month number from 1 to 12.
 # * `unit_id`        Soft foreign key to the primary unit of the primary
-#                    collection of the [Item].
+#                    collection of the {Item}.
 # * `updated_at`     Managed by ActiveRecord.
 # * `year`           Year.
 #

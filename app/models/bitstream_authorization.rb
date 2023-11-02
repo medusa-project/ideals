@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Encapsulates the ability of a {UserGroup} to access the {Bitstream}s of an
 # {Item}.

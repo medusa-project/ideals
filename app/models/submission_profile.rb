@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Defines an ordered list of {RegisteredElement metadata elements}, their
 # labels, and whether they are required, repeatable, etc., for the purposes of

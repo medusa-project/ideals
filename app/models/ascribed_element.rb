@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Attachment of a {RegisteredElement} to a {Describable} resource.
 #

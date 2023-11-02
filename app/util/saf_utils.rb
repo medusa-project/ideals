@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SafUtils
 
   def remove_metadata_element(metadata_path, target_element)

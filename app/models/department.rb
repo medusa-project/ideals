@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # University department associated with a {UserGroup} and a
 # {#User::AuthType::SHIBBOLETH} user.

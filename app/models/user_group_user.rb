@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 ##
-# Encapsulates a direct membership of a [User] within a [UserGroup].
+# Encapsulates a direct membership of a {User} within a {UserGroup}.
 #
 # This class only exists to make certain ActiveRecord operations easier and
 # there should be little use for it otherwise.

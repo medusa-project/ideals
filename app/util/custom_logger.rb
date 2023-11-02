@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Logging class that enhances {Rails#logger} with class name logging and
 # string formatting.

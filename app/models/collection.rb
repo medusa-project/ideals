@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # A collection is a container for {Item}s. It resides within a {Unit}. It
 # supports a one-to-many parent-children relationship with itself.

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SubmissionProfilesController < ApplicationController
 
   before_action :ensure_institution_host, :ensure_logged_in

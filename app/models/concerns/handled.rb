@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Concern to be included by models that have surrogate {Handle}s: {Unit}s,
 # {Collection}s, and {Item}s.

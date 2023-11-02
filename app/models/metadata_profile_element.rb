@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 ##
-# Encapsulates an element in a [MetadataProfile]. Essentially this is a
-# glorified join model between [MetadataProfile] and [RegisteredElement].
+# Encapsulates an element in a {MetadataProfile}. Essentially this is a
+# glorified join model between {MetadataProfile} and {RegisteredElement}.
 #
 # # Attributes
 #
@@ -9,8 +11,8 @@
 #                           results views.
 # * `metadata_profile_id`   ID of the associated metadata profile. Foreign key.
 # * `position`              Zero-based position relative to other elements in
-#                           the owning [MetadataProfile].
-# * `registered_element_id` ID of the associated [RegisteredElement]. Foreign
+#                           the owning {MetadataProfile}.
+# * `registered_element_id` ID of the associated {RegisteredElement}. Foreign
 #                           key.
 # * `relevance_weight`      Weight of the element when computing a result
 #                           relevance score. These are OpenSearch weights

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Encapsulates a long-running (usually asynchronous) task, for the purpose of
 # providing status updates.

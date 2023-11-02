@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RegisteredElementPolicy < ApplicationPolicy
 
   WRONG_SCOPE_RESULT = {

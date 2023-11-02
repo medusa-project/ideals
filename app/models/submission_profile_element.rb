@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 ##
-# Encapsulates an element in a [SubmissionProfile]. Essentially this is a
-# glorified join model between [SubmissionProfile] and [RegisteredElement].
+# Encapsulates an element in a {SubmissionProfile}. Essentially this is a
+# glorified join model between {SubmissionProfile} and {RegisteredElement}.
 #
 # # Attributes
 #
@@ -8,14 +10,14 @@
 # * `help_text`             Help text.
 # * `placeholder_text`      Text that is inserted into form inputs by default.
 # * `position`              Zero-based position within the owning
-#                           [SubmissionProfile].
-# * `registered_element_id` ID of the associated [RegisteredElement]. Foreign
+#                           {SubmissionProfile}.
+# * `registered_element_id` ID of the associated {RegisteredElement}. Foreign
 #                           key.
-# * `repeatable`            Whether multiple matching [AscribedElement]s can be
+# * `repeatable`            Whether multiple matching {AscribedElement}s can be
 #                           associated with an entity.
-# * `required`              Whether a matching [AscribedElement] must be
+# * `required`              Whether a matching {AscribedElement} must be
 #                           associated with an entity.
-# * `submission_profile_id` ID of the associated [SubmissionProfile]. Foreign
+# * `submission_profile_id` ID of the associated {SubmissionProfile}. Foreign
 #                           key.
 # * `updated_at`            Managed by ActiveRecord.
 #

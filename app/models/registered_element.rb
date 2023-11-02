@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # An element available for use in the application.
 #

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Module to be included by models that are included in UI breadcrumbs.
 #

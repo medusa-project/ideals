@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ImportItemCommand < Command
 
   def initialize(primary_collection:)

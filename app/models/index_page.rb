@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Represents an "index page" accessible from the header browse menu. An index
 # page displays lists of {AscribedElement} values corresponding to one or more

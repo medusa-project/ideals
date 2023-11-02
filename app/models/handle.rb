@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+##
 # Represents a handle in the handle server.
 #
 # The local database is the source-of-truth for handles.

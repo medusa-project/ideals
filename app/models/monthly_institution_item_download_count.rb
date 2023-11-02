@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # This is a reporting model/table that enables more efficient queries for
 # monthly item download counts within institutions than the alternative, which
@@ -6,13 +8,13 @@
 #
 # The data in this table is derived from that in `monthly_item_download_counts`
 # using {compile_counts}. So, that table must be populated first. See
-# [MonthlyItemDownloadCount] for more information.
+# {MonthlyItemDownloadCount} for more information.
 #
 # Attributes
 #
 # * `count`          Download count.
 # * `created_at`     Managed by ActiveRecord.
-# * `institution_id` Soft foreign key to [Institution].
+# * `institution_id` Soft foreign key to {Institution}.
 # * `month`          Month number from 1 to 12.
 # * `updated_at`     Managed by ActiveRecord.
 # * `year`           Year.

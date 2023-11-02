@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Prints the progress of a long-running task to the console.
 #

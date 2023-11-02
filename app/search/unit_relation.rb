@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UnitRelation < AbstractRelation
 
   LOGGER = CustomLogger.new(UnitRelation)

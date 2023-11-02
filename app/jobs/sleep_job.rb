@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # A job that sleeps for a given length of time. This is used mainly for testing
 # the job worker.

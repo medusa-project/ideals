@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Concern to be included by controllers that receive user input from search
 # forms.

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # University affiliation associated with {UserGroup} and
 # {#User::AuthType::SHIBBOLETH Shibboleth} users.

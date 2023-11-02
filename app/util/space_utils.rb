@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Helper class for converting spatial coordinates.
 #

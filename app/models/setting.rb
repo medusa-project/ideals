@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Encapsulates a key-value setting. Keys should be one of the {Setting::Key}
 # constant values. Values are stored as JSON in the database. Simple values can

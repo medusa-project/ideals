@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Encapsulates an entry in `config/formats.yml`.
 #

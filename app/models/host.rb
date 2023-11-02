@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Group of one or more network hosts described by hostname, IP address, or
 # IP address range.

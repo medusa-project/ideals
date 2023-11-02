@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # # How styles work in the application
 #

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Controlled vocabulary associated with a {RegisteredElement}.
 #

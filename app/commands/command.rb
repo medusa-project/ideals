@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Abstract superclass for commands in the
 # [command pattern](https://en.wikipedia.org/wiki/Command_pattern).

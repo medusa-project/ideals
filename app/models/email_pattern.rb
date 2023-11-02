@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Email address pattern associated with a [UserGroup]. All [User]s whose email
 # address matches an instance will be considered to be included in the group.

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Our demo server is public, but we don't want it to get crawled by search
 # engine bots, so this controller provides a dynamic, environment-specific

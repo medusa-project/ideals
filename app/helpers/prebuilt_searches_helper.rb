@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PrebuiltSearchesHelper
 
   def prebuilt_search_redirect_path(search)

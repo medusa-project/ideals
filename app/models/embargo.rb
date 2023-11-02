@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Restricts {Item} access either perpetually or until a certain date,
 # optionally exempting one or more {UserGroup}s.

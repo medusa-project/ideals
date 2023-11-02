@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Defines an ordered list of {MetadataProfileElement metadata elements}, their
 # labels, and whether they are searchable, sortable, etc.

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Encapsulates some kind of event, characterized by one of the {Event#Type}
 # constant values. Records information like the triggering user, the model

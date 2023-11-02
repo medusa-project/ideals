@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Singleton interface to the application configuration.
 #

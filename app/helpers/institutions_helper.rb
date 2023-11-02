@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module InstitutionsHelper
 
   # See https://stackoverflow.com/a/68189611

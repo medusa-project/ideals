@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Concern to be included by models that can have metadata ascribed to them.
 #

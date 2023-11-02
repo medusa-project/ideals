@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Associates a {Collection} with a {UserGroup} allowed to submit to it.
 #
