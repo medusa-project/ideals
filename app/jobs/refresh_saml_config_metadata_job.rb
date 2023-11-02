@@ -27,6 +27,7 @@ class RefreshSamlConfigMetadataJob < ApplicationJob
       if config_file.present?
         xml_file = config_file
       elsif config_url.present?
+        institution.update!(saml_metadata_url: config_url)
         xml_file = Institution.fetch_saml_config_metadata(url: config_url)
       elsif Rails.env.development? || Rails.env.test?
         xml_file = File.new(File.join(Rails.root, "test", "fixtures", "files",

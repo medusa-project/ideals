@@ -41,4 +41,20 @@ class RefreshSamlConfigMetadataJobTest < ActiveSupport::TestCase
     skip # TODO: write this
   end
 
+  test "perform() updates the value of saml_metadata_url when updating an
+  institution's metadata from a remote XML file" do
+    institution = institutions(:southwest)
+    institution.update!(sso_federation:        Institution::SSOFederation::NONE,
+                        saml_idp_signing_cert: nil)
+    url = "https://example.org/metadata.xml"
+
+    assert_raises ArgumentError do
+      # This is going to raise an ArgumentError, but the property should still
+      # get set.
+      RefreshSamlConfigMetadataJob.perform_now(institution:       institution,
+                                               configuration_url: url)
+    end
+    assert_equal url, institution.saml_metadata_url
+  end
+
 end

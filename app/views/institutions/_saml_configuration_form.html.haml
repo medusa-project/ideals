@@ -38,7 +38,8 @@
                                   "aria-labelledby": "url-tab",
                                   tabindex:          0}
         .mb-3
-          = text_field_tag :configuration_url, nil, class: "form-control"
+          = text_field_tag :configuration_url, institution.saml_metadata_url,
+                           class: "form-control"
 
     .clearfix
       .float-end

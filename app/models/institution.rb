@@ -121,6 +121,9 @@
 #                                       SAML for authentication.
 # * `saml_idp_sso_redirect_service_url` Required only by institutions that use
 #                                       SAML for authentication.
+# * `saml_metadata_url`                 Caches the value entered into the URL
+#                                       field when supplying SAML metadata from
+#                                       A URL.
 # * `saml_sp_next_public_cert`          SAML X.509 public certificate with a
 #                                       later expiration than
 #                                       {saml_sp_public_cert} to facilitate
