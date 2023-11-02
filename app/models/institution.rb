@@ -749,17 +749,18 @@ class Institution < ApplicationRecord
   #
   def update_from_saml_metadata(metadata_xml_file)
     File.open(metadata_xml_file) do |file|
-      doc          = Nokogiri::XML(file)
+      doc      = Nokogiri::XML(file)
       entities = doc.xpath("//md:EntityDescriptor", md: SAML_METADATA_NS)
       if entities.count > 1
         if self.saml_idp_entity_id.blank?
           raise "There are multiple md:EntityDescriptors, but don't know which "\
-                "one to use because the institution's IdP entity ID is not set."
+                "one to use because this institution's IdP entity ID is not set."
         end
         idp_entity = doc.xpath("//md:EntityDescriptor[@entityID = '#{self.saml_idp_entity_id}']",
                                md: SAML_METADATA_NS).first
       else
         idp_entity = entities.first
+        self.saml_idp_entity_id = idp_entity.attr("entityID")
       end
 
       # IdP SSO service URL(s)

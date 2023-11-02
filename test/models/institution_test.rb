@@ -899,6 +899,8 @@ class InstitutionTest < ActiveSupport::TestCase
 
     @instance.update_from_saml_metadata(xml_file)
 
+    assert_equal "https://southwest.edu/entity",
+                 @instance.saml_idp_entity_id
     assert_equal "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST",
                  @instance.saml_idp_sso_binding_urn
     assert_equal "https://login.openathens.net/saml/2/POST/sso/southwest.edu",
