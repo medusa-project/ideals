@@ -33,7 +33,9 @@ SAML_SETUP_PROC = lambda do |env|
   }
   s.options[:certificate]                        = institution.saml_sp_public_cert
   s.options[:private_key]                        = institution.saml_sp_private_key
-  s.options[:certificate_new]                    = institution.saml_sp_next_public_cert
+  if institution.saml_sp_next_public_cert.present?
+    s.options[:certificate_new]                  = institution.saml_sp_next_public_cert
+  end
   if institution.saml_sp_public_cert.present?
     s.options[:security]                         = { want_assertions_encrypted: true }
   end
