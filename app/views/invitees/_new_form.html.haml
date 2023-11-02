@@ -5,7 +5,7 @@
   = f.hidden_field :institution_admin, value: f.object.institution_admin
   = f.hidden_field :institution_id, value: f.object.institution_id
   = f.hidden_field :inviting_user_id, value: current_user.id
-  = f.hidden_field :note, value: "Invited by #{current_user.name} (#{current_user.email})"
+  = f.hidden_field :purpose, value: "Invited by #{current_user.name} (#{current_user.email})"
 
   .mb-3
     = f.label :email, "Email", class: "required"
