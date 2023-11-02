@@ -290,6 +290,7 @@ class ApplicationController < ActionController::Base
   def to_do_list
     if @list.nil?
       @list = ToDoList.new
+      # Preservation alerts
       if current_user&.sysadmin?
         count = Institution.where("outgoing_message_queue IS NULL OR outgoing_message_queue = ''").count
         if count > 0
@@ -299,6 +300,28 @@ class ApplicationController < ActionController::Base
           }
           @list.total_items += count
         end
+      end
+
+      # Metadata profiles
+      profiles        = current_institution.metadata_profiles
+      default_profile = profiles.find(&:institution_default)
+      if !default_profile && policy(profiles.first).edit?
+        @list.items << {
+          message: "Set a default metadata profile",
+          url:     metadata_profiles_path
+        }
+        @list.total_items += 1
+      end
+
+      # Submission profiles
+      profiles        = current_institution.submission_profiles
+      default_profile = profiles.find(&:institution_default)
+      if !default_profile && policy(profiles.first).edit?
+        @list.items << {
+          message: "Set a default submission profile",
+          url:     submission_profiles_path
+        }
+        @list.total_items += 1
       end
 
       # Pending Invitees (if the user is allowed to act on them)
