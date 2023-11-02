@@ -753,14 +753,23 @@ class Institution < ApplicationRecord
       entities = doc.xpath("//md:EntityDescriptor", md: SAML_METADATA_NS)
       if entities.count > 1
         if self.saml_idp_entity_id.blank?
-          raise "There are multiple md:EntityDescriptors, but don't know which "\
-                "one to use because this institution's IdP entity ID is not set."
+          raise ArgumentError, "There are multiple md:EntityDescriptors, but "\
+            "I don't know which one to use because this institution's IdP "\
+            "entity ID is not set."
         end
         idp_entity = doc.xpath("//md:EntityDescriptor[@entityID = '#{self.saml_idp_entity_id}']",
                                md: SAML_METADATA_NS).first
-      else
+        unless idp_entity
+          raise ArgumentError, "The given file does not contain any "\
+            "md:EntityDescriptor elements with an entityID of "\
+            "#{self.saml_idp_entity_id}."
+        end
+      elsif entities.count == 1
         idp_entity = entities.first
         self.saml_idp_entity_id = idp_entity.attr("entityID")
+      else
+        raise ArgumentError, "The given file does not contain any "\
+          "md:EntityDescriptor elements."
       end
 
       # IdP SSO service URL(s)

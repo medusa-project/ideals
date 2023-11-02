@@ -868,11 +868,21 @@ class InstitutionTest < ActiveSupport::TestCase
 
   # update_from_saml_metadata()
 
+  test "update_from_saml_metadata() raises an error if there are no
+  EntityDescriptors" do
+    @instance.saml_idp_entity_id = nil
+    xml_file = File.join(Rails.root, "test", "fixtures", "files", "packages",
+                         "saf", "valid_item", "item_1", "dublin_core.xml")
+    assert_raises ArgumentError do
+      @instance.update_from_saml_metadata(xml_file)
+    end
+  end
+
   test "update_from_saml_metadata() raises an error if there is more
   than one EntityDescriptor and saml_idp_entity_id is not set" do
     @instance.saml_idp_entity_id = nil
     xml_file = file_fixture("oaf_metadata.xml")
-    assert_raises do
+    assert_raises ArgumentError do
       @instance.update_from_saml_metadata(xml_file)
     end
   end
@@ -881,7 +891,7 @@ class InstitutionTest < ActiveSupport::TestCase
   than one EntityDescriptor but no matching IdP entityID in the XML file" do
     @instance.saml_idp_entity_id = "bogus.org"
     xml_file = file_fixture("oaf_metadata.xml")
-    assert_raises do
+    assert_raises ArgumentError do
       @instance.update_from_saml_metadata(xml_file)
     end
   end
