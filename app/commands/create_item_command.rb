@@ -34,10 +34,12 @@ class CreateItemCommand < Command
       # For every element with placeholder text in the item's effective
       # submission profile, ascribe a metadata element with a value of that
       # text.
-      item.effective_submission_profile.elements.
-        where("LENGTH(placeholder_text) > ?", 0).each do |sp_element|
-        item.elements.build(registered_element: sp_element.registered_element,
-                            string:             sp_element.placeholder_text)
+      if item.effective_submission_profile
+        item.effective_submission_profile.elements.
+          where("LENGTH(placeholder_text) > ?", 0).each do |sp_element|
+          item.elements.build(registered_element: sp_element.registered_element,
+                              string:             sp_element.placeholder_text)
+        end
       end
       item.save!
     end
