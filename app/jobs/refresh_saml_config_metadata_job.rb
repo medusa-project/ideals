@@ -35,7 +35,7 @@ class RefreshSamlConfigMetadataJob < ApplicationJob
         xml_file     = Institution.fetch_saml_config_metadata(federation: institution.sso_federation)
         is_temp_file = true
       end
-      institution.update_from_saml_config_metadata(xml_file)
+      institution.update_from_saml_metadata(xml_file)
     ensure
       xml_file.unlink if is_temp_file
     end

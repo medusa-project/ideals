@@ -866,27 +866,27 @@ class InstitutionTest < ActiveSupport::TestCase
     assert_equal %w(dogs cats foxes), @instance.shibboleth_extra_attributes
   end
 
-  # update_from_saml_config_metadata()
+  # update_from_saml_metadata()
 
-  test "update_from_saml_config_metadata() raises an error if there is more
+  test "update_from_saml_metadata() raises an error if there is more
   than one EntityDescriptor and saml_idp_entity_id is not set" do
     @instance.saml_idp_entity_id = nil
     xml_file = file_fixture("oaf_metadata.xml")
     assert_raises do
-      @instance.update_from_saml_config_metadata(xml_file)
+      @instance.update_from_saml_metadata(xml_file)
     end
   end
 
-  test "update_from_saml_config_metadata() raises an error if there is more
+  test "update_from_saml_metadata() raises an error if there is more
   than one EntityDescriptor but no matching IdP entityID in the XML file" do
     @instance.saml_idp_entity_id = "bogus.org"
     xml_file = file_fixture("oaf_metadata.xml")
     assert_raises do
-      @instance.update_from_saml_config_metadata(xml_file)
+      @instance.update_from_saml_metadata(xml_file)
     end
   end
 
-  test "update_from_saml_config_metadata() updates properties from metadata
+  test "update_from_saml_metadata() updates properties from metadata
   containing one EntityDescriptor" do
     @instance.saml_idp_sso_binding_urn          = nil
     @instance.saml_idp_sso_post_service_url     = nil
@@ -897,7 +897,7 @@ class InstitutionTest < ActiveSupport::TestCase
     @instance.saml_idp_encryption_cert2         = nil
     xml_file = file_fixture("southwest_saml.xml")
 
-    @instance.update_from_saml_config_metadata(xml_file)
+    @instance.update_from_saml_metadata(xml_file)
 
     assert_equal "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST",
                  @instance.saml_idp_sso_binding_urn
@@ -914,7 +914,7 @@ class InstitutionTest < ActiveSupport::TestCase
     assert_nil @instance.saml_idp_encryption_cert2
   end
 
-  test "update_from_saml_config_metadata() updates properties from metadata
+  test "update_from_saml_metadata() updates properties from metadata
   containing multiple EntityDescriptors" do
     @instance.saml_idp_sso_binding_urn          = nil
     @instance.saml_idp_sso_post_service_url     = nil
@@ -925,7 +925,7 @@ class InstitutionTest < ActiveSupport::TestCase
     @instance.saml_idp_encryption_cert2         = nil
     xml_file = file_fixture("oaf_metadata.xml")
 
-    @instance.update_from_saml_config_metadata(xml_file)
+    @instance.update_from_saml_metadata(xml_file)
 
     assert_equal "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST",
                  @instance.saml_idp_sso_binding_urn

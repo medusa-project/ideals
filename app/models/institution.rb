@@ -747,7 +747,7 @@ class Institution < ApplicationRecord
   #
   # @param metadata_xml_file [File]
   #
-  def update_from_saml_config_metadata(metadata_xml_file)
+  def update_from_saml_metadata(metadata_xml_file)
     File.open(metadata_xml_file) do |file|
       doc          = Nokogiri::XML(file)
       entities = doc.xpath("//md:EntityDescriptor", md: SAML_METADATA_NS)
