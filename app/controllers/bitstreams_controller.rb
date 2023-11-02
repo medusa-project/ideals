@@ -255,8 +255,9 @@ class BitstreamsController < ApplicationController
       format = @bitstream.format
       if format.media_type == "application/pdf"
         data
-      #elsif format.derivative_generator == "libreoffice"
-        #redirect_to @bitstream.derivative_pdf_url, allow_other_host: true
+      elsif format.derivative_generator == "libreoffice"
+        redirect_to DerivativeGenerator.new(@bitstream).derivative_pdf_url,
+                    allow_other_host: true
       else
         render plain: "Unable to provide a PDF representation of this bitstream.",
                status: :not_acceptable
