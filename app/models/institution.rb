@@ -262,12 +262,12 @@ class Institution < ApplicationRecord
   validates :key, length: { minimum: MIN_KEY_LENGTH, maximum: MAX_KEY_LENGTH }
   validates_format_of :key, with: /\A[A-Za-z0-9]+\Z/, allow_blank: false
   validates :latitude_degrees,
-            numericality: { greater_than: 36, less_than: 43 }, # Illinois state bounds
+            numericality: { greater_than: 35, less_than: 43 }, # Illinois state bounds
             allow_blank: true
   validates :link_color, presence: true
   validates :link_hover_color, presence: true
   validates :longitude_degrees,
-            numericality: { greater_than: -92, less_than: -87 }, # Illinois state bounds
+            numericality: { greater_than: -92, less_than: -86 }, # Illinois state bounds
             allow_blank: true
   validates :name, presence: true
   validates :primary_color, presence: true
