@@ -58,6 +58,17 @@ Rails.application.routes.draw do
   match "/contact", to: "welcome#contact", via: :post,
         constraints: lambda { |request| request.xhr? }
 
+  # Credentials
+  resources :credentials, only: [:update] do
+    match "/edit-password", to: "credentials#edit_password", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/register", to: "credentials#register", via: :get
+    match "/reset-password", to: "credentials#new_password", via: :get
+    match "/reset-password", to: "credentials#reset_password", via: [:patch, :post]
+    match "/update-password", to: "credentials#update_password", via: [:patch, :post],
+          constraints: lambda { |request| request.xhr? }
+  end
+
   # Theme route
   match "/custom-styles", to: "stylesheets#show", via: :get
 
@@ -239,17 +250,6 @@ Rails.application.routes.draw do
     match "/withdraw", to: "items#withdraw", via: :patch
   end
 
-  # Local Identities
-  resources :local_identities, only: [:update], path: "identities" do
-    match "/edit-password", to: "local_identities#edit_password", via: :get,
-          constraints: lambda { |request| request.xhr? }
-    match "/register", to: "local_identities#register", via: :get
-    match "/reset-password", to: "local_identities#new_password", via: :get
-    match "/reset-password", to: "local_identities#reset_password", via: [:patch, :post]
-    match "/update-password", to: "local_identities#update_password", via: [:patch, :post],
-          constraints: lambda { |request| request.xhr? }
-  end
-
   # Messages
   resources :messages, only: [:index, :show] do
     match "/resend", to: "messages#resend", via: :post
@@ -368,7 +368,7 @@ Rails.application.routes.draw do
   # Users
   match "/all-users", to: "users#index_all", via: :get, as: "all_users"
   resources :users, only: [:index, :show] do
-    resources :local_identities, only: [:create, :new], path: "/identities"
+    resources :credentials, only: [:create, :new]
     match "/credentials", to: "users#show_credentials", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/disable", to: "users#disable", via: :patch

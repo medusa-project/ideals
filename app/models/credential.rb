@@ -1,18 +1,19 @@
 # frozen_string_literal: true
 
 ##
-# Local user identity, which hooks into the `omniauth-identity` authentication
-# strategy. This is a surrogate of a {User} for users whose credentials are
-# stored in the database.
+# Local user credential, which hooks into the `omniauth-identity`
+# authentication provider. This is associated with {User} for users whose
+# credentials are stored in the database.
+#
+# In practice, most users will log in via single sign-on (SSO) and will not
+# have credentials stored locally. But, some will. And system administrators
+# may associate local credentials with their accounts, with which they can
+# log into other institutions' spaces.
 #
 # N.B. 1: See the documentation of {Invitee} for a detailed overview of the
 # invitation & registration process.
 #
-# N.B. 2: `omniauth-identity` wants this class to be named `Identity` by
-# default. It was renamed to make it immediately clear that these identities
-# are managed locally and are not used by all subclasses of {User}.
-#
-# N.B. 3: The superclass validates {password} and {password_confirmation} on
+# N.B. 2: The superclass validates {password} and {password_confirmation} on
 # update. In order to update an instance without supplying a password, use
 # {update_attribute}.
 #
@@ -36,7 +37,7 @@
 #
 # @see https://github.com/omniauth/omniauth-identity
 #
-class LocalIdentity < OmniAuth::Identity::Models::ActiveRecord
+class Credential < OmniAuth::Identity::Models::ActiveRecord
 
   PASSWORD_MIN_LENGTH             = 12
   PASSWORD_MIN_UPPERCASE_LETTERS  = 1
@@ -47,7 +48,7 @@ class LocalIdentity < OmniAuth::Identity::Models::ActiveRecord
 
   attr_accessor :activation_token, :registration_token, :reset_token
 
-  belongs_to :user, inverse_of: :identity
+  belongs_to :user, inverse_of: :credential
 
   validates :email, presence: true, length: { maximum: 255 },
             format: { with: StringUtils::EMAIL_REGEX },
@@ -111,16 +112,16 @@ class LocalIdentity < OmniAuth::Identity::Models::ActiveRecord
   # Creates and assigns new registration attributes.
   #
   def create_registration_digest
-    self.registration_token = LocalIdentity.new_token
-    update_attribute(:registration_digest, LocalIdentity.digest(self.registration_token))
+    self.registration_token = Credential.new_token
+    update_attribute(:registration_digest, Credential.digest(self.registration_token))
   end
 
   ##
   # Creates and assigns new password reset attributes.
   #
   def create_reset_digest
-    self.reset_token = LocalIdentity.new_token
-    update_attribute(:reset_digest, LocalIdentity.digest(self.reset_token))
+    self.reset_token = Credential.new_token
+    update_attribute(:reset_digest, Credential.digest(self.reset_token))
     update_attribute(:reset_sent_at, Time.zone.now)
   end
 
@@ -135,7 +136,7 @@ class LocalIdentity < OmniAuth::Identity::Models::ActiveRecord
   #
   def password_reset_url
     raise "Reset token is not set." if self.reset_token.blank?
-    sprintf("%s/identities/%d/reset-password?token=%s",
+    sprintf("%s/credentials/%d/reset-password?token=%s",
             self.user.institution.scope_url,
             self.id,
             self.reset_token)
@@ -148,7 +149,7 @@ class LocalIdentity < OmniAuth::Identity::Models::ActiveRecord
   #
   def registration_url
     raise "Registration token is not set." if self.registration_token.blank?
-    sprintf("%s/identities/%d/register?token=%s",
+    sprintf("%s/credentials/%d/register?token=%s",
             self.user.institution.scope_url,
             self.id,
             self.registration_token)
@@ -213,7 +214,7 @@ class LocalIdentity < OmniAuth::Identity::Models::ActiveRecord
 
   def validate_invitee_expiration
     if self.user&.invitee&.expired?
-      errors.add(:base, "Identity does not have a current invitation.")
+      errors.add(:base, "Credential does not have a current invitation.")
     end
   end
 

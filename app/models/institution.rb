@@ -62,8 +62,8 @@
 #                                       latitude.
 # * `link_color`                        Theme hyperlink color.
 # * `link_hover_color`                  Theme hover-over-hyperlink color.
-# * `local_auth_enabled`                Whether local-identity authentication
-#                                       is enabled.
+# * `local_auth_enabled`                Whether local-credentials
+#                                       authentication is enabled.
 # * `longitude_degrees`                 Degrees component of the institution's
 #                                       longitude.
 # * `longitude_minutes`                 Minutes component of the institution's

@@ -51,7 +51,7 @@ const UserView = {
             $.get(url, function (data) {
                 $("#properties-tab-content").html(data);
                 $("button.edit-properties").on("click", function() {
-                    const id = $(this).data("user-id");
+                    const id  = $(this).data("user-id");
                     const url = ROOT_URL + "/users/" + id + "/edit-properties";
                     $.get(url, function(data) {
                         $("#edit-properties-modal .modal-body").html(data);
@@ -65,17 +65,17 @@ const UserView = {
             $.get(url, function (data) {
                 $("#credentials-tab-content").html(data);
                 $("button.change-password").on("click", function() {
-                    const id = $(this).data("identity-id");
-                    const url = ROOT_URL + "/identities/" + id + "/edit-password";
+                    const id  = $(this).data("identity-id");
+                    const url = ROOT_URL + "/credentials/" + id + "/edit-password";
                     $.get(url, function(data) {
                         $("#change-password-modal .modal-body").html(data);
                     });
                 });
-                $("button.create-local-identity").on("click", function() {
-                    const id = $(this).data("user-id");
-                    const url = ROOT_URL + "/users/" + id + "/identities/new";
+                $("button.create-local-credential").on("click", function() {
+                    const id  = $(this).data("user-id");
+                    const url = ROOT_URL + "/users/" + id + "/credentials/new";
                     $.get(url, function(data) {
-                        $("#create-local-identity-modal .modal-body").html(data);
+                        $("#create-local-credential-modal .modal-body").html(data);
                     });
                 });
             });

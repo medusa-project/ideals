@@ -77,7 +77,7 @@ class UserTest < ActiveSupport::TestCase
   test "create_local() creates a correct instance" do
     email       = "test@example.org"
     name        = "Testy Test"
-    password    = LocalIdentity.random_password
+    password    = Credential.random_password
     institution = institutions(:southwest)
     user        = User.create_local(email:       email,
                                     name:        name,
@@ -89,12 +89,12 @@ class UserTest < ActiveSupport::TestCase
     assert_equal institution, invitee.institution
     assert invitee.approved?
 
-    # check the LocalIdentity
-    identity = user.identity
-    assert_equal email, identity.email
+    # check the Credential
+    credential = user.credential
+    assert_equal email, credential.email
 
     # check the User
-    assert_equal identity, user.identity
+    assert_equal credential, user.credential
     assert_equal email, user.email
     assert_equal name, user.name
     assert_equal institution, user.institution
@@ -407,12 +407,12 @@ class UserTest < ActiveSupport::TestCase
 
   # destroy()
 
-  test "destroy() destroys the associated Identity" do
-    identity = @user.identity
+  test "destroy() destroys the associated Credential" do
+    credential = @user.credential
     @user.destroy!
 
     assert_raises ActiveRecord::RecordNotFound do
-      identity.reload
+      credential.reload
     end
   end
 
@@ -665,10 +665,10 @@ class UserTest < ActiveSupport::TestCase
 
   # save()
 
-  test "save() updates the email of the associated LocalIdentity" do
+  test "save() updates the email of the associated Credential" do
     new_email = "new@example.edu"
     @user.update!(email: new_email)
-    assert_equal new_email, @user.identity.email
+    assert_equal new_email, @user.credential.email
   end
 
   # sysadmin?()

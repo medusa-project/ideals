@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_11_02_195022) do
+ActiveRecord::Schema[7.1].define(version: 2023_11_03_155627) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -146,6 +146,21 @@ ActiveRecord::Schema[7.1].define(version: 2023_11_02_195022) do
     t.index ["metadata_profile_id"], name: "index_collections_on_metadata_profile_id"
     t.index ["parent_id"], name: "index_collections_on_parent_id"
     t.index ["submission_profile_id"], name: "index_collections_on_submission_profile_id"
+  end
+
+  create_table "credentials", force: :cascade do |t|
+    t.string "email", null: false
+    t.string "password_digest"
+    t.string "reset_digest"
+    t.datetime "reset_sent_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "registration_digest"
+    t.string "lowercase_email", null: false
+    t.bigint "user_id"
+    t.index ["email"], name: "index_credentials_on_email", unique: true
+    t.index ["lowercase_email"], name: "index_credentials_on_lowercase_email", unique: true
+    t.index ["user_id"], name: "index_credentials_on_user_id", unique: true
   end
 
   create_table "delayed_jobs", force: :cascade do |t|
@@ -518,21 +533,6 @@ ActiveRecord::Schema[7.1].define(version: 2023_11_02_195022) do
     t.index ["submitter_id"], name: "index_items_on_submitter_id"
   end
 
-  create_table "local_identities", force: :cascade do |t|
-    t.string "email", null: false
-    t.string "password_digest"
-    t.string "reset_digest"
-    t.datetime "reset_sent_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "registration_digest"
-    t.string "lowercase_email", null: false
-    t.bigint "user_id"
-    t.index ["email"], name: "index_local_identities_on_email", unique: true
-    t.index ["lowercase_email"], name: "index_local_identities_on_lowercase_email", unique: true
-    t.index ["user_id"], name: "index_local_identities_on_user_id", unique: true
-  end
-
   create_table "logins", force: :cascade do |t|
     t.bigint "user_id"
     t.string "ip_address"
@@ -891,6 +891,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_11_02_195022) do
   add_foreign_key "collections", "institutions", on_update: :cascade, on_delete: :restrict
   add_foreign_key "collections", "metadata_profiles", on_update: :cascade, on_delete: :nullify
   add_foreign_key "collections", "submission_profiles", on_update: :cascade, on_delete: :nullify
+  add_foreign_key "credentials", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "departments", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "departments", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "deposit_agreement_question_responses", "deposit_agreement_questions", on_update: :cascade, on_delete: :cascade
@@ -930,7 +931,6 @@ ActiveRecord::Schema[7.1].define(version: 2023_11_02_195022) do
   add_foreign_key "invitees", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "items", "institutions", on_update: :cascade, on_delete: :restrict
   add_foreign_key "items", "users", column: "submitter_id", on_update: :cascade, on_delete: :nullify
-  add_foreign_key "local_identities", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "logins", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "logins", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "messages", "bitstreams", on_update: :cascade, on_delete: :cascade

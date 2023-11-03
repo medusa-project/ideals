@@ -42,17 +42,17 @@ class IdealsMailer < ApplicationMailer
   end
 
   ##
-  # Notifies the given local-identity user that their request to register has
-  # been approved, and contains a link to the registration form.
+  # Notifies the given local-credentials user that their request to register
+  # has been approved, and contains a link to the registration form.
   #
   # This is the counterpart of {invited} for self-invited users.
   #
-  # @param identity [LocalIdentity]
+  # @param credential [Credential]
   #
-  def account_approved(identity)
-    @identity    = identity
-    @institution = @identity.user.institution
-    mail(to:      @identity.email,
+  def account_approved(credential)
+    @credential  = credential
+    @institution = @credential.user.institution
+    mail(to:      @credential.email,
          subject: "Register your #{@institution.service_name} account")
   end
 
@@ -72,12 +72,12 @@ class IdealsMailer < ApplicationMailer
   # Notifies the given invitee that their registration has been
   # received/approved, and contains a link to log in.
   #
-  # @param identity [Identity]
+  # @param credential [Credential]
   #
-  def account_registered(identity)
-    @identity    = identity
-    @institution = @identity.user.institution
-    mail(to:      @identity.email,
+  def account_registered(credential)
+    @credential  = credential
+    @institution = @credential.user.institution
+    mail(to:      @credential.email,
          subject: "Welcome to #{@institution.service_name}!")
   end
 
@@ -152,12 +152,12 @@ class IdealsMailer < ApplicationMailer
   # This is the counterpart of {account_approved} for users who have been
   # invited (and therefore pre-approved) by a sysadmin.
   #
-  # @param identity [LocalIdentity]
+  # @param credential [Credential]
   #
-  def invited(identity)
-    @identity    = identity
-    @institution = @identity.user.institution
-    mail(to:      @identity.email,
+  def invited(credential)
+    @credential  = credential
+    @institution = @credential.user.institution
+    mail(to:      @credential.email,
          subject: "Register for an account with #{@institution.service_name}")
   end
 
@@ -223,12 +223,12 @@ class IdealsMailer < ApplicationMailer
   end
 
   ##
-  # @param identity [Identity]
+  # @param credential [Credential]
   #
-  def password_reset(identity)
-    @identity    = identity
-    @institution = @identity.user.institution
-    mail(to:      @identity.email,
+  def password_reset(credential)
+    @credential  = credential
+    @institution = @credential.user.institution
+    mail(to:      @credential.email,
          subject: "Reset your #{@institution.service_name} password")
   end
 

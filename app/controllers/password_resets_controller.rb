@@ -4,7 +4,7 @@
 # Handles "phase one" of the password reset process--the phase before user
 # identity is known.
 #
-# "Phase two" of the reset process is handled by {IdentitiesController}.
+# "Phase two" of the reset process is handled by {CredentialsController}.
 #
 class PasswordResetsController < ApplicationController
 
@@ -26,10 +26,10 @@ class PasswordResetsController < ApplicationController
     if params.dig(:password_reset, :email).present?
       email = params[:password_reset][:email]&.downcase
       if StringUtils.valid_email?(email)
-        @identity = LocalIdentity.where("LOWER(email) = ?", email).limit(1).first
-        if @identity
-          @identity.create_reset_digest
-          @identity.send_password_reset_email
+        @credential = Credential.where("LOWER(email) = ?", email).limit(1).first
+        if @credential
+          @credential.create_reset_digest
+          @credential.send_password_reset_email
           flash['success'] = "An email has been sent containing "\
               "instructions to reset your password. If you don't receive "\
               "it soon, check your spam folder."

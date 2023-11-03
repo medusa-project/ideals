@@ -2,7 +2,7 @@ require 'rake'
 
 namespace :users do
 
-  desc "Create a local-identity user"
+  desc "Create a local-credentials user"
   task :create_local, [:email, :password, :name, :institution_key] => :environment do |task, args|
     institution = Institution.find_by_key(args[:institution_key])
     raise ArgumentError, "Institution not found: #{institution}" unless institution
@@ -13,7 +13,7 @@ namespace :users do
     user.save!
   end
 
-  desc "Create a local-identity sysadmin user"
+  desc "Create a local-credentials sysadmin user"
   task :create_local_sysadmin, [:email, :password, :name, :institution_key] => :environment do |task, args|
     institution = Institution.find_by_key(args[:institution_key])
     raise ArgumentError, "Institution not found: #{institution}" unless institution
@@ -27,12 +27,7 @@ namespace :users do
 
   desc 'Delete a user'
   task :delete, [:email] => :environment do |task, args|
-    email = args[:email]
-    ActiveRecord::Base.transaction do
-      LocalIdentity.destroy_by(email: email)
-      Invitee.destroy_by(email: email)
-      User.destroy_by(email: email)
-    end
+    User.destroy_by(email: args[:email])
   end
 
   desc "Make a user an institution administrator"

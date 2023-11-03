@@ -2,8 +2,8 @@
 
 ##
 # Non-NetID user who has either been invited to register, or has requested to
-# register, and may or may not yet have a corresponding {LocalIdentity
-# identity}.
+# register, and may or may not yet have a corresponding {Credential
+# credential}.
 #
 # # Invitation/Registration Flow
 #
@@ -148,16 +148,16 @@ class Invitee < ApplicationRecord
       raise "An approval email can only be sent to an approved invitee."
     end
     associate_or_create_user
-    self.user.identity.create_registration_digest
-    self.user.identity.send_approval_email
+    self.user.credential.create_registration_digest
+    self.user.credential.send_approval_email
   end
 
   def send_invited_email
     unless approved?
       raise "An invite email can only be sent to an approved invitee."
     end
-    self.user.identity.create_registration_digest
-    self.user.identity.send_invited_email
+    self.user.credential.create_registration_digest
+    self.user.credential.send_invited_email
   end
 
   ##
@@ -202,17 +202,17 @@ class Invitee < ApplicationRecord
                    institution: self.institution)
     self.update!(user: user) if self.user != user
 
-    identity = LocalIdentity.find_by(email: self.email)
-    if identity
-      identity.update!(user: user)
+    credential = Credential.find_by(email: self.email)
+    if credential
+      credential.update!(user: user)
     else
       # A password is required, so just set a random one. It will be updated
       # during registration.
-      password = LocalIdentity.random_password
-      LocalIdentity.create!(email:                 self.email,
-                            password:              password,
-                            password_confirmation: password,
-                            user:                  user)
+      password = Credential.random_password
+      Credential.create!(email:                 self.email,
+                         password:              password,
+                         password_confirmation: password,
+                         user:                  user)
     end
   end
 

@@ -781,7 +781,7 @@ IDEALS.UIUtils.MultiElementList = function(minElements = 1) {
 IDEALS.UIUtils.NonNetIDLoginForm = function() {
     const ROOT_URL = $("input[name=root_url]").val();
     const modal    = $("#login-modal");
-    const form     = modal.find(".local-identity");
+    const form     = modal.find(".local-credential");
     const flash    = modal.find(".alert.login-status");
     form.find("input[name=password").on("keyup", function() {
         flash.hide();

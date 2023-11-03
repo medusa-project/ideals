@@ -1,9 +1,9 @@
 User-agent: *
 Disallow: /admin
 Disallow: /auth
+Disallow: /credentials
 Disallow: /handle
 Disallow: /health
-Disallow: /identities
 Disallow: /invitees
 Disallow: /login
 Disallow: /logout

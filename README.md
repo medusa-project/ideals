@@ -172,7 +172,7 @@ Refer to the instructions in the
 Users can be authenticated in two ways: by local email/password, and using
 SAML, where account info is provided by a remote identity provider (IdP). Since
 you won't have access to one of those locally, you will have to use local
-identity authentication:
+credential authentication:
 
 ```sh
 rails users:create_local_sysadmin[email,password,name,institution_key]
@@ -200,8 +200,8 @@ OmniAuth supports many different providers, but the ones used by this app are:
 * [SAML](https://github.com/omniauth/omniauth-saml): handles SSO authentication
   for many CARLI member institutions, as well as CARLI itself.
 * [Local identity](https://github.com/omniauth/omniauth-identity):
-  credentials are stored in a `local_identities` database table associated with
-  the `users` table.
+  credentials are stored in a `credentials` database table associated with the
+  `users` table.
 
 The general idea with OmniAuth is that authentication requests (via e.g. a
 login button) are sent to `/auth/:provider`. From there the provider takes
@@ -215,7 +215,7 @@ institutions (local identity), or work with only one institution (Shibboleth).
 But the SAML provider in particular needs to be customized per-institution, so
 that each institution can work with its own identity provider (IdP).
 
-Users who have an associated local identity can also log in via some other
+Users who have associated local credentials can also log in via some other
 provider, if configured, but not vice versa.
 
 All users belong to a "home institution." Sysadmins can log in from an

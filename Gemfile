@@ -10,7 +10,7 @@ ruby "3.2.2"
 # limit.)
 gem "activerecord-session_store"
 gem "aws-sdk-s3", "~> 1"
-# Use ActiveModel has_secure_password for local identity users
+# Use ActiveModel has_secure_password for local-credential users
 gem "bcrypt", "~> 3"
 gem "bootstrap", "~> 5"
 # Handles RabbitMQ messages.
@@ -49,7 +49,7 @@ gem "mini_racer", platforms: :ruby
 gem "natural_sort"
 # Assists in parsing IP address CIDR ranges.
 gem "netaddr"
-# Enables local identity logins.
+# Enables local-credential logins.
 gem "omniauth-identity"
 gem "omniauth-rails_csrf_protection"
 gem "omniauth-saml"

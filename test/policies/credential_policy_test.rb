@@ -1,15 +1,15 @@
 require 'test_helper'
 
-class LocalIdentityPolicyTest < ActiveSupport::TestCase
+class CredentialPolicyTest < ActiveSupport::TestCase
 
   setup do
-    @identity = local_identities(:southwest)
+    @credential = credentials(:southwest)
   end
 
   # create?()
 
   test "create?() returns false with a nil user" do
-    policy = LocalIdentityPolicy.new(nil, LocalIdentity)
+    policy = CredentialPolicy.new(nil, Credential)
     assert !policy.create?
   end
 
@@ -17,7 +17,7 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = LocalIdentityPolicy.new(context, LocalIdentity)
+    policy  = CredentialPolicy.new(context, Credential)
     assert !policy.create?
   end
 
@@ -25,7 +25,7 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = LocalIdentityPolicy.new(context, LocalIdentity)
+    policy  = CredentialPolicy.new(context, Credential)
     assert policy.create?
   end
 
@@ -35,7 +35,7 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
-    policy  = LocalIdentityPolicy.new(context, LocalIdentity)
+    policy  = CredentialPolicy.new(context, Credential)
     assert !policy.create?
   end
 
@@ -43,15 +43,15 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
 
   test "edit_password?() returns false with a nil request context" do
     context = RequestContext.new(user:        nil,
-                                 institution: @identity.user.institution)
-    policy = LocalIdentityPolicy.new(context, @identity)
+                                 institution: @credential.user.institution)
+    policy = CredentialPolicy.new(context, @credential)
     assert !policy.edit_password?
   end
 
   test "edit_password?() does not authorize an incorrect scope" do
     context = RequestContext.new(user:        users(:southwest_admin),
                                  institution: institutions(:northeast))
-    policy  = LocalIdentityPolicy.new(context, @identity)
+    policy  = CredentialPolicy.new(context, @credential)
     assert !policy.edit_password?
   end
 
@@ -59,8 +59,8 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
   being edited" do
     user    = users(:southwest_shibboleth)
     context = RequestContext.new(user:        user,
-                                 institution: @identity.user.institution)
-    policy  = LocalIdentityPolicy.new(context, @identity)
+                                 institution: @credential.user.institution)
+    policy  = CredentialPolicy.new(context, @credential)
     assert !policy.edit_password?
   end
 
@@ -69,7 +69,7 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = LocalIdentityPolicy.new(context, @identity)
+    policy  = CredentialPolicy.new(context, @credential)
     assert !policy.edit_password?
   end
 
@@ -77,7 +77,7 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = LocalIdentityPolicy.new(context, @identity)
+    policy  = CredentialPolicy.new(context, @credential)
     assert policy.edit_password?
   end
 
@@ -87,14 +87,14 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
-    policy  = LocalIdentityPolicy.new(context, @identity)
+    policy  = CredentialPolicy.new(context, @credential)
     assert !policy.edit_password?
   end
 
   # new?()
 
   test "new?() returns false with a nil user" do
-    policy = LocalIdentityPolicy.new(nil, LocalIdentity)
+    policy = CredentialPolicy.new(nil, Credential)
     assert !policy.new?
   end
 
@@ -102,7 +102,7 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = LocalIdentityPolicy.new(context, LocalIdentity)
+    policy  = CredentialPolicy.new(context, Credential)
     assert !policy.new?
   end
 
@@ -110,7 +110,7 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = LocalIdentityPolicy.new(context, LocalIdentity)
+    policy  = CredentialPolicy.new(context, Credential)
     assert policy.new?
   end
 
@@ -120,7 +120,7 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
                                  role_limit:  Role::LOGGED_IN)
-    policy  = LocalIdentityPolicy.new(context, LocalIdentity)
+    policy  = CredentialPolicy.new(context, Credential)
     assert !policy.new?
   end
 
@@ -128,15 +128,15 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
 
   test "new_password?() returns true with a nil user" do
     context = RequestContext.new(user:        nil,
-                                 institution: @identity.user.institution)
-    policy = LocalIdentityPolicy.new(context, @identity)
+                                 institution: @credential.user.institution)
+    policy = CredentialPolicy.new(context, @credential)
     assert policy.new_password?
   end
 
   test "new_password?() does not authorize an incorrect scope" do
     context = RequestContext.new(user:        users(:southwest_admin),
                                  institution: institutions(:northeast))
-    policy  = LocalIdentityPolicy.new(context, @identity)
+    policy  = CredentialPolicy.new(context, @credential)
     assert !policy.new_password?
   end
 
@@ -144,7 +144,7 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = LocalIdentityPolicy.new(context, @identity)
+    policy  = CredentialPolicy.new(context, @credential)
     assert policy.new_password?
   end
 
@@ -152,15 +152,15 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
 
   test "register?() returns true with a nil user" do
     context = RequestContext.new(user:        nil,
-                                 institution: @identity.user.institution)
-    policy = LocalIdentityPolicy.new(context, @identity)
+                                 institution: @credential.user.institution)
+    policy = CredentialPolicy.new(context, @credential)
     assert policy.register?
   end
 
   test "register?() does not authorize an incorrect scope" do
     context = RequestContext.new(user:        users(:southwest_admin),
                                  institution: institutions(:northeast))
-    policy  = LocalIdentityPolicy.new(context, @identity)
+    policy  = CredentialPolicy.new(context, @credential)
     assert !policy.register?
   end
 
@@ -168,7 +168,7 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = LocalIdentityPolicy.new(context, @identity)
+    policy  = CredentialPolicy.new(context, @credential)
     assert policy.register?
   end
 
@@ -176,15 +176,15 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
 
   test "reset_password?() returns true with a nil user" do
     context = RequestContext.new(user:        nil,
-                                 institution: @identity.user.institution)
-    policy = LocalIdentityPolicy.new(context, @identity)
+                                 institution: @credential.user.institution)
+    policy = CredentialPolicy.new(context, @credential)
     assert policy.reset_password?
   end
 
   test "reset_password?() does not authorize an incorrect scope" do
     context = RequestContext.new(user:        users(:southwest_admin),
                                  institution: institutions(:northeast))
-    policy  = LocalIdentityPolicy.new(context, @identity)
+    policy  = CredentialPolicy.new(context, @credential)
     assert !policy.reset_password?
   end
 
@@ -192,7 +192,7 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = LocalIdentityPolicy.new(context, @identity)
+    policy  = CredentialPolicy.new(context, @credential)
     assert policy.reset_password?
   end
 
@@ -200,23 +200,23 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
 
   test "update?() returns true with a nil user" do
     context = RequestContext.new(user:        nil,
-                                 institution: @identity.user.institution)
-    policy = LocalIdentityPolicy.new(context, @identity)
+                                 institution: @credential.user.institution)
+    policy = CredentialPolicy.new(context, @credential)
     assert policy.update?
   end
 
   test "update?() does not authorize an incorrect scope" do
     context = RequestContext.new(user:        users(:southwest_admin),
                                  institution: institutions(:northeast))
-    policy  = LocalIdentityPolicy.new(context, @identity)
+    policy  = CredentialPolicy.new(context, @credential)
     assert !policy.update?
   end
 
   test "update?() authorizes everyone" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
-                                 institution: @identity.user.institution)
-    policy  = LocalIdentityPolicy.new(context, @identity)
+                                 institution: @credential.user.institution)
+    policy  = CredentialPolicy.new(context, @credential)
     assert policy.update?
   end
 
@@ -224,15 +224,15 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
 
   test "update_password?() returns false with a nil request context" do
     context = RequestContext.new(user:        nil,
-                                 institution: @identity.user.institution)
-    policy = LocalIdentityPolicy.new(context, @identity)
+                                 institution: @credential.user.institution)
+    policy = CredentialPolicy.new(context, @credential)
     assert !policy.update_password?
   end
 
   test "update_password?() does not authorize an incorrect scope" do
     context = RequestContext.new(user:        users(:southwest_admin),
                                  institution: institutions(:northeast))
-    policy  = LocalIdentityPolicy.new(context, @identity)
+    policy  = CredentialPolicy.new(context, @credential)
     assert !policy.update_password?
   end
 
@@ -240,8 +240,8 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
   being updated" do
     user    = users(:southwest_shibboleth)
     context = RequestContext.new(user:        user,
-                                 institution: @identity.user.institution)
-    policy = LocalIdentityPolicy.new(context, @identity)
+                                 institution: @credential.user.institution)
+    policy = CredentialPolicy.new(context, @credential)
     assert !policy.update_password?
   end
 
@@ -250,7 +250,7 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy = LocalIdentityPolicy.new(context, @identity)
+    policy = CredentialPolicy.new(context, @credential)
     assert !policy.update_password?
   end
 
@@ -258,7 +258,7 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy = LocalIdentityPolicy.new(context, @identity)
+    policy = CredentialPolicy.new(context, @credential)
     assert policy.update_password?
   end
 
@@ -267,7 +267,7 @@ class LocalIdentityPolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
-    policy  = LocalIdentityPolicy.new(context, @identity)
+    policy  = CredentialPolicy.new(context, @credential)
     assert !policy.update_password?
   end
 

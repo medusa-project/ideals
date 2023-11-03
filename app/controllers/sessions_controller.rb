@@ -35,7 +35,7 @@ class SessionsController < ApplicationController
   #
   # Only {User#enabled enabled users} whose {User#institution owning
   # institution} matches the request institution are allowed to log in. (The
-  # only exception is sysadmins who are using the local-identity provider.
+  # only exception is sysadmins who are using the local-credentials provider.
   # This is a feature needed by CARLI sysadmins for e.g. walking users through
   # how to do things. But there is no use case for non-sysadmins to be able to
   # do this, and no way to support it for OpenAthens users, because the IdP

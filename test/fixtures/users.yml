@@ -1,6 +1,6 @@
 ##
 # N.B.: every local-auth user in this file MUST have a corresponding
-# LocalIdentity in `local_identities.yml`.
+# Credential in `credentials.yml`.
 #
 # N.B. 2: to place a Shibboleth user in an AD group, edit the `ad.groups` key
 # in the config/environments/test.yml file.

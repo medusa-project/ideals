@@ -78,8 +78,8 @@ class PasswordResetsControllerTest < ActionDispatch::IntegrationTest
 
   test "post() posts a reset digest, sends an email, sets the flash, and
   redirects when a registered email is provided" do
-    # We need to fetch a LocalIdentity and update its email to a non-UofI
-    # address, but the process is a little bit convoluted.
+    # We need to fetch a Credential and update its email to a non-UofI address
+    # but the process is a little bit convoluted.
     email    = "MixedCaseTest@example.edu"
     password = "MyPassword123!"
     invitee  = Invitee.create!(email:       email,
@@ -87,10 +87,10 @@ class PasswordResetsControllerTest < ActionDispatch::IntegrationTest
                                institution: institutions(:northeast),
                                expires_at:  Time.now + 1.hour)
     invitee.send(:associate_or_create_user)
-    identity = invitee.user.identity
-    identity.update!(email:                 email,
-                     password:              password,
-                     password_confirmation: password)
+    credential = invitee.user.credential
+    credential.update!(email:                 email,
+                       password:              password,
+                       password_confirmation: password)
 
     assert_emails 1 do
       post reset_password_path,
@@ -100,9 +100,9 @@ class PasswordResetsControllerTest < ActionDispatch::IntegrationTest
                }
            }
     end
-    identity.reload
-    assert_not_nil identity.reset_digest
-    assert Time.zone.now - identity.reset_sent_at < 10
+    credential.reload
+    assert_not_nil credential.reset_digest
+    assert Time.zone.now - credential.reset_sent_at < 10
     assert flash['success'].start_with?("An email has been sent")
     assert_redirected_to institutions(:southeast).scope_url
   end

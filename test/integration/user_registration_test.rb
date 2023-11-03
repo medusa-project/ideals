@@ -93,10 +93,10 @@ class UserRegistrationTest < ActionDispatch::IntegrationTest
   end
 
   def submit_registration_form(email:, token:)
-    identity = LocalIdentity.find_by_email(email)
-    patch local_identity_path(identity), params: {
+    credential = Credential.find_by_email(email)
+    patch credential_path(credential), params: {
       token: token,
-      local_identity: {
+      credential: {
         user_attributes: {
           name: "New User"
         },

@@ -1,18 +1,18 @@
 require 'test_helper'
 
-class LocalIdentityTest < ActiveSupport::TestCase
+class CredentialTest < ActiveSupport::TestCase
 
   include ActionMailer::TestHelper
 
   setup do
-    @instance = local_identities(:southwest)
+    @instance = credentials(:southwest)
   end
 
   # create()
 
   test "create() does not allow association with an expired Invitee" do
     assert_raises ActiveRecord::RecordInvalid do
-      # LocalIdentity.create() is invoked indirectly
+      # Credential.create() is invoked indirectly
       Invitee.create!(email:      "test@example.org",
                       expires_at: 10.years.ago)
     end
@@ -21,18 +21,18 @@ class LocalIdentityTest < ActiveSupport::TestCase
   # new_token()
 
   test "new_token() returns a token" do
-    assert_not_empty LocalIdentity.new_token
+    assert_not_empty Credential.new_token
   end
 
   # random_password()
 
   test "random_password() returns a valid random password" do
-    password = LocalIdentity.random_password
-    assert password.length >= LocalIdentity::PASSWORD_MIN_LENGTH
-    assert password.gsub(/[^a-z]/, "").length >= LocalIdentity::PASSWORD_MIN_LOWERCASE_LETTERS
-    assert password.gsub(/[^A-Z]/, "").length >= LocalIdentity::PASSWORD_MIN_UPPERCASE_LETTERS
-    assert password.gsub(/[^0-9]/, "").length >= LocalIdentity::PASSWORD_MIN_NUMBERS
-    assert password.gsub(/[^#{LocalIdentity::PASSWORD_SPECIAL_CHARACTERS}]/, "").length >= LocalIdentity::PASSWORD_MIN_SPECIAL_CHARACTERS
+    password = Credential.random_password
+    assert password.length >= Credential::PASSWORD_MIN_LENGTH
+    assert password.gsub(/[^a-z]/, "").length >= Credential::PASSWORD_MIN_LOWERCASE_LETTERS
+    assert password.gsub(/[^A-Z]/, "").length >= Credential::PASSWORD_MIN_UPPERCASE_LETTERS
+    assert password.gsub(/[^0-9]/, "").length >= Credential::PASSWORD_MIN_NUMBERS
+    assert password.gsub(/[^#{Credential::PASSWORD_SPECIAL_CHARACTERS}]/, "").length >= Credential::PASSWORD_MIN_SPECIAL_CHARACTERS
   end
 
   # create_registration_digest()
@@ -64,9 +64,9 @@ class LocalIdentityTest < ActiveSupport::TestCase
     email    = "test@example.org"
     password = "password"
     assert_raises ActiveRecord::RecordInvalid do
-      @instance = LocalIdentity.create!(email:                 email,
-                                        password:              password,
-                                        password_confirmation: password)
+      @instance = Credential.create!(email:                 email,
+                                     password:              password,
+                                     password_confirmation: password)
     end
   end
 
@@ -88,7 +88,7 @@ class LocalIdentityTest < ActiveSupport::TestCase
 
   test "password_reset_url() returns a correct URL" do
     @instance.create_reset_digest
-    expected = sprintf("http://%s/identities/%d/reset-password?token=%s",
+    expected = sprintf("http://%s/credentials/%d/reset-password?token=%s",
                        @instance.user.institution.fqdn,
                        @instance.id,
                        @instance.reset_token)
@@ -105,7 +105,7 @@ class LocalIdentityTest < ActiveSupport::TestCase
 
   test "registration_url() returns a correct URL" do
     @instance.create_registration_digest
-    expected = sprintf("http://%s/identities/%d/register?token=%s",
+    expected = sprintf("http://%s/credentials/%d/register?token=%s",
                        @instance.user.institution.fqdn,
                        @instance.id,
                        @instance.registration_token)
@@ -207,21 +207,21 @@ class LocalIdentityTest < ActiveSupport::TestCase
   test "update_password!() raises an error if the confirmation does not match
   the password" do
     assert_raises ActiveRecord::RecordInvalid do
-      @instance.update_password!(password:     LocalIdentity.random_password,
-                                 confirmation: LocalIdentity.random_password)
+      @instance.update_password!(password:     Credential.random_password,
+                                 confirmation: Credential.random_password)
     end
   end
 
   test "update_password!() updates the password" do
     digest       = @instance.password_digest
-    new_password = LocalIdentity.random_password
+    new_password = Credential.random_password
     @instance.update_password!(password:     new_password,
                                confirmation: new_password)
     assert_not_equal digest, @instance.password_digest
   end
 
   test "update_password!() clears reset information" do
-    new_password = LocalIdentity.random_password
+    new_password = Credential.random_password
     @instance.update_password!(password:     new_password,
                                confirmation: new_password)
     assert_nil @instance.reset_digest

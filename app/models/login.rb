@@ -18,7 +18,7 @@
 class Login < ApplicationRecord
 
   class Provider
-    # Credentials are stored in the `local_identities` table.
+    # Credentials are stored in the `credentials` table.
     LOCAL      = 0
     # Used only by UIUC.
     SHIBBOLETH = 1

@@ -45,7 +45,7 @@ class ActiveSupport::TestCase
   ##
   # @param user [User]
   # @param provider [Symbol] `:saml`, `:shibboleth`, or `:local`. If omitted,
-  #                          and the user has an associated {LocalIdentity},
+  #                          and the user has an associated {Credential},
   #                          local is assumed; otherwise :shibboleth.
   #
   def log_in_as(user, provider = nil)
@@ -53,7 +53,7 @@ class ActiveSupport::TestCase
     raise "User is disabled" unless user.enabled
     raise "User is not persisted" unless user.persisted?
     unless provider
-      if user.identity
+      if user.credential
         provider = :local
       elsif user.institution.key == "southeast"
         provider = :shibboleth

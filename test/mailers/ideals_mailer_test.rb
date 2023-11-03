@@ -7,21 +7,21 @@ class IdealsMailerTest < ActionMailer::TestCase
   # account_approved()
 
   test "account_approved() sends the expected email" do
-    identity = local_identities(:southwest)
-    identity.create_registration_digest
+    credential = credentials(:southwest)
+    credential.create_registration_digest
 
-    email = IdealsMailer.account_approved(identity).deliver_now
+    email = IdealsMailer.account_approved(credential).deliver_now
     assert !ActionMailer::Base.deliveries.empty?
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
-    assert_equal [identity.email], email.to
+    assert_equal [credential.email], email.to
     assert_equal "Register your Southwest IR account", email.subject
 
     assert_equal render_template("account_approved.txt",
-                                 url: identity.registration_url),
+                                 url: credential.registration_url),
                  email.text_part.body.raw_source
     assert_equal render_template("account_approved.html",
-                                 url: identity.registration_url),
+                                 url: credential.registration_url),
                  email.html_part.body.raw_source
   end
 
@@ -47,14 +47,14 @@ class IdealsMailerTest < ActionMailer::TestCase
   # account_registered()
 
   test "account_registered() sends the expected email" do
-    identity    = local_identities(:southwest)
-    institution = identity.user.institution
+    credential  = credentials(:southwest)
+    institution = credential.user.institution
 
-    email = IdealsMailer.account_registered(identity).deliver_now
+    email = IdealsMailer.account_registered(credential).deliver_now
     assert !ActionMailer::Base.deliveries.empty?
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
-    assert_equal [identity.email], email.to
+    assert_equal [credential.email], email.to
     assert_equal "Welcome to Southwest IR!", email.subject
 
     assert_equal render_template("account_registered.txt",
@@ -168,19 +168,19 @@ class IdealsMailerTest < ActionMailer::TestCase
   # invited()
 
   test "invited() sends the expected email" do
-    identity = local_identities(:southwest)
-    identity.create_registration_digest
+    credential = credentials(:southwest)
+    credential.create_registration_digest
 
-    email = IdealsMailer.invited(identity).deliver_now
+    email = IdealsMailer.invited(credential).deliver_now
     assert !ActionMailer::Base.deliveries.empty?
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
-    assert_equal [identity.email], email.to
+    assert_equal [credential.email], email.to
     assert_equal "Register for an account with Southwest IR", email.subject
 
-    assert_equal render_template("invited.txt", url: identity.registration_url),
+    assert_equal render_template("invited.txt", url: credential.registration_url),
                  email.text_part.body.raw_source
-    assert_equal render_template("invited.html", url: identity.registration_url),
+    assert_equal render_template("invited.html", url: credential.registration_url),
                  email.html_part.body.raw_source
   end
 
@@ -277,21 +277,21 @@ class IdealsMailerTest < ActionMailer::TestCase
   # password_reset()
 
   test "password_reset() sends the expected email" do
-    identity = local_identities(:southwest)
-    identity.create_reset_digest
+    credential = credentials(:southwest)
+    credential.create_reset_digest
 
-    email = IdealsMailer.password_reset(identity).deliver_now
+    email = IdealsMailer.password_reset(credential).deliver_now
     assert !ActionMailer::Base.deliveries.empty?
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
-    assert_equal [identity.email], email.to
+    assert_equal [credential.email], email.to
     assert_equal "Reset your Southwest IR password", email.subject
 
     assert_equal render_template("password_reset.txt",
-                                 url: identity.password_reset_url),
+                                 url: credential.password_reset_url),
                  email.text_part.body.raw_source
     assert_equal render_template("password_reset.html",
-                                 url: identity.password_reset_url),
+                                 url: credential.password_reset_url),
                  email.html_part.body.raw_source
   end
 

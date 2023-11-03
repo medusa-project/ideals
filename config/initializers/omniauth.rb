@@ -46,7 +46,7 @@ Rails.application.config.middleware.use OmniAuth::Builder do
   # The identity provider (for local password logins) is available in all
   # environments.
   provider :identity,
-           model:                  LocalIdentity,
+           model:                  Credential,
            fields:                 [:email, :name],
            locate_conditions:      -> (req) { { model.auth_key => req['auth_key']&.downcase } }
 

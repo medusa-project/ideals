@@ -39,7 +39,7 @@ class User < ApplicationRecord
   belongs_to :institution, optional: true
   # Only Shibboleth users will have one of these.
   has_one :department
-  has_one :identity, class_name: "LocalIdentity", inverse_of: :user
+  has_one :credential, inverse_of: :user
   has_many :collection_administrators, class_name: "CollectionAdministrator"
   has_many :events
   has_many :institution_administrators
@@ -67,7 +67,7 @@ class User < ApplicationRecord
   validates_uniqueness_of :email, case_sensitive: false
   validates :name, presence: true
 
-  before_save :sync_identity_properties
+  before_save :sync_credential_properties
 
   ##
   # This is used for quickly creating local administrators in development. It
@@ -85,22 +85,22 @@ class User < ApplicationRecord
     ActiveRecord::Base.transaction do
       invitee = Invitee.find_by_email(email)
       unless invitee
-        invitee = Invitee.create!(email:          email,
-                                  institution:    institution,
-                                  approval_state: Invitee::ApprovalState::APPROVED,
-                                  purpose:        "Created as a sysadmin "\
-                                                  "manually, bypassing the "\
-                                                  "invitation process")
+        Invitee.create!(email:          email,
+                        institution:    institution,
+                        approval_state: Invitee::ApprovalState::APPROVED,
+                        purpose:        "Created as a sysadmin "\
+                                        "manually, bypassing the "\
+                                        "invitation process")
       end
       user = User.create!(email:       email,
                           institution: institution,
                           name:        name || email)
-      identity = LocalIdentity.find_by_email(email)
-      unless identity
-        LocalIdentity.create!(user:                  user,
-                              email:                 email,
-                              password:              password,
-                              password_confirmation: password)
+      credential = Credential.find_by_email(email)
+      unless credential
+        Credential.create!(user:                  user,
+                           email:                 email,
+                           password:              password,
+                           password_confirmation: password)
       end
     end
     user
@@ -173,7 +173,7 @@ class User < ApplicationRecord
   # @param institution [Institution] The returned user will be assigned to this
   #        institution. (Only applies to SAML users. Shibboleth users will
   #        instead be assigned to the institution matching the "org DN"
-  #        attribute in the auth hash, and local identity users will be
+  #        attribute in the auth hash, and local credential users will be
   #        assigned to the institution of the corresponding {Invitee}.)
   # @return [User] Instance corresponding to the given auth hash. If one was
   #                not found, it is created.
@@ -471,12 +471,12 @@ class User < ApplicationRecord
   private
 
   ##
-  # Updates the relevant properties of the associated {LocalIdentity} to match
+  # Updates the relevant properties of the associated {Credential} to match
   # those of the instance.
   #
-  def sync_identity_properties
+  def sync_credential_properties
     if self.email_changed?
-      id = LocalIdentity.find_by_email(self.email_was)
+      id = Credential.find_by_email(self.email_was)
       id&.update_attribute(:email, self.email)
     end
   end
