@@ -32,7 +32,7 @@
           %dd= element.vocabulary ? element.vocabulary&.name : "None"
         %dt Input Type
         %dd= element.vocabulary ? "Menu" : element.input_type&.split("_")&.map(&:capitalize)&.join(" ")
-        %dt Dublin Core Mapping
+        %dt Dublin Core 1.1 Mapping
         %dd
           - if element.dublin_core_mapping.present?
             %code= element.dublin_core_mapping
