@@ -13,6 +13,8 @@
   %dd= @invitee.user ? link_to(@invitee.user.name, @invitee.user) : "Not yet registered"
   %dt Invited By
   %dd= @invitee.inviting_user ? link_to(@invitee.inviting_user.name, @invitee.inviting_user) : "Self-Invited"
+  %dt Institution Administrator
+  %dd= boolean(@invitee.institution_admin, style: :word)
   %dt Purpose
   %dd= @invitee.purpose
   %dt Approval State
