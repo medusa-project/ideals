@@ -123,7 +123,7 @@ class CredentialsController < ApplicationController
     begin
       raise "Incorrect math question response. Please try again." unless check_captcha
       user = @credential.user
-      if @credential.user.invitee.institution_admin &&
+      if @credential.user&.invitee&.institution_admin &&
           !user.institution.administering_users.include?(user)
         user.institution.administering_users << user
         user.institution.save!
