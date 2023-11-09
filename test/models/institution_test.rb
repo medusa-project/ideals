@@ -866,6 +866,27 @@ class InstitutionTest < ActiveSupport::TestCase
     assert_equal %w(dogs cats foxes), @instance.shibboleth_extra_attributes
   end
 
+  # sso_enabled?()
+
+  test "sso_enabled?() returns true when saml_auth_enabled is true" do
+    @instance.saml_auth_enabled       = true
+    @instance.shibboleth_auth_enabled = false
+    assert @instance.sso_enabled?
+  end
+
+  test "sso_enabled?() returns true when shibboleth_auth_enabled is true" do
+    @instance.saml_auth_enabled       = false
+    @instance.shibboleth_auth_enabled = true
+    assert @instance.sso_enabled?
+  end
+
+  test "sso_enabled?() returns false when both saml_auth_enabled and
+  shibboleth_auth_enabled are false" do
+    @instance.saml_auth_enabled       = false
+    @instance.shibboleth_auth_enabled = false
+    assert !@instance.sso_enabled?
+  end
+
   # update_from_saml_metadata()
 
   test "update_from_saml_metadata() raises an error if there are no

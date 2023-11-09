@@ -706,6 +706,13 @@ class Institution < ApplicationRecord
   end
 
   ##
+  # @return [Boolean]
+  #
+  def sso_enabled?
+    saml_auth_enabled || shibboleth_auth_enabled
+  end
+
+  ##
   # @param start_time [Time]   Optional beginning of a time range.
   # @param end_time [Time]     Optional end of a time range.
   # @return [Enumerable<Hash>] Enumerable of hashes with `month` and `dl_count`
