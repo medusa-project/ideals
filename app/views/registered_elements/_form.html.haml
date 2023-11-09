@@ -29,8 +29,10 @@
                class: "form-select")
   .mb-3
     = f.label :dublin_core_mapping, "Dublin Core 1.1 Mapping"
-    = f.text_field :dublin_core_mapping,
-                   class: "form-control"
+    = f.select(:dublin_core_mapping, options_for_select(RegisteredElement::DUBLIN_CORE_1_1_ELEMENTS,
+                                                        f.object.dublin_core_mapping),
+               { include_blank: true },
+               class: "form-select")
   .mb-3
     = f.label :highwire_mapping, "Highwire Press Mapping"
     = f.text_field :highwire_mapping,

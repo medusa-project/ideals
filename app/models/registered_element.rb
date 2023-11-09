@@ -54,11 +54,14 @@ class RegisteredElement < ApplicationRecord
     end
   end
 
-  DATE_FIELD_PREFIX     = "d"
-  EXACT_FIELD_SUFFIX    = ".exact"
-  KEYWORD_FIELD_SUFFIX  = ".keyword"
-  SORTABLE_FIELD_SUFFIX = ".sort"
-  TEXT_FIELD_PREFIX     = "t"
+  DATE_FIELD_PREFIX        = "d"
+  EXACT_FIELD_SUFFIX       = ".exact"
+  KEYWORD_FIELD_SUFFIX     = ".keyword"
+  SORTABLE_FIELD_SUFFIX    = ".sort"
+  TEXT_FIELD_PREFIX        = "t"
+  DUBLIN_CORE_1_1_ELEMENTS = %w(contributor coverage creator date description
+                                format identifier language publisher relation
+                                rights source subject title type)
 
   belongs_to :institution, optional: true
   belongs_to :vocabulary, optional: true
@@ -69,10 +72,7 @@ class RegisteredElement < ApplicationRecord
 
   has_and_belongs_to_many :index_pages
 
-  validates :dublin_core_mapping, inclusion: { in: %w(contributor coverage
-                                  creator date description format identifier
-                                  language publisher relation rights source
-                                  subject title type) },
+  validates :dublin_core_mapping, inclusion: { in: DUBLIN_CORE_1_1_ELEMENTS },
                                   allow_blank: true
 
   # input_type (we allow blank because the database will assign a default value)
