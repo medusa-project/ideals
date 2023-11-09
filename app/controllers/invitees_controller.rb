@@ -152,7 +152,8 @@ class InviteesController < ApplicationController
       render plain: "Missing institution ID", status: :bad_request
       return
     end
-    @invitee = Invitee.new(expires_at: Time.zone.now + 1.year)
+    @invitee            = Invitee.new(invitee_params)
+    @invitee.expires_at = Time.zone.now + 1.year
     render partial: "new_form"
   end
 
