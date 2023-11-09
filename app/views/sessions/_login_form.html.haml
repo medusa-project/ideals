@@ -2,12 +2,23 @@
                                "data-bs-touch":    "false",
                                "data-bs-interval": "9999999999"}
   .carousel-inner
+    -# OmniAuth Developer
+    - if Rails.env.development?
+      = form_tag("/auth/developer", method: :post) do
+        = submit_tag("Log in as OmniAuth Developer (DEVELOPMENT)",
+                     class: "btn btn-primary p-4 mb-3")
+
+    -# SAML
     - if current_institution&.saml_auth_enabled
       .carousel-item.openathens.active
         = render partial: "sessions/openathens_login_form"
+
+    -# Shibboleth
     - if current_institution&.shibboleth_auth_enabled
       .carousel-item.shibboleth.active
         = render partial: "sessions/shibboleth_login_form"
+
+    -# Local Credentials
     - if current_institution&.local_auth_enabled
       .carousel-item.local-credential.p-1{class: (current_institution&.sso_enabled?) ? "" : "active"}
         = render partial: "sessions/local_login_form"
