@@ -98,7 +98,8 @@ class IdealsMailer < ApplicationMailer
       raise "This institution's feedback email is not set."
     end
     @invitee     = invitee
-    @invitee_url = "https://#{@institution.fqdn}/invitees/#{invitee.id}"
+    scheme       = (Rails.env.development? || Rails.env.test?) ? "http" : "https"
+    @invitee_url = "#{scheme}://#{@institution.fqdn}/invitees/#{invitee.id}"
     mail(to:      @institution.feedback_email,
          subject: "#{subject_prefix} Action required on a new "\
                   "#{@institution.service_name} user")
