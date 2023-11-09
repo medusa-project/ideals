@@ -1,15 +1,3 @@
-.btn-group.float-end{role: "group"}
-  - if policy(@institution).invite_administrator?
-    -# Invite Administrator button
-    %button.btn.btn-light.invite-administrator{"data-bs-target":       "#invite-administrator-modal",
-                                               "data-bs-toggle":       "modal",
-                                               role:                   "button",
-                                               "data-institution-key": @institution.key }
-      %i.fa.fa-plus
-      Invite Administrator
-
-.clearfix.mb-3
-
 .row
   .col-md-6
     .card.mb-3
@@ -49,9 +37,6 @@
         - else
           None
 
-= render partial: "shared/xhr_modal",
-       locals: { id: "invite-administrator-modal",
-                 title: "Invite Administrator" }
 = render partial: "shared/xhr_modal",
        locals: { id: "edit-administering-groups-modal",
                  title: "Edit Administering Groups" }

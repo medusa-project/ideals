@@ -870,41 +870,6 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.index?
   end
 
-  # invite_administrator?()
-
-  test "invite_administrator?() returns false with a nil request context" do
-    context = RequestContext.new(user:        nil,
-                                 institution: @institution)
-    policy = InstitutionPolicy.new(context, @institution)
-    assert !policy.invite_administrator?
-  end
-
-  test "invite_administrator?() is restrictive by default" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: @institution)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert !policy.invite_administrator?
-  end
-
-  test "invite_administrator?() authorizes sysadmins" do
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: @institution)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert policy.invite_administrator?
-  end
-
-  test "invite_administrator?() respects role limits" do
-    # sysadmin user limited to an insufficient role
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::LOGGED_IN)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert !policy.invite_administrator?
-  end
-
   # item_download_counts?()
 
   test "item_download_counts?() returns false with a nil request context" do

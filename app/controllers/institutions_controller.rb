@@ -212,17 +212,6 @@ class InstitutionsController < ApplicationController
   end
 
   ##
-  # Sysadmins only.
-  #
-  # Responds to `GET /institutions/invite-administrator`
-  #
-  def invite_administrator
-    @invitee = Invitee.new(institution:       @institution,
-                           institution_admin: true)
-    render partial: "invitees/new_form"
-  end
-
-  ##
   # Renders a CSV of item download counts by month.
   #
   # Responds to `GET /institutions/:key/item-download-counts`

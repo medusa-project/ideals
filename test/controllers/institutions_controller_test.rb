@@ -609,31 +609,6 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  # invite_administrator()
-
-  test "invite_administrators() returns HTTP 404 for unscoped requests" do
-    host! ::Configuration.instance.main_host
-    get institution_invite_administrator_path(@institution), xhr: true
-    assert_response :not_found
-  end
-
-  test "invite_administrator() returns HTTP 403 for logged-out users" do
-    get institution_invite_administrator_path(@institution), xhr: true
-    assert_response :forbidden
-  end
-
-  test "invite_administrator() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:southwest_admin))
-    get institution_invite_administrator_path(@institution), xhr: true
-    assert_response :forbidden
-  end
-
-  test "invite_administrator() returns HTTP 200 for sysadmins" do
-    log_in_as(users(:southwest_sysadmin))
-    get institution_invite_administrator_path(@institution), xhr: true
-    assert_response :ok
-  end
-
   # item_download_counts()
 
   test "item_download_counts() returns HTTP 404 for unscoped requests" do

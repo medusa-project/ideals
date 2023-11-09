@@ -400,12 +400,6 @@ const InstitutionView = {
             $.get(url, function (data) {
                 $("#access-tab-content").html(data);
 
-                $('.invite-administrator').on("click", function () {
-                    const url = ROOT_URL + "/institutions/" + institutionKey + "/invite-administrator";
-                    $.get(url, function (data) {
-                        $("#invite-administrator-modal .modal-body").html(data);
-                    });
-                });
                 $('.edit-administering-groups').on("click", function () {
                     const url = ROOT_URL + "/institutions/" + institutionKey + "/edit-administering-groups";
                     $.get(url, function (data) {

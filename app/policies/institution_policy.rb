@@ -85,10 +85,6 @@ class InstitutionPolicy < ApplicationPolicy
     create
   end
 
-  def invite_administrator
-    effective_sysadmin(@user, @role_limit)
-  end
-
   def item_download_counts
     show_statistics
   end
