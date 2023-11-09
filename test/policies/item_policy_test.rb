@@ -351,16 +351,17 @@ class ItemPolicyTest < ActiveSupport::TestCase
 
   # destroy?()
 
-  test "destroy?() does not authorize a nil user" do
+  test "destroy?() returns false with a nil user" do
     context = RequestContext.new(user:        nil,
                                  institution: @item.institution)
-    policy  = ItemPolicy.new(context, @item)
+    policy = ItemPolicy.new(context, @item)
     assert !policy.destroy?
   end
 
-  test "destroy?() does not authorize an incorrect scope" do
-    context = RequestContext.new(user:        users(:southwest_admin),
-                                 institution: institutions(:northeast))
+  test "destroy?() does not authorize non-sysadmins" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert !policy.destroy?
   end
@@ -368,50 +369,9 @@ class ItemPolicyTest < ActiveSupport::TestCase
   test "destroy?() authorizes sysadmins" do
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
-                                 institution: @item.institution)
+                                 institution: user.institution)
     policy  = ItemPolicy.new(context, @item)
     assert policy.destroy?
-  end
-
-  test "destroy?() authorizes institution admins" do
-    user    = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: @item.institution)
-    policy  = ItemPolicy.new(context, @item)
-    assert policy.destroy?
-  end
-
-  test "destroy?() authorizes the submission owner if the item is submitting" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: @item.institution)
-
-    @item.submitter = user
-    @item.stage     = Item::Stages::SUBMITTING
-
-    policy = ItemPolicy.new(context, @item)
-    assert policy.destroy?
-  end
-
-  test "destroy?() does not authorize the submission owner if the item is not
-  submitting" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: @item.institution)
-
-    @item.submitter = user
-    @item.stage     = Item::Stages::APPROVED
-
-    policy = ItemPolicy.new(context, @item)
-    assert !policy.destroy?
-  end
-
-  test "destroy?() does not authorize anyone else" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: @item.institution)
-    policy  = ItemPolicy.new(context, @item)
-    assert !policy.destroy?
   end
 
   test "destroy?() respects role limits" do
@@ -419,7 +379,7 @@ class ItemPolicyTest < ActiveSupport::TestCase
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: @item.institution,
-                                 role_limit:  Role::LOGGED_IN)
+                                 role_limit:  Role::INSTITUTION_ADMINISTRATOR)
     policy  = ItemPolicy.new(context, @item)
     assert !policy.destroy?
   end

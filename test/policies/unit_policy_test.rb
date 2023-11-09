@@ -254,14 +254,7 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert !policy.destroy?
   end
 
-  test "destroy?() does not authorize an incorrect scope" do
-    context = RequestContext.new(user:        users(:southwest_admin),
-                                 institution: institutions(:northeast))
-    policy  = UnitPolicy.new(context, @unit)
-    assert !policy.destroy?
-  end
-
-  test "destroy?() is restrictive by default" do
+  test "destroy?() does not authorize non-sysadmins" do
     user    = users(:southwest)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
@@ -277,20 +270,12 @@ class UnitPolicyTest < ActiveSupport::TestCase
     assert policy.destroy?
   end
 
-  test "destroy?() authorizes institution admins" do
-    user    = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = UnitPolicy.new(context, @unit)
-    assert policy.destroy?
-  end
-
   test "destroy?() respects role limits" do
     # sysadmin user limited to an insufficient role
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,
                                  institution: user.institution,
-                                 role_limit:  Role::LOGGED_IN)
+                                 role_limit:  Role::INSTITUTION_ADMINISTRATOR)
     policy  = UnitPolicy.new(context, @unit)
     assert !policy.destroy?
   end

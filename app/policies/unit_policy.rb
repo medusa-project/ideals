@@ -40,7 +40,7 @@ class UnitPolicy < ApplicationPolicy
   end
 
   def bury
-    destroy
+    exhume
   end
 
   def children
@@ -77,7 +77,7 @@ class UnitPolicy < ApplicationPolicy
   def destroy
     # (Note that the unit must also be empty of collections and child
     # units; this is validated in the model.)
-    create
+    effective_sysadmin(@user, @role_limit)
   end
 
   def edit_administering_groups
@@ -97,7 +97,7 @@ class UnitPolicy < ApplicationPolicy
   end
 
   def exhume
-    destroy
+    create
   end
 
   def export_items

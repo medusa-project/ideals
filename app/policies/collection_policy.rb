@@ -23,7 +23,19 @@ class CollectionPolicy < ApplicationPolicy
   end
 
   def bury
-    destroy
+    if !@user
+      return LOGGED_OUT_RESULT
+    elsif effective_sysadmin?(@user, @role_limit)
+      return AUTHORIZED_RESULT
+    elsif @ctx_institution != @collection.institution
+      return WRONG_SCOPE_RESULT
+    elsif (@role_limit >= Role::INSTITUTION_ADMINISTRATOR) &&
+      @user.effective_institution_admin?(@collection.institution)
+      return AUTHORIZED_RESULT
+    end
+    { authorized: false,
+      reason:     "You must be an administrator of the institution in which "\
+        "the collection resides." }
   end
 
   ##
@@ -58,19 +70,7 @@ class CollectionPolicy < ApplicationPolicy
   end
 
   def destroy
-    if !@user
-      return LOGGED_OUT_RESULT
-    elsif effective_sysadmin?(@user, @role_limit)
-      return AUTHORIZED_RESULT
-    elsif @ctx_institution != @collection.institution
-      return WRONG_SCOPE_RESULT
-    elsif (@role_limit >= Role::INSTITUTION_ADMINISTRATOR) &&
-      @user.effective_institution_admin?(@collection.institution)
-      return AUTHORIZED_RESULT
-    end
-    { authorized: false,
-      reason:     "You must be an administrator of the institution in which "\
-                  "the collection resides." }
+    effective_sysadmin(@user, @role_limit)
   end
 
   def edit_administering_groups
