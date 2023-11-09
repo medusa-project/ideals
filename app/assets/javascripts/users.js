@@ -65,7 +65,7 @@ const UserView = {
             $.get(url, function (data) {
                 $("#credentials-tab-content").html(data);
                 $("button.change-password").on("click", function() {
-                    const id  = $(this).data("identity-id");
+                    const id  = $(this).data("credential-id");
                     const url = ROOT_URL + "/credentials/" + id + "/edit-password";
                     $.get(url, function(data) {
                         $("#change-password-modal .modal-body").html(data);

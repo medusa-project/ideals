@@ -112,8 +112,8 @@ class Invitee < ApplicationRecord
   end
 
   ##
-  # Invites a local-identity user and pre-approves the invite. Should only be
-  # invoked by sysadmins.
+  # Invites a local-credentials user and pre-approves the invite. Should only
+  # be invoked by sysadmins.
   #
   # @see approve
   # @see reject
