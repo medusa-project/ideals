@@ -20,6 +20,7 @@ gem "amqp_helper", "~>0.2.0", git: "https://github.com/medusa-project/amqp_helpe
 gem "csv"
 # Required by delayed job
 gem "daemons"
+gem "dartsass-sprockets"
 # Our ActiveJob queue
 gem "delayed_job_active_record"
 # All HTML templates are written in HAML
@@ -57,8 +58,6 @@ gem "pg"
 # Our application server
 gem "puma"
 gem "rails", "~> 7.1"
-# Use SCSS for stylesheets
-gem "sassc"
 gem "sprockets-rails"
 gem "tzinfo-data"
 # Use Uglifier as compressor for JavaScript assets
