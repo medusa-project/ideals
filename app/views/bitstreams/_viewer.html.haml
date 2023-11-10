@@ -9,12 +9,12 @@
         %button.btn.btn-success.btn-sm.dropdown-toggle{type:             "button",
                                                        "data-bs-toggle": "dropdown",
                                                        "aria-expanded":  false}
-          %i.fa.fa-download
+          = icon_for(:download)
           Download
         .dropdown-menu
           = link_to(item_bitstream_object_path(@bitstream.item, @bitstream),
                     class: "dropdown-item") do
-            %i.fa.fa-download
+            = icon_for(:download)
             Download File
           %a#copy-link.dropdown-item{"data-bitstream-url": item_bitstream_object_url(@bitstream.item, @bitstream),
                                      type:                 "button"}
@@ -31,7 +31,7 @@
         Edit
     -# More Info button
     %button#more-info.btn.btn-sm.btn-dark{type: "button"}
-      %i.fa.fa-info-circle
+      = icon_for(:info)
       More Info
 
 #file-navigator-viewer-content

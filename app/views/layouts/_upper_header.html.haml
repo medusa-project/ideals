@@ -76,7 +76,7 @@
                   All Invitees
               %li
                 = link_to(all_users_path, class: "dropdown-item") do
-                  %i.fa.fa-user
+                  = icon_for(User)
                   All Users
               %li
                 = link_to(global_user_groups_path, class: "dropdown-item") do
@@ -180,7 +180,7 @@
                   Invitees
               %li
                 = link_to(users_path, class: "dropdown-item") do
-                  %i.fa.fa-user
+                  = icon_for(:user)
                   Users
               %li
                 = link_to(user_groups_path, class: "dropdown-item") do

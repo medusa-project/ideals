@@ -22,7 +22,7 @@
     = f.label :welcome_html, "Welcome HTML"
     = f.text_area :welcome_html, class: "form-control", rows: 10
     %p.form-text
-      %i.fa.fa-info-circle
+      = icon_for(:info)
       The following HTML tags are allowed:
       = allowed_html_tags
 
@@ -30,7 +30,7 @@
     = f.label :about_html, "About HTML"
     = f.text_area :about_html, class: "form-control", rows: 10
     %p.form-text
-      %i.fa.fa-info-circle
+      = icon_for(:info)
       The following HTML tags are allowed:
       = allowed_html_tags
 
@@ -38,7 +38,7 @@
     = f.label :about_url, "About URL"
     = f.text_field :about_url, class: "form-control"
     %p.form-text
-      %i.fa.fa-info-circle
+      = icon_for(:info)
       If filled in, this will override the About HTML.
 
   .mb-3

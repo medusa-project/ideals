@@ -29,7 +29,7 @@
                                         format: :csv,
                                         params: params.permit(:from_year, :from_month, :to_year, :to_month)),
                                         class: "btn btn-light mb-3 float-right") do
-      %i.fa.fa-download
+      = icon_for(:download)
       CSV
 
     %table.table

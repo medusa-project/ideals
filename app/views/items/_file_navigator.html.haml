@@ -43,14 +43,14 @@
                                  "data-bs-toggle": "dropdown",
                                  "aria-haspopup":  "true",
                                  "aria-expanded":  "false"}
-          %i.fa.fa-download
+          = icon_for(:download)
           Download Options
         .dropdown-menu{"aria-labelledby": "download-options"}
           %button.dropdown-item.download-all-files{"data-item-id":   @item.id,
                                                    "data-bs-target": "#download-all-files-modal",
                                                    "data-bs-toggle": "modal",
                                                    role:             "button"}
-            %i.fa.fa-download
+            = icon_for(:download)
             Download All Files
           - if policy(@item).download_counts?
             %button.dropdown-item.download-counts{"data-item-id":   @item.id,

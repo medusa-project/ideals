@@ -504,11 +504,13 @@ module ApplicationHelper
       icon = "fa fa-cog"
     when "Symbol"
       case entity
+      when :download
+        icon = "fa fa-download"
       when :help
         icon = "fa fa-question-circle"
       when :info
         icon = "fa fa-info-circle"
-      else
+      when :warning
         icon = "fa fa-exclamation-triangle"
       end
     when "Task"

@@ -5,7 +5,7 @@
     -# populated via ajax by shared/_validation_messages.js.erb
 
   .alert.alert-light
-    %i.fa.fa-info-circle
+    = icon_for(:info)
     = raw("Department names must match their names in the #{link_to("Campus Directory", "https://directory.illinois.edu/search")}.")
 
   = hidden_field_tag "user_group[departments][]"
