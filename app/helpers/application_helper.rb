@@ -453,7 +453,8 @@ module ApplicationHelper
   end
 
   ##
-  # @param entity [Object,Symbol] Any model object or class, or `:info` or
+  # @param entity [Object,Symbol] Any model object or class, or the following
+  #                               symbols: `:download`, `:help`, `:info`,
   #                               `:warning`.
   # @return [String] HTML icon tag.
   #
@@ -487,13 +488,7 @@ module ApplicationHelper
         bs = entity.representative_bitstream
         if bs
           format = bs.format
-          if format
-            icon = format.icon
-            # TODO: this is an ugly hack because the FA SVGs referenced in
-            # formats.yml are from an earlier version of FA
-            icon = "file-alt" if icon == "file-text-o"
-            icon = "far fa-#{icon.gsub(/-o\z/, "")}"
-          end
+          icon   = format.icon if format
         end
       end
     when "Message"

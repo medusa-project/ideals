@@ -38,7 +38,7 @@ module BitstreamsHelper
     end
     unless path
       format = bitstream.format
-      icon   = format&.icon || "file-o"
+      icon   = format&.icon || "file"
       path   = image_path("fontawesome/white/#{icon}.svg")
       svg    = true
     end
