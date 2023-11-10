@@ -91,7 +91,7 @@ class IdealsMailerTest < ActionMailer::TestCase
     assert_equal "[TEST: Illinois IR] Action required on a new Southwest IR user",
                  email.subject
 
-    invitee_url = sprintf("https://%s/invitees/%d",
+    invitee_url = sprintf("http://%s/invitees/%d",
                           institution.fqdn,
                           invitee.id)
     assert_equal render_template("account_request_action_required.txt", url: invitee_url),

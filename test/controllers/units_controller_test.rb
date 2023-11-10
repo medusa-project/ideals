@@ -244,7 +244,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() destroys the unit" do
-    log_in_as(users(:southeast_admin))
+    log_in_as(users(:southeast_sysadmin))
     # choose a unit with no dependent collections or units to make setup easier
     unit = units(:southeast_empty)
     delete unit_path(unit)
@@ -254,7 +254,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() redirects to the unit when the destroy fails" do
-    log_in_as(users(:southeast_admin))
+    log_in_as(users(:southeast_sysadmin))
     unit = units(:southeast_unit1)
     delete unit_path(unit)
     assert_redirected_to unit_path(unit)
@@ -262,7 +262,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   test "destroy() redirects to the parent unit, if available, when the destroy
   succeeds" do
-    log_in_as(users(:southeast_admin))
+    log_in_as(users(:southeast_sysadmin))
     unit = units(:southeast_unit1_unit1)
     delete unit_path(unit)
     assert_redirected_to unit_path(unit.parent)
@@ -270,7 +270,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
 
   test "destroy() redirects to the units path if the unit is in the current
   institution's scope and there is no parent unit and the destroy succeeds" do
-    log_in_as(users(:southeast_admin))
+    log_in_as(users(:southeast_sysadmin))
     unit = units(:southeast_empty)
     delete unit_path(unit)
     assert_redirected_to units_path
@@ -286,7 +286,7 @@ class UnitsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() returns HTTP 404 for a missing unit" do
-    log_in_as(users(:southeast_admin))
+    log_in_as(users(:southeast_sysadmin))
     delete "/units/bogus"
     assert_response :not_found
   end

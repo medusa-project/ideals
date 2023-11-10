@@ -262,7 +262,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() destroys the collection" do
-    log_in_as(users(:southeast_admin))
+    log_in_as(users(:southeast_sysadmin))
     collection = collections(:southeast_empty)
     delete collection_path(collection)
     assert_raises ActiveRecord::RecordNotFound do
@@ -271,7 +271,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() redirects to the collection when the destroy fails" do
-    log_in_as(users(:southeast_admin))
+    log_in_as(users(:southeast_sysadmin))
     collection = collections(:southeast_collection1)
     delete collection_path(collection) # fails because collection is not empty
     assert_redirected_to collection
@@ -279,7 +279,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   test "destroy() redirects to the parent collection, if available, for an
   existing collection" do
-    log_in_as(users(:southeast_admin))
+    log_in_as(users(:southeast_sysadmin))
     collection = collections(:southeast_collection1_collection1_collection1)
     delete collection_path(collection)
     assert_redirected_to collection.parent
@@ -287,7 +287,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
 
   test "destroy() redirects to the primary unit, if there is no parent
   collection, for an existing collection" do
-    log_in_as(users(:southeast_admin))
+    log_in_as(users(:southeast_sysadmin))
     collection   = collections(:southeast_empty)
     primary_unit = collection.primary_unit
     delete collection_path(collection)
@@ -295,7 +295,7 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() returns HTTP 404 for a missing collections" do
-    log_in_as(users(:southeast_admin))
+    log_in_as(users(:southeast_sysadmin))
     delete "/collections/bogus"
     assert_response :not_found
   end

@@ -143,7 +143,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() destroys the item" do
-    log_in_as(users(:southeast_admin))
+    log_in_as(users(:southeast_sysadmin))
     item = items(:southeast_submitting)
     delete item_path(item)
     assert_raises ActiveRecord::RecordNotFound do
@@ -152,7 +152,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() returns HTTP 302 for an existing item" do
-    log_in_as(users(:southeast_admin))
+    log_in_as(users(:southeast_sysadmin))
     submission = items(:southeast_item1)
     expected   = submission.primary_collection
     delete item_path(submission)
@@ -160,7 +160,7 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() returns HTTP 404 for a missing item" do
-    log_in_as(users(:southeast_admin))
+    log_in_as(users(:southeast_sysadmin))
     delete "/items/99999"
     assert_response :not_found
   end
