@@ -69,6 +69,7 @@ const UserView = {
                     const url = ROOT_URL + "/credentials/" + id + "/edit-password";
                     $.get(url, function(data) {
                         $("#change-password-modal .modal-body").html(data);
+                        IDEALS.UIUtils.PasswordRequirements();
                     });
                 });
                 $("button.create-local-credential").on("click", function() {
@@ -76,6 +77,7 @@ const UserView = {
                     const url = ROOT_URL + "/users/" + id + "/credentials/new";
                     $.get(url, function(data) {
                         $("#create-local-credential-modal .modal-body").html(data);
+                        IDEALS.UIUtils.PasswordRequirements();
                     });
                 });
             });

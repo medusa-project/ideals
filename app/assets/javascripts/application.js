@@ -32,6 +32,7 @@
 
 // View-specific files
 //= require collections
+//= require credentials
 //= require element_namespaces
 //= require events
 //= require imports

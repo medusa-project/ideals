@@ -838,6 +838,79 @@ IDEALS.UIUtils.NonNetIDLoginForm = function() {
 };
 
 /**
+ * Used in conjunction with the `credentials/password_requirements` partial to
+ * provide feedback as a password is being typed.
+ */
+IDEALS.UIUtils.PasswordRequirements = function() {
+    const container     = $("#password-requirements");
+    const passwordInput = $("input[name='credential[password]']");
+    passwordInput.on("keyup", function() {
+        const inputValue     = $(this).val();
+        // Min length
+        const minLengthLI    = container.find("#min-length");
+        const minLength      = parseInt(minLengthLI.data("value"));
+        const minLengthCheck = minLengthLI.find("i");
+        if (inputValue.length >= minLength) {
+            minLengthLI.css("font-weight", "normal");
+            minLengthCheck.css("visibility", "visible");
+        } else {
+            minLengthLI.css("font-weight", "bold");
+            minLengthCheck.css("visibility", "hidden");
+        }
+        // Min lowercase
+        const minLowercaseLI    = container.find("#min-lowercase-letters");
+        const minLowercase      = parseInt(minLowercaseLI.data("value"));
+        const minLowercaseCheck = minLowercaseLI.find("i");
+        let matches             = inputValue.match(/[a-z]/g)
+        if (matches && matches.length >= minLowercase) {
+            minLowercaseLI.css("font-weight", "normal");
+            minLowercaseCheck.css("visibility", "visible");
+        } else {
+            minLowercaseLI.css("font-weight", "bold");
+            minLowercaseCheck.css("visibility", "hidden");
+        }
+        // Min uppercase
+        const minUppercaseLI    = container.find("#min-uppercase-letters");
+        const minUppercase      = parseInt(minUppercaseLI.data("value"));
+        const minUppercaseCheck = minUppercaseLI.find("i");
+        matches                 = inputValue.match(/[A-Z]/g)
+        if (matches && matches.length >= minUppercase) {
+            minUppercaseLI.css("font-weight", "normal");
+            minUppercaseCheck.css("visibility", "visible");
+        } else {
+            minUppercaseLI.css("font-weight", "bold");
+            minUppercaseCheck.css("visibility", "hidden");
+        }
+        // Min numbers
+        const minNumbersLI    = container.find("#min-numbers");
+        const minNumbers      = parseInt(minNumbersLI.data("value"));
+        const minNumbersCheck = minNumbersLI.find("i");
+        matches               = inputValue.match(/[0-9]/g);
+        if (matches && matches.length >= minNumbers) {
+            minNumbersLI.css("font-weight", "normal");
+            minNumbersCheck.css("visibility", "visible");
+        } else {
+            minNumbersLI.css("font-weight", "bold");
+            minNumbersCheck.css("visibility", "hidden");
+        }
+        // Min special chars
+        const minSpecialLI    = container.find("#min-special-characters");
+        const minSpecial      = parseInt(minSpecialLI.data("value"));
+        const characters      = minSpecialLI.data("characters");
+        const minSpecialCheck = minSpecialLI.find("i");
+        const regex           = new RegExp("[" + characters + "]", "g");
+        matches               = inputValue.match(regex);
+        if (matches && matches.length >= minSpecial) {
+            minSpecialLI.css("font-weight", "normal");
+            minSpecialCheck.css("visibility", "visible");
+        } else {
+            minSpecialLI.css("font-weight", "bold");
+            minSpecialCheck.css("visibility", "hidden");
+        }
+    });
+};
+
+/**
  * @return Bootstrap spinner with markup matching that of
  *         ApplicationHelper.spinner().
  */

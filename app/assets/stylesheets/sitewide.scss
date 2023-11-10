@@ -268,3 +268,16 @@ label.required::after {
   padding: 2em;
   text-align: center;
 }
+
+#password-requirements {
+  ul {
+    list-style-type: none;
+    margin-left: 0;
+    padding-left: 0;
+    li {
+      i.fa {
+        visibility: hidden;
+      }
+    }
+  }
+}
