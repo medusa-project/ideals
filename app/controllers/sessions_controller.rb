@@ -2,17 +2,18 @@
 
 class SessionsController < ApplicationController
 
-  skip_before_action :verify_authenticity_token, except: [:new_admin,
-                                                          :new_netid]
+  skip_before_action :verify_authenticity_token, except: [:new, :new_netid]
 
   ##
-  # Provides a login form for sysadmins only.
+  # Provides a "back door" login form. This is not linked to from anywhere
+  # else, but it can be used by sysadmins to log into other institutions when
+  # they don't have local-credentials logins enabled.
   #
-  # Responds to `GET /admin`
+  # Responds to `GET /login`
   #
-  def new_admin
+  def new
     redirect_to root_path if logged_in?
-    session[:login_failure_url] = admin_login_url
+    session[:login_failure_url] = login_url
   end
 
   ##

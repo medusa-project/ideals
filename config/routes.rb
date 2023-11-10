@@ -3,9 +3,9 @@ Rails.application.routes.draw do
   get "/", to: "welcome#index"
 
   # Authentication routes
-  match "/admin", to: "sessions#new_admin", as: :admin_login, via: :get
   match "/auth/:provider/callback", to: "sessions#create", via: [:get, :post]
   match "/auth/failure", to: "sessions#auth_failed", as: :auth_failed, via: [:get, :post]
+  match "/login", to: "sessions#new", as: :login, via: :get
   match "/logout", to: "sessions#destroy", as: :logout, via: :all
   match "/netid-login", to: "sessions#new_netid", as: :netid_login, via: :get
 
