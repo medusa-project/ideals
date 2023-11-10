@@ -22,8 +22,6 @@ gem "csv"
 gem "daemons"
 # Our ActiveJob queue
 gem "delayed_job_active_record"
-# Provides all of our icons.
-gem "font-awesome-sass", "~> 5"
 # All HTML templates are written in HAML
 gem "haml-rails"
 # Application HTTP client
