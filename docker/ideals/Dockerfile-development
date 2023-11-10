@@ -1,3 +1,5 @@
+ARG RUBY_VERSION=3.2.2
+
 FROM ubuntu:22.04
 
 EXPOSE 3000
@@ -41,7 +43,7 @@ RUN sed -i '/disable ghostscript format types/d' /etc/ImageMagick-6/policy.xml \
 # Install Ruby
 RUN git clone https://github.com/rbenv/ruby-build.git \
     && PREFIX=/usr/local ./ruby-build/install.sh \
-    && ruby-build -v 3.2.2 /usr/local
+    && ruby-build -v ${RUBY_VERSION} /usr/local
 
 # This is a host volume.
 WORKDIR /app
