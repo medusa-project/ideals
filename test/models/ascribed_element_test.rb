@@ -136,4 +136,18 @@ class AscribedElementTest < ActiveSupport::TestCase
     assert @instance.valid?
   end
 
+  # string
+
+  test "string is normalized" do
+    @instance.string = " test  test "
+    assert_equal "test  test", @instance.string
+  end
+
+  # uri
+
+  test "uri is normalized" do
+    @instance.uri = " test  test "
+    assert_equal "test test", @instance.uri
+  end
+
 end

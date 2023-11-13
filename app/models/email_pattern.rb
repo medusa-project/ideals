@@ -16,6 +16,8 @@ class EmailPattern < ApplicationRecord
 
   belongs_to :user_group
 
+  normalizes :pattern, with: -> (value) { value.strip }
+
   validates :pattern, presence: true
 
   ##

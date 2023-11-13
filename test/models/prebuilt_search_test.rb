@@ -21,29 +21,34 @@ class PrebuiltSearchTest < ActiveSupport::TestCase
   end
 
   setup do
-    @search = prebuilt_searches(:southwest_cats)
-    assert @search.valid?
+    @instance = prebuilt_searches(:southwest_cats)
+    assert @instance.valid?
   end
 
   # institution
 
   test "institution is required" do
-    @search.institution = nil
-    assert !@search.valid?
+    @instance.institution = nil
+    assert !@instance.valid?
   end
 
   # name
 
   test "name is required" do
-    @search.name = nil
-    assert !@search.valid?
+    @instance.name = nil
+    assert !@instance.valid?
+  end
+
+  test "name is normalized" do
+    @instance.name = " test  test "
+    assert_equal "test test", @instance.name
   end
 
   # ordering_element
 
   test "ordering_element must be in the same institution" do
-    @search.ordering_element = registered_elements(:northeast_dc_creator)
-    assert !@search.valid?
+    @instance.ordering_element = registered_elements(:northeast_dc_creator)
+    assert !@instance.valid?
   end
 
   # url_query()
@@ -55,13 +60,13 @@ class PrebuiltSearchTest < ActiveSupport::TestCase
 
   test "url_query() returns a correct query string" do
     parts = []
-    @search.elements.sort_by(&:term).each do |element|
+    @instance.elements.sort_by(&:term).each do |element|
       parts << ["fq[]", "#{element.registered_element.indexed_keyword_field}:#{element.term}"]
     end
-    parts << ["sort", @search.ordering_element.indexed_sort_field]
+    parts << ["sort", @instance.ordering_element.indexed_sort_field]
     parts << ["direction", "asc"]
     assert_equal "?" + parts.map{ |p| p.map{ |a| StringUtils.url_encode(a) }.join("=") }.join("&"),
-                 @search.url_query
+                 @instance.url_query
   end
 
 end

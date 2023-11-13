@@ -58,6 +58,13 @@ class CredentialTest < ActiveSupport::TestCase
     assert_not_equal sent_at, @instance.reset_sent_at
   end
 
+  # email
+
+  test "email is normalized" do
+    @instance.email = " test  test "
+    assert_equal "test  test", @instance.email
+  end
+
   # invitee()
 
   test "invitee is required" do

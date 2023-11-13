@@ -32,6 +32,12 @@ class EmailPatternTest < ActiveSupport::TestCase
     end
   end
 
+  test "pattern is normalized" do
+    pattern = email_patterns(:literal)
+    pattern.pattern = " test  test "
+    assert_equal "test  test", pattern.pattern
+  end
+
   # to_s()
 
   test "to_s() returns a correct value" do

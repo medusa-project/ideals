@@ -23,6 +23,8 @@ class Vocabulary < ApplicationRecord
   has_many :registered_elements
   has_many :vocabulary_terms
 
+  normalizes :name, with: -> (value) { value.squish }
+
   # uniqueness (within an institution) enforced by database constraints
   validates :name, presence: true
 

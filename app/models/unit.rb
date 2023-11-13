@@ -83,6 +83,8 @@ class Unit < ApplicationRecord
   has_one :primary_administrator, through: :primary_administrator_relationship,
           source: :user
 
+  normalizes :title, with: -> (value) { value.squish }
+
   validates :title, presence: true
   validate :validate_bury, if: -> { buried }
   validate :validate_parent, :validate_primary_administrator

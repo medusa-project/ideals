@@ -68,4 +68,9 @@ class VocabularyTest < ActiveSupport::TestCase
     assert !@instance.valid?
   end
 
+  test "name is normalized" do
+    @instance.name = " test  test "
+    assert_equal "test test", @instance.name
+  end
+
 end

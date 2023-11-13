@@ -46,6 +46,8 @@ class MetadataProfile < ApplicationRecord
   has_many :units, inverse_of: :metadata_profile,
            dependent: :restrict_with_exception
 
+  normalizes :name, with: -> (value) { value.squish }
+
   validates :full_text_relevance_weight, numericality: { only_integer: true,
                                                          greater_than_or_equal_to: MetadataProfileElement::MIN_RELEVANCE_WEIGHT,
                                                          less_than_or_equal_to: MetadataProfileElement::MAX_RELEVANCE_WEIGHT }

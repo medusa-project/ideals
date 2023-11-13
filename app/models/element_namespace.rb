@@ -19,6 +19,8 @@ class ElementNamespace < ApplicationRecord
 
   belongs_to :institution
 
+  normalizes :prefix, :uri, with: -> (value) { value.squish }
+
   validates_presence_of :prefix
   validates_presence_of :uri
 

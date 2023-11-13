@@ -50,6 +50,8 @@ class Credential < OmniAuth::Identity::Models::ActiveRecord
 
   belongs_to :user, inverse_of: :credential
 
+  normalizes :email, with: -> (value) { value.strip }
+
   validates :email, presence: true, length: { maximum: 255 },
             format: { with: StringUtils::EMAIL_REGEX },
             uniqueness: { case_sensitive: false }

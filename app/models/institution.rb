@@ -248,6 +248,20 @@ class Institution < ApplicationRecord
 
   serialize :shibboleth_extra_attributes, coder: JSON
 
+  normalizes :copyright_notice, :google_analytics_measurement_id,
+             :saml_idp_encryption_cert, :saml_idp_encryption_cert2,
+             :saml_idp_signing_cert, :saml_idp_signing_cert2,
+             :saml_sp_next_public_cert, :saml_sp_private_key,
+             :saml_sp_public_cert,
+             with: -> (value) { value.strip }
+  normalizes :about_url, :feedback_email, :fqdn, :incoming_message_queue, :key,
+             :main_website_url, :name, :outgoing_message_queue,
+             :saml_email_attribute, :saml_first_name_attribute,
+             :saml_idp_entity_id, :saml_idp_sso_post_service_url,
+             :saml_idp_sso_redirect_service_url, :saml_last_name_attribute,
+             :saml_metadata_url, :service_name,
+             with: -> (value) { value.squish }
+
   validates :feedback_email, allow_blank: true, length: {maximum: 255},
             format: {with: StringUtils::EMAIL_REGEX}
 

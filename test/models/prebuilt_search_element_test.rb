@@ -28,4 +28,9 @@ class PrebuiltSearchElementTest < ActiveSupport::TestCase
     assert !@instance.valid?
   end
 
+  test "term is normalized" do
+    @instance.term = " test  test "
+    assert_equal "test test", @instance.term
+  end
+
 end

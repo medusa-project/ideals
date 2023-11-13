@@ -30,6 +30,9 @@ class AscribedElement < ApplicationRecord
   belongs_to :registered_element
   belongs_to :item
 
+  normalizes :string, with: -> (value) { value.strip }
+  normalizes :uri, with: -> (value) { value.squish }
+
   validates :string, presence: true
   validates :position, numericality: { greater_than_or_equal_to: 1 },
             allow_blank: false

@@ -32,6 +32,7 @@
 # * `updated_at`          Managed by ActiveRecord.
 #
 class SubmissionProfile < ApplicationRecord
+
   include Breadcrumb
 
   belongs_to :institution
@@ -40,6 +41,9 @@ class SubmissionProfile < ApplicationRecord
   has_many :elements, -> { order(:position) },
            class_name: "SubmissionProfileElement",
            inverse_of: :submission_profile
+
+  normalizes :name, with: -> (value) { value.squish }
+
   validates :name, presence: true, length: { minimum: 2 }
 
   after_save :ensure_default_uniqueness

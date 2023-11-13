@@ -19,6 +19,8 @@ class IndexPage < ApplicationRecord
   belongs_to :institution
   has_and_belongs_to_many :registered_elements
 
+  normalizes :name, with: -> (value) { value.squish }
+
   validates :name, presence: true
 
   def breadcrumb_label

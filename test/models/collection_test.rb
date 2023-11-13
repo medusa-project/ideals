@@ -630,6 +630,13 @@ class CollectionTest < ActiveSupport::TestCase
     assert_equal 0, actual[0]['count']
   end
 
+  # title
+
+  test "title is normalized" do
+    @instance.title = " test  test "
+    assert_equal "test test", @instance.title
+  end
+
   # units
 
   test "units can be empty" do

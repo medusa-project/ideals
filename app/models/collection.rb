@@ -145,6 +145,8 @@ class Collection < ApplicationRecord
   has_many :unit_collection_memberships
   has_many :units, through: :unit_collection_memberships
 
+  normalizes :title, with: -> (value) { value.squish }
+
   validate :validate_parent
   validate :validate_primary_unit
   validate :validate_bury, if: -> { buried }

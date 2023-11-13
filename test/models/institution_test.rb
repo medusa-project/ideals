@@ -238,6 +238,13 @@ class InstitutionTest < ActiveSupport::TestCase
     assert institution.administrator_groups.map(&:user_group).include?(group)
   end
 
+  # about_url
+
+  test "about_url is normalized" do
+    @instance.about_url = " test  test "
+    assert_equal "test test", @instance.about_url
+  end
+
   # active_link_color
 
   test "active_link_color must contain a valid CSS color" do
@@ -279,6 +286,13 @@ class InstitutionTest < ActiveSupport::TestCase
   test "banner_image_url() returns a correct URL" do
     @instance.banner_image_filename = "banner.png"
     assert @instance.banner_image_url.start_with?("http://")
+  end
+
+  # copyright_notice
+
+  test "copyright_notice is normalized" do
+    @instance.copyright_notice = " test  test "
+    assert_equal "test  test", @instance.copyright_notice
   end
 
   # default_metadata_profile()
@@ -487,6 +501,11 @@ class InstitutionTest < ActiveSupport::TestCase
     assert @instance.valid?
   end
 
+  test "feedback_email is normalized" do
+    @instance.feedback_email = " test  test "
+    assert_equal "test test", @instance.feedback_email
+  end
+
   # file_stats()
 
   test "file_stats() returns file statistics" do
@@ -534,6 +553,18 @@ class InstitutionTest < ActiveSupport::TestCase
     assert !@instance.valid?
   end
 
+  test "fqdn is normalized" do
+    @instance.fqdn = " test  test "
+    assert_equal "test test", @instance.fqdn
+  end
+
+  # google_analytics_measurement_id
+
+  test "google_analytics_measurement_id is normalized" do
+    @instance.google_analytics_measurement_id = " test  test "
+    assert_equal "test  test", @instance.google_analytics_measurement_id
+  end
+
   # header_background_color
 
   test "header_background_color must contain a valid CSS color" do
@@ -559,6 +590,13 @@ class InstitutionTest < ActiveSupport::TestCase
   test "header_image_url() returns a correct URL" do
     @instance.header_image_filename = "header.png"
     assert @instance.header_image_url.start_with?("http://")
+  end
+
+  # incoming_message_queue
+
+  test "incoming_message_queue is normalized" do
+    @instance.incoming_message_queue = " test  test "
+    assert_equal "test test", @instance.incoming_message_queue
   end
 
   # key
@@ -628,6 +666,11 @@ class InstitutionTest < ActiveSupport::TestCase
     end
   end
 
+  test "key is normalized" do
+    @instance.key = " test  test "
+    assert_equal "test test", @instance.key
+  end
+
   # latitude_degrees
 
   test "latitude_degrees must be within the Illinois boundaries" do
@@ -682,6 +725,13 @@ class InstitutionTest < ActiveSupport::TestCase
     assert @instance.valid?
   end
 
+  # main_website_url
+
+  test "main_website_url is normalized" do
+    @instance.main_website_url = " test  test "
+    assert_equal "test test", @instance.main_website_url
+  end
+
   # medusa_file_group()
 
   test "medusa_file_group() returns an instance when medusa_file_group_id is set" do
@@ -718,12 +768,24 @@ class InstitutionTest < ActiveSupport::TestCase
     assert !@instance.valid?
   end
 
+  test "name is normalized" do
+    @instance.name = " test  test "
+    assert_equal "test test", @instance.name
+  end
+
   # nuke!()
 
   test "nuke!() nukes an instance" do
     setup_opensearch
     @instance.nuke!
     assert @instance.destroyed?
+  end
+
+  # outgoing_message_queue
+
+  test "outgoing_message_queue is normalized" do
+    @instance.outgoing_message_queue = " test  test "
+    assert_equal "test test", @instance.outgoing_message_queue
   end
 
   # primary_color
@@ -817,6 +879,13 @@ class InstitutionTest < ActiveSupport::TestCase
     assert_equal 2, @instance.required_elements.length
   end
 
+  # saml_email_attribute
+
+  test "saml_email_attribute is normalized" do
+    @instance.saml_email_attribute = " test  test "
+    assert_equal "test test", @instance.saml_email_attribute
+  end
+
   # saml_email_location
 
   test "saml_email_location must be one of the SAMLEmailLocation constant
@@ -827,6 +896,48 @@ class InstitutionTest < ActiveSupport::TestCase
     assert @instance.valid?
     @instance.saml_email_location = 99
     assert !@instance.valid?
+  end
+
+  # saml_first_name_attribute
+
+  test "saml_first_name_attribute is normalized" do
+    @instance.saml_first_name_attribute = " test  test "
+    assert_equal "test test", @instance.saml_first_name_attribute
+  end
+
+  # saml_idp_encryption_cert
+
+  test "saml_idp_encryption_cert is normalized" do
+    @instance.saml_idp_encryption_cert = " test  test "
+    assert_equal "test  test", @instance.saml_idp_encryption_cert
+  end
+
+  # saml_idp_encryption_cert2
+
+  test "saml_idp_encryption_cert2 is normalized" do
+    @instance.saml_idp_encryption_cert2 = " test  test "
+    assert_equal "test  test", @instance.saml_idp_encryption_cert2
+  end
+
+  # saml_idp_entity_id
+
+  test "saml_idp_entity_id is normalized" do
+    @instance.saml_idp_entity_id = " test  test "
+    assert_equal "test test", @instance.saml_idp_entity_id
+  end
+
+  # saml_idp_signing_cert
+
+  test "saml_idp_signing_cert is normalized" do
+    @instance.saml_idp_signing_cert = " test  test "
+    assert_equal "test  test", @instance.saml_idp_signing_cert
+  end
+
+  # saml_idp_signing_cert2
+
+  test "saml_idp_signing_cert2 is normalized" do
+    @instance.saml_idp_signing_cert2 = " test  test "
+    assert_equal "test  test", @instance.saml_idp_signing_cert2
   end
 
   # saml_idp_sso_binding_urn
@@ -840,10 +951,59 @@ class InstitutionTest < ActiveSupport::TestCase
     assert !@instance.valid?
   end
 
+  # saml_idp_sso_post_service_url
+
+  test "saml_idp_sso_post_service_url is normalized" do
+    @instance.saml_idp_sso_post_service_url = " test  test "
+    assert_equal "test test", @instance.saml_idp_sso_post_service_url
+  end
+
+  # saml_idp_sso_redirect_service_url
+
+  test "saml_idp_sso_redirect_service_url is normalized" do
+    @instance.saml_idp_sso_redirect_service_url = " test  test "
+    assert_equal "test test", @instance.saml_idp_sso_redirect_service_url
+  end
+
+  # saml_last_name_attribute
+
+  test "saml_last_name_attribute is normalized" do
+    @instance.saml_last_name_attribute = " test  test "
+    assert_equal "test test", @instance.saml_last_name_attribute
+  end
+
+  # saml_metadata_url
+
+  test "saml_metadata_url is normalized" do
+    @instance.saml_metadata_url = " test  test "
+    assert_equal "test test", @instance.saml_metadata_url
+  end
+
   # saml_sp_entity_id()
 
   test "saml_sp_entity_id() returns a correct value" do
     assert_equal "#{@instance.scope_url}/entity", @instance.saml_sp_entity_id
+  end
+
+  # saml_sp_next_public_cert
+
+  test "saml_sp_next_public_cert is normalized" do
+    @instance.saml_sp_next_public_cert = " test  test "
+    assert_equal "test  test", @instance.saml_sp_next_public_cert
+  end
+
+  # saml_sp_private_key
+
+  test "saml_sp_private_key is normalized" do
+    @instance.saml_sp_private_key = " test  test "
+    assert_equal "test  test", @instance.saml_sp_private_key
+  end
+
+  # saml_sp_public_cert
+
+  test "saml_sp_public_cert is normalized" do
+    @instance.saml_sp_public_cert = " test  test "
+    assert_equal "test  test", @instance.saml_sp_public_cert
   end
 
   # scope_url()
@@ -857,6 +1017,11 @@ class InstitutionTest < ActiveSupport::TestCase
   test "service_name is required" do
     @instance.service_name = nil
     assert !@instance.valid?
+  end
+
+  test "service_name is normalized" do
+    @instance.service_name = " test  test "
+    assert_equal "test test", @instance.service_name
   end
 
   # shibboleth_extra_attributes

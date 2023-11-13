@@ -19,4 +19,6 @@ class Department < ApplicationRecord
   belongs_to :user, optional: true
   belongs_to :user_group, optional: true
 
+  normalizes :name, with: -> (value) { value.squish }
+
 end

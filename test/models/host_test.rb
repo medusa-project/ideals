@@ -46,6 +46,14 @@ class HostTest < ActiveSupport::TestCase
     assert_nil host.comment
   end
 
+  # pattern
+
+  test "pattern is normalized" do
+    host = Host.new(pattern: '# 123.123.*')
+    host.pattern = " test  test "
+    assert_equal "test  test", host.pattern
+  end
+
   # pattern_matches?()
 
   test 'pattern_matches?() returns false when pattern is commented out' do

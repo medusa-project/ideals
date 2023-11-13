@@ -747,4 +747,9 @@ class UnitTest < ActiveSupport::TestCase
     assert !@instance.valid?
   end
 
+  test "title is normalized" do
+    @instance.title = " test  test "
+    assert_equal "test test", @instance.title
+  end
+
 end

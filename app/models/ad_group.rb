@@ -16,6 +16,8 @@ class AdGroup < ApplicationRecord
 
   belongs_to :user_group
 
+  normalizes :name, with: -> (value) { value.squish }
+
   validates :name, presence: true
 
   def to_s

@@ -171,6 +171,11 @@ class UserGroupTest < ActiveSupport::TestCase
     end
   end
 
+  test "key is normalized" do
+    @instance.key = " test  test "
+    assert_equal "test test", @instance.key
+  end
+
   # name
 
   test "name must be present" do
@@ -189,6 +194,11 @@ class UserGroupTest < ActiveSupport::TestCase
                         name:        "Test",
                         institution: institution)
     end
+  end
+
+  test "name is normalized" do
+    @instance.name = " test  test "
+    assert_equal "test test", @instance.name
   end
 
   # required?()

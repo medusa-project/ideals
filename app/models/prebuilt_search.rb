@@ -48,6 +48,8 @@ class PrebuiltSearch < ApplicationRecord
   belongs_to :ordering_element, class_name: "RegisteredElement", optional: true
   has_many :elements, class_name: "PrebuiltSearchElement"
 
+  normalizes :name, with: -> (value) { value.squish }
+
   validates :name, presence: true
   validate :validate_ordering_element_institution
 

@@ -139,6 +139,11 @@ class RegisteredElementTest < ActiveSupport::TestCase
     end
   end
 
+  test "label is normalized" do
+    @instance.label = " test  test "
+    assert_equal "test test", @instance.label
+  end
+
   # name
 
   test "name must be present" do
@@ -168,6 +173,11 @@ class RegisteredElementTest < ActiveSupport::TestCase
     assert !@instance.valid?
   end
 
+  test "name is normalized" do
+    @instance.name = " test  test "
+    assert_equal "test test", @instance.name
+  end
+
   # uri
 
   test "uri must be unique" do
@@ -179,11 +189,14 @@ class RegisteredElementTest < ActiveSupport::TestCase
     end
   end
 
-  # uri=()
-
-  test "uri=() converts empty strings to nil" do
+  test "uri converts empty strings to nil" do
     @instance.uri = ""
     assert_nil @instance.uri
+  end
+
+  test "uri is normalized" do
+    @instance.uri = " test  test "
+    assert_equal "test test", @instance.uri
   end
 
 end

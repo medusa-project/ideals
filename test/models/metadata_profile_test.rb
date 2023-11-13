@@ -152,4 +152,9 @@ class MetadataProfileTest < ActiveSupport::TestCase
     end
   end
 
+  test "name is normalized" do
+    @instance.name = " test  test "
+    assert_equal "test test", @instance.name
+  end
+
 end

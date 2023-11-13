@@ -18,6 +18,8 @@ class PrebuiltSearchElement < ApplicationRecord
   belongs_to :prebuilt_search
   belongs_to :registered_element
 
+  normalizes :term, with: -> (value) { value.squish }
+
   validates :term, presence: true
 
 end

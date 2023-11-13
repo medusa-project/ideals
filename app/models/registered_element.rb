@@ -72,6 +72,8 @@ class RegisteredElement < ApplicationRecord
 
   has_and_belongs_to_many :index_pages
 
+  normalizes :label, :name, :uri, with: -> (value) { value.squish }
+
   validates :dublin_core_mapping, inclusion: { in: DUBLIN_CORE_1_1_ELEMENTS },
                                   allow_blank: true
 

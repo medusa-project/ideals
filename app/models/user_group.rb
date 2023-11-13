@@ -64,6 +64,8 @@ class UserGroup < ApplicationRecord
   has_and_belongs_to_many :embargoes
   has_and_belongs_to_many :users
 
+  normalizes :key, :name, with: -> (value) { value.squish }
+
   validates :name, presence: true # uniqueness enforced by database constraints
   validates :key, presence: true  # uniqueness enforced by database constraints
   validate :validate_sysadmin_group

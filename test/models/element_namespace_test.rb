@@ -3,37 +3,49 @@ require "test_helper"
 class ElementNamespaceTest < ActiveSupport::TestCase
 
   setup do
-    @namespace = element_namespaces(:southwest_dc)
-    assert @namespace.valid?
+    @instance = element_namespaces(:southwest_dc)
+    assert @instance.valid?
   end
 
   # institution
 
   test "institution is required" do
-    @namespace.institution = nil
-    assert !@namespace.valid?
+    @instance.institution = nil
+    assert !@instance.valid?
   end
 
   # prefix
 
   test "prefix is required" do
-    @namespace.prefix = nil
-    assert !@namespace.valid?
-    @namespace.prefix = ""
-    assert !@namespace.valid?
+    @instance.prefix = nil
+    assert !@instance.valid?
+    @instance.prefix = ""
+    assert !@instance.valid?
   end
 
+  test "prefix is normalized" do
+    @instance.prefix = " test  test "
+    assert_equal "test test", @instance.prefix
+  end
+
+  # to_s()
+
   test "to_s() returns the prefix" do
-    assert_equal @namespace.prefix, @namespace.to_s
+    assert_equal @instance.prefix, @instance.to_s
   end
 
   # uri
 
   test "uri is required" do
-    @namespace.uri = nil
-    assert !@namespace.valid?
-    @namespace.uri = ""
-    assert !@namespace.valid?
+    @instance.uri = nil
+    assert !@instance.valid?
+    @instance.uri = ""
+    assert !@instance.valid?
+  end
+
+  test "uri is normalized" do
+    @instance.uri = " test  test "
+    assert_equal "test test", @instance.uri
   end
 
 end

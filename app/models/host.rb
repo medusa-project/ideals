@@ -37,6 +37,8 @@ class Host < ApplicationRecord
 
   belongs_to :user_group
 
+  normalizes :pattern, with: -> (value) { value.strip }
+
   validate :validate_pattern
 
   ##
