@@ -46,10 +46,6 @@ gem "medusa-client", git: "https://github.com/medusa-project/medusa-client.git"
 gem "natural_sort"
 # Assists in parsing IP address CIDR ranges.
 gem "netaddr"
-# Normally there is no need to specify this one, but the precompiled binaries
-# won't work on our EC2s due to an older version of glibc. Specifying the
-# platform will force a compilation which will work.
-gem "nokogiri", platforms: [:ruby]
 # Enables local-credential logins.
 gem "omniauth-identity"
 gem "omniauth-rails_csrf_protection"
