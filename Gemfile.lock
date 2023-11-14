@@ -442,6 +442,7 @@ DEPENDENCIES
   minitest-reporters
   natural_sort
   netaddr
+  nokogiri
   omniauth-identity
   omniauth-rails_csrf_protection
   omniauth-saml
