@@ -167,6 +167,8 @@ class Unit < ApplicationRecord
       doc[IndexFields::SHORT_DESCRIPTION],
       doc[IndexFields::TITLE]
     ].join(" ")
+    # Normalized titles make cross-entity search easier.
+    doc[self.institution.title_element.indexed_field] = self.title
     doc
   end
 

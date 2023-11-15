@@ -118,6 +118,7 @@ class UnitTest < ActiveSupport::TestCase
     assert_equal @instance.rights, doc[Unit::IndexFields::RIGHTS]
     assert_equal @instance.short_description, doc[Unit::IndexFields::SHORT_DESCRIPTION]
     assert_equal @instance.title, doc[Unit::IndexFields::TITLE]
+    assert_equal @instance.title, doc[@instance.institution.title_element.indexed_field]
   end
 
   # buried

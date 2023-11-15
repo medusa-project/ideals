@@ -241,7 +241,7 @@ class Collection < ApplicationRecord
     doc[IndexFields::TITLE]             = self.title
     doc[IndexFields::UNIT_TITLES]       = units.map(&:title)
     doc[IndexFields::UNITS]             = self.unit_ids
-    doc[IndexFields::ALL_ELEMENTS]          = [
+    doc[IndexFields::ALL_ELEMENTS]      = [
       doc[IndexFields::DESCRIPTION],
       doc[IndexFields::HANDLE],
       doc[IndexFields::INTRODUCTION],
@@ -249,6 +249,8 @@ class Collection < ApplicationRecord
       doc[IndexFields::SHORT_DESCRIPTION],
       doc[IndexFields::TITLE]
     ].join(" ")
+    # Normalized titles make cross-entity search easier.
+    doc[self.institution.title_element.indexed_field] = self.title
     doc
   end
 

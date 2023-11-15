@@ -155,6 +155,7 @@ class CollectionTest < ActiveSupport::TestCase
                  doc[Collection::IndexFields::UNIT_TITLES]
     assert_equal @instance.units.count,
         doc[Collection::IndexFields::UNITS].length
+    assert_equal @instance.title, doc[@instance.institution.title_element.indexed_field]
   end
 
   # buried
