@@ -3,6 +3,7 @@
 class SessionsController < ApplicationController
 
   skip_before_action :verify_authenticity_token, except: [:new, :new_netid]
+  before_action :require_institution_host, only: [:new, :new_netid]
 
   ##
   # Provides a "back door" login form. This is not linked to from anywhere
@@ -98,6 +99,10 @@ class SessionsController < ApplicationController
 
 
   private
+
+  def require_institution_host
+    redirect_to root_path unless institution_host?
+  end
 
   def return_url
     session[:login_failure_url] ||
