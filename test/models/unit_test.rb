@@ -101,6 +101,7 @@ class UnitTest < ActiveSupport::TestCase
   test "as_indexed_json() returns the correct structure" do
     doc = @instance.as_indexed_json
     assert_not_empty doc[Unit::IndexFields::ADMINISTRATORS]
+    assert_not_empty doc[Unit::IndexFields::ALL_ELEMENTS]
     assert !doc[Unit::IndexFields::BURIED]
     assert_equal "Unit", doc[Unit::IndexFields::CLASS]
     assert_not_empty doc[Unit::IndexFields::CREATED]

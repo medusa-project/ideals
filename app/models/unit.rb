@@ -45,6 +45,7 @@ class Unit < ApplicationRecord
 
   class IndexFields
     ADMINISTRATORS        = "i_administrator_id"
+    ALL_ELEMENTS          = OpenSearchIndex::StandardFields::ALL_ELEMENTS
     BURIED                = "b_buried"
     CLASS                 = OpenSearchIndex::StandardFields::CLASS
     CREATED               = OpenSearchIndex::StandardFields::CREATED
@@ -160,6 +161,12 @@ class Unit < ApplicationRecord
     doc[IndexFields::RIGHTS]                = self.rights
     doc[IndexFields::SHORT_DESCRIPTION]     = self.short_description
     doc[IndexFields::TITLE]                 = self.title
+    doc[IndexFields::ALL_ELEMENTS]          = [
+      doc[IndexFields::HANDLE],
+      doc[IndexFields::INTRODUCTION],
+      doc[IndexFields::SHORT_DESCRIPTION],
+      doc[IndexFields::TITLE]
+    ].join(" ")
     doc
   end
 
