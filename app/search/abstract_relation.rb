@@ -245,7 +245,13 @@ class AbstractRelation
   # @see filter
   #
   def must_not(field, value)
-    @must_nots << [field, value]
+    if value.respond_to?(:each)
+      value.each do |v|
+        @must_nots << [field, v]
+      end
+    else
+      @must_nots << [field, value]
+    end
     @loaded = false
     self
   end
