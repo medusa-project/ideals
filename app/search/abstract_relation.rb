@@ -461,28 +461,48 @@ class AbstractRelation
   end
 
   ##
-  # @return [ActiveRecord::Relation<Object>]
+  # @return [Enumerable<Object>]
   #
   def to_a
-    ids = to_id_a
-    @result_instances = get_class.
-      where(id: ids).
-      in_order_of(:id, ids)
-    # This should improve performance for Items, as their elements relationship
-    # is almost always accessed.
-    if get_class == Item
-      @result_instances = @result_instances.includes(:elements)
+    results = to_id_a
+    # N.B.: includes() should improve performance for Items, as their elements
+    # relationship is almost always accessed.
+    #
+    # Are we loading instances of different classes? This might be the case
+    # when we are searching across items, collections, and units.
+    if results.map{ |h| h[:class] }.uniq.length > 1
+      @result_instances = results.map do |h|
+        q = h[:class].where(id: h[:id]).limit(1)
+        q = q.includes(:elements) if h[:class] == Item
+        q.first
+      end
+    # If not, we can load results more efficiently.
+    elsif results.any?
+      ids = results.map{ |h| h[:id] }
+      class_ = results.first[:class]
+      @result_instances = class_.
+        where(id: ids).
+        in_order_of(:id, ids)
+      if class_ == Item
+        @result_instances = @result_instances.includes(:elements)
+      end
     end
     @result_instances
   end
 
   ##
-  # @return [Enumerable<Integer>] Enumerable of entity IDs.
+  # @return [Enumerable<Hash>] Enumerable of hashes with `class` and `id` keys.
   #
   def to_id_a
     load
-    @response_json['hits']['hits']
-        .map{ |r| get_class.to_model_id(r[OpenSearchIndex::StandardFields::ID]) }
+    @response_json['hits']['hits'].map do |hit|
+      doc_id = hit[OpenSearchIndex::StandardFields::ID]
+      class_ = doc_id.split(":").first.capitalize.constantize
+      {
+        class: class_,
+        id:    class_.to_model_id(doc_id)
+      }
+    end
   end
 
 
@@ -642,7 +662,8 @@ class AbstractRelation
               j.must do
                 j.child! do
                   j.term do
-                    j.set! OpenSearchIndex::StandardFields::CLASS, get_class.to_s
+                    j.set! OpenSearchIndex::StandardFields::CLASS,
+                           self.class.to_s.gsub(/Relation\z/, "")
                   end
                 end
                 if @exists_field
@@ -809,7 +830,7 @@ class AbstractRelation
   end
 
   def get_class
-    self.class.to_s.gsub("Relation", "").constantize
+    self.class.to_s.gsub(/Relation\z/, "").constantize
   end
 
   def get_response

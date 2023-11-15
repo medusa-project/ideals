@@ -148,9 +148,9 @@ module Indexed
       index       = 0
       num_deleted = 0
 
-      relation.each_id_in_batches do |id|
-        unless class_.exists?(id: id)
-          class_.delete_document(to_index_id(name, id))
+      relation.each_id_in_batches do |result|
+        unless result[:class].exists?(id: result[:id])
+          class_.delete_document(to_index_id(result[:class].to_s, result))
           num_deleted += 1
         end
         index += 1

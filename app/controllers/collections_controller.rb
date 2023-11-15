@@ -34,7 +34,7 @@ class CollectionsController < ApplicationController
         if item_ids.any?
           download = Download.create!(institution: @collection.institution,
                                       ip_address:  request.remote_ip)
-          ZipItemsJob.perform_later(item_ids: item_ids,
+          ZipItemsJob.perform_later(item_ids: item_ids.map{ |h| h[:id] },
                                     download: download,
                                     user:     current_user)
           redirect_to download_url(download)
