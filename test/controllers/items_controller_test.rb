@@ -553,42 +553,6 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_response :gone
   end
 
-  # index()
-
-  test "index() returns HTTP 200 for HTML" do
-    get items_path
-    assert_response :ok
-  end
-
-  test "index() returns HTTP 200 for JSON" do
-    get items_path(format: :json)
-    assert_response :ok
-  end
-
-  test "index() returns HTTP 200 in global scope" do
-    host! ::Configuration.instance.main_host
-    get items_path
-    assert_response :ok
-  end
-
-  test "index() omits submitting, submitted, embargoed, withdrawn, and buried
-  items by default" do
-    skip # TODO: this fails intermittently
-    Item.reindex_all
-    OpenSearchClient.instance.refresh
-
-    expected_count = Item.non_embargoed.
-        where.not(stage: [Item::Stages::SUBMITTING,
-                          Item::Stages::SUBMITTED,
-                          Item::Stages::WITHDRAWN,
-                          Item::Stages::BURIED]).
-        count
-
-    get items_path(format: :json)
-    struct = JSON.parse(response.body)
-    assert_equal expected_count, struct['numResults']
-  end
-
   # process_review()
 
   test "process_review() returns HTTP 404 for unscoped requests" do

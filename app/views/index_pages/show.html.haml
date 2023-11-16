@@ -89,7 +89,7 @@
 
 %ul
   - @terms.each do |term|
-    %li= link_to(term, items_path(q: term))
+    %li= link_to(term, search_path(q: term))
 
 .row.justify-content-md-center
   .col-md-auto

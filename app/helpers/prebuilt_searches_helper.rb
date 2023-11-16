@@ -3,7 +3,7 @@
 module PrebuiltSearchesHelper
 
   def prebuilt_search_redirect_path(search)
-    items_path + search.url_query
+    search_path + search.url_query
   end
 
   def prebuilt_search_redirect_url(search)

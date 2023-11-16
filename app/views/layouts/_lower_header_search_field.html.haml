@@ -1,4 +1,4 @@
-= form_tag items_path, method: "get", role: "search" do
+= form_tag(search_path, method: "get", role: "search") do
   .input-group
     %input.form-control{name:         "q",
                         type:         "search",

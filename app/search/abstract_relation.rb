@@ -666,10 +666,11 @@ class AbstractRelation
           j.filter do
             j.bool do
               j.must do
-                j.child! do
-                  j.term do
-                    j.set! OpenSearchIndex::StandardFields::CLASS,
-                           self.class.to_s.gsub(/Relation\z/, "")
+                unless self.kind_of?(EntityRelation)
+                  j.child! do
+                    j.term do
+                      j.set! OpenSearchIndex::StandardFields::CLASS, get_class.to_s
+                    end
                   end
                 end
                 if @exists_field

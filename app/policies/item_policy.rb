@@ -20,7 +20,12 @@ class ItemPolicy < ApplicationPolicy
     #
     def resolve
       @relation.
-        filter(Item::IndexFields::STAGE, Item::Stages::APPROVED).
+        must_not(Item::IndexFields::STAGE, [Item::Stages::NEW,
+                                            Item::Stages::SUBMITTING,
+                                            Item::Stages::SUBMITTED,
+                                            Item::Stages::REJECTED,
+                                            Item::Stages::WITHDRAWN,
+                                            Item::Stages::BURIED]).
         non_embargoed
     end
   end

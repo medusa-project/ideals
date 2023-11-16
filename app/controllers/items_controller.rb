@@ -5,15 +5,13 @@ class ItemsController < ApplicationController
   include MetadataSubmission
   include Search
 
-  before_action :ensure_institution_host, except: :index
-  before_action :ensure_logged_in, except: [:file_navigator, :index, :recent,
-                                            :show]
-  before_action :set_item, except: [:export, :index, :process_review, :recent,
-                                    :review]
+  before_action :ensure_institution_host
+  before_action :ensure_logged_in, except: [:file_navigator, :recent, :show]
+  before_action :set_item, except: [:export, :process_review, :recent, :review]
   before_action :redirect_scope, only: :show
-  before_action :authorize_item, except: [:export, :index, :process_review,
-                                          :recent, :review]
-  before_action :store_location, only: [:index, :recent, :review, :show]
+  before_action :authorize_item, except: [:export, :process_review, :recent,
+                                          :review]
+  before_action :store_location, only: [:recent, :review, :show]
 
   ##
   # Approves an item.
@@ -254,37 +252,6 @@ class ItemsController < ApplicationController
     end
     set_item_bitstreams
     render partial: "items/file_navigator"
-  end
-
-  ##
-  # Responds to `GET /items`
-  #
-  def index
-    @permitted_params = params.permit(Search::SIMPLE_SEARCH_PARAMS +
-                                        Search::advanced_search_params +
-                                        Search::RESULTS_PARAMS)
-    @start            = [@permitted_params[:start].to_i.abs, MAX_START].min
-    @window           = window_size
-    @items            = Item.search.
-      aggregations(true).
-      facet_filters(@permitted_params[:fq]).
-      start(@start).
-      limit(@window)
-    if institution_host?
-      @items = @items.institution(current_institution)
-    else
-      @items = @items.metadata_profile(MetadataProfile.global)
-    end
-    if @permitted_params[:sort].present?
-      @items.order(@permitted_params[:sort] =>
-                     (@permitted_params[:direction] == "desc") ? :desc : :asc)
-    end
-    process_search_query(@items)
-
-    @items        = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)
-    @count        = @items.count
-    @facets       = @items.facets
-    @current_page = @items.page
   end
 
   ##
