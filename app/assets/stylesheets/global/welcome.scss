@@ -44,6 +44,10 @@ body#global-landing {
         stroke: yellow;
       }
     }
+    .right-column {
+      height: 600px;
+      overflow-y: scroll;
+    }
     #institution-accordion {
       border: 1px solid rgba(0,0,0,0.125);
       border-radius: 0.375rem;
