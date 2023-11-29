@@ -146,9 +146,12 @@ class BitstreamsController < ApplicationController
     client.get_object(s3_request) do |chunk|
       response.stream.write chunk
     end
-  rescue ActionController::Live::ClientDisconnected => e
+  rescue Aws::S3::Plugins::NonRetryableStreamingError,
+    ActionController::Live::ClientDisconnected => e
     # Rescue this or else Rails will log it at error level.
     LOGGER.debug('show(): %s', e)
+  rescue Aws::S3::Errors::Http416Error
+    render plain: 'Range not satisfyable', status: :range_not_satisfiable
   ensure
     response.stream.close
   end
