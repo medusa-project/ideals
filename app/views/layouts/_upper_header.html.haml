@@ -180,7 +180,7 @@
                   Invitees
               %li
                 = link_to(users_path, class: "dropdown-item") do
-                  = icon_for(:user)
+                  = icon_for(User)
                   Users
               %li
                 = link_to(user_groups_path, class: "dropdown-item") do
@@ -235,12 +235,12 @@
                 %hr.dropdown-divider
               %li
                 = link_to("https://docs.google.com/document/d/14CodOjc4Pjn42OOCtZp4lK1oRbm8lvPEXvDGDOxgyzY/edit?usp=sharing", class: "dropdown-item", target: "_blank") do
-                  = icon_for(:help)
+                  %i.fa.fa-arrow-up-right-from-square
                   IR Administrator's Guide
             - if current_user.sysadmin?
               %li
                 = link_to("https://docs.google.com/document/d/1yAFOUC_gKrtH7cF7ZB0Vu3M989CI_26gF3O55kio2OU/edit?usp=sharing", class: "dropdown-item", target: "_blank") do
-                  = icon_for(:help)
+                  %i.fa.fa-arrow-up-right-from-square
                   System Administrator's Guide
               %li
                 %hr.dropdown-divider

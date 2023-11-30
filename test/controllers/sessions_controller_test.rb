@@ -138,6 +138,12 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
   # new()
 
+  test "new() from the global scope redirects to root path" do
+    host! ::Configuration.instance.main_host
+    get login_path
+    assert_redirected_to root_path
+  end
+
   test "new() returns HTTP 200 when not logged in" do
     get login_path
     assert_response :ok
@@ -150,6 +156,12 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   # new_netid()
+
+  test "new_netid() from the global scope redirects to root path" do
+    host! ::Configuration.instance.main_host
+    get netid_login_path
+    assert_redirected_to root_path
+  end
 
   test "new_netid() redirects to the NetID login path" do
     get netid_login_path

@@ -2,10 +2,18 @@
   %thead
     %tr
       %th Name
+      %th
   %tbody
     - @profiles.each do |profile|
       %tr
         %td
           = link_to(profile.name, profile)
+        %td
           - if profile.institution_default
             %span.badge.text-bg-success DEFAULT
+          - elsif policy(profile).edit?
+            = button_to("Set as Default",
+                        profile,
+                        remote: true,
+                        params: { submission_profile: { institution_default: true }},
+                        class:  "btn btn-sm btn-light")

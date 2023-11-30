@@ -186,6 +186,10 @@ label.required::after {
       text-decoration: none;
     }
   }
+  .institution {
+    color: $gray-600;
+    font-size: 0.9em;
+  }
 }
 
 .facet {

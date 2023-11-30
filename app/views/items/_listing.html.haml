@@ -11,7 +11,9 @@
   .col-md-auto
     = pagination
 
-= resource_list(@items, use_resource_host: false)
+= resource_list(@items,
+                use_resource_host: false,
+                show_institution:  !institution_host?)
 
 .row.justify-content-md-center
   .col-md-auto

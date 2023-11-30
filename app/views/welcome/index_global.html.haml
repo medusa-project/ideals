@@ -17,7 +17,7 @@
 %section#map-section.row.mb-3.pt-3.pb-3
   .col-md-5.d-flex.justify-content-center
     = render partial: "illinois"
-  .col-md-7
+  .col-md-7.right-column
     %p.count
       %small Housing content from
       %br
@@ -47,7 +47,7 @@
                 = number_with_delimiter(institution.units.count)
                 academic units
               &bull;
-              = link_to(url_for(controller: "items", action: "index", host: institution.fqdn), class: "count") do
+              = link_to(url_for(controller: "search", action: "index", host: institution.fqdn), class: "count") do
                 = icon_for(Item)
                 = number_with_delimiter(institution.public_item_count)
                 items
@@ -76,4 +76,4 @@
             %small= local_time_ago(item.created_at)
           %small= item.institution.name
     .text-center.mt-2
-      = link_to(raw("More items&hellip;"), items_path)
+      = link_to(raw("More items&hellip;"), search_path)

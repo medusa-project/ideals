@@ -101,6 +101,7 @@ class UnitTest < ActiveSupport::TestCase
   test "as_indexed_json() returns the correct structure" do
     doc = @instance.as_indexed_json
     assert_not_empty doc[Unit::IndexFields::ADMINISTRATORS]
+    assert_not_empty doc[Unit::IndexFields::ALL_ELEMENTS]
     assert !doc[Unit::IndexFields::BURIED]
     assert_equal "Unit", doc[Unit::IndexFields::CLASS]
     assert_not_empty doc[Unit::IndexFields::CREATED]
@@ -117,6 +118,7 @@ class UnitTest < ActiveSupport::TestCase
     assert_equal @instance.rights, doc[Unit::IndexFields::RIGHTS]
     assert_equal @instance.short_description, doc[Unit::IndexFields::SHORT_DESCRIPTION]
     assert_equal @instance.title, doc[Unit::IndexFields::TITLE]
+    assert_equal @instance.title, doc[@instance.institution.title_element.indexed_field]
   end
 
   # buried

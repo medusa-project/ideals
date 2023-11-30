@@ -3,7 +3,7 @@
 
 = google_analytics_tags
 
-= form_tag(items_path, method: :get) do
+= form_tag(search_path, method: :get) do
   .card.mb-3
     .card-body
       %ul#search-tabs.nav.nav-pills.mb-0{role: "tablist"}
@@ -56,4 +56,4 @@
             = sort_menu
 
       #listing
-        = render partial: "listing"
+        = render partial: "items/listing"

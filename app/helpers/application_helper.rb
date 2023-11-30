@@ -708,16 +708,19 @@ module ApplicationHelper
   # @param primary_id [Integer] ID of a resource in `resources` to indicate as
   #                             primary.
   # @param use_resource_host [Boolean]
+  # @param show_institution [Boolean]
   # @return [String] HTML listing.
   #
   def resource_list(resources,
                     primary_id:        nil,
-                    use_resource_host: true)
+                    use_resource_host: true,
+                    show_institution:  false)
     html = StringIO.new
     resources.each do |resource|
       html << resource_list_row(resource,
                                 primary:           (primary_id == resource.id),
-                                use_resource_host: use_resource_host)
+                                use_resource_host: use_resource_host,
+                                show_institution:  show_institution)
     end
     raw(html.string)
   end
@@ -726,11 +729,13 @@ module ApplicationHelper
   # @param resource [Describable]
   # @param primary [Boolean] Whether to mark the resource as primary.
   # @param use_resource_host [Boolean]
+  # @param show_institution [Boolean]
   # @return [String] HTML string.
   #
   def resource_list_row(resource,
                         primary:           false,
-                        use_resource_host: true)
+                        use_resource_host: true,
+                        show_institution:  false)
     embargoed_item = resource.kind_of?(Item) &&
       resource.embargoed_for?(current_user)
     thumb          = thumbnail_for(resource)
@@ -783,6 +788,14 @@ module ApplicationHelper
       info_parts << author if author.present?
       info_parts << date if date.present?
       html       << info_parts.join(" &bull; ")
+      if show_institution
+        html << "<br>"
+        html << "<span class=\"institution\">"
+        html <<   icon_for(resource.institution)
+        html <<   " "
+        html <<   resource.institution.name
+        html << "</span>"
+      end
       html << "<br><br>"
     elsif resource.kind_of?(Collection) || resource.kind_of?(Unit)
       html << resource.short_description

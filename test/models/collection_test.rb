@@ -124,6 +124,7 @@ class CollectionTest < ActiveSupport::TestCase
 
   test "as_indexed_json() returns the correct structure" do
     doc = @instance.as_indexed_json
+    assert_not_empty doc[Collection::IndexFields::ALL_ELEMENTS]
     assert !doc[Collection::IndexFields::BURIED]
     assert_equal "Collection", doc[Collection::IndexFields::CLASS]
     assert_not_empty doc[Collection::IndexFields::CREATED]
@@ -154,6 +155,7 @@ class CollectionTest < ActiveSupport::TestCase
                  doc[Collection::IndexFields::UNIT_TITLES]
     assert_equal @instance.units.count,
         doc[Collection::IndexFields::UNITS].length
+    assert_equal @instance.title, doc[@instance.institution.title_element.indexed_field]
   end
 
   # buried

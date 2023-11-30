@@ -198,7 +198,7 @@ GEM
       concurrent-ruby (~> 1.0)
     iconv (1.0.8)
     io-console (0.6.0)
-    irb (1.9.0)
+    irb (1.9.1)
       rdoc
       reline (>= 0.3.8)
     jbuilder (2.11.5)
@@ -329,7 +329,7 @@ GEM
     rdoc (6.6.0)
       psych (>= 4.0.0)
     regexp_parser (2.8.2)
-    reline (0.4.0)
+    reline (0.4.1)
       io-console (~> 0.5)
     rexml (3.2.6)
     rubocop (1.57.2)
@@ -384,7 +384,7 @@ GEM
     standard-performance (1.2.1)
       lint_roller (~> 1.1)
       rubocop-performance (~> 1.19.1)
-    stringio (3.0.9)
+    stringio (3.1.0)
     temple (0.10.3)
     test-unit (3.6.1)
       power_assert

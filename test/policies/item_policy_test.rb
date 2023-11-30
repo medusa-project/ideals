@@ -23,10 +23,15 @@ class ItemPolicyTest < ActiveSupport::TestCase
                                    role_limit:  Role::LOGGED_IN)
       relation = ItemRelation.new
       scope    = ItemPolicy::Scope.new(context, relation)
-      assert_equal [
-                       [Item::IndexFields::STAGE, Item::Stages::APPROVED]
-                   ],
-                   scope.resolve.instance_variable_get("@filters")
+      assert_equal Set.new([
+                     [Item::IndexFields::STAGE, Item::Stages::NEW],
+                     [Item::IndexFields::STAGE, Item::Stages::SUBMITTING],
+                     [Item::IndexFields::STAGE, Item::Stages::SUBMITTED],
+                     [Item::IndexFields::STAGE, Item::Stages::REJECTED],
+                     [Item::IndexFields::STAGE, Item::Stages::WITHDRAWN],
+                     [Item::IndexFields::STAGE, Item::Stages::BURIED]
+                   ]),
+                   Set.new(scope.resolve.instance_variable_get("@must_nots"))
     end
 
   end

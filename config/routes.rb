@@ -210,7 +210,7 @@ Rails.application.routes.draw do
   end
 
   # Items
-  resources :items, except: :new do
+  resources :items, except: [:index, :new] do
     collection do
       match "/export", to: "items#export", via: [:get, :post]
       match "/review", to: "items#review", via: :get
@@ -279,6 +279,9 @@ Rails.application.routes.draw do
 
   # Robots
   match "/robots", to: "robots#show", via: :get
+
+  # Search
+  match "/search", to: "search#index", via: :get
 
   # Settings
   match "/settings", to: "settings#index", via: :get

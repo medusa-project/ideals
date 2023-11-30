@@ -92,6 +92,7 @@ class Collection < ApplicationRecord
 
   class IndexFields
     ADMINISTRATORS    = "i_administrator_id"
+    ALL_ELEMENTS      = OpenSearchIndex::StandardFields::ALL_ELEMENTS
     BURIED            = "b_buried"
     CLASS             = OpenSearchIndex::StandardFields::CLASS
     CREATED           = OpenSearchIndex::StandardFields::CREATED
@@ -240,6 +241,16 @@ class Collection < ApplicationRecord
     doc[IndexFields::TITLE]             = self.title
     doc[IndexFields::UNIT_TITLES]       = units.map(&:title)
     doc[IndexFields::UNITS]             = self.unit_ids
+    doc[IndexFields::ALL_ELEMENTS]      = [
+      doc[IndexFields::DESCRIPTION],
+      doc[IndexFields::HANDLE],
+      doc[IndexFields::INTRODUCTION],
+      doc[IndexFields::PROVENANCE],
+      doc[IndexFields::SHORT_DESCRIPTION],
+      doc[IndexFields::TITLE]
+    ].join(" ")
+    # Normalized titles make cross-entity search easier.
+    doc[self.institution.title_element.indexed_field] = self.title
     doc
   end
 
