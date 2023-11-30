@@ -38,15 +38,16 @@
                   Remove
               %h6.card-title= "Response #{r_index + 1}"
             .card-body
-              = text_field_tag "questions[#{q_index}][responses[#{r_index}][text]]",
-                               response.text, class: "form-control mb-2"
+              = text_field_tag "questions[#{q_index}][responses][#{r_index}][text]",
+                               response.text,
+                               class: "form-control mb-2"
               .form-check
                 %input.form-check-input{type:    "checkbox",
-                                        name:    "questions[#{q_index}][responses[#{r_index}][success]]",
-                                        id:      "questions[#{q_index}][responses[#{r_index}][success]]",
+                                        name:    "questions[#{q_index}][responses][#{r_index}][success]",
+                                        id:      "questions[#{q_index}][responses][#{r_index}][success]",
                                         value:   "true",
                                         checked: response.success}
-                %label.form-check-label{for: "questions[#{q_index}][responses[#{r_index}][success]]"}
+                %label.form-check-label{for: "questions[#{q_index}][responses][#{r_index}][success]"}
                   Success
 
         %button.btn.btn-sm.btn-outline-success.add-response.mb-3

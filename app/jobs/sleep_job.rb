@@ -17,7 +17,7 @@ class SleepJob < ApplicationJob
   #
   # @param args [Hash]
   #
-  def perform(*args)
+  def perform(**args)
     duration = args[:duration].to_i
     self.task.update!(started_at:  Time.now,
                       status_text: "Sleeping for #{duration} seconds")
