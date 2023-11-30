@@ -172,7 +172,7 @@ const InstitutionView = {
                                         const input = $(this);
                                         let newName = input.attr("name")
                                             .replace(/questions\[[0-9]]/, "questions[" + qindex + "]")
-                                            .replace(/responses\[[0-9]]/, "responses[" + rindex + "]");
+                                            .replace(/responses]\[[0-9]]/, "responses][" + rindex + "]");
                                         input.attr("name", newName);
                                     });
                                 });
