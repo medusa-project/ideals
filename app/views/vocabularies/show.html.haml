@@ -10,13 +10,19 @@
                                    type:                 "button"}
       %i.fa.fa-plus
       Add Term
-    - # Import Terms button
+    -# Import Terms button
     %button.btn.btn-light.import-terms{"data-bs-target":     "#import-terms-modal",
                                        "data-bs-toggle":     "modal",
                                        "data-vocabulary-id": @vocabulary.id,
                                        type:                 "button"}
       %i.fa.fa-file-import
       Import Terms&hellip;
+
+    -# Export Terms button
+    = link_to(vocabulary_path(@vocabulary, format: :csv), class: "btn btn-light",
+                                                          role:  "button") do
+      %i.fa.fa-file-export
+      Export CSV
 
     -# Edit button
     %button.btn.btn-light.edit-vocabulary{"data-bs-target":     "#edit-vocabulary-modal",

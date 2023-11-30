@@ -106,10 +106,25 @@ class VocabulariesController < ApplicationController
     @terms            = @terms.limit(@window).offset(@start)
     @current_page     = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
 
-    if request.xhr?
-      render partial: "terms"
-    else
-      render "show"
+    respond_to do |format|
+      format.csv do
+        response.headers['Content-Type']        = 'text/comma-separated-values; charset=utf-8'
+        response.headers['Content-Disposition'] = "attachment;filename=#{@vocabulary.name}.csv"
+        response.stream.write(CSV.generate_line(%w[stored_value displayed_value]))
+        VocabularyTerm.uncached do
+          @terms.find_each do |term|
+            response.stream.write(CSV.generate_line([term.stored_value,
+                                                     term.displayed_value]))
+          end
+        end
+      end
+      format.all do
+        if request.xhr?
+          render partial: "terms"
+        else
+          render "show"
+        end
+      end
     end
   end
 

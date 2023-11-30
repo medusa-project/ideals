@@ -268,6 +268,18 @@ class VocabulariesControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  test "show() returns HTML" do
+    log_in_as(users(:southwest_admin))
+    get vocabulary_path(vocabularies(:southwest_one))
+    assert response.content_type.include?("text/html")
+  end
+
+  test "show() returns CSV" do
+    log_in_as(users(:southwest_admin))
+    get vocabulary_path(vocabularies(:southwest_one), format: :csv)
+    assert response.content_type.include?("text/comma-separated-values")
+  end
+
   test "show() respects role limits" do
     log_in_as(users(:southwest_admin))
     get vocabulary_path(vocabularies(:southwest_one))
