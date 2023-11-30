@@ -174,6 +174,14 @@ const InstitutionView = {
                                             .replace(/questions\[[0-9]]/, "questions[" + qindex + "]")
                                             .replace(/responses]\[[0-9]]/, "responses][" + rindex + "]");
                                         input.attr("name", newName);
+                                        input.attr("id", newName);
+                                    });
+                                    $(response).find("label").each(function () {
+                                        const label = $(this);
+                                        let newFor = label.attr("for")
+                                            .replace(/questions\[[0-9]]/, "questions[" + qindex + "]")
+                                            .replace(/responses]\[[0-9]]/, "responses][" + rindex + "]");
+                                        label.attr("for", newFor);
                                     });
                                 });
                             });
