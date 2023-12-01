@@ -242,6 +242,7 @@ class Institution < ApplicationRecord
   has_many :submission_profiles
   has_many :tasks
   has_many :units
+  has_many :collections, through: :units
   has_many :user_groups
   has_many :users
   has_many :vocabularies

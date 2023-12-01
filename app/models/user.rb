@@ -371,15 +371,30 @@ class User < ApplicationRecord
     if effective_institution_admin?(self.institution,
                                     client_ip:       client_ip,
                                     client_hostname: client_hostname)
-      return Collection.joins(:units).
-        where(buried: false).
-        where("units.institution_id = ?", self.institution_id)
+      return self.institution.collections.where(buried: false)
     end
-    collections  = Set.new
-    collections += self.administering_units.map(&:collections).flatten.reject(&:buried)
-    collections += self.administering_collections
-    collections += self.submitting_collections
-    collections
+
+
+    collections             = self.institution.collections
+    submittable_collections = []
+    # If we are a sysadmin or institution admin, we already know we can
+    # submit to all collections, so there is no need to iterate through them.
+    if self.effective_institution_admin?(self.institution,
+                                         client_ip:       client_ip,
+                                         client_hostname: client_hostname)
+      submittable_collections = collections
+    else
+      Collection.uncached do
+        self.institution.collections.find_each do |collection|
+          if self.effective_collection_submitter?(collection,
+                                                  client_ip:       client_ip,
+                                                  client_hostname: client_hostname)
+            submittable_collections << collection
+          end
+        end
+      end
+    end
+    submittable_collections
   end
 
   ##
