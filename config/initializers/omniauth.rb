@@ -48,7 +48,7 @@ Rails.application.config.middleware.use OmniAuth::Builder do
   provider :identity,
            model:                  Credential,
            fields:                 [:email, :name],
-           locate_conditions:      -> (req) { { model.auth_key => req['auth_key']&.downcase } }
+           locate_conditions:      -> (request) { { model.auth_key => request.params['auth_key']&.downcase } }
 
   # The Shibboleth (UIUC) developer provider is available only in development
   # and test.
