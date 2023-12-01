@@ -12,10 +12,8 @@ class IndexPagePolicy < ApplicationPolicy
   # @param index_page [IndexPage]
   #
   def initialize(request_context, index_page)
-    @user            = request_context&.user
-    @ctx_institution = request_context&.institution
-    @role_limit      = request_context&.role_limit || Role::NO_LIMIT
-    @index_page      = index_page
+    super(request_context)
+    @index_page = index_page
   end
 
   def create

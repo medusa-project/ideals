@@ -7,8 +7,7 @@ class FileFormatPolicy < ApplicationPolicy
   # @param file_format [FileFormat]
   #
   def initialize(request_context, file_format)
-    @user        = request_context&.user
-    @role_limit  = request_context&.role_limit || Role::NO_LIMIT
+    super(request_context)
     @file_format = file_format
   end
 

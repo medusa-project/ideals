@@ -12,10 +12,8 @@ class RegisteredElementPolicy < ApplicationPolicy
   # @param registered_element [RegisteredElement]
   #
   def initialize(request_context, registered_element)
-    @user            = request_context&.user
-    @ctx_institution = request_context&.institution
-    @role_limit      = request_context&.role_limit || Role::NO_LIMIT
-    @element         = registered_element
+    super(request_context)
+    @element = registered_element
   end
 
   def create

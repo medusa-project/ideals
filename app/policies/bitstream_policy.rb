@@ -52,13 +52,8 @@ class BitstreamPolicy < ApplicationPolicy
   # @param bitstream [Bitstream]
   #
   def initialize(request_context, bitstream)
-    @client_ip       = request_context&.client_ip
-    @client_hostname = request_context&.client_hostname
-    @ctx_institution = request_context&.institution
-    @user            = request_context&.user
-    @role_limit      = request_context&.role_limit
-    @bitstream       = bitstream
-    @request_context = request_context
+    super(request_context)
+    @bitstream = bitstream
   end
 
   def create

@@ -12,10 +12,8 @@ class VocabularyTermPolicy < ApplicationPolicy
   # @param term [VocabularyTerm]
   #
   def initialize(request_context, term)
-    @user            = request_context&.user
-    @ctx_institution = request_context&.institution
-    @role_limit      = request_context&.role_limit || Role::NO_LIMIT
-    @term            = term
+    super(request_context)
+    @term = term
   end
 
   def create

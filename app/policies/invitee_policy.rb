@@ -12,10 +12,8 @@ class InviteePolicy < ApplicationPolicy
   # @param invitee [Invitee]
   #
   def initialize(request_context, invitee)
-    @user            = request_context&.user
-    @ctx_institution = request_context&.institution
-    @role_limit      = request_context&.role_limit || Role::NO_LIMIT
-    @invitee         = invitee
+    super(request_context)
+    @invitee = invitee
   end
 
   def approve

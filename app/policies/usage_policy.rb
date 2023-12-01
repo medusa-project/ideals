@@ -7,9 +7,8 @@ class UsagePolicy < ApplicationPolicy
   # @param usage [Usage]
   #
   def initialize(request_context, usage)
-    @user       = request_context&.user
-    @role_limit = request_context&.role_limit || Role::NO_LIMIT
-    @usage      = usage
+    super(request_context)
+    @usage = usage
   end
 
   def files

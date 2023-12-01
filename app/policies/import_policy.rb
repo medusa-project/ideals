@@ -12,10 +12,8 @@ class ImportPolicy < ApplicationPolicy
   # @param import [Import]
   #
   def initialize(request_context, import)
-    @user            = request_context&.user
-    @ctx_institution = request_context&.institution
-    @role_limit      = request_context&.role_limit || Role::NO_LIMIT
-    @import          = import
+    super(request_context)
+    @import = import
   end
 
   def complete_upload

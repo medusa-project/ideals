@@ -12,10 +12,8 @@ class ElementNamespacePolicy < ApplicationPolicy
   # @param element_namespace [ElementNamespace]
   #
   def initialize(request_context, element_namespace)
-    @user            = request_context&.user
-    @ctx_institution = request_context&.institution
-    @role_limit      = request_context&.role_limit || Role::NO_LIMIT
-    @namespace       = element_namespace
+    super(request_context)
+    @namespace = element_namespace
   end
 
   def clone

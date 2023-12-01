@@ -27,13 +27,27 @@ class ApplicationPolicy
   attr_reader :role
 
   ##
+  # @param request_context [RequestContext]
+  #
+  def initialize(request_context)
+    @request_context = request_context
+    @client_ip       = request_context&.client_ip
+    @client_hostname = request_context&.client_hostname
+    @ctx_institution = request_context&.institution
+    @user            = request_context&.user
+    @role_limit      = request_context&.role_limit || Role::NO_LIMIT
+  end
+
+  ##
   # @param user [User]
   # @param target_institution [Institution]
   # @param role_limit [Integer] One of the [Role] constant values.
   #
   def effective_institution_admin(user, target_institution, role_limit)
     if (!role_limit || role_limit >= Role::INSTITUTION_ADMINISTRATOR) &&
-      user&.effective_institution_admin?(target_institution)
+      user&.effective_institution_admin?(target_institution,
+                                         client_ip:       @client_ip,
+                                         client_hostname: @client_hostname)
       return AUTHORIZED_RESULT
     end
     {

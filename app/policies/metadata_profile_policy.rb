@@ -12,10 +12,8 @@ class MetadataProfilePolicy < ApplicationPolicy
   # @param metadata_profile [MetadataProfile]
   #
   def initialize(request_context, metadata_profile)
-    @user            = request_context&.user
-    @ctx_institution = request_context&.institution
-    @role_limit      = request_context&.role_limit || Role::NO_LIMIT
-    @profile         = metadata_profile
+    super(request_context)
+    @profile = metadata_profile
   end
 
   def clone

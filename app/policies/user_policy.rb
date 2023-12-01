@@ -7,10 +7,9 @@ class UserPolicy < ApplicationPolicy
   # @param object_user [User] The user to which access is being requested.
   #
   def initialize(request_context, object_user)
-    @subject_user    = request_context&.user
-    @role_limit      = request_context&.role_limit || Role::NO_LIMIT
-    @ctx_institution = request_context&.institution
-    @object_user     = object_user
+    super(request_context)
+    @subject_user = @user
+    @object_user  = object_user
   end
 
   ##

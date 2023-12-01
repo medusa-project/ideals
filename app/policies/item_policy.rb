@@ -45,12 +45,8 @@ class ItemPolicy < ApplicationPolicy
   # @param item [Item]
   #
   def initialize(request_context, item)
-    @user            = request_context&.user
-    @ctx_institution = request_context&.institution
-    @client_ip       = request_context&.client_ip
-    @client_hostname = request_context&.client_hostname
-    @role_limit      = request_context&.role_limit
-    @item            = item
+    super(request_context)
+    @item = item
   end
 
   def approve

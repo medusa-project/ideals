@@ -12,10 +12,8 @@ class TaskPolicy < ApplicationPolicy
   # @param task [Task]
   #
   def initialize(request_context, task)
-    @user            = request_context&.user
-    @ctx_institution = request_context&.institution
-    @role_limit      = request_context&.role_limit || Role::NO_LIMIT
-    @task            = task
+    super(request_context)
+    @task = task
   end
 
   def index

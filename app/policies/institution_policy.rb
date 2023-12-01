@@ -7,10 +7,8 @@ class InstitutionPolicy < ApplicationPolicy
   # @param institution [Institution]
   #
   def initialize(request_context, institution)
-    @user            = request_context&.user
-    @ctx_institution = request_context&.institution
-    @role_limit      = request_context&.role_limit || Role::NO_LIMIT
-    @institution     = institution
+    super(request_context)
+    @institution = institution
   end
 
   def create

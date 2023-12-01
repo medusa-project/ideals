@@ -7,11 +7,8 @@ class SubmissionPolicy < ApplicationPolicy
   # @param item [Item]
   #
   def initialize(request_context, item)
-    @request_context = request_context
-    @user            = request_context&.user
-    @ctx_institution = request_context&.institution
-    @role_limit      = request_context&.role_limit || Role::NO_LIMIT
-    @item            = item
+    super(request_context)
+    @item = item
   end
 
   def complete

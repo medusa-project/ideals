@@ -12,12 +12,8 @@ class UnitPolicy < ApplicationPolicy
   # @param unit [Unit]
   #
   def initialize(request_context, unit)
-    @client_ip       = request_context&.client_ip
-    @client_hostname = request_context&.client_hostname
-    @user            = request_context&.user
-    @ctx_institution = request_context&.institution
-    @role_limit      = request_context&.role_limit || Role::NO_LIMIT
-    @unit            = unit
+    super(request_context)
+    @unit = unit
   end
 
   ##

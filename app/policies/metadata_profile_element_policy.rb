@@ -12,10 +12,8 @@ class MetadataProfileElementPolicy < ApplicationPolicy
   # @param element [MetadataProfileElement]
   #
   def initialize(request_context, element)
-    @user            = request_context&.user
-    @ctx_institution = request_context&.institution
-    @role_limit      = request_context&.role_limit || Role::NO_LIMIT
-    @element         = element
+    super(request_context)
+    @element = element
   end
 
   def create

@@ -12,10 +12,8 @@ class SubmissionProfilePolicy < ApplicationPolicy
   # @param submission_profile [SubmissionProfile]
   #
   def initialize(request_context, submission_profile)
-    @user            = request_context&.user
-    @ctx_institution = request_context&.institution
-    @role_limit      = request_context&.role_limit || Role::NO_LIMIT
-    @profile         = submission_profile
+    super(request_context)
+    @profile = submission_profile
   end
 
   def clone
