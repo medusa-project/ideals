@@ -107,10 +107,20 @@ class IndexPagesController < ApplicationController
               "items.stage":          Item::Stages::APPROVED,
               registered_element_id:  reg_e_ids).
         order(:string)
-      if params[:letter]
-        @terms = @terms.where("UNACCENT(LOWER(string)) LIKE ?", "#{params[:letter].downcase}%")
-      elsif params[:q]
-        @terms = @terms.where("UNACCENT(LOWER(string)) LIKE ?", "%#{params[:q].downcase}%")
+      # N.B.: attackers are known to attempt SQL injections here, which will
+      # cause a flood of ArgumentError emails unless we rescue.
+      begin
+        if params[:letter]
+          @terms = @terms.where("UNACCENT(LOWER(string)) LIKE ?", "#{params[:letter].downcase}%")
+        elsif params[:q]
+          @terms = @terms.where("UNACCENT(LOWER(string)) LIKE ?", "%#{params[:q].downcase}%")
+        end
+      rescue ArgumentError => e
+        if e.message.include?("string contains null byte")
+          raise ActionDispatch::Http::Parameters::ParseError
+        else
+          raise e
+        end
       end
       @count            = @terms.count
       @terms            = @terms.offset(@start).
