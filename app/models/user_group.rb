@@ -93,9 +93,6 @@ class UserGroup < ApplicationRecord
   end
 
   ##
-  # N.B.: this method gets more expensive as the number of users in the
-  # institution grows.
-  #
   # @return [Enumerable<User>] All users either directly associated with the
   #         instance or belonging to an AD group associated with the instance.
   #
@@ -120,6 +117,7 @@ class UserGroup < ApplicationRecord
   # ```
   # (is a directly associated User)
   # OR (has an email address matching one of the email patterns)
+  # OR (has an IP address or hostname matching one of the host patterns)
   # OR (belongs to an associated department)
   # OR (is of an associated affiliation)
   # OR (is a Shibboleth user AND belongs to an associated AD Group)
@@ -128,15 +126,18 @@ class UserGroup < ApplicationRecord
   # @param user [User]
   # @return [Boolean]
   #
-  def includes?(user)
+  def includes?(user, client_ip: nil, client_hostname: nil)
     # is a directly associated User
-    self.users.where(id: user.id).count.positive? ||
+    self.users.where(id: user.id).exists? ||
     # has a matching email address
     self.email_patterns.find{ |p| p.matches?(user.email) }.present? ||
+    # has a matching client IP address or hostname
+    self.hosts.find{ |h| (client_ip && h.pattern_matches?(client_ip)) ||
+      (client_hostname && h.pattern_matches?(client_hostname)) }.present? ||
     # belongs to an associated department
-    self.departments.where(name: user.department&.name).count.positive? ||
+    self.departments.where(name: user.department&.name).exists? ||
     # is of an associated affiliation
-    self.affiliations.where(id: user.affiliation_id).count.positive? ||
+    self.affiliations.where(id: user.affiliation_id).exists? ||
     # belongs to an associated AD group
     # (this check comes last because it is the most expensive)
     self.ad_groups.find{ |g| user.belongs_to_ad_group?(g) }.present?

@@ -106,6 +106,20 @@ class UserGroupTest < ActiveSupport::TestCase
     assert @instance.includes?(user)
   end
 
+  test "includes?() returns true for a user whose client IP matches a pattern
+  on the instance" do
+    user = users(:southwest)
+    @instance.hosts.build(pattern: "132.15.0.0/16").save!
+    assert @instance.includes?(user, client_ip: "132.15.152.14")
+  end
+
+  test "includes?() returns true for a user whose client hostname matches a
+  pattern on the instance" do
+    user = users(:southwest)
+    @instance.hosts.build(pattern: "*.example.org").save!
+    assert @instance.includes?(user, client_hostname: "host1.example.org")
+  end
+
   test "includes?() returns true for a user belonging to an AD group associated
   with the instance" do
     # In the test environment, a user is considered to be in a group if both
