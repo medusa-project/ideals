@@ -72,36 +72,6 @@ class UserTest < ActiveSupport::TestCase
     }
   }
 
-  # create_local()
-
-  test "create_local() creates a correct instance" do
-    email       = "test@example.org"
-    name        = "Testy Test"
-    password    = Credential.random_password
-    institution = institutions(:southwest)
-    user        = User.create_local(email:       email,
-                                    name:        name,
-                                    password:    password,
-                                    institution: institution)
-
-    # check the Invitee
-    invitee  = Invitee.find_by_email(email)
-    assert_equal institution, invitee.institution
-    assert invitee.approved?
-
-    # check the Credential
-    credential = user.credential
-    assert_equal email, credential.email
-
-    # check the User
-    assert_equal credential, user.credential
-    assert_equal email, user.email
-    assert_equal name, user.name
-    assert_equal institution, user.institution
-    assert !user.sysadmin?(client_ip:       "127.0.0.1",
-                           client_hostname: "localhost")
-  end
-
   # fetch_from_omniauth_local()
 
   test "fetch_from_omniauth_local() with a matching email returns the user" do

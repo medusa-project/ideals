@@ -70,43 +70,6 @@ class User < ApplicationRecord
   before_save :sync_credential_properties
 
   ##
-  # This is used for quickly creating local administrators in development. It
-  # should not be used in production as it does not proceed through the normal
-  # invitation & registration workflow.
-  #
-  # @param email [String]
-  # @param password [String]
-  # @param institution [Institution]
-  # @param name [String] If not provided, the email is used.
-  # @return [User]
-  #
-  def self.create_local(email:, password:, institution:, name: nil)
-    user = nil
-    ActiveRecord::Base.transaction do
-      invitee = Invitee.find_by_email(email)
-      unless invitee
-        Invitee.create!(email:          email,
-                        institution:    institution,
-                        approval_state: Invitee::ApprovalState::APPROVED,
-                        purpose:        "Created as a sysadmin "\
-                                        "manually, bypassing the "\
-                                        "invitation process")
-      end
-      user = User.create!(email:       email,
-                          institution: institution,
-                          name:        name || email)
-      credential = Credential.find_by_email(email)
-      unless credential
-        Credential.create!(user:                  user,
-                           email:                 email,
-                           password:              password,
-                           password_confirmation: password)
-      end
-    end
-    user
-  end
-
-  ##
   # @param auth [OmniAuth::AuthHash]
   # @return [User] Instance corresponding to the given auth hash, or nil if not
   #                found.

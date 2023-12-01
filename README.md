@@ -169,14 +169,15 @@ Refer to the instructions in the
 
 ### Create a user account
 
-Users can be authenticated in two ways: by local email/password, and using
-SAML, where account info is provided by a remote identity provider (IdP). Since
-you won't have access to one of those locally, you will have to use local
-credential authentication:
+In development, there are two working authentication methods available:
 
-```sh
-rails users:create_local_sysadmin[email,password,name,institution_key]
-```
+1. Local credentials
+2. The OmniAuth developer strategy
+
+To create a user account, simply log in via the OmniAuth developer strategy
+using any name/email combination. Once logged in, you will have ordinary-user
+privileges. To bestow sysadmin privileges, use the `users:make_sysadmin[email]`
+rake task.
 
 ## CronTasks
 
