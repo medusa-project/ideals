@@ -12,6 +12,8 @@ class UnitPolicy < ApplicationPolicy
   # @param unit [Unit]
   #
   def initialize(request_context, unit)
+    @client_ip       = request_context&.client_ip
+    @client_hostname = request_context&.client_hostname
     @user            = request_context&.user
     @ctx_institution = request_context&.institution
     @role_limit      = request_context&.role_limit || Role::NO_LIMIT
@@ -66,7 +68,9 @@ class UnitPolicy < ApplicationPolicy
       effective_institution_admin?(@user, @unit.institution, @role_limit)
       return AUTHORIZED_RESULT
     elsif @role_limit >= Role::UNIT_ADMINISTRATOR &&
-      @unit.kind_of?(Unit) && @unit.parent && @user.effective_unit_admin?(@unit.parent)
+      @unit.kind_of?(Unit) && @unit.parent && @user.effective_unit_admin?(@unit.parent,
+                                                                          client_ip:       @client_ip,
+                                                                          client_hostname: @client_hostname)
       return AUTHORIZED_RESULT
     end
     { authorized: false,
@@ -190,7 +194,9 @@ class UnitPolicy < ApplicationPolicy
       return AUTHORIZED_RESULT
     elsif unit.kind_of?(Unit) && @ctx_institution != unit.institution
       return WRONG_SCOPE_RESULT
-    elsif @role_limit >= Role::UNIT_ADMINISTRATOR && @user.effective_unit_admin?(unit)
+    elsif @role_limit >= Role::UNIT_ADMINISTRATOR && @user.effective_unit_admin?(unit,
+                                                                                 client_ip:       @client_ip,
+                                                                                 client_hostname: @client_hostname)
       return AUTHORIZED_RESULT
     end
     { authorized: false, reason: "You must be an administrator of the unit." }

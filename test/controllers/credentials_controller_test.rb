@@ -505,7 +505,9 @@ class CredentialsControllerTest < ActionDispatch::IntegrationTest
       user = @credential.user
       assert_equal name, user.name
       assert_equal @institution, user.institution
-      assert !user.institution_admin?(@institution)
+      assert !user.institution_admin?(@institution,
+                                      client_ip:       "127.0.0.1",
+                                      client_hostname: "localhost")
     end
   end
 
@@ -533,7 +535,9 @@ class CredentialsControllerTest < ActionDispatch::IntegrationTest
           }
     @credential.reload
     user = @credential.user
-    assert user.institution_admin?(@institution)
+    assert user.institution_admin?(@institution,
+                                   client_ip:       "127.0.0.1",
+                                   client_hostname: "localhost")
   end
 
   # update_password()

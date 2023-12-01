@@ -55,7 +55,9 @@ module UnitsHelper
       where(institution: institution || current_institution).
       order(:title).
       reject{ |u| u == exclude_unit }.
-      select{ |u| user.effective_unit_admin?(u) }
+      select{ |u| user.effective_unit_admin?(u,
+                                             client_ip:       request_context.client_ip,
+                                             client_hostname: request_context.client_hostname) }
     options += units.map{ |u| [u.title, u.id] }
     options
   end
@@ -106,7 +108,9 @@ module UnitsHelper
       units.include_children(false)
     end
     if include_only_admin && current_user
-      units = units.select{ |u| current_user.effective_unit_admin?(u) }
+      units = units.select{ |u| current_user.effective_unit_admin?(u,
+                                                                   client_ip:       request_context.client_ip,
+                                                                   client_hostname: request_context.client_hostname) }
     end
     units.reject{ |u| u == exclude_unit }.each do |unit|
       indent   = "&nbsp;&nbsp;&nbsp;&nbsp;" * level

@@ -30,7 +30,7 @@
 
     .user-menus
       - if logged_in?
-        - if current_user.effective_institution_admin?(current_institution)
+        - if current_user.effective_institution_admin?(current_institution, client_ip: request_context.client_ip, client_hostname: request_context.client_hostname)
           -# Role-play menu
           .btn-group{role: "group"}
             %button#role-play-dropdown.btn.btn-sm.btn-default.dropdown-toggle{"aria-expanded":  "false",
@@ -111,7 +111,7 @@
                   = icon_for(Message)
                   Medusa Messages
 
-        - if current_user.effective_institution_admin?(current_institution)
+        - if current_user.effective_institution_admin?(current_institution, client_ip: request_context.client_ip, client_hostname: request_context.client_hostname)
           - scope_match = current_institution == current_user.institution
           -# Institution Administration menu
           .btn-group{role: "group"}
@@ -221,7 +221,7 @@
                     = item[:message]
               %li
                 %hr.dropdown-divider
-            - if current_user.effective_institution_admin?(current_user.institution)
+            - if current_user.effective_institution_admin?(current_user.institution, client_ip: request_context.client_ip, client_hostname: request_context.client_hostname)
               %li
                 = link_to(institution_path(current_user.institution), class: "dropdown-item") do
                   = icon_for(current_user.institution)

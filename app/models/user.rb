@@ -272,93 +272,139 @@ class User < ApplicationRecord
 
   ##
   # @param collection [Collection]
+  # @param client_ip [String]
+  # @param client_hostname [String]
   # @return [Boolean] Whether the instance is a direct administrator of the
   #                   given collection.
   # @see #effective_collection_admin?
   #
-  def collection_admin?(collection)
+  def collection_admin?(collection,
+                        client_ip:       nil,
+                        client_hostname: nil)
     return true if collection.administrators.where(user_id: self.id).exists?
     collection.administering_groups.each do |group|
-      return true if group.includes?(user: self)
+      return true if group.includes?(user:            self,
+                                     client_ip:       client_ip,
+                                     client_hostname: client_hostname)
     end
     false
   end
 
   ##
   # @param collection [Collection]
+  # @param client_ip [String]
+  # @param client_hostname [String]
   # @return [Boolean] Whether the instance is a direct submitter of the given
   #                   collection.
   # @see #effective_collection_submitter?
   #
-  def collection_submitter?(collection)
+  def collection_submitter?(collection,
+                            client_ip:       nil,
+                            client_hostname: nil)
     return true if collection.submitters.where(user_id: self.id).exists?
     collection.submitting_groups.each do |group|
-      return true if group.includes?(user: self)
+      return true if group.includes?(user:            self,
+                                     client_ip:       client_ip,
+                                     client_hostname: client_hostname)
     end
     false
   end
 
   ##
   # @param collection [Collection]
+  # @param client_ip [String]
+  # @param client_hostname [String]
   # @return [Boolean] Whether the instance is an effective administrator of the
   #                   given collection, either directly or as a unit or system
   #                   administrator.
   # @see #collection_administrator?
   #
-  def effective_collection_admin?(collection)
+  def effective_collection_admin?(collection,
+                                  client_ip:       nil,
+                                  client_hostname: nil)
     # Check for sysadmin.
     return true if sysadmin?
     # Check for institution admin.
-    return true if institution_admin?(collection.institution)
+    return true if institution_admin?(collection.institution,
+                                      client_ip:       client_ip,
+                                      client_hostname: client_hostname)
     # Check for unit admin.
     # There may be cases where primary_unit is set but units aren't (such as
     # new collections that haven't been persisted yet).
-    return true if effective_unit_admin?(collection.primary_unit)
+    return true if effective_unit_admin?(collection.primary_unit,
+                                         client_ip:       client_ip,
+                                         client_hostname: client_hostname)
     collection.all_units.each do |unit|
-      return true if effective_unit_admin?(unit)
+      return true if effective_unit_admin?(unit,
+                                           client_ip:       client_ip,
+                                           client_hostname: client_hostname)
     end
     # Check for administrator of the collection itself.
-    return true if collection_admin?(collection)
+    return true if collection_admin?(collection,
+                                     client_ip:       client_ip,
+                                     client_hostname: client_hostname)
     # Check all of its parent collections.
     collection.all_parents.each do |parent|
-      return true if collection_admin?(parent)
+      return true if collection_admin?(parent,
+                                       client_ip: client_ip,
+                                       client_hostname: client_hostname)
     end
     false
   end
 
   ##
   # @param collection [Collection]
+  # @param client_ip [String]
+  # @param client_hostname [String]
   # @return [Boolean] Whether the instance is an effective submitter in the
   #                   given collection, either directly or as a collection,
   #                   unit, institution, or system administrator.
   # @see #collection_submitter?
   #
-  def effective_collection_submitter?(collection)
-    return true if effective_collection_admin?(collection)
+  def effective_collection_submitter?(collection,
+                                      client_ip:       nil,
+                                      client_hostname: nil)
+    return true if effective_collection_admin?(collection,
+                                               client_ip:       client_ip,
+                                               client_hostname: client_hostname)
     # Check the collection itself.
-    return true if collection_submitter?(collection)
+    return true if collection_submitter?(collection,
+                                         client_ip:       client_ip,
+                                         client_hostname: client_hostname)
     # Check all of its parent collections.
     collection.all_parents.each do |parent|
-      return true if collection_submitter?(parent)
+      return true if collection_submitter?(parent,
+                                           client_ip:       client_ip,
+                                           client_hostname: client_hostname)
     end
     false
   end
 
   ##
   # @param institution [Institution]
+  # @param client_ip [String]
+  # @param client_hostname [String]
   # @return [Boolean] Whether the instance is effectively an administrator of
   #                   the given institution.
   #
-  def effective_institution_admin?(institution)
-    sysadmin? || institution_admin?(institution)
+  def effective_institution_admin?(institution,
+                                   client_ip:       nil,
+                                   client_hostname: nil)
+    sysadmin? || institution_admin?(institution,
+                                    client_ip:       client_ip,
+                                    client_hostname: client_hostname)
   end
 
   ##
+  # @param client_ip [String]
+  # @param client_hostname [String]
   # @return [Enumerable<Collection>] All collections to which the user is
   #         authorized to submit an item.
   #
-  def effective_submittable_collections
-    if effective_institution_admin?(self.institution)
+  def effective_submittable_collections(client_ip:, client_hostname:)
+    if effective_institution_admin?(self.institution,
+                                    client_ip:       client_ip,
+                                    client_hostname: client_hostname)
       return Collection.joins(:units).
         where(buried: false).
         where("units.institution_id = ?", self.institution_id)
@@ -372,35 +418,47 @@ class User < ApplicationRecord
 
   ##
   # @param unit [Unit]
+  # @param client_ip [String]
+  # @param client_hostname [String]
   # @return [Boolean] Whether the instance is effectively an administrator of
   #                   the given unit.
   # @see unit_admin?
   #
-  def effective_unit_admin?(unit)
+  def effective_unit_admin?(unit, client_ip: nil, client_hostname: nil)
     # Check to see whether the user is an administrator of the unit's
     # institution.
-    return true if effective_institution_admin?(unit.institution)
+    return true if effective_institution_admin?(unit.institution,
+                                                client_ip:       client_ip,
+                                                client_hostname: client_hostname)
     # Check to see whether the user is an administrator of the unit itself.
-    return true if unit_admin?(unit)
+    return true if unit_admin?(unit,
+                               client_ip:       client_ip,
+                               client_hostname: client_hostname)
     # Check all of its parent units.
     unit.all_parents.each do |parent|
-      return true if unit_admin?(parent)
+      return true if unit_admin?(parent,
+                                 client_ip:       client_ip,
+                                 client_hostname: client_hostname)
     end
     false
   end
 
   ##
   # @param institution [Institution]
+  # @param client_ip [String]
+  # @param client_hostname [String]
   # @return [Boolean] Whether the instance is a direct administrator of the
   #                   given institution.
   #
-  def institution_admin?(institution)
+  def institution_admin?(institution, client_ip: nil, client_hostname: nil)
     return false unless institution
     # Check for a directly assigned administrator.
     return true if institution.administrators.where(user_id: self.id).exists?
     # Check for membership in an administering user group.
     institution.administering_groups.each do |group|
-      return true if group.includes?(user: self)
+      return true if group.includes?(user:            self,
+                                     client_ip:       client_ip,
+                                     client_hostname: client_hostname)
     end
     false
   end
@@ -447,14 +505,18 @@ class User < ApplicationRecord
 
   ##
   # @param unit [Unit]
+  # @param client_ip [String]
+  # @param client_hostname [String]
   # @return [Boolean] Whether the instance is a direct administrator of the
   #                   given unit (not considering its parents).
   # @see effective_unit_admin?
   #
-  def unit_admin?(unit)
+  def unit_admin?(unit, client_ip: nil, client_hostname: nil)
     return true if unit.administrators.where(user_id: self.id).exists?
     unit.administering_groups.each do |group|
-      return true if group.includes?(user: self)
+      return true if group.includes?(user:            self,
+                                     client_ip:       client_ip,
+                                     client_hostname: client_hostname)
     end
     false
   end

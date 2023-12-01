@@ -342,7 +342,9 @@ class UserTest < ActiveSupport::TestCase
     collection = collections(:southeast_collection1)
     collection.administering_users << @user
     collection.save!
-    assert @user.collection_admin?(collection)
+    assert @user.collection_admin?(collection,
+                                   client_ip:       "127.0.0.1",
+                                   client_hostname: "localhost")
   end
 
   test "collection_admin?() returns true when the user belongs to a user group
@@ -351,12 +353,16 @@ class UserTest < ActiveSupport::TestCase
     @user.user_groups << group
     collection = collections(:southeast_collection1)
     collection.administering_users << @user
-    assert @user.collection_admin?(collection)
+    assert @user.collection_admin?(collection,
+                                   client_ip:       "127.0.0.1",
+                                   client_hostname: "localhost")
   end
 
   test "collection_admin?() returns false when the user is not an administrator
   of the given collection" do
-    assert !@user.collection_admin?(collections(:southeast_collection1))
+    assert !@user.collection_admin?(collections(:southeast_collection1),
+                                    client_ip:       "127.0.0.1",
+                                    client_hostname: "localhost")
   end
 
   # collection_submitter?()
@@ -366,7 +372,9 @@ class UserTest < ActiveSupport::TestCase
     collection = collections(:southeast_collection1)
     collection.submitting_users << @user
     collection.save!
-    assert @user.collection_submitter?(collection)
+    assert @user.collection_submitter?(collection,
+                                       client_ip:       "127.0.0.1",
+                                       client_hostname: "localhost")
   end
 
   test "collection_submitter?() returns true when the user belongs to a user
@@ -375,12 +383,16 @@ class UserTest < ActiveSupport::TestCase
     @user.user_groups << group
     collection = collections(:southeast_collection1)
     collection.submitting_users << @user
-    assert @user.collection_submitter?(collection)
+    assert @user.collection_submitter?(collection,
+                                       client_ip:       "127.0.0.1",
+                                       client_hostname: "localhost")
   end
 
   test "collection_submitter?() returns false when the user is not a submitter
   in the given collection" do
-    assert !@user.collection_submitter?(collections(:southeast_collection1))
+    assert !@user.collection_submitter?(collections(:southeast_collection1),
+                                        client_ip:       "127.0.0.1",
+                                        client_hostname: "localhost")
   end
 
   # destroy()
@@ -400,7 +412,9 @@ class UserTest < ActiveSupport::TestCase
   sysadmin" do
     @user      = users(:southwest_sysadmin)
     collection = collections(:southeast_collection1)
-    assert @user.effective_collection_admin?(collection)
+    assert @user.effective_collection_admin?(collection,
+                                             client_ip:       "127.0.0.1",
+                                             client_hostname: "localhost")
   end
 
   test "effective_collection_admin?() returns true if the user is an
@@ -408,7 +422,9 @@ class UserTest < ActiveSupport::TestCase
     collection = collections(:southeast_collection1)
     @user.administering_institutions << collection.institution
     @user.save!
-    assert @user.effective_collection_admin?(collection)
+    assert @user.effective_collection_admin?(collection,
+                                             client_ip:       "127.0.0.1",
+                                             client_hostname: "localhost")
   end
 
   test "effective_collection_admin?() returns true when the user is an
@@ -417,7 +433,9 @@ class UserTest < ActiveSupport::TestCase
     unit       = collection.primary_unit
     unit.administering_users << @user
     unit.save!
-    assert @user.effective_collection_admin?(collection)
+    assert @user.effective_collection_admin?(collection,
+                                             client_ip:       "127.0.0.1",
+                                             client_hostname: "localhost")
   end
 
   test "effective_collection_admin?() returns true when the user is an
@@ -426,7 +444,9 @@ class UserTest < ActiveSupport::TestCase
     child  = collections(:southeast_collection1_collection1)
     parent.administering_users << @user
     parent.save!
-    assert @user.effective_collection_admin?(child)
+    assert @user.effective_collection_admin?(child,
+                                             client_ip:       "127.0.0.1",
+                                             client_hostname: "localhost")
   end
 
   test "effective_collection_admin?() returns true when the user is an
@@ -434,19 +454,25 @@ class UserTest < ActiveSupport::TestCase
     collection = collections(:southeast_collection1)
     collection.administering_users << @user
     collection.save!
-    assert @user.effective_collection_admin?(collection)
+    assert @user.effective_collection_admin?(collection,
+                                             client_ip:       "127.0.0.1",
+                                             client_hostname: "localhost")
   end
 
   test "effective_collection_admin?() returns false when the user is not an
   administrator of the given collection, nor a unit admin, nor a sysadmin" do
-    assert !@user.effective_collection_admin?(collections(:southeast_collection1))
+    assert !@user.effective_collection_admin?(collections(:southeast_collection1),
+                                              client_ip:       "127.0.0.1",
+                                              client_hostname: "localhost")
   end
 
   # effective_institution_admin?()
 
   test "effective_institution_admin?() returns true if the user is a sysadmin" do
     @user = users(:southwest_sysadmin)
-    assert @user.effective_institution_admin?(@user.institution)
+    assert @user.effective_institution_admin?(@user.institution,
+                                              client_ip:       "127.0.0.1",
+                                              client_hostname: "localhost")
   end
 
   test "effective_institution_admin?() returns true if the user is an
@@ -455,12 +481,16 @@ class UserTest < ActiveSupport::TestCase
     institution = institutions(:southeast)
     @user.administering_institutions << institution
     @user.save!
-    assert @user.effective_institution_admin?(institution)
+    assert @user.effective_institution_admin?(institution,
+                                              client_ip:       "127.0.0.1",
+                                              client_hostname: "localhost")
   end
 
   test "effective_institution_admin?() returns false if the user is neither a
   member of the given institution nor a sysadmin" do
-    assert !@user.effective_institution_admin?(institutions(:southwest))
+    assert !@user.effective_institution_admin?(institutions(:southwest),
+                                               client_ip:       "127.0.0.1",
+                                               client_hostname: "localhost")
   end
 
   # effective_submittable_collections()
@@ -470,33 +500,38 @@ class UserTest < ActiveSupport::TestCase
     user = users(:southwest_sysadmin)
     assert_equal Collection.joins(:units).where("units.institution_id = ?",
                                                 user.institution_id).count,
-                 user.effective_submittable_collections.count
+                 user.effective_submittable_collections(client_ip:       "127.0.0.1",
+                                                        client_hostname: "localhost").count
   end
 
   test "effective_submittable_collections() returns all unit collections for
   unit administrators" do
     user = users(:southeast_unit1_unit2_unit1_admin)
     assert_equal user.administering_units.count,
-                 user.effective_submittable_collections.count
+                 user.effective_submittable_collections(client_ip:       "127.0.0.1",
+                                                        client_hostname: "localhost").count
   end
 
   test "effective_submittable_collections() returns all administering
   collections for collection administrators" do
     user = users(:southeast_collection1_collection1_admin)
     assert_equal user.administering_collections.count,
-                 user.effective_submittable_collections.count
+                 user.effective_submittable_collections(client_ip:       "127.0.0.1",
+                                                        client_hostname: "localhost").count
   end
 
   test "effective_submittable_collections() returns all submitting collections
   for collection submitters" do
     user = users(:southeast_collection1_collection1_submitter)
     assert_equal user.submitting_collections.count,
-                 user.effective_submittable_collections.count
+                 user.effective_submittable_collections(client_ip:       "127.0.0.1",
+                                                        client_hostname: "localhost").count
   end
 
   test "effective_submittable_collections() returns an empty set for ordinary
   users" do
-    assert_empty users(:southwest).effective_submittable_collections
+    assert_empty users(:southwest).effective_submittable_collections(client_ip:       "127.0.0.1",
+                                                                     client_hostname: "localhost")
   end
 
   # effective_collection_submitter?()
@@ -504,7 +539,9 @@ class UserTest < ActiveSupport::TestCase
   test "effective_collection_submitter?() returns true when the user is a sysadmin" do
     @user      = users(:southwest_sysadmin)
     collection = collections(:southeast_collection1)
-    assert @user.effective_collection_submitter?(collection)
+    assert @user.effective_collection_submitter?(collection,
+                                                 client_ip:       "127.0.0.1",
+                                                 client_hostname: "localhost")
   end
 
   test "effective_collection_submitter?() returns true when the user is an
@@ -513,7 +550,9 @@ class UserTest < ActiveSupport::TestCase
     unit       = collection.primary_unit
     unit.administering_users << @user
     unit.save!
-    assert @user.effective_collection_submitter?(collection)
+    assert @user.effective_collection_submitter?(collection,
+                                                 client_ip:       "127.0.0.1",
+                                                 client_hostname: "localhost")
   end
 
   test "effective_collection_submitter?() returns true when the user is an
@@ -522,7 +561,9 @@ class UserTest < ActiveSupport::TestCase
     child  = collections(:southeast_collection1_collection1)
     parent.administering_users << @user
     parent.save!
-    assert @user.effective_collection_submitter?(child)
+    assert @user.effective_collection_submitter?(child,
+                                                 client_ip:       "127.0.0.1",
+                                                 client_hostname: "localhost")
   end
 
   test "effective_collection_submitter?() returns true when the user is an
@@ -530,7 +571,9 @@ class UserTest < ActiveSupport::TestCase
     collection = collections(:southeast_collection1)
     collection.administering_users << @user
     collection.save!
-    assert @user.effective_collection_submitter?(collection)
+    assert @user.effective_collection_submitter?(collection,
+                                                 client_ip:       "127.0.0.1",
+                                                 client_hostname: "localhost")
   end
 
   test "effective_collection_submitter?() returns true when the user is a
@@ -538,12 +581,16 @@ class UserTest < ActiveSupport::TestCase
     collection = collections(:southeast_collection1)
     collection.submitting_users << @user
     collection.save!
-    assert @user.effective_collection_submitter?(collection)
+    assert @user.effective_collection_submitter?(collection,
+                                                 client_ip:       "127.0.0.1",
+                                                 client_hostname: "localhost")
   end
 
   test "effective_collection_submitter?() returns false when the user is not an
   administrator of the given collection, nor a unit admin, nor a sysadmin" do
-    assert !@user.effective_collection_submitter?(collections(:southeast_collection1))
+    assert !@user.effective_collection_submitter?(collections(:southeast_collection1),
+                                                  client_ip:       "127.0.0.1",
+                                                  client_hostname: "localhost")
   end
 
   # effective_unit_admin?()
@@ -551,7 +598,9 @@ class UserTest < ActiveSupport::TestCase
   test "effective_unit_admin?() returns true when the user is a sysadmin" do
     @user = users(:southwest_sysadmin)
     unit  = units(:southeast_unit1)
-    assert @user.effective_unit_admin?(unit)
+    assert @user.effective_unit_admin?(unit,
+                                       client_ip:       "127.0.0.1",
+                                       client_hostname: "localhost")
   end
 
   test "effective_unit_admin?() returns true when the user is an administrator
@@ -559,7 +608,9 @@ class UserTest < ActiveSupport::TestCase
     unit = units(:southeast_unit1)
     @user.administering_institutions << unit.institution
     @user.save!
-    assert @user.effective_unit_admin?(unit)
+    assert @user.effective_unit_admin?(unit,
+                                       client_ip:       "127.0.0.1",
+                                       client_hostname: "localhost")
   end
 
   test "effective_unit_admin?() returns true when the user is an administrator
@@ -568,7 +619,9 @@ class UserTest < ActiveSupport::TestCase
     child  = units(:southeast_unit1_unit1)
     parent.administering_users << @user
     parent.save!
-    assert @user.effective_unit_admin?(child)
+    assert @user.effective_unit_admin?(child,
+                                       client_ip:       "127.0.0.1",
+                                       client_hostname: "localhost")
   end
 
   test "effective_unit_admin?() returns true when the user is an administrator
@@ -576,12 +629,16 @@ class UserTest < ActiveSupport::TestCase
     unit = units(:southeast_unit1)
     unit.administering_users << @user
     unit.save!
-    assert @user.effective_unit_admin?(unit)
+    assert @user.effective_unit_admin?(unit,
+                                       client_ip:       "127.0.0.1",
+                                       client_hostname: "localhost")
   end
 
   test "effective_unit_admin?() returns false when the user is not an
   administrator of the given unit" do
-    assert !@user.effective_unit_admin?(units(:southeast_unit1))
+    assert !@user.effective_unit_admin?(units(:southeast_unit1),
+                                        client_ip:       "127.0.0.1",
+                                        client_hostname: "localhost")
   end
 
   # email
@@ -608,16 +665,22 @@ class UserTest < ActiveSupport::TestCase
     institution = institutions(:southwest)
     @user.administering_institutions << institution
     @user.save!
-    assert @user.institution_admin?(institution)
+    assert @user.institution_admin?(institution,
+                                    client_ip:       "127.0.0.1",
+                                    client_hostname: "localhost")
   end
 
   test "institution_admin?() returns false if the user is not a member of the
   given institution" do
-    assert !@user.institution_admin?(institutions(:southwest))
+    assert !@user.institution_admin?(institutions(:southwest),
+                                     client_ip:       "127.0.0.1",
+                                     client_hostname: "localhost")
   end
 
   test "institution_admin?() returns false for a nil argument" do
-    assert !@user.institution_admin?(nil)
+    assert !@user.institution_admin?(nil,
+                                     client_ip:       "127.0.0.1",
+                                     client_hostname: "localhost")
   end
 
   # invitee()
@@ -685,7 +748,9 @@ class UserTest < ActiveSupport::TestCase
     unit = units(:southeast_unit1)
     unit.administering_users << @user
     unit.save!
-    assert @user.unit_admin?(unit)
+    assert @user.unit_admin?(unit,
+                             client_ip:       "127.0.0.1",
+                             client_hostname: "localhost")
   end
 
   test "unit_admin?() returns true when the user belongs to a user group that
@@ -694,12 +759,16 @@ class UserTest < ActiveSupport::TestCase
     @user.user_groups << group
     unit = units(:southeast_unit1)
     unit.administering_groups << group
-    assert @user.unit_admin?(unit)
+    assert @user.unit_admin?(unit,
+                             client_ip:       "127.0.0.1",
+                             client_hostname: "localhost")
   end
 
   test "unit_admin?() returns false when the user is not an administrator of
   the given unit" do
-    assert !@user.unit_admin?(units(:southeast_unit1))
+    assert !@user.unit_admin?(units(:southeast_unit1),
+                              client_ip:       "127.0.0.1",
+                              client_hostname: "localhost")
   end
 
 end

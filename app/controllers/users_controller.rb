@@ -171,7 +171,8 @@ class UsersController < ApplicationController
     @start                   = [params[:collections_start].to_i.abs, MAX_START].min
     @window                  = window_size
     @permitted_params        = params.permit(:collections_start, :items_start, :window)
-    @submittable_collections = @user.effective_submittable_collections
+    @submittable_collections = @user.effective_submittable_collections(client_ip:       request_context.client_ip,
+                                                                       client_hostname: request_context.client_hostname)
     @count                   = @submittable_collections.count
     if @submittable_collections.kind_of?(ActiveRecord::Relation)
       @submittable_collections = @submittable_collections.

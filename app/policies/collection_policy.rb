@@ -12,6 +12,8 @@ class CollectionPolicy < ApplicationPolicy
   # @param collection [Collection]
   #
   def initialize(request_context, collection)
+    @client_ip       = request_context&.client_ip
+    @client_hostname = request_context&.client_hostname
     @user            = request_context&.user
     @ctx_institution = request_context&.institution
     @role_limit      = request_context&.role_limit || Role::NO_LIMIT
@@ -29,13 +31,12 @@ class CollectionPolicy < ApplicationPolicy
       return AUTHORIZED_RESULT
     elsif @ctx_institution != @collection.institution
       return WRONG_SCOPE_RESULT
-    elsif (@role_limit >= Role::INSTITUTION_ADMINISTRATOR) &&
-      @user.effective_institution_admin?(@collection.institution)
+    elsif effective_institution_admin?(@user, @collection.institution, @role_limit)
       return AUTHORIZED_RESULT
     end
     { authorized: false,
       reason:     "You must be an administrator of the institution in which "\
-        "the collection resides." }
+                  "the collection resides." }
   end
 
   ##
@@ -53,7 +54,9 @@ class CollectionPolicy < ApplicationPolicy
     elsif new_parent_id == @collection.parent_id # no change
       return AUTHORIZED_RESULT
     elsif @role_limit >= Role::COLLECTION_ADMINISTRATOR &&
-      @user.effective_collection_admin?(Collection.find(new_parent_id))
+      @user.effective_collection_admin?(Collection.find(new_parent_id),
+                                        client_ip:       @client_ip,
+                                        client_hostname: @client_hostname)
       return AUTHORIZED_RESULT
     end
     { authorized: false,
@@ -195,7 +198,9 @@ class CollectionPolicy < ApplicationPolicy
       return WRONG_SCOPE_RESULT
     elsif @role_limit >= Role::COLLECTION_ADMINISTRATOR &&
       @collection.kind_of?(Collection) &&
-      @user.effective_collection_admin?(@collection)
+      @user.effective_collection_admin?(@collection,
+                                        client_ip:       @client_ip,
+                                        client_hostname: @client_hostname)
       return AUTHORIZED_RESULT
     end
     { authorized: false,
@@ -210,7 +215,10 @@ class CollectionPolicy < ApplicationPolicy
     elsif @collection.kind_of?(Collection) &&
       @ctx_institution != @collection.institution
       return WRONG_SCOPE_RESULT
-    elsif @role_limit >= Role::COLLECTION_SUBMITTER && @user.effective_collection_submitter?(@collection)
+    elsif @role_limit >= Role::COLLECTION_SUBMITTER &&
+      @user.effective_collection_submitter?(@collection,
+                                            client_ip:       @client_ip,
+                                            client_hostname: @client_hostname)
       return AUTHORIZED_RESULT
     end
     { authorized: false,

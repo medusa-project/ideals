@@ -9,7 +9,7 @@
   .error-messages
     -# populated via ajax by shared/_validation_messages.js.erb
 
-  - if current_user.effective_institution_admin?(f.object.institution)
+  - if current_user.effective_institution_admin?(f.object.institution, client_ip: request_context.client_ip, client_hostname: request_context.client_hostname)
     - unit_options = unit_tree_options(institution:        f.object.institution,
                                        include_only_admin: true,
                                        include_blank:      false)

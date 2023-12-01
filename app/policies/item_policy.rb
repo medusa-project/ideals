@@ -73,7 +73,9 @@ class ItemPolicy < ApplicationPolicy
         # non-sysadmins can submit to collections for which they have submitter
         # privileges
         return AUTHORIZED_RESULT if (@role_limit >= Role::COLLECTION_SUBMITTER) &&
-          @user&.effective_collection_submitter?(collection)
+          @user&.effective_collection_submitter?(collection,
+                                                 client_ip:       @client_ip,
+                                                 client_hostname: @client_hostname)
       end
     end
     { authorized: false,
@@ -132,8 +134,7 @@ class ItemPolicy < ApplicationPolicy
       return AUTHORIZED_RESULT
     elsif @ctx_institution != @item.institution
       return WRONG_SCOPE_RESULT
-    elsif (@role_limit >= Role::INSTITUTION_ADMINISTRATOR) &&
-      @user.effective_institution_admin?(@item.institution)
+    elsif effective_institution_admin?(@user, @item.institution, @role_limit)
       return AUTHORIZED_RESULT
     end
     NOT_INSTITUTION_ADMIN_RESULT
@@ -144,8 +145,7 @@ class ItemPolicy < ApplicationPolicy
       return LOGGED_OUT_RESULT
     elsif effective_sysadmin?(@user, @role_limit)
       return AUTHORIZED_RESULT
-    elsif (@role_limit >= Role::INSTITUTION_ADMINISTRATOR) &&
-      effective_institution_admin?(@user, @user.institution, @role_limit)
+    elsif effective_institution_admin?(@user, @user.institution, @role_limit)
       return AUTHORIZED_RESULT
     end
     NOT_INSTITUTION_ADMIN_RESULT
@@ -265,11 +265,15 @@ class ItemPolicy < ApplicationPolicy
       @item.collections.each do |collection|
         # collection admins can see access of items within their collections
         return AUTHORIZED_RESULT if (@role_limit >= Role::COLLECTION_ADMINISTRATOR) &&
-          @user.effective_collection_admin?(collection)
+          @user.effective_collection_admin?(collection,
+                                            client_ip:       @client_ip,
+                                            client_hostname: @client_hostname)
         # unit admins can see access of items within their units
         collection.units.each do |unit|
           return AUTHORIZED_RESULT if (@role_limit >= Role::UNIT_ADMINISTRATOR) &&
-            @user.effective_unit_admin?(unit)
+            @user.effective_unit_admin?(unit,
+                                        client_ip:       @client_ip,
+                                        client_hostname: @client_hostname)
         end
       end
     end
@@ -348,11 +352,15 @@ class ItemPolicy < ApplicationPolicy
       @item.collections.each do |collection|
         # collection admins can update items within their collections
         return AUTHORIZED_RESULT if (@role_limit >= Role::COLLECTION_ADMINISTRATOR) &&
-          @user.effective_collection_admin?(collection)
+          @user.effective_collection_admin?(collection,
+                                            client_ip:       @client_ip,
+                                            client_hostname: @client_hostname)
         # unit admins can update items within their units
         collection.units.each do |unit|
           return AUTHORIZED_RESULT if (@role_limit >= Role::UNIT_ADMINISTRATOR) &&
-            @user.effective_unit_admin?(unit)
+            @user.effective_unit_admin?(unit,
+                                        client_ip:       @client_ip,
+                                        client_hostname: @client_hostname)
         end
       end
     end
@@ -374,7 +382,9 @@ class ItemPolicy < ApplicationPolicy
     elsif @ctx_institution != @item.institution
       return WRONG_SCOPE_RESULT
     elsif (@role_limit >= Role::UNIT_ADMINISTRATOR) &&
-      @user&.effective_unit_admin?(@item.effective_primary_unit)
+      @user&.effective_unit_admin?(@item.effective_primary_unit,
+                                   client_ip:       @client_ip,
+                                   client_hostname: @client_hostname)
       return AUTHORIZED_RESULT
     end
     { authorized: false,

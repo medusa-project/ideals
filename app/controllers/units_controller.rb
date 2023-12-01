@@ -91,7 +91,9 @@ class UnitsController < ApplicationController
         order("#{Collection::IndexFields::TITLE}.sort").
         limit(999)
     if params[:'only-submitter-access'] == "true"
-      @collections = @collections.select{ |c| current_user.effective_collection_submitter?(c) }
+      @collections = @collections.select{ |c| current_user.effective_collection_submitter?(c,
+                                                                                           client_ip:       request_context.client_ip,
+                                                                                           client_hostname: request_context.client_hostname) }
     end
     if params[:'for-select'] == "true"
       render partial: "collections_for_select"
