@@ -89,35 +89,35 @@ class UserGroupTest < ActiveSupport::TestCase
   # includes?()
 
   test "includes?() returns false for a user not associated with the instance" do
-    assert !@instance.includes?(users(:southwest))
+    assert !@instance.includes?(user: users(:southwest))
   end
 
   test "includes?() returns true for a user directly associated with the
   instance" do
     user             = users(:southwest)
     @instance.users << user
-    assert @instance.includes?(user)
+    assert @instance.includes?(user: user)
   end
 
   test "includes?() returns true for a user whose email address matches a
   pattern on the instance" do
     user = users(:southwest)
     @instance.email_patterns.build(pattern: "southwest.edu").save!
-    assert @instance.includes?(user)
+    assert @instance.includes?(user: user)
   end
 
   test "includes?() returns true for a user whose client IP matches a pattern
   on the instance" do
     user = users(:southwest)
     @instance.hosts.build(pattern: "132.15.0.0/16").save!
-    assert @instance.includes?(user, client_ip: "132.15.152.14")
+    assert @instance.includes?(user: user, client_ip: "132.15.152.14")
   end
 
   test "includes?() returns true for a user whose client hostname matches a
   pattern on the instance" do
     user = users(:southwest)
     @instance.hosts.build(pattern: "*.example.org").save!
-    assert @instance.includes?(user, client_hostname: "host1.example.org")
+    assert @instance.includes?(user: user, client_hostname: "host1.example.org")
   end
 
   test "includes?() returns true for a user belonging to an AD group associated
@@ -127,7 +127,7 @@ class UserGroupTest < ActiveSupport::TestCase
     # the string "sysadmin" in it.
     @instance.ad_groups.build(name: "test sysadmin group")
     user = users(:southwest_sysadmin)
-    assert @instance.includes?(user)
+    assert @instance.includes?(user: user)
   end
 
   test "includes?() returns true for a user belonging to a department associated
@@ -136,7 +136,7 @@ class UserGroupTest < ActiveSupport::TestCase
     user.department        = departments(:basket_weaving)
     @instance.departments << user.department
 
-    assert @instance.includes?(user)
+    assert @instance.includes?(user: user)
   end
 
   test "includes?() returns true for a user belonging to a department associated
@@ -147,7 +147,7 @@ class UserGroupTest < ActiveSupport::TestCase
     @instance.departments  << user.department
     @instance.affiliations << user.affiliation
 
-    assert @instance.includes?(user)
+    assert @instance.includes?(user: user)
   end
 
   # key

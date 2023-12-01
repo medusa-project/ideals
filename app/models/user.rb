@@ -279,7 +279,7 @@ class User < ApplicationRecord
   def collection_admin?(collection)
     return true if collection.administrators.where(user_id: self.id).exists?
     collection.administering_groups.each do |group|
-      return true if group.includes?(self)
+      return true if group.includes?(user: self)
     end
     false
   end
@@ -293,7 +293,7 @@ class User < ApplicationRecord
   def collection_submitter?(collection)
     return true if collection.submitters.where(user_id: self.id).exists?
     collection.submitting_groups.each do |group|
-      return true if group.includes?(self)
+      return true if group.includes?(user: self)
     end
     false
   end
@@ -400,7 +400,7 @@ class User < ApplicationRecord
     return true if institution.administrators.where(user_id: self.id).exists?
     # Check for membership in an administering user group.
     institution.administering_groups.each do |group|
-      return true if group.includes?(self)
+      return true if group.includes?(user: self)
     end
     false
   end
@@ -454,7 +454,7 @@ class User < ApplicationRecord
   def unit_admin?(unit)
     return true if unit.administrators.where(user_id: self.id).exists?
     unit.administering_groups.each do |group|
-      return true if self.belongs_to_user_group?(group)
+      return true if group.includes?(user: self)
     end
     false
   end

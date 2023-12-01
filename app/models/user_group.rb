@@ -99,7 +99,7 @@ class UserGroup < ApplicationRecord
   def all_users
     self.users +
       User.where(institution: self.institution).
-        select{ |user| self.includes?(user) }
+        select{ |user| self.includes?(user: user) }
   end
 
   def breadcrumb_label
@@ -126,7 +126,7 @@ class UserGroup < ApplicationRecord
   # @param user [User]
   # @return [Boolean]
   #
-  def includes?(user, client_ip: nil, client_hostname: nil)
+  def includes?(user:, client_ip: nil, client_hostname: nil)
     # is a directly associated User
     self.users.where(id: user.id).exists? ||
     # has a matching email address

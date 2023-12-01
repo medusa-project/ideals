@@ -90,7 +90,7 @@ class Embargo < ApplicationRecord
   #
   def exempt?(user)
     self.user_groups.each do |group|
-      return true if group.includes?(user)
+      return true if group.includes?(user: user)
     end
     false
   end
