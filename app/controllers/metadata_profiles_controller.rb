@@ -70,7 +70,7 @@ class MetadataProfilesController < ApplicationController
              message: "The metadata profile \"#{@profile.name}\" has been "\
                       "deleted.")
     ensure
-      if current_user.sysadmin?
+      if current_user_is_sysadmin?
         redirect_to institution_path(institution)
       else
         redirect_to metadata_profiles_path

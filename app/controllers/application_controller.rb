@@ -5,7 +5,8 @@ class ApplicationController < ActionController::Base
   MAX_START = 10000
 
   protect_from_forgery with: :exception
-  helper_method :current_user, :logged_in?, :request_context, :to_do_list
+  helper_method :current_user, :current_user_is_sysadmin?, :logged_in?,
+                :request_context, :to_do_list
 
   rescue_from StandardError, with: :rescue_server_error
   rescue_from ActionController::InvalidAuthenticityToken, with: :rescue_invalid_auth_token
@@ -97,6 +98,14 @@ class ApplicationController < ActionController::Base
       end
     end
     @current_user
+  end
+
+  ##
+  # @return [Boolean]
+  #
+  def current_user_is_sysadmin?
+    current_user&.sysadmin?(client_ip:       request_context.client_ip,
+                            client_hostname: request_context.client_hostname)
   end
 
   ##
@@ -291,7 +300,7 @@ class ApplicationController < ActionController::Base
     if @list.nil?
       @list = ToDoList.new
       # Preservation alerts
-      if current_user&.sysadmin?
+      if current_user_is_sysadmin?
         count = Institution.where("outgoing_message_queue IS NULL OR outgoing_message_queue = ''").count
         if count > 0
           @list.items << {

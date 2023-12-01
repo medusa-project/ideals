@@ -40,7 +40,7 @@ class ElementNamespacesController < ApplicationController
              message: "The element namespace \"#{@namespace}\" has been "\
                       "deleted.")
     ensure
-      if current_user.sysadmin?
+      if current_user_is_sysadmin?
         redirect_to institution_path(institution)
       else
         redirect_to element_namespaces_path

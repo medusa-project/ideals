@@ -497,7 +497,7 @@ class ItemsController < ApplicationController
   #   scope.
   #
   def redirect_scope
-    if @item.institution != current_institution && !current_user&.sysadmin?
+    if @item.institution != current_institution && !current_user_is_sysadmin?
       scheme = (Rails.env.development? || Rails.env.test?) ? "http" : "https"
       redirect_to scheme + "://" + @item.institution.fqdn + item_path(@item),
                   allow_other_host: true

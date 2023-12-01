@@ -41,7 +41,7 @@ class IndexPagesController < ApplicationController
       toast!(title:   "Index page deleted",
              message: "Index page \"#{@index_page.name}\" has been deleted.")
     ensure
-      if current_user.sysadmin?
+      if current_user_is_sysadmin?
         redirect_to institution_path(institution)
       else
         redirect_to index_pages_path

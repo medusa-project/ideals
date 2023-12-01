@@ -65,7 +65,8 @@ class ApplicationPolicy
   #
   def effective_sysadmin(user, role_limit)
     if (!role_limit || role_limit >= Role::SYSTEM_ADMINISTRATOR) &&
-      user&.sysadmin?
+      user&.sysadmin?(client_ip:       @client_ip,
+                      client_hostname: @client_hostname)
       return AUTHORIZED_RESULT
     end
     {

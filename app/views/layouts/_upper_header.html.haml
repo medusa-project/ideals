@@ -40,12 +40,12 @@
               = Role.label(session[:role_limit])
             %ul.dropdown-menu{"aria-labelledby": "role-play-dropdown"}
               - Role.all.sort.reverse.each do |role|
-                - next if role != Role::NO_LIMIT && (role > Role::INSTITUTION_ADMINISTRATOR && !current_user.sysadmin?)
+                - next if role != Role::NO_LIMIT && (role > Role::INSTITUTION_ADMINISTRATOR && !current_user_is_sysadmin?)
                 %li
                   = link_to Role.label(role),
                             url_for(role: role),
                             class: "dropdown-item"
-        - if current_user.sysadmin?
+        - if current_user_is_sysadmin?
           -# Global Administration menu
           .btn-group{role: "group"}
             %button#administration-dropdown.btn.btn-sm.btn-default.dropdown-toggle{"aria-expanded":  "false",
@@ -230,14 +230,14 @@
               = link_to(user_path(current_user), class: "dropdown-item") do
                 = icon_for(current_user)
                 My Account
-            - if current_user.sysadmin? || InstitutionAdministrator.where(user: current_user).exists?
+            - if current_user_is_sysadmin? || InstitutionAdministrator.where(user: current_user).exists?
               %li
                 %hr.dropdown-divider
               %li
                 = link_to("https://docs.google.com/document/d/14CodOjc4Pjn42OOCtZp4lK1oRbm8lvPEXvDGDOxgyzY/edit?usp=sharing", class: "dropdown-item", target: "_blank") do
                   %i.fa.fa-arrow-up-right-from-square
                   IR Administrator's Guide
-            - if current_user.sysadmin?
+            - if current_user_is_sysadmin?
               %li
                 = link_to("https://docs.google.com/document/d/1yAFOUC_gKrtH7cF7ZB0Vu3M989CI_26gF3O55kio2OU/edit?usp=sharing", class: "dropdown-item", target: "_blank") do
                   %i.fa.fa-arrow-up-right-from-square

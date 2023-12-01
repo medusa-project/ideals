@@ -323,7 +323,8 @@ class User < ApplicationRecord
                                   client_ip:       nil,
                                   client_hostname: nil)
     # Check for sysadmin.
-    return true if sysadmin?
+    return true if sysadmin?(client_ip:       client_ip,
+                             client_hostname: client_hostname)
     # Check for institution admin.
     return true if institution_admin?(collection.institution,
                                       client_ip:       client_ip,
@@ -390,9 +391,11 @@ class User < ApplicationRecord
   def effective_institution_admin?(institution,
                                    client_ip:       nil,
                                    client_hostname: nil)
-    sysadmin? || institution_admin?(institution,
-                                    client_ip:       client_ip,
-                                    client_hostname: client_hostname)
+    sysadmin?(client_ip:       client_ip,
+              client_hostname: client_hostname) ||
+      institution_admin?(institution,
+                         client_ip:       client_ip,
+                         client_hostname: client_hostname)
   end
 
   ##
@@ -484,12 +487,15 @@ class User < ApplicationRecord
   end
 
   ##
+  # @param client_ip [String]
+  # @param client_hostname [String]
   # @return [Boolean] Whether the user is a system administrator, i.e. can do
   #                   absolutely anything.
   #
-  def sysadmin?
-    UserGroup.sysadmin.includes?(user: self) ||
-      UserGroup.sysadmin.ad_groups.find{ |g| self.belongs_to_ad_group?(g) }.present?
+  def sysadmin?(client_ip:, client_hostname:)
+    UserGroup.sysadmin.includes?(user:            self,
+                                 client_ip:       client_ip,
+                                 client_hostname: client_hostname)
   end
 
   ##

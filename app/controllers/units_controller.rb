@@ -545,7 +545,7 @@ class UnitsController < ApplicationController
   #   scope.
   #
   def redirect_scope
-    if @unit.institution != current_institution && !current_user&.sysadmin?
+    if @unit.institution != current_institution && !current_user_is_sysadmin?
       scheme = (Rails.env.development? || Rails.env.test?) ? "http" : "https"
       redirect_to scheme + "://" + @unit.institution.fqdn + unit_path(@unit),
                   allow_other_host: true

@@ -21,7 +21,7 @@
               %code= login.ip_address
             %dt Auth Method
             %dd= Login::Provider.label_for(login.provider)
-            - if current_user.sysadmin? && request_context.role_limit >= Role::SYSTEM_ADMINISTRATOR
+            - if current_user_is_sysadmin? && request_context.role_limit >= Role::SYSTEM_ADMINISTRATOR
               %dt Auth Hash
               -# some of this content can be very wide and would mess up the page layout
               -# without the overflow-x

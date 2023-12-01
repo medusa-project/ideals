@@ -39,7 +39,7 @@ class VocabulariesController < ApplicationController
       toast!(title:   "Vocabulary deleted",
              message: "The vocabulary \"#{@vocabulary.name}\" has been deleted.")
     ensure
-      if current_user.sysadmin?
+      if current_user_is_sysadmin?
         redirect_to institution_path(institution)
       else
         redirect_to vocabularies_path

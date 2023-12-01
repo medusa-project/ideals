@@ -638,7 +638,7 @@ class CollectionsController < ApplicationController
   #   host scope.
   #
   def redirect_scope
-    if @collection.institution != current_institution && !current_user&.sysadmin?
+    if @collection.institution != current_institution && !current_user_is_sysadmin?
       scheme = (Rails.env.development? || Rails.env.test?) ? "http" : "https"
       redirect_to scheme + "://" + @collection.institution.fqdn + collection_path(@collection),
                   allow_other_host: true

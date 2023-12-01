@@ -98,7 +98,8 @@ class UserTest < ActiveSupport::TestCase
     assert_equal email, user.email
     assert_equal name, user.name
     assert_equal institution, user.institution
-    assert !user.sysadmin?
+    assert !user.sysadmin?(client_ip:       "127.0.0.1",
+                           client_hostname: "localhost")
   end
 
   # fetch_from_omniauth_local()
@@ -717,19 +718,22 @@ class UserTest < ActiveSupport::TestCase
   test "sysadmin?() returns true when the user is directly associated with the
   sysadmin user group" do
     @user = users(:southwest_sysadmin)
-    assert @user.sysadmin?
+    assert @user.sysadmin?(client_ip:       "127.0.0.1",
+                           client_hostname: "localhost")
   end
 
   test "sysadmin?() returns true when the user is a member of an AD group
   included in the sysadmin user group" do
     @user = users(:southeast_sysadmin)
     @user.user_groups.destroy_all
-    assert @user.sysadmin?
+    assert @user.sysadmin?(client_ip:       "127.0.0.1",
+                           client_hostname: "localhost")
   end
 
   test "sysadmin?() returns false when the user is not a member of the sysadmin
   user group in any way" do
-    assert !@user.sysadmin?
+    assert !@user.sysadmin?(client_ip:       "127.0.0.1",
+                            client_hostname: "localhost")
   end
 
   # to_autocomplete()

@@ -41,7 +41,7 @@ class PrebuiltSearchesController < ApplicationController
       toast!(title:   "Prebuilt search deleted",
              message: "Prebuilt search \"#{@prebuilt_search.name}\" has been deleted.")
     ensure
-      if current_user.sysadmin?
+      if current_user_is_sysadmin?
         redirect_to institution_path(institution)
       else
         redirect_to prebuilt_searches_path

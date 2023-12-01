@@ -42,7 +42,7 @@ class RegisteredElementsController < ApplicationController
       toast!(title:   "Element deleted",
              message: "The element \"#{@element.name}\" has been deleted.")
     ensure
-      if current_user.sysadmin?
+      if current_user_is_sysadmin?
         if institution
           redirect_to institution_path(institution)
         else
