@@ -430,7 +430,7 @@ class User < ApplicationRecord
   #                   absolutely anything.
   #
   def sysadmin?
-    self.user_groups.include?(UserGroup.sysadmin) ||
+    UserGroup.sysadmin.includes?(user: self) ||
       UserGroup.sysadmin.ad_groups.find{ |g| self.belongs_to_ad_group?(g) }.present?
   end
 

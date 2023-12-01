@@ -1,9 +1,9 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 literal:
-  user_group: sysadmin
+  user_group: southwest
   pattern:    example.org
 
 regexp:
-  user_group: sysadmin
+  user_group: southwest
   pattern:    /example.org$/
