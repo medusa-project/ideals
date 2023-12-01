@@ -102,7 +102,7 @@ class UserGroup < ApplicationRecord
   def all_users
     self.users +
       User.where(institution: self.institution).
-        select{ |u| u.belongs_to_user_group?(self) }
+        select{ |user| self.includes?(user) }
   end
 
   def breadcrumb_label

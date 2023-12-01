@@ -335,28 +335,6 @@ class UserTest < ActiveSupport::TestCase
     end
   end
 
-  # belongs_to_user_group?()
-
-  test "belongs_to_user_group?() returns false for a user not associated with
-  the group" do
-    assert !@user.belongs_to_user_group?(user_groups(:sysadmin))
-  end
-
-  test "belongs_to_user_group?() returns true for a user directly associated
-  with the group" do
-    group              = user_groups(:sysadmin)
-    @user.user_groups << group
-    assert @user.belongs_to_user_group?(group)
-  end
-
-  test "belongs_to_user_group?() returns true for a user belonging to an AD
-  group associated with the group" do
-    skip # TODO: set up a mock AD group system for the test environment
-    user       = users(:southeast_admin)
-    user_group = user_groups(:sysadmin)
-    assert user.belongs_to_user_group?(user_group)
-  end
-
   # collection_admin?()
 
   test "collection_admin?() returns true when the user is a directly assigned

@@ -59,7 +59,7 @@ class User < ApplicationRecord
   has_many :unit_administrators
   has_many :administering_units, through: :unit_administrators, source: :unit
   # This includes only directly assigned user groups. See
-  # `belongs_to_user_group?()`
+  # `UserGroup.includes?()`
   has_and_belongs_to_many :user_groups
 
   validates :email, presence: true, length: {maximum: 255},
@@ -262,14 +262,6 @@ class User < ApplicationRecord
     end
   end
 
-  ##
-  # @param user_group [UserGroup]
-  # @return [Boolean]
-  #
-  def belongs_to_user_group?(user_group)
-    user_group.includes?(self)
-  end
-
   def breadcrumb_label
     self.name
   end
@@ -287,7 +279,7 @@ class User < ApplicationRecord
   def collection_admin?(collection)
     return true if collection.administrators.where(user_id: self.id).exists?
     collection.administering_groups.each do |group|
-      return true if self.belongs_to_user_group?(group)
+      return true if group.includes?(self)
     end
     false
   end
@@ -301,7 +293,7 @@ class User < ApplicationRecord
   def collection_submitter?(collection)
     return true if collection.submitters.where(user_id: self.id).exists?
     collection.submitting_groups.each do |group|
-      return true if self.belongs_to_user_group?(group)
+      return true if group.includes?(self)
     end
     false
   end
@@ -408,7 +400,7 @@ class User < ApplicationRecord
     return true if institution.administrators.where(user_id: self.id).exists?
     # Check for membership in an administering user group.
     institution.administering_groups.each do |group|
-      return true if self.belongs_to_user_group?(group)
+      return true if group.includes?(self)
     end
     false
   end
