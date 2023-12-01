@@ -139,28 +139,31 @@ class ApplicationController < ActionController::Base
   # @return [RequestContext]
   #
   def request_context
-    # Read the role from the URL query and write it to the session so that it
-    # will persist across pages without having to add it into link URLs.
-    # If a role was not provided in the query, read it from the session.
-    role_limit = params[:role]
-    if role_limit.present?
-      role_limit           = role_limit.to_i
-      session[:role_limit] = role_limit
-    else
-      role_limit           = session[:role_limit]
-      role_limit         ||= Role::NO_LIMIT
-      session[:role_limit] = role_limit
+    unless @request_context
+      # Read the role from the URL query and write it to the session so that it
+      # will persist across pages without having to add it into link URLs.
+      # If a role was not provided in the query, read it from the session.
+      role_limit = params[:role]
+      if role_limit.present?
+        role_limit           = role_limit.to_i
+        session[:role_limit] = role_limit
+      else
+        role_limit           = session[:role_limit]
+        role_limit         ||= Role::NO_LIMIT
+        session[:role_limit] = role_limit
+      end
+      begin
+        hostname = Resolv.getname(request.remote_ip)
+      rescue Resolv::ResolvError
+        hostname = nil
+      end
+      @request_context = RequestContext.new(client_ip:       request.remote_ip,
+                                            client_hostname: hostname,
+                                            user:            current_user,
+                                            institution:     current_institution,
+                                            role_limit:      role_limit)
     end
-    begin
-      hostname = Resolv.getname(request.remote_ip)
-    rescue Resolv::ResolvError
-      hostname = nil
-    end
-    RequestContext.new(client_ip:       request.remote_ip,
-                       client_hostname: hostname,
-                       user:            current_user,
-                       institution:     current_institution,
-                       role_limit:      role_limit)
+    @request_context
   end
 
   ##
