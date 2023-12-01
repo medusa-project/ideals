@@ -777,13 +777,17 @@ class ItemTest < ActiveSupport::TestCase
   # embargoed_for?()
 
   test "embargoed_for?() returns false for an item with no embargoes" do
-    assert !@instance.embargoed_for?(users(:southwest))
+    assert !@instance.embargoed_for?(user:            users(:southwest),
+                                     client_ip:       "127.0.0.1",
+                                     client_hostname: "localhost")
   end
 
   test "embargoed_for?() returns false for an item with only a download embargo" do
     @instance.embargoes.build(kind:       Embargo::Kind::DOWNLOAD,
                               expires_at: Time.now + 1.year).save!
-    assert !@instance.embargoed_for?(users(:southwest))
+    assert !@instance.embargoed_for?(user:            users(:southwest),
+                                     client_ip:       "127.0.0.1",
+                                     client_hostname: "localhost")
   end
 
   test "embargoed_for?() returns false for an item with an all-access embargo to
@@ -797,14 +801,18 @@ class ItemTest < ActiveSupport::TestCase
     embargo.save!
     group.save!
 
-    assert !@instance.embargoed_for?(user)
+    assert !@instance.embargoed_for?(user:            user,
+                                     client_ip:       "127.0.0.1",
+                                     client_hostname: "localhost")
   end
 
   test "embargoed_for?() returns true for an item with an all-access embargo to
   which the given user is not exempt" do
     @instance.embargoes.build(kind:       Embargo::Kind::ALL_ACCESS,
                               expires_at: Time.now + 1.year).save!
-    assert @instance.embargoed_for?(users(:southwest))
+    assert @instance.embargoed_for?(user:            users(:southwest),
+                                    client_ip:       "127.0.0.1",
+                                    client_hostname: "localhost")
   end
 
   # exhume!()

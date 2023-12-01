@@ -659,11 +659,15 @@ class Item < ApplicationRecord
 
   ##
   # @param user [User]
+  # @param client_ip [String]
+  # @param client_hostname [String]
   # @return [Boolean]
   #
-  def embargoed_for?(user)
+  def embargoed_for?(user:, client_ip:, client_hostname:)
     self.current_embargoes.where(kind: Embargo::Kind::ALL_ACCESS).each do |embargo|
-      return true if !user || !embargo.exempt?(user)
+      return true if !user || !embargo.exempt?(user:            user,
+                                               client_ip:       client_ip,
+                                               client_hostname: client_hostname)
     end
     false
   end

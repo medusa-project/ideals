@@ -34,14 +34,22 @@ class EmbargoTest < ActiveSupport::TestCase
   test "exempt?() returns false when the given user is not exempt from the
   embargo" do
     user    = users(:southwest)
-    assert !@instance.exempt?(user)
+    assert !@instance.exempt?(user:            user,
+                              client_ip:       "127.0.0.1",
+                              client_hostname: "localhost")
   end
 
   test "exempt?() returns true when the given user is exempt from the embargo" do
-    user    = users(:southwest_sysadmin)
-    assert !@instance.exempt?(user)
+    user     = users(:southwest_sysadmin)
+    ip       = "127.0.0.1"
+    hostname = "localhost"
+    assert !@instance.exempt?(user:            user,
+                              client_ip:       ip,
+                              client_hostname: hostname)
     @instance.user_groups << user_groups(:sysadmin)
-    assert @instance.exempt?(user)
+    assert @instance.exempt?(user:            user,
+                             client_ip:       ip,
+                             client_hostname: hostname)
   end
 
   # expires_at

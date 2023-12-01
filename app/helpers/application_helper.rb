@@ -420,7 +420,9 @@ module ApplicationHelper
           b.format.media_types.include?("application/pdf") }.each do |bs|
         bs_authorized = true
         entity.current_embargoes.each do |embargo|
-          unless current_user && embargo.exempt?(current_user)
+          unless current_user && embargo.exempt?(user:            current_user,
+                                                 client_hostname: request_context.client_hostname,
+                                                 client_ip:       request_context.client_ip)
             bs_authorized = false
             break
           end
@@ -737,7 +739,9 @@ module ApplicationHelper
                         use_resource_host: true,
                         show_institution:  false)
     embargoed_item = resource.kind_of?(Item) &&
-      resource.embargoed_for?(current_user)
+      resource.embargoed_for?(user:            current_user,
+                              client_hostname: request_context.client_hostname,
+                              client_ip:       request_context.client_ip)
     thumb          = thumbnail_for(resource)
     if use_resource_host
       resource_url = polymorphic_url(resource, host: resource.institution.fqdn)

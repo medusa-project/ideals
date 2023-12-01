@@ -124,7 +124,9 @@ class BitstreamPolicy < ApplicationPolicy
       }
     elsif @bitstream.item.current_embargoes.any?
       @bitstream.item.current_embargoes.each do |embargo|
-        unless @user && embargo.exempt?(@user)
+        unless @user && embargo.exempt?(user:            @user,
+                                        client_ip:       @request_context.client_ip,
+                                        client_hostname: @request_context.client_hostname)
           return { authorized: false,
                    reason:     "This file's owning item is embargoed." }
         end

@@ -86,11 +86,15 @@ class Embargo < ApplicationRecord
 
   ##
   # @param user [User]
+  # @param client_ip [String]
+  # @param client_hostname [String]
   # @return [Boolean] Whether the given user is exempt from the embargo.
   #
-  def exempt?(user)
+  def exempt?(user:, client_ip:, client_hostname:)
     self.user_groups.each do |group|
-      return true if group.includes?(user: user)
+      return true if group.includes?(user:            user,
+                                     client_ip:       client_ip,
+                                     client_hostname: client_hostname)
     end
     false
   end

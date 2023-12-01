@@ -47,6 +47,8 @@ class ItemPolicy < ApplicationPolicy
   def initialize(request_context, item)
     @user            = request_context&.user
     @ctx_institution = request_context&.institution
+    @client_ip       = request_context&.client_ip
+    @client_hostname = request_context&.client_hostname
     @role_limit      = request_context&.role_limit
     @item            = item
   end
@@ -163,7 +165,11 @@ class ItemPolicy < ApplicationPolicy
       return WRONG_SCOPE_RESULT
     end
     @item.current_embargoes.each do |embargo|
-      if !@user || !embargo.exempt?(@user) || (@role_limit && @role_limit <= Role::LOGGED_OUT)
+      if !@user ||
+        !embargo.exempt?(user:            @user,
+                         client_ip:       @client_ip,
+                         client_hostname: @client_hostname) ||
+        (@role_limit && @role_limit <= Role::LOGGED_OUT)
         if embargo.user_groups.length > 1
           reason = embargo.public_reason
           if reason.blank?
@@ -237,7 +243,9 @@ class ItemPolicy < ApplicationPolicy
       return AUTHORIZED_RESULT
     elsif !@item.approved?
       return { authorized: false, reason: "This item is not approved." }
-    elsif @item.embargoed_for?(@user)
+    elsif @item.embargoed_for?(user:            @user,
+                               client_ip:       @client_ip,
+                               client_hostname: @client_hostname)
       return { authorized: false, reason: "This item is embargoed." }
     end
     AUTHORIZED_RESULT
