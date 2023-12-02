@@ -277,21 +277,33 @@ class User < ApplicationRecord
   # @param collection [Collection]
   # @param client_ip [String]
   # @param client_hostname [String]
+  # @param consider_sysadmin [Boolean] If false, the user's sysadmin status
+  #                                    (which would cause a true return value)
+  #                                    will not be checked for/considered.
+  # @param consider_institution_admin [Boolean] If false, the user's
+  #                                             institution administrator
+  #                                             status (which would cause a
+  #                                             true return value) will not be
+  #                                             checked for/considered.
   # @return [Boolean] Whether the instance is an effective administrator of the
   #                   given collection, either directly or as a unit or system
   #                   administrator.
   # @see #collection_administrator?
   #
   def effective_collection_admin?(collection,
-                                  client_ip:       nil,
-                                  client_hostname: nil)
+                                  client_ip:                  nil,
+                                  client_hostname:            nil,
+                                  consider_sysadmin:          true,
+                                  consider_institution_admin: true)
     # Check for sysadmin.
-    return true if sysadmin?(client_ip:       client_ip,
-                             client_hostname: client_hostname)
+    return true if consider_sysadmin &&
+      sysadmin?(client_ip:       client_ip,
+                client_hostname: client_hostname)
     # Check for institution admin.
-    return true if institution_admin?(collection.institution,
-                                      client_ip:       client_ip,
-                                      client_hostname: client_hostname)
+    return true if consider_institution_admin &&
+      institution_admin?(collection.institution,
+                         client_ip:       client_ip,
+                         client_hostname: client_hostname)
     # Check for unit admin.
     # There may be cases where primary_unit is set but units aren't (such as
     # new collections that haven't been persisted yet).
@@ -320,17 +332,29 @@ class User < ApplicationRecord
   # @param collection [Collection]
   # @param client_ip [String]
   # @param client_hostname [String]
+  # @param consider_sysadmin [Boolean] If false, the user's sysadmin status
+  #                                    (which would cause a true return value)
+  #                                    will not be checked for/considered.
+  # @param consider_institution_admin [Boolean] If false, the user's
+  #                                             institution administrator
+  #                                             status (which would cause a
+  #                                             true return value) will not be
+  #                                             checked for/considered.
   # @return [Boolean] Whether the instance is an effective submitter in the
   #                   given collection, either directly or as a collection,
   #                   unit, institution, or system administrator.
   # @see #collection_submitter?
   #
   def effective_collection_submitter?(collection,
-                                      client_ip:       nil,
-                                      client_hostname: nil)
+                                      client_ip:                  nil,
+                                      client_hostname:            nil,
+                                      consider_sysadmin:          true,
+                                      consider_institution_admin: true)
     return true if effective_collection_admin?(collection,
-                                               client_ip:       client_ip,
-                                               client_hostname: client_hostname)
+                                               client_ip:                  client_ip,
+                                               client_hostname:            client_hostname,
+                                               consider_sysadmin:          consider_sysadmin,
+                                               consider_institution_admin: consider_institution_admin)
     # Check the collection itself.
     return true if collection_submitter?(collection,
                                          client_ip:       client_ip,
@@ -374,7 +398,6 @@ class User < ApplicationRecord
       return self.institution.collections.where(buried: false)
     end
 
-
     collections             = self.institution.collections
     submittable_collections = []
     # If we are a sysadmin or institution admin, we already know we can
@@ -387,8 +410,10 @@ class User < ApplicationRecord
       Collection.uncached do
         self.institution.collections.find_each do |collection|
           if self.effective_collection_submitter?(collection,
-                                                  client_ip:       client_ip,
-                                                  client_hostname: client_hostname)
+                                                  client_ip:                  client_ip,
+                                                  client_hostname:            client_hostname,
+                                                  consider_sysadmin:          false,
+                                                  consider_institution_admin: false)
             submittable_collections << collection
           end
         end
