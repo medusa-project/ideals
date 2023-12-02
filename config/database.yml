@@ -21,6 +21,7 @@ default: &default
   timeout:      5000
   min_messages: warning
   template:     template0
+  query_cache:  1000 # default in Rails 7.1 is 100
 
 development:
   <<: *default
