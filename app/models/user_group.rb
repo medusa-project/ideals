@@ -92,16 +92,6 @@ class UserGroup < ApplicationRecord
     UserGroup.find_by_key(SYSADMIN_KEY)
   end
 
-  ##
-  # @return [Enumerable<User>] All users either directly associated with the
-  #         instance or belonging to an AD group associated with the instance.
-  #
-  def all_users
-    self.users +
-      User.where(institution: self.institution).
-        select{ |user| self.includes?(user: user) }
-  end
-
   def breadcrumb_label
     name
   end

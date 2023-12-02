@@ -46,16 +46,6 @@ class UserGroupTest < ActiveSupport::TestCase
     assert_not_nil UserGroup.sysadmin
   end
 
-  # all_users()
-
-  test "all_users() returns associated users" do
-    assert @instance.all_users.include?(users(:southwest_sysadmin))
-  end
-
-  test "all_users() returns all users belonging to an associated AD group" do
-    assert @instance.all_users.include?(users(:southeast_sysadmin))
-  end
-
   # defines_institution
 
   test "setting a group as defining its institution sets all other instances of
