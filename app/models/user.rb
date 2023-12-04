@@ -244,7 +244,7 @@ class User < ApplicationRecord
   def collection_admin?(collection,
                         client_ip:       nil,
                         client_hostname: nil)
-    return true if collection.administrators.where(user_id: self.id).exists?
+    return true if collection.administrators.find{ |a| a.user_id == self.id }
     collection.administering_groups.each do |group|
       return true if group.includes?(user:            self,
                                      client_ip:       client_ip,
@@ -264,7 +264,7 @@ class User < ApplicationRecord
   def collection_submitter?(collection,
                             client_ip:       nil,
                             client_hostname: nil)
-    return true if collection.submitters.where(user_id: self.id).exists?
+    return true if collection.submitters.find{ |s| s.user_id == self.id }
     collection.submitting_groups.each do |group|
       return true if group.includes?(user:            self,
                                      client_ip:       client_ip,
@@ -407,15 +407,13 @@ class User < ApplicationRecord
                                          client_hostname: client_hostname)
       submittable_collections = collections
     else
-      Collection.uncached do
-        self.institution.collections.find_each do |collection|
-          if self.effective_collection_submitter?(collection,
-                                                  client_ip:                  client_ip,
-                                                  client_hostname:            client_hostname,
-                                                  consider_sysadmin:          false,
-                                                  consider_institution_admin: false)
-            submittable_collections << collection
-          end
+      self.institution.collections.each do |collection|
+        if self.effective_collection_submitter?(collection,
+                                                client_ip:                  client_ip,
+                                                client_hostname:            client_hostname,
+                                                consider_sysadmin:          false,
+                                                consider_institution_admin: false)
+          submittable_collections << collection
         end
       end
     end
@@ -521,7 +519,7 @@ class User < ApplicationRecord
   # @see effective_unit_admin?
   #
   def unit_admin?(unit, client_ip: nil, client_hostname: nil)
-    return true if unit.administrators.where(user_id: self.id).exists?
+    return true if unit.administrators.find{ |a| a.user_id == self.id }
     unit.administering_groups.each do |group|
       return true if group.includes?(user:            self,
                                      client_ip:       client_ip,
