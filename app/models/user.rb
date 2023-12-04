@@ -388,34 +388,31 @@ class User < ApplicationRecord
   ##
   # @param client_ip [String]
   # @param client_hostname [String]
+  # @param task [Task] Supply to receive progress updates.
   # @return [Enumerable<Collection>] All collections to which the user is
   #         authorized to submit an item.
   #
-  def effective_submittable_collections(client_ip:, client_hostname:)
-    if effective_institution_admin?(self.institution,
-                                    client_ip:       client_ip,
-                                    client_hostname: client_hostname)
-      return self.institution.collections.where(buried: false)
-    end
-
-    collections             = self.institution.collections
-    submittable_collections = []
-    # If we are a sysadmin or institution admin, we already know we can
-    # submit to all collections, so there is no need to iterate through them.
+  def effective_submittable_collections(client_ip:,
+                                        client_hostname:,
+                                        task:            nil)
+    collections = self.institution.collections.where(buried: false)
     if self.effective_institution_admin?(self.institution,
                                          client_ip:       client_ip,
                                          client_hostname: client_hostname)
-      submittable_collections = collections
-    else
-      self.institution.collections.each do |collection|
-        if self.effective_collection_submitter?(collection,
-                                                client_ip:                  client_ip,
-                                                client_hostname:            client_hostname,
-                                                consider_sysadmin:          false,
-                                                consider_institution_admin: false)
-          submittable_collections << collection
-        end
+      task&.succeed
+      return collections
+    end
+    count                   = collections.count
+    submittable_collections = []
+    collections.each_with_index do |collection, index|
+      if self.effective_collection_submitter?(collection,
+                                              client_ip:                  client_ip,
+                                              client_hostname:            client_hostname,
+                                              consider_sysadmin:          false,
+                                              consider_institution_admin: false)
+        submittable_collections << collection
       end
+      task&.progress(index + 1 / count.to_f)
     end
     submittable_collections
   end

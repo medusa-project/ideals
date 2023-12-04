@@ -505,6 +505,15 @@ class UserTest < ActiveSupport::TestCase
                                                                      client_hostname: "localhost")
   end
 
+  test "effective_submittable_collections() updates the supplied Task" do
+    task = tasks(:pending)
+    user = users(:southeast_unit1_unit2_unit1_admin)
+    user.effective_submittable_collections(client_ip:       "127.0.0.1",
+                                           client_hostname: "localhost",
+                                           task:            task)
+    assert task.succeeded?
+  end
+
   # effective_collection_submitter?()
 
   test "effective_collection_submitter?() returns true when the user is a sysadmin" do
