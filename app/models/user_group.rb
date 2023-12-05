@@ -118,19 +118,19 @@ class UserGroup < ApplicationRecord
   #
   def includes?(user:, client_ip: nil, client_hostname: nil)
     # is a directly associated User
-    self.users.find{ |u| u.id == user.id } ||
+    self.users.find{ |u| u.id == user.id }.present? ||
     # has a matching email address
-    self.email_patterns.find{ |p| p.matches?(user.email) } ||
+    self.email_patterns.find{ |p| p.matches?(user.email) }.present? ||
     # has a matching client IP address or hostname
     self.hosts.find{ |h| (client_ip && h.pattern_matches?(client_ip)) ||
-      (client_hostname && h.pattern_matches?(client_hostname)) } ||
+      (client_hostname && h.pattern_matches?(client_hostname)) }.present? ||
     # belongs to an associated department
-    self.departments.find{ |d| d.name == user.department&.name } ||
+    self.departments.find{ |d| d.name == user.department&.name }.present? ||
     # is of an associated affiliation
-    self.affiliations.find{ |a| a.id == user.affiliation_id } ||
+    self.affiliations.find{ |a| a.id == user.affiliation_id }.present? ||
     # belongs to an associated AD group
     # (this check comes last because it is the most expensive)
-    self.ad_groups.find{ |g| user.belongs_to_ad_group?(g) }
+    self.ad_groups.find{ |g| user.belongs_to_ad_group?(g) }.present?
   end
 
   ##
