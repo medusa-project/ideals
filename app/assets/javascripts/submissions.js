@@ -79,7 +79,7 @@ const EditSubmissionView = {
 
     initialize: function() {
         const self = this;
-        const form = $("form#properties-form, form#access-form, " +
+        const form = $("form#collection-form, form#access-form, " +
             "form#metadata-form, form#files-form");
 
         var lastEditedInput;
@@ -100,7 +100,7 @@ const EditSubmissionView = {
             $("#access-tab").tab("show");
         });
         $("button.step-2-to-1").on("click", function () {
-            $("#properties-tab").tab("show");
+            $("#collection-tab").tab("show");
         });
 
         form.on("submit", function (e) {
@@ -172,24 +172,24 @@ const EditSubmissionView = {
             container.empty();
         };
 
-        /****************** Properties/Collections section *********************/
+        /*********************** Collection section **************************/
 
-        const propertiesForm     = form.filter("#properties-form");
+        const collectionForm     = form.filter("#collection-form");
         const unitsMenu          = $("[name=unit_id]");
         const collectionSection  = $("#collection-section");
         const collectionsMenu    = $("[name='item[primary_collection_id]']");
         const noCollectionsAlert = $("#no-collections-alert");
 
-        const setPropertiesError = function (message) {
-            setErrorAlert(propertiesForm.find("#properties-messages"), message);
+        const setCollectionError = function (message) {
+            setErrorAlert(collectionForm.find("#collection-messages"), message);
         };
 
-        this.validatePropertiesSection = function () {
+        this.validateCollectionSection = function () {
             // Check that a collection has been selected.
             if (collectionsMenu.val() > 0) {
-                setPropertiesError(null);
+                setCollectionError(null);
             } else {
-                setPropertiesError("Please select a unit and collection.");
+                setCollectionError("Please select a unit and collection.");
                 return false;
             }
             return true;
@@ -545,8 +545,8 @@ const EditSubmissionView = {
 
         // Validate everything before submitting.
         formSubmitButton.on("click", function (e) {
-            if (!self.validatePropertiesSection()) {
-                $("#properties-tab").click();
+            if (!self.validateCollectionSection()) {
+                $("#collection-tab").click();
                 return false;
             }
             if (!self.validateAccessSection()) {

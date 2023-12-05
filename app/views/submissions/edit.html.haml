@@ -19,11 +19,11 @@
 
 %ul.nav.nav-pills.nav-justified{role: "tablist"}
   %li.nav-item
-    %button#properties-tab.nav-link.active{"data-bs-toggle": "tab",
-                                           "data-bs-target": "#properties",
+    %button#collection-tab.nav-link.active{"data-bs-toggle": "tab",
+                                           "data-bs-target": "#collection",
                                            role:             "tab",
                                            type:             "button",
-                                           "aria-controls":  "properties",
+                                           "aria-controls":  "collection",
                                            "aria-selected":  "true"}
       %span.badge.rounded-pill 1
       Pick a Collection
@@ -59,9 +59,9 @@
       Files
 
 .tab-content
-  #properties.tab-pane.fade.show.active{role:              "tabpanel",
-                                        "aria-labelledby": "properties-tab"}
-    = render partial: "submit_properties_form"
+  #collection.tab-pane.fade.show.active{role:              "tabpanel",
+                                        "aria-labelledby": "collection-tab"}
+    = render partial: "submit_collection_form"
 
   #access.tab-pane.fade{role:              "tabpanel",
                         "aria-labelledby": "access-tab"}
