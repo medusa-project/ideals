@@ -1,3 +1,5 @@
+- show_unit_menu = current_user.effective_institution_admin?(current_institution, client_ip: request_context.client_ip, client_hostname: request_context.client_hostname)
+
 = form_for(@item, url: submission_path(@item), remote: true,
            html: { id: "collection-form" }) do |f|
   = token_tag(nil)
@@ -9,30 +11,30 @@
   = f.hidden_field :stage, value: Item::Stages::SUBMITTING
   = f.hidden_field :initial_primary_collection_unit_id, value: f.object&.primary_collection&.primary_unit&.id
   = f.hidden_field :initial_primary_collection_id, value: f.object.primary_collection&.id
+  = hidden_field_tag :show_unit_menu, show_unit_menu
+  = hidden_field_tag :user_id, current_user.id
 
   - if current_institution.deposit_form_collection_help.present?
     .alert.alert-light
       = icon_for(:info)
       = current_institution.deposit_form_collection_help
 
-  %section#unit-section
-    %p Select the unit into which you would like to deposit the item.
+  - if show_unit_menu
+    %section#unit-section
+      %p Select the unit into which you would like to deposit the item.
 
-    .row.mb-3
-      .col-sm-10
-        -# This element is used only to populate the collection-select menu.
-        = select_tag(:unit_id, options_for_select(unit_tree_options(include_blank: f.object&.primary_collection&.primary_unit&.id.blank?)),
-                     class: "form-select")
-      .col-sm-2
-        .message
-          .text-success
-            %i.fa.fa-check
-            Value saved
+      .row.mb-3
+        .col-sm-10
+          -# This element is used only to populate the collection-select menu.
+          = select_tag(:unit_id, options_for_select(unit_tree_options(include_blank: f.object&.primary_collection&.primary_unit&.id.blank?)),
+                       class: "form-select")
+        .col-sm-2
+          .message
+            .text-success
+              %i.fa.fa-check
+              Value saved
 
   #no-collections-alert.text-danger{style: "display: none"}
-    = icon_for(:warning)
-    This unit does not contain any collections that you are allowed to submit to.
-    Please select a different unit.
 
   %section#collection-section{style: "display: none"}
     %p Select the collection into which you would like to deposit the item.

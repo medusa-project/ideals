@@ -110,8 +110,16 @@ class UsersController < ApplicationController
   # Responds to `GET /users/:id/submittable-collections` (XHR only)
   #
   def show_submittable_collections
-    set_submittable_collections_ivars
-    render partial: "show_submittable_collections_tab"
+    respond_to do |format|
+      format.json do
+        set_submittable_collections_ivars(apply_window: false)
+        render "show_submittable_collections"
+      end
+      format.any do
+        set_submittable_collections_ivars
+        render partial: "show_submittable_collections_tab"
+      end
+    end
   end
 
   ##
@@ -167,7 +175,7 @@ class UsersController < ApplicationController
     @count = @submissions_in_progress.count
   end
 
-  def set_submittable_collections_ivars
+  def set_submittable_collections_ivars(apply_window: true)
     @start                   = [params[:collections_start].to_i.abs, MAX_START].min
     @window                  = window_size
     @permitted_params        = params.permit(:collections_start, :items_start, :window)
@@ -175,9 +183,12 @@ class UsersController < ApplicationController
                                                                   client_ip:       request_context.client_ip,
                                                                   client_hostname: request_context.client_hostname) ?
                                  @user.institution.collections.where(buried: false) :
-                                 @user.cached_submittable_collections
+                                 @user.cached_submittable_collections.
+                                   joins(:collection).
+                                   order("collections.title").
+                                   map(&:collection)
     @count                   = @submittable_collections.count
-    if @submittable_collections.kind_of?(ActiveRecord::Relation)
+    if @submittable_collections.kind_of?(ActiveRecord::Relation) && apply_window
       @submittable_collections = @submittable_collections.
         offset(@start).
         limit(@window)

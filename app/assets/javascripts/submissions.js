@@ -173,12 +173,20 @@ const EditSubmissionView = {
         };
 
         /*********************** Collection section **************************/
-
+        /*
+        N.B.: if the user is effectively an institution administrator, this
+        section will have two menus: a unit menu and a dependent collection
+        menu, both containing all units & collections. Otherwise, there will be
+        only a collection menu containing the collections to which the user
+        is allowed to submit.
+        */
         const collectionForm     = form.filter("#collection-form");
         const unitsMenu          = $("[name=unit_id]");
         const collectionSection  = $("#collection-section");
         const collectionsMenu    = $("[name='item[primary_collection_id]']");
         const noCollectionsAlert = $("#no-collections-alert");
+        const userID             = $("[name=user_id]").val();
+        const showUnitMenu       = $("[name=show_unit_menu]").val() === "true";
 
         const setCollectionError = function (message) {
             setErrorAlert(collectionForm.find("#collection-messages"), message);
@@ -189,13 +197,17 @@ const EditSubmissionView = {
             if (collectionsMenu.val() > 0) {
                 setCollectionError(null);
             } else {
-                setCollectionError("Please select a unit and collection.");
+                setCollectionError("Please select a collection.");
                 return false;
             }
             return true;
         };
 
-        const fetchCollectionsForUnit = function (unitID, onComplete) {
+        /**
+         * Used for institution admins. For them, all collections are
+         * submittable.
+         */
+        const fetchCollectionsForUnit = function(unitID, onComplete) {
             collectionSection.hide();
             new IDEALS.Client().fetchUnitCollections(unitID, true, true, function (data) {
                 collectionsMenu.children().remove();
@@ -207,6 +219,33 @@ const EditSubmissionView = {
                     });
                     collectionSection.show();
                 } else {
+                    noCollectionsAlert.text("This unit does not contain any " +
+                        "collections. Please select a different unit.")
+                    noCollectionsAlert.show();
+                }
+                if (onComplete) {
+                    onComplete();
+                }
+            });
+        };
+
+        /**
+         * Used for non-institution admins.
+         */
+        const fetchSubmittableCollections = function(onComplete) {
+            collectionSection.hide();
+            new IDEALS.Client().fetchSubmittableCollections(userID, function(data) {
+                collectionsMenu.children().remove();
+                if (data.results.length > 0) {
+                    noCollectionsAlert.hide();
+                    $.each(data.results, function(index, value) {
+                        collectionsMenu.append(
+                            "<option value='" + value.id + "'>" + value.title + "</option>");
+                    });
+                    collectionSection.show();
+                } else {
+                    noCollectionsAlert.text("There are no collections that you " +
+                        "are allowed to submit to. Please contact us for help.");
                     noCollectionsAlert.show();
                 }
                 if (onComplete) {
@@ -227,19 +266,28 @@ const EditSubmissionView = {
             self.save(collectionsMenu);
         });
 
-        // Restore initial unit & collection selection values. If there is nothing
-        // to restore, select the blank item in the unit menu, and hide the
-        // collection menu.
-        let unitID = $("[name='item[initial_primary_collection_unit_id]']").val();
-        if (unitID > 0) {
-            fetchCollectionsForUnit(unitID, function () {
-                unitsMenu.val(unitID);
-                const collectionID = $("[name='item[initial_primary_collection_id]']").val();
-                if (collectionID > 0) {
+        // Restore initial unit & collection selection values. If there is
+        // nothing to restore, select the blank item in the unit menu, and hide
+        // the collection menu.
+        if (showUnitMenu) {
+            let unitID = $("[name='item[initial_primary_collection_unit_id]']").val();
+            if (unitID > 0) {
+                fetchCollectionsForUnit(unitID, function () {
+                    unitsMenu.val(unitID);
+                    const collectionID = $("[name='item[initial_primary_collection_id]']").val();
+                    if (collectionID > 0) {
+                        collectionsMenu.val(collectionID);
+                    }
+                    self.save(collectionsMenu);
+                });
+            }
+        } else {
+            const collectionID = $("[name='item[initial_primary_collection_id]']").val();
+            if (collectionID > 0) {
+                fetchSubmittableCollections(function() {
                     collectionsMenu.val(collectionID);
-                }
-                self.save(collectionsMenu);
-            });
+                });
+            }
         }
 
         /************************** Access section *****************************/

@@ -26,6 +26,20 @@ IDEALS.Client = function() {
     };
 
     /**
+     * @param userID {Number}
+     * @param onSuccess {Function} Function accepting response data.
+     */
+    this.fetchSubmittableCollections = function(userID, onSuccess) {
+        const url = ROOT_URL + "/users/" + userID + "/submittable-collections.json";
+        $.ajax({
+            method: "GET",
+            url:    url,
+            headers: {"X-CSRF-Token": CSRF_TOKEN},
+            success: onSuccess
+        });
+    };
+
+    /**
      * @param unitID {Number}
      * @param includeChildren {Boolean}
      * @param onlySubmitterAccess {Boolean}

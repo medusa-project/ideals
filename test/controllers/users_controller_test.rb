@@ -390,6 +390,14 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  test "show_submittable_collections() returns JSON" do
+    log_in_as(users(:southwest_admin))
+    get user_submittable_collections_path(users(:southwest_admin), format: :json), xhr: true
+    assert_response :ok
+    struct = JSON.parse(response.body)
+    assert struct['results'].length > 0
+  end
+
   test "show_submittable_collections() respects role limits" do
     log_in_as(users(:southwest_admin))
     user = users(:southwest)
