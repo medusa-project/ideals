@@ -768,6 +768,13 @@ class Institution < ApplicationRecord
   end
 
   ##
+  # @return [String]
+  #
+  def to_s
+    self.name
+  end
+
+  ##
   # Updates SAML IdP information from a federation metadata file.
   #
   # @param metadata_xml_file [File]

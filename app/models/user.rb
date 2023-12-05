@@ -524,6 +524,13 @@ class User < ApplicationRecord
   end
 
   ##
+  # @return [String]
+  #
+  def to_s
+    self.email
+  end
+
+  ##
   # @param unit [Unit]
   # @param client_ip [String]
   # @param client_hostname [String]

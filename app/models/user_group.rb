@@ -141,6 +141,12 @@ class UserGroup < ApplicationRecord
     self.defines_institution || SYSTEM_REQUIRED_GROUPS.include?(self.key)
   end
 
+  ##
+  # @return [String]
+  #
+  def to_s
+    self.name
+  end
 
   private
 
