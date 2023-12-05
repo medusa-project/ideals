@@ -17,6 +17,9 @@
 #
 # # Attributes
 #
+# * `accepts_submissions`   If true, the collection accepts submissions,
+#                           subject to the usual authorization. If false, it
+#                           doesn't, regardless of authorization.
 # * `buried`                Indicates a "near-deletion" which leaves behind
 #                           only a row in the table to facilitate display of a
 #                           tombstone record. The burial is not reversible.

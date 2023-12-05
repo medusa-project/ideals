@@ -613,9 +613,10 @@ class CollectionsController < ApplicationController
   end
 
   def collection_params
-    params.require(:collection).permit(:description, :introduction,
-                                       :institution_id, :metadata_profile_id,
-                                       :parent_id, :provenance, :rights,
+    params.require(:collection).permit(:accepts_submissions, :description,
+                                       :introduction, :institution_id,
+                                       :metadata_profile_id, :parent_id,
+                                       :provenance, :rights,
                                        :short_description,
                                        :submission_profile_id,
                                        :submissions_reviewed,

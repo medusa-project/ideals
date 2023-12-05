@@ -411,7 +411,8 @@ class User < ApplicationRecord
   def effective_submittable_collections(client_ip:,
                                         client_hostname:,
                                         task:            nil)
-    collections = self.institution.collections.where(buried: false)
+    collections = self.institution.collections.where(accepts_submissions: true,
+                                                     buried:              false)
     if self.effective_institution_admin?(self.institution,
                                          client_ip:       client_ip,
                                          client_hostname: client_hostname)

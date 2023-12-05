@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_12_04_210051) do
+ActiveRecord::Schema[7.1].define(version: 2023_12_05_202626) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -141,6 +141,8 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_04_210051) do
     t.text "provenance"
     t.boolean "buried", default: false, null: false
     t.bigint "institution_id", null: false
+    t.boolean "accepts_submissions", default: true, null: false
+    t.index ["accepts_submissions"], name: "index_collections_on_accepts_submissions"
     t.index ["buried"], name: "index_collections_on_buried"
     t.index ["institution_id"], name: "index_collections_on_institution_id"
     t.index ["metadata_profile_id"], name: "index_collections_on_metadata_profile_id"

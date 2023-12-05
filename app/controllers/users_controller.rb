@@ -182,7 +182,8 @@ class UsersController < ApplicationController
     @submittable_collections = @user.effective_institution_admin?(@user.institution,
                                                                   client_ip:       request_context.client_ip,
                                                                   client_hostname: request_context.client_hostname) ?
-                                 @user.institution.collections.where(buried: false) :
+                                 @user.institution.collections.where(accepts_submissions: true,
+                                                                     buried:              false) :
                                  @user.cached_submittable_collections.
                                    joins(:collection).
                                    order("collections.title").

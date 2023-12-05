@@ -48,12 +48,15 @@
           = @submission_profile.name
       - else
         = raw("Not assigned (falling back to #{link_to(@submission_profile.name, @submission_profile)})")
+    %dt Accepts Submissions
+    %dd= boolean(@collection.accepts_submissions, style: :word)
     %dt Submissions Reviewed
     %dd= boolean(@collection.submissions_reviewed, style: :word, invert_color: true)
     %dt File Downloads
     %dd= number_with_delimiter(@num_downloads)
     %dt Items Awaiting Review
     %dd= number_with_delimiter(@num_submitted_items)
+    %dt Created
     %dd
       = local_time @collection.created_at
       - create_event = @collection.create_event

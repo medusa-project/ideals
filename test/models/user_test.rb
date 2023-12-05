@@ -499,6 +499,14 @@ class UserTest < ActiveSupport::TestCase
                                                         client_hostname: "localhost").count
   end
 
+  test "effective_submittable_collections() does not include collections that
+  are not accepting submissions" do
+    user = users(:southeast_collection1_collection1_submitter)
+    user.institution.collections.update_all(accepts_submissions: false)
+    assert_empty user.effective_submittable_collections(client_ip:       "127.0.0.1",
+                                                        client_hostname: "localhost")
+  end
+
   test "effective_submittable_collections() returns an empty set for ordinary
   users" do
     assert_empty users(:southwest).effective_submittable_collections(client_ip:       "127.0.0.1",

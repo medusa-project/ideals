@@ -1,3 +1,7 @@
 collection1_admin:
-  collection: southeast_collection1
   user:       southeast_sysadmin
+  collection: southeast_collection1
+
+southeast_collection1_collection1_submitter_collection1_collection:
+  user:       southeast_collection1_collection1_submitter
+  collection: southeast_collection1_collection1
