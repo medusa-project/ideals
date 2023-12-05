@@ -104,6 +104,13 @@ class TasksControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  test "show() returns JSON" do
+    log_in_as(users(:southwest_sysadmin))
+    get task_path(tasks(:running), format: :json), xhr: true
+    struct = JSON.parse(response.body)
+    assert_not_nil struct['id']
+  end
+
   test "show() respects role limits" do
     log_in_as(users(:southwest_sysadmin))
     get task_path(tasks(:running)), xhr: true

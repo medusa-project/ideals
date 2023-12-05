@@ -40,7 +40,11 @@ class TasksController < ApplicationController
   # Responds to `GET /tasks/:id` (XHR only)
   #
   def show
-    render partial: "show", locals: { task: @task }
+    respond_to do |format|
+      format.html { render partial: "show", locals: { task: @task } }
+      format.json { render "show" }
+    end
+
   end
 
 
