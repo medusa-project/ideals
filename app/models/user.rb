@@ -19,16 +19,24 @@
 #
 # # Attributes
 #
-# * `created_at`     Managed by ActiveRecord.
-# * `email`          Email address.
-# * `enabled`        Whether the user is able to log in.
-# * `institution_id` Foreign key to {Institution} representing the institution
-#                    of which the instance is a member. All non-sysadmin users
-#                    can only log into and browse around their home
-#                    institution's space in the IR.
-# * `name`           The user's name in whatever format they choose to provide
-#                    it.
-# * `updated_at:     Managed by ActiveRecord.
+# * `caching_submittable_collections_task_id` Set to the ID of the {Task}
+#                                       associated with a
+#                                       {CacheSubmittableCollectionsJob} while
+#                                       it's working.
+# * `created_at`                        Managed by ActiveRecord.
+# * `email`                             Email address.
+# * `enabled`                           Whether the user is able to log in.
+# * `institution_id`                    Foreign key to {Institution}
+#                                       representing the institution of which
+#                                       the user is a member. Non-sysadmin
+#                                       users can only log into and browse
+#                                       around their home institution's space
+#                                       in the IR.
+# * `name`                              The user's name.
+# * `updated_at`                        Managed by ActiveRecord.
+# * `submittable_collections_cached_at` The last time
+#                                       {cached_submittable_collections} was
+#                                       updated.
 #
 class User < ApplicationRecord
 
@@ -36,11 +44,15 @@ class User < ApplicationRecord
 
   # Only Shibboleth users will have one of these.
   belongs_to :affiliation, optional: true
+  belongs_to :caching_submittable_collections_task, optional: true
   belongs_to :institution, optional: true
   # Only Shibboleth users will have one of these.
   has_one :department
   has_one :credential, inverse_of: :user
-  has_many :collection_administrators, class_name: "CollectionAdministrator"
+  # This relationship is not "live" - it needs to be populated manually
+  # (typically by effective_submittable_collections?()).
+  has_many :cached_submittable_collections, class_name: "SubmittableCollection"
+  has_many :collection_administrators
   has_many :events
   has_many :institution_administrators
   has_many :administering_institutions, through: :institution_administrators,
@@ -386,6 +398,10 @@ class User < ApplicationRecord
   end
 
   ##
+  # N.B.: this is expensive and slows as the collection count increases.
+  # Consider invoking {CacheSubmittableCollectionsJob} and then reading
+  # {cached_submittable_collections}.
+  #
   # @param client_ip [String]
   # @param client_hostname [String]
   # @param task [Task] Supply to receive progress updates.

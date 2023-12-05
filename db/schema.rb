@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_11_03_155627) do
+ActiveRecord::Schema[7.1].define(version: 2023_12_04_210051) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -742,6 +742,15 @@ ActiveRecord::Schema[7.1].define(version: 2023_11_03_155627) do
     t.index ["institution_id"], name: "index_submission_profiles_on_institution_id"
   end
 
+  create_table "submittable_collections", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "collection_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "collection_id"], name: "index_submittable_collections_on_user_id_and_collection_id", unique: true
+    t.index ["user_id"], name: "index_submittable_collections_on_user_id"
+  end
+
   create_table "submitter_groups", force: :cascade do |t|
     t.bigint "collection_id", null: false
     t.bigint "user_group_id", null: false
@@ -846,6 +855,8 @@ ActiveRecord::Schema[7.1].define(version: 2023_11_03_155627) do
     t.bigint "affiliation_id"
     t.bigint "institution_id", null: false
     t.boolean "enabled", default: true, null: false
+    t.datetime "submittable_collections_cached_at"
+    t.bigint "caching_submittable_collections_task_id"
     t.index ["affiliation_id"], name: "index_users_on_affiliation_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["institution_id"], name: "index_users_on_institution_id"
@@ -945,6 +956,8 @@ ActiveRecord::Schema[7.1].define(version: 2023_11_03_155627) do
   add_foreign_key "registered_elements", "vocabularies", on_update: :cascade, on_delete: :restrict
   add_foreign_key "submission_profile_elements", "registered_elements", on_update: :cascade, on_delete: :cascade
   add_foreign_key "submission_profile_elements", "submission_profiles", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "submittable_collections", "collections", on_update: :cascade, on_delete: :cascade
+  add_foreign_key "submittable_collections", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "submitter_groups", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "submitter_groups", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "tasks", "institutions", on_update: :cascade, on_delete: :cascade
@@ -963,6 +976,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_11_03_155627) do
   add_foreign_key "user_groups_users", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "users", "affiliations", on_update: :cascade, on_delete: :nullify
   add_foreign_key "users", "institutions", on_update: :cascade, on_delete: :restrict
+  add_foreign_key "users", "tasks", column: "caching_submittable_collections_task_id", on_update: :cascade, on_delete: :nullify
   add_foreign_key "vocabularies", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "vocabulary_terms", "vocabularies", on_update: :cascade, on_delete: :cascade
 end

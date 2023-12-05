@@ -69,6 +69,16 @@ class SessionsController < ApplicationController
                       hostname:    hostname,
                       institution: current_institution,
                       auth_hash:   auth).save!
+
+    if user.caching_submittable_collections_task_id.blank? &&
+      (!user.submittable_collections_cached_at ||
+        (user.submittable_collections_cached_at &&
+          user.submittable_collections_cached_at < 12.hours.ago))
+      CacheSubmittableCollectionsJob.perform_later(user:            user,
+                                                   client_ip:       request_context.client_ip,
+                                                   client_hostname: request_context.client_hostname)
+    end
+
     return_url_ = return_url
     # Protect against session fixation:
     # https://guides.rubyonrails.org/security.html#session-fixation-countermeasures
