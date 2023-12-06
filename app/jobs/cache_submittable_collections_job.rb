@@ -32,7 +32,9 @@ class CacheSubmittableCollectionsJob < ApplicationJob
       user.effective_submittable_collections(client_ip:       client_ip,
                                              client_hostname: client_hostname,
                                              task:            self.task).each do |collection|
-        user.cached_submittable_collections.build(collection: collection)
+        unless user.cached_submittable_collections.map(&:collection_id).include?(collection.id)
+          user.cached_submittable_collections.build(collection: collection)
+        end
       end
       user.submittable_collections_cached_at = Time.now
       user.save!
