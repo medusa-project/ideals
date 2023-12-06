@@ -701,4 +701,68 @@ class UserPolicyTest < ActiveSupport::TestCase
     assert !policy.update_properties?
   end
 
+  # update_submittable_collections?()
+
+  test "update_submittable_collections?() returns false with a nil request
+  context user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @object_user.institution)
+    policy = UserPolicy.new(context, @object_user)
+    assert !policy.update_submittable_collections?
+  end
+
+  test "update_submittable_collections?() does not authorize non-sysadmins" do
+    user    = users(:southwest_shibboleth)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy  = UserPolicy.new(context, @object_user)
+    assert !policy.update_submittable_collections?
+  end
+
+  test "update_submittable_collections?() authorizes the same user" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy = UserPolicy.new(context, context.user)
+    assert policy.update_submittable_collections?
+  end
+
+  test "update_submittable_collections?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    policy = UserPolicy.new(context, @object_user)
+    assert policy.update_submittable_collections?
+  end
+
+  test "update_submittable_collections?() authorizes administrators of the same
+  institution" do
+    subject_user = users(:southwest_admin)
+    object_user  = users(:southwest)
+    context = RequestContext.new(user:        subject_user,
+                                 institution: subject_user.institution)
+    policy  = UserPolicy.new(context, object_user)
+    assert policy.update_submittable_collections?
+  end
+
+  test "update_submittable_collections?() does not authorize administrators of
+  a different institution" do
+    subject_user = users(:southwest_admin)
+    object_user  = users(:northeast)
+    context = RequestContext.new(user:        subject_user,
+                                 institution: subject_user.institution)
+    policy  = UserPolicy.new(context, object_user)
+    assert !policy.update_submittable_collections?
+  end
+
+  test "update_submittable_collections?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = UserPolicy.new(context, @object_user)
+    assert !policy.update_submittable_collections?
+  end
+
 end

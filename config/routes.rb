@@ -393,6 +393,8 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/update-properties", to: "users#update_properties", via: [:patch, :post],
           constraints: lambda { |request| request.xhr? }
+    match "/update-submittable-collections", to: "users#update_submittable_collections", via: [:patch, :post],
+          constraints: lambda { |request| request.xhr? }
   end
 
   # Vocabularies

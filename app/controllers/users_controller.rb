@@ -165,6 +165,27 @@ class UsersController < ApplicationController
     end
   end
 
+  ##
+  # Responds to `PATCH/POST /users/:id/update-submittable-collections`
+  # (XHR only)
+  #
+  def update_submittable_collections
+    if @user.caching_submittable_collections_task_id.present?
+      render plain: "A task is already in progress.", status: :conflict
+      return
+    end
+    @task = Task.create!(name:        CacheSubmittableCollectionsJob.name,
+                         user:        @user,
+                         institution: @user.institution,
+                         status_text: "Waiting...",
+                         queue:       CacheSubmittableCollectionsJob::QUEUE)
+    CacheSubmittableCollectionsJob.perform_later(user:            @user,
+                                                 client_ip:       request_context.client_ip,
+                                                 client_hostname: request_context.client_hostname,
+                                                 task:            @task)
+    redirect_to task_path(@task, format: :json)
+  end
+
 
   private
 

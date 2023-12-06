@@ -82,6 +82,10 @@ class UserPolicy < ApplicationPolicy
     institution_admin_or_same_user
   end
 
+  def update_submittable_collections
+    institution_admin_or_same_user
+  end
+
 
   private
 

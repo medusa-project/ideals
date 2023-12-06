@@ -40,6 +40,20 @@ IDEALS.Client = function() {
     };
 
     /**
+     * @param taskID {Number}
+     * @param onSuccess {Function} Function accepting response data.
+     */
+    this.fetchTask = function(taskID, onSuccess) {
+        const url = ROOT_URL + "/tasks/" + taskID + ".json";
+        $.ajax({
+            method: "GET",
+            url:    url,
+            headers: {"X-CSRF-Token": CSRF_TOKEN},
+            success: onSuccess
+        });
+    };
+
+    /**
      * @param unitID {Number}
      * @param includeChildren {Boolean}
      * @param onlySubmitterAccess {Boolean}

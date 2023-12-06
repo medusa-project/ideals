@@ -13,6 +13,7 @@
   = f.hidden_field :initial_primary_collection_id, value: f.object.primary_collection&.id
   = hidden_field_tag :show_unit_menu, show_unit_menu
   = hidden_field_tag :user_id, current_user.id
+  = hidden_field_tag :caching_submittable_collections_task_id, current_user.caching_submittable_collections_task_id
 
   - if current_institution.deposit_form_collection_help.present?
     .alert.alert-light
@@ -34,7 +35,18 @@
               %i.fa.fa-check
               Value saved
 
-  #no-collections-alert.text-danger{style: "display: none"}
+  #collection-check-in-progress-alert.mb-3{style: "display: none"}
+    %p
+      Checking to determine which collections you are allowed to submit to.
+      Please wait&hellip;
+    .progress
+      .progress-bar.progress-bar-striped.progress-bar-animated.bg-info{"aria-valuemax": "100",
+                                                                       "aria-valuemin": "0",
+                                                                       "aria-valuenow": "0",
+                                                                       role:            "progressbar",
+                                                                       style:           "width: 0%"}
+
+  #no-collections-alert.mb-3.text-danger{style: "display: none"}
 
   %section#collection-section{style: "display: none"}
     %p Select the collection into which you would like to deposit the item.
@@ -49,7 +61,16 @@
             %i.fa.fa-check
             Value saved
 
-  .text-center.mb-3
-    %button.btn.btn-light.step-1-to-2{type: "button"}
-      Next Step
-      %i.fa.fa-arrow-right
+#check-collections.alert.alert-light.mb-3
+  %p
+    = icon_for(:info)
+    If you can't find the collection you're looking for in the menu above, it
+    may have been added or had its permissions changed recently. Try checking for it again:
+  = form_with(url: user_update_submittable_collections_path(current_user), method: :post) do
+    = submit_tag("Check Again", class: "btn btn-secondary btn-sm mb-3" )
+  %p If you still can't find it, please contact us.
+
+.text-center.mt-3.mb-3
+  %button.btn.btn-light.step-1-to-2{type: "button"}
+    Next Step
+    %i.fa.fa-arrow-right

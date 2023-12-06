@@ -598,4 +598,60 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
+  # update_submittable_collections()
+
+  test "update_submittable_collections() returns HTTP 404 for unscoped
+  requests" do
+    host! ::Configuration.instance.main_host
+    patch user_update_submittable_collections_path(users(:southwest)), xhr: true
+    assert_response :not_found
+  end
+
+  test "update_submittable_collections() returns HTTP 403 for logged-out users" do
+    patch user_update_submittable_collections_path(users(:southwest)), xhr: true
+    assert_response :forbidden
+  end
+
+  test "update_submittable_collections() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    patch user_update_submittable_collections_path(users(:southwest_admin)), xhr: true
+    assert_response :forbidden
+  end
+
+  test "update_submittable_collections() updates a user's submittable collections" do
+    skip # TODO: figure out why jobs aren't running in test
+    user = users(:southwest)
+    collection = collections(:southwest_unit1_collection1)
+    collection.submitting_users << user
+    collection.save!
+    log_in_as(user)
+    patch user_update_submittable_collections_path(user), xhr: true
+    user.reload
+    assert_not_empty user.cached_submittable_collections
+  end
+
+  test "update_submittable_collections() redirects to the created Task" do
+    user = users(:southwest_admin)
+    log_in_as(user)
+    patch user_update_submittable_collections_path(user), xhr: true
+    task = Task.all.order(created_at: :desc).limit(1).first
+    assert_redirected_to task_path(task, format: :json)
+  end
+
+  test "update_submittable_collections() returns HTTP 409 if a check is already
+  in progress" do
+    user = users(:southwest_admin)
+    log_in_as(user)
+    user.update!(caching_submittable_collections_task: tasks(:running))
+    patch user_update_submittable_collections_path(user), xhr: true
+    assert_response :conflict
+  end
+
+  test "update_submittable_collections() returns HTTP 404 for nonexistent
+  users" do
+    log_in_as(users(:southwest_admin))
+    patch "/users/99999999/update-submittable-collections", xhr: true
+    assert_response :not_found
+  end
+
 end

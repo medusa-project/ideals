@@ -180,19 +180,23 @@ const EditSubmissionView = {
         only a collection menu containing the collections to which the user
         is allowed to submit.
         */
-        const collectionForm     = form.filter("#collection-form");
-        const unitsMenu          = $("[name=unit_id]");
-        const collectionSection  = $("#collection-section");
-        const collectionsMenu    = $("[name='item[primary_collection_id]']");
-        const noCollectionsAlert = $("#no-collections-alert");
-        const userID             = $("[name=user_id]").val();
-        const showUnitMenu       = $("[name=show_unit_menu]").val() === "true";
+        const collectionForm          = form.filter("#collection-form");
+        const unitsMenu               = $("[name=unit_id]");
+        const collectionSection       = $("#collection-section");
+        const collectionsMenu         = $("[name='item[primary_collection_id]']");
+        const collectionCheckInProgressAlert = $("#collection-check-in-progress-alert");
+        const noCollectionsAlert      = $("#no-collections-alert");
+        const checkCollectionsSection = $("#check-collections");
+        const userID                  = $("[name=user_id]").val();
+        const showUnitMenu            = $("[name=show_unit_menu]").val() === "true";
+        const cachingSubmittableCollectionsTaskID =
+            $("[name=caching_submittable_collections_task_id]").val();
 
         const setCollectionError = function (message) {
             setErrorAlert(collectionForm.find("#collection-messages"), message);
         };
 
-        this.validateCollectionSection = function () {
+        this.validateCollectionSection = function() {
             // Check that a collection has been selected.
             if (collectionsMenu.val() > 0) {
                 setCollectionError(null);
@@ -234,6 +238,7 @@ const EditSubmissionView = {
          */
         const fetchSubmittableCollections = function(onComplete) {
             collectionSection.hide();
+            noCollectionsAlert.hide();
             new IDEALS.Client().fetchSubmittableCollections(userID, function(data) {
                 collectionsMenu.children().remove();
                 if (data.results.length > 0) {
@@ -254,41 +259,94 @@ const EditSubmissionView = {
             });
         };
 
-        unitsMenu.on("change", function () {
+        unitsMenu.on("change", function() {
             fetchCollectionsForUnit($(this).val(), function () {
                 // (No need to validate as this menu is always valid)
                 self.save(collectionsMenu);
             });
         });
 
-        collectionsMenu.on("change", function () {
+        collectionsMenu.on("change", function() {
             // (No need to validate as this menu is always valid)
             self.save(collectionsMenu);
         });
 
-        // Restore initial unit & collection selection values. If there is
-        // nothing to restore, select the blank item in the unit menu, and hide
-        // the collection menu.
-        if (showUnitMenu) {
-            let unitID = $("[name='item[initial_primary_collection_unit_id]']").val();
-            if (unitID > 0) {
-                fetchCollectionsForUnit(unitID, function () {
-                    unitsMenu.val(unitID);
-                    const collectionID = $("[name='item[initial_primary_collection_id]']").val();
-                    if (collectionID > 0) {
-                        collectionsMenu.val(collectionID);
+        /**
+         * Polls the task associated with the collection check.
+         */
+        const pollTask = function(taskID) {
+            collectionSection.hide();
+            noCollectionsAlert.hide();
+            collectionCheckInProgressAlert.show();
+            checkCollectionsSection.hide();
+            const client = new IDEALS.Client();
+            const interval = setInterval(function() {
+                client.fetchTask(taskID, function(data) {
+                    const progress    = (data.percent_complete * 100).toFixed(1);
+                    const progressBar = collectionCheckInProgressAlert.find(".progress-bar");
+                    progressBar.attr("aria-valuenow", progress);
+                    const pctString = progress + "%";
+                    progressBar.css("width", pctString);
+                    switch (data.status) {
+                        case "Succeeded":
+                            clearInterval(interval);
+                            fetchSubmittableCollections(function() {
+                                collectionCheckInProgressAlert.hide();
+                                checkCollectionsSection.show();
+                            });
+                            break;
+                        case "Failed":
+                            collectionCheckInProgressAlert.find("p").text(
+                                "There was an error checking collection access.");
+                            clearInterval(interval);
+                            break;
                     }
-                    self.save(collectionsMenu);
                 });
-            }
+            }, 3000);
+        };
+
+        if (cachingSubmittableCollectionsTaskID) {
+            pollTask(cachingSubmittableCollectionsTaskID);
         } else {
-            const collectionID = $("[name='item[initial_primary_collection_id]']").val();
-            if (collectionID > 0) {
+            collectionCheckInProgressAlert.hide();
+            checkCollectionsSection.show();
+            // Restore initial unit & collection selection values. If there is
+            // nothing to restore, select the blank item in the unit menu, and
+            // hide the collection menu.
+            if (showUnitMenu) {
+                let unitID = $("[name='item[initial_primary_collection_unit_id]']").val();
+                if (unitID > 0) {
+                    fetchCollectionsForUnit(unitID, function () {
+                        unitsMenu.val(unitID);
+                        const collectionID = $("[name='item[initial_primary_collection_id]']").val();
+                        if (collectionID > 0) {
+                            collectionsMenu.val(collectionID);
+                        }
+                        self.save(collectionsMenu);
+                    });
+                }
+            } else {
+                const collectionID = $("[name='item[initial_primary_collection_id]']").val();
                 fetchSubmittableCollections(function() {
                     collectionsMenu.val(collectionID);
                 });
             }
         }
+
+        checkCollectionsSection.find("form").on("submit", function() {
+            const CSRF_TOKEN = $("meta[name=csrf-token]").attr("content");
+            const url        = $(this).attr("action");
+            $.ajax({
+                method:  "POST",
+                url:     url,
+                headers: {"X-CSRF-Token": CSRF_TOKEN},
+                success: function(data) {
+                    console.log(data);
+                    pollTask(data.id);
+                }
+            });
+            return false;
+        });
 
         /************************** Access section *****************************/
 
