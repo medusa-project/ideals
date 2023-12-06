@@ -2,6 +2,11 @@
 # N.B.: Connection settings should not be edited in this file; edit the main
 # application configuration instead.
 #
+# N.B. 2: The "*_2" databases enable the use of separate connection pools.
+# The use case for this is to be able to update certain ActiveRecord instances
+# from inside `ActiveRecord::Base.transaction` blocks and for those updates to
+# be visible outside of the transaction. (See the Task model, for example.)
+#
 
 #############################################################################
 #                  ENVIRONMENTS USING PLAIN TEXT CONFIG                     #
@@ -23,7 +28,7 @@ default: &default
   template:     template0
   query_cache:  1000 # default in Rails 7.1 is 100
 
-development:
+development: &development
   <<: *default
   host:     <%= dev_config['primary_db'] ? dev_config['primary_db']['host'] : nil %>
   port:     <%= dev_config['primary_db'] ? dev_config['primary_db']['port'] : nil %>
@@ -31,10 +36,13 @@ development:
   username: <%= dev_config['primary_db'] ? dev_config['primary_db']['username'] : nil %>
   password: <%= dev_config['primary_db'] ? dev_config['primary_db']['password'] : nil %>
 
+development_2:
+  <<: *development
+
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
-test:
+test: &test
   <<: *default
   host:     <%= test_config['primary_db'] ? test_config['primary_db']['host'] : nil %>
   port:     <%= test_config['primary_db'] ? test_config['primary_db']['port'] : nil %>
@@ -42,13 +50,16 @@ test:
   username: <%= test_config['primary_db'] ? test_config['primary_db']['username'] : nil %>
   password: <%= test_config['primary_db'] ? test_config['primary_db']['password'] : nil %>
 
+test_2:
+  <<: *test
+
 #############################################################################
 #                   ENVIRONMENTS USING ENCRYPTED CONFIG                     #
 #############################################################################
 
 <% db = Rails.application.credentials.dig(:primary_db) %>
 
-demo:
+demo: &demo
   <<: *default
   pool:     <%= 2 * ENV.fetch("RAILS_MAX_THREADS") { 5 }.to_i %>
   host:     <%= db ? db[:host] : nil %>
@@ -57,7 +68,10 @@ demo:
   username: <%= db ? db[:username] : nil %>
   password: <%= db ? db[:password] : nil%>
 
-production:
+demo_2:
+  <<: *demo
+
+production: &production
   <<: *default
   pool:     <%= 2 * ENV.fetch("RAILS_MAX_THREADS") { 5 }.to_i %>
   host:     <%= db ? db[:host] : nil %>
@@ -65,3 +79,6 @@ production:
   database: <%= db ? db[:database] : nil %>
   username: <%= db ? db[:username] : nil %>
   password: <%= db ? db[:password] : nil %>
+
+production_2:
+  <<: *production

@@ -99,6 +99,11 @@ class Task < ApplicationRecord
 
   before_save :constrain_progress
 
+  # Instances will often be updated from inside transactions, outside of which
+  # any updates would not be visible. So, we use a different database
+  # connection.
+  establish_connection "#{Rails.env}_2".to_sym
+
   ##
   # @return [Time,nil]
   #
@@ -115,12 +120,10 @@ class Task < ApplicationRecord
   # Fails the instance by setting its status to {Status::FAILED}.
   #
   def fail(detail: nil, backtrace: nil)
-    self.class.connection_pool.with_connection do
-      self.update!(status:     Status::FAILED,
-                   stopped_at: Time.now,
-                   detail:     detail,
-                   backtrace:  backtrace)
-    end
+    self.update!(status:     Status::FAILED,
+                 stopped_at: Time.now,
+                 detail:     detail,
+                 backtrace:  backtrace)
   end
 
   def failed?
@@ -131,9 +134,7 @@ class Task < ApplicationRecord
   # Pauses the instance by setting its status to {Status::PAUSED}.
   #
   def pause
-    self.class.connection_pool.with_connection do
-      self.update!(status: Status::PAUSED)
-    end
+    self.update!(status: Status::PAUSED)
   end
 
   def paused?
@@ -161,9 +162,7 @@ class Task < ApplicationRecord
       self.started_at       = Time.now if self.started_at.blank?
       self.status           = Status::RUNNING if progress < 1
       self.status_text      = status_text if status_text.present?
-      self.class.connection_pool.with_connection do
-        self.save!
-      end
+      self.save!
     end
   end
 
@@ -175,10 +174,8 @@ class Task < ApplicationRecord
   # Stops the instance by setting its status to {Status::STOPPED}.
   #
   def stop
-    self.class.connection_pool.with_connection do
-      self.update!(status:     Status::STOPPED,
-                   stopped_at: Time.now)
-    end
+    self.update!(status:     Status::STOPPED,
+                 stopped_at: Time.now)
   end
 
   ##
@@ -200,9 +197,7 @@ class Task < ApplicationRecord
     self.stopped_at       = Time.now
     self.backtrace        = nil
     self.status_text      = status_text if status_text.present?
-    self.class.connection_pool.with_connection do
-      self.save!
-    end
+    self.save!
   end
 
   def succeeded?
