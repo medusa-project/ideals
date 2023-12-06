@@ -118,6 +118,15 @@ class TaskPolicyTest < ActiveSupport::TestCase
     assert !policy.show?
   end
 
+  test "show?() authorizes the initiator of the Task" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    @task.update!(user: user)
+    policy  = TaskPolicy.new(context, @task)
+    assert policy.show?
+  end
+
   test "show?() authorizes sysadmins" do
     user    = users(:southwest_sysadmin)
     context = RequestContext.new(user:        user,

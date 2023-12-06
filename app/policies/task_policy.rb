@@ -29,6 +29,8 @@ class TaskPolicy < ApplicationPolicy
       return AUTHORIZED_RESULT
     elsif @ctx_institution != @task.institution
       return WRONG_SCOPE_RESULT
+    elsif @user && @task.user && @user == @task.user
+      return AUTHORIZED_RESULT
     end
     effective_institution_admin(@user, @task.institution, @role_limit)
   end
