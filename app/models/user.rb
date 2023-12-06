@@ -222,6 +222,7 @@ class User < ApplicationRecord
   # @return [Boolean]
   #
   def belongs_to_ad_group?(group)
+    return false unless self.email.end_with?("@illinois.edu")
     group = group.to_s
     if Rails.env.development? || Rails.env.test?
       groups = Configuration.instance.ad.dig(:groups, self.email)
