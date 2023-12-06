@@ -314,6 +314,7 @@ const EditSubmissionView = {
             // nothing to restore, select the blank item in the unit menu, and
             // hide the collection menu.
             if (showUnitMenu) {
+                checkCollectionsSection.hide();
                 let unitID = $("[name='item[initial_primary_collection_unit_id]']").val();
                 if (unitID > 0) {
                     fetchCollectionsForUnit(unitID, function () {
