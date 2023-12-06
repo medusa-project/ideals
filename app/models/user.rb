@@ -429,7 +429,9 @@ class User < ApplicationRecord
                                               consider_institution_admin: false)
         submittable_collections << collection
       end
-      task&.progress(index + 1 / count.to_f)
+      if index % 10 == 0
+        task&.progress((index + 1) / count.to_f)
+      end
     end
     submittable_collections
   end
