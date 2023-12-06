@@ -222,12 +222,13 @@ class User < ApplicationRecord
   # @return [Boolean]
   #
   def belongs_to_ad_group?(group)
-    return false unless self.email.end_with?("@illinois.edu")
     group = group.to_s
     if Rails.env.development? || Rails.env.test?
       groups = Configuration.instance.ad.dig(:groups, self.email)
       return groups&.include?(group)
     end
+
+    return false unless self.email.end_with?("@illinois.edu")
     cache_key = Digest::MD5.hexdigest("#{self.email} ismemberof #{group}")
     Rails.cache.fetch(cache_key, expires_in: 12.hours) do
       begin
@@ -435,6 +436,7 @@ class User < ApplicationRecord
         task&.progress((index + 1) / count.to_f)
       end
     end
+    task&.succeed
     submittable_collections
   end
 

@@ -494,9 +494,8 @@ class UserTest < ActiveSupport::TestCase
   test "effective_submittable_collections() returns all submitting collections
   for collection submitters" do
     user = users(:southeast_collection1_collection1_submitter)
-    assert_equal user.submitting_collections.count,
-                 user.effective_submittable_collections(client_ip:       "127.0.0.1",
-                                                        client_hostname: "localhost").count
+    assert_equal 2, user.effective_submittable_collections(client_ip:       "127.0.0.1",
+                                                           client_hostname: "localhost").count
   end
 
   test "effective_submittable_collections() does not include collections that
