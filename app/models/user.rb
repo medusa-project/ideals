@@ -214,7 +214,7 @@ class User < ApplicationRecord
       groups = Configuration.instance.ad.dig(:groups, self.email)
       return groups&.include?(group)
     end
-    cache_key = Digest::MD5.hexdigest("#{self.institution.key} #{self.netid} ismemberof #{group}")
+    cache_key = Digest::MD5.hexdigest("#{self.email} ismemberof #{group}")
     Rails.cache.fetch(cache_key, expires_in: 12.hours) do
       begin
         user = UiucLibAd::User.new(cn: self.netid)
