@@ -47,6 +47,9 @@ class ApplicationJob < ActiveJob::Base
 
   attr_writer :task
 
+  # we are configuring this in config/initializers/delayed_job.rb instead
+  #retry_on Exception, wait: :exponentially_longer, attempts: 1
+
   before_enqueue :do_before_enqueue
   after_enqueue :do_after_enqueue
   before_perform :do_before_perform
