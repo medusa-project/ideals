@@ -405,16 +405,12 @@ class Bitstream < ApplicationRecord
   def delete_from_medusa(institution: nil)
     return nil if self.medusa_uuid.blank?
     institution ||= self.institution
-    # N.B.: MessageHandler will nil out medusa_uuid and medusa_key upon success.
-    # See inline comment in ingest_into_medusa() for an explanation of this
-    self.class.connection_pool.with_connection do
-      message = self.messages.build(operation:   Message::Operation::DELETE,
-                                    medusa_uuid: self.medusa_uuid,
-                                    medusa_key:  self.medusa_key,
-                                    institution: institution)
-      message.save!
-      message.send_message
-    end
+    message = self.messages.build(operation:   Message::Operation::DELETE,
+                                  medusa_uuid: self.medusa_uuid,
+                                  medusa_key:  self.medusa_key,
+                                  institution: institution)
+    message.save!
+    message.send_message
   end
 
   ##
@@ -526,17 +522,12 @@ class Bitstream < ApplicationRecord
     # Medusa is configured to look only within that prefix.
     staging_key = [self.item_id, self.filename].join("/")
     target_key  = self.class.medusa_key(self.item.handle.handle, self.filename)
-    # If we are inside a transaction, and an error is raised after this block
-    # but before commit, we don't want the Message we are creating here to get
-    # wiped out by a rollback, so we persist it in a separate DB connection.
-    self.class.connection_pool.with_connection do
-      message = self.messages.build(operation:   Message::Operation::INGEST,
-                                    staging_key: staging_key,
-                                    target_key:  target_key,
-                                    institution: self.institution)
-      message.save!
-      message.send_message
-    end
+    message     = self.messages.build(operation:   Message::Operation::INGEST,
+                                      staging_key: staging_key,
+                                      target_key:  target_key,
+                                      institution: self.institution)
+    message.save!
+    message.send_message
   end
 
   ##

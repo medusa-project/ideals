@@ -3,20 +3,6 @@
 ##
 # Encapsulates an outgoing and incoming Medusa AMQP message.
 #
-# N.B.: When working within a transaction, instances should be persisted using
-# a separate database connection. The objective is to maintain an instance
-# corresponding to each message sent to Medusa, but consider the case of e.g.
-# an instance created inside a transaction that rolls back after a message has
-# already been sent. Using a separate connection like this ensures persistence:
-#
-# ```
-# Thread.new do
-#   ActiveRecord::Base.connection_pool.with_connection do
-#     # persistence code...
-#   end
-# end.join
-# ```
-#
 # # Attributes
 #
 # * `bitstream_id`   "Soft" foreign key to {Bitstream}. May be `nil` if the
@@ -57,6 +43,11 @@ class Message < ApplicationRecord
 
   validates :operation, inclusion: { in: Operation.constants.map{ |c| Operation.const_get(c) },
                                      message: "%{value} is not a valid operation" }
+
+  # Instances will often be updated from inside transactions, outside of which
+  # any updates would not be visible. So, we use a different database
+  # connection.
+  establish_connection "#{Rails.env}_2".to_sym
 
   ##
   # @return [String] Console representation of the instance.
