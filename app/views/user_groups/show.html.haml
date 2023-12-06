@@ -79,7 +79,7 @@
               - if @user_group.institution_id
                 %ul
                   - @users.each do |user|
-                    %li= link_to(user.name, user)
+                    %li= link_to("#{user.name} (#{user.email})", user)
               - else
                 %table.table
                   - @users.each do |user|
@@ -88,6 +88,7 @@
                         = link_to(user) do
                           = icon_for(user)
                           = user.name
+                        = " (#{user.email})"
                       %td
                         = link_to(user.institution) do
                           = icon_for(user.institution)
