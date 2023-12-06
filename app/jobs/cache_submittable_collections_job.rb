@@ -15,12 +15,14 @@ class CacheSubmittableCollectionsJob < ApplicationJob
 
   ##
   # @param args [Hash] Hash with `:user`, `:client_ip`, and `:client_hostname`
-  #                    keys.
+  #                    keys. Also, optionally a `:task` key if you want to
+  #                    override that.
   #
   def perform(**args)
     user            = args[:user]
     client_ip       = args[:client_ip]
     client_hostname = args[:client_hostname]
+    self.task     ||= args[:task]
 
     self.task&.update!(indeterminate: false,
                        institution:   user.institution,

@@ -12,7 +12,7 @@
 #    be nil. Most necessary properties should get set automatically, but the
 #    {Task#status_text} property will need updating. It may also want to update
 #    other properties like {Task#indeterminate} or any other property that
-#    hasn't been set the way it should by {create_task}.
+#    hasn't been set the way it should by {create_or_associate_task}.
 #
 # Implementations should not rescue errors, and should rethrow them if they do.
 #
@@ -96,11 +96,11 @@ class ApplicationJob < ActiveJob::Base
   # N.B. this only gets called when {perform_later} is used.
   #
   def do_after_enqueue
-    create_task if has_task?
+    create_or_associate_task if has_task?
   end
 
   def do_before_perform
-    create_task if has_task?
+    create_or_associate_task if has_task?
     self.task&.update!(status:     Task::Status::RUNNING,
                        started_at: Time.now)
   end
@@ -112,19 +112,24 @@ class ApplicationJob < ActiveJob::Base
 
   private
 
-  def create_task
+  def create_or_associate_task
     if arguments[0].respond_to?(:dig)
       user        = arguments[0].dig(:user)
       institution = arguments[0].dig(:institution)
+      task        = arguments[0].dig(:task)
     else
-      user = institution = nil
+      user = institution = task = nil
     end
-    Task.create!(name:        self.class.name,
-                 user:        user,
-                 institution: institution,
-                 status_text: "Waiting...",
-                 job_id:      self.job_id,
-                 queue:       self.class::QUEUE)
+    if task
+      task.update!(job_id: self.job_id)
+    else
+      Task.create!(name:        self.class.name,
+                   user:        user,
+                   institution: institution,
+                   status_text: "Waiting...",
+                   job_id:      self.job_id,
+                   queue:       self.class::QUEUE)
+    end
   rescue ActiveRecord::RecordNotUnique
     # job_id is violating a uniqueness constraint. Assuming that job_id is a
     # UUID, this can only mean that a Task corresponding to this job has
