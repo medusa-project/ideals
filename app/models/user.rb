@@ -44,7 +44,8 @@ class User < ApplicationRecord
 
   # Only Shibboleth users will have one of these.
   belongs_to :affiliation, optional: true
-  belongs_to :caching_submittable_collections_task, optional: true
+  belongs_to :caching_submittable_collections_task, class_name: "Task",
+             optional: true
   belongs_to :institution, optional: true
   # Only Shibboleth users will have one of these.
   has_one :department
