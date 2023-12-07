@@ -11,11 +11,12 @@
 
 %h1 Submit an Item
 
-.alert.alert-info
-  = icon_for(:info)
-  Once approved, this item's permanent URL (for use in citations) will be:
-  %strong{style: "white-space: nowrap"}
-    = @item.handle.permanent_url
+- if @item.handle
+  .alert.alert-info
+    = icon_for(:info)
+    Once approved, this item's permanent URL (for use in citations) will be:
+    %strong{style: "white-space: nowrap"}
+      = @item.handle.permanent_url
 
 %ul.nav.nav-pills.nav-justified{role: "tablist"}
   %li.nav-item
