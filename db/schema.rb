@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_12_05_202626) do
+ActiveRecord::Schema[7.1].define(version: 2023_12_07_195840) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -910,7 +910,6 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_05_202626) do
   add_foreign_key "deposit_agreement_question_responses", "deposit_agreement_questions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "deposit_agreement_questions", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "downloads", "institutions", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "downloads", "tasks", on_update: :cascade, on_delete: :nullify
   add_foreign_key "element_namespaces", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "email_patterns", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "embargoes", "items", on_update: :cascade, on_delete: :cascade
@@ -930,7 +929,6 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_05_202626) do
   add_foreign_key "hosts", "user_groups", on_update: :cascade, on_delete: :cascade
   add_foreign_key "imports", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "imports", "institutions", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "imports", "tasks", on_update: :cascade, on_delete: :restrict
   add_foreign_key "imports", "users", on_update: :cascade, on_delete: :nullify
   add_foreign_key "institution_administrators", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "institution_administrators", "users", on_update: :cascade, on_delete: :cascade
@@ -946,7 +944,6 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_05_202626) do
   add_foreign_key "items", "users", column: "submitter_id", on_update: :cascade, on_delete: :nullify
   add_foreign_key "logins", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "logins", "users", on_update: :cascade, on_delete: :cascade
-  add_foreign_key "messages", "bitstreams", on_update: :cascade, on_delete: :cascade
   add_foreign_key "messages", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "metadata_profile_elements", "metadata_profiles", on_update: :cascade, on_delete: :cascade
   add_foreign_key "metadata_profile_elements", "registered_elements", on_update: :cascade, on_delete: :cascade
@@ -978,7 +975,6 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_05_202626) do
   add_foreign_key "user_groups_users", "users", on_update: :cascade, on_delete: :cascade
   add_foreign_key "users", "affiliations", on_update: :cascade, on_delete: :nullify
   add_foreign_key "users", "institutions", on_update: :cascade, on_delete: :restrict
-  add_foreign_key "users", "tasks", column: "caching_submittable_collections_task_id", on_update: :cascade, on_delete: :nullify
   add_foreign_key "vocabularies", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "vocabulary_terms", "vocabularies", on_update: :cascade, on_delete: :cascade
 end
