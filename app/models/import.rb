@@ -22,8 +22,9 @@
 # * `institution_id` Foreign key to {Institution} representing the institution
 #                    into which items are being imported.
 # * `length`         Length of the file identified by {filename}.
-# * `task_id`        Foreign key to {Task} which can be used for status
-#                    reports.
+# * `task_id`        Sort foreign key to {Task} which can be used for status
+#                    reports--soft because imports and tasks may be updated
+#                    within separate database connections.
 # * `updated_at`     Managed by ActiveRecord.
 # * `user_id`        ID of the {User} who initiated the import.
 #
