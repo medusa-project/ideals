@@ -101,11 +101,8 @@ class Task < ApplicationRecord
 
   # Instances will often be updated from inside transactions, outside of which
   # any updates would not be visible. So, we use a different database
-  # connection--except in test, where this won't work because of how fixtures
-  # are loaded in transactions.
-  unless Rails.env.test?
-    establish_connection "#{Rails.env}_2".to_sym
-  end
+  # connection.
+  establish_connection "#{Rails.env}_2".to_sym
 
   ##
   # @return [Time,nil]
