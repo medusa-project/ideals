@@ -1200,6 +1200,16 @@ class CollectionPolicyTest < ActiveSupport::TestCase
     assert policy.submit_item?
   end
 
+  test "submit_item?() does not authorize anyone to a collection that is not
+  accepting submissions" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution)
+    @collection.update!(accepts_submissions: false)
+    policy  = CollectionPolicy.new(context, @collection)
+    assert !policy.submit_item?
+  end
+
   test "submit_item?() respects role limits" do
     # sysadmin user limited to an insufficient role
     user    = users(:southwest_sysadmin)

@@ -173,6 +173,10 @@ class CollectionPolicy < ApplicationPolicy
   # N.B.: this method doesn't correspond to a controller method.
   #
   def submit_item
+    unless @collection.accepts_submissions
+      return { authorized: false,
+               reason: "This collection is not accepting submissions." }
+    end
     effective_submitter
   end
 
