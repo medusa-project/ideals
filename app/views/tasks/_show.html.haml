@@ -30,6 +30,8 @@
         = task.user.name
     - else
       Anonymous or Automated
+  %dt Created
+  %dd= local_time(task.created_at)
   %dt Started
   %dd
     = task.started_at ? local_time(task.started_at) : ""
