@@ -74,7 +74,7 @@ class ThreadUtils
       proc.call
     else
       Thread.new do
-        self.class.connection_pool.with_connection do
+        ActiveRecord::Base.connection_pool.with_connection do
           proc.call
         end
       end.join
