@@ -99,11 +99,6 @@ class Task < ApplicationRecord
 
   before_save :constrain_progress
 
-  # Instances will often be updated from inside transactions, outside of which
-  # any updates would not be visible. So, we use a different database
-  # connection.
-  establish_connection "#{Rails.env}_2".to_sym
-
   ##
   # @return [Time,nil]
   #
@@ -120,10 +115,12 @@ class Task < ApplicationRecord
   # Fails the instance by setting its status to {Status::FAILED}.
   #
   def fail(detail: nil, backtrace: nil)
-    self.update!(status:     Status::FAILED,
-                 stopped_at: Time.now,
-                 detail:     detail,
-                 backtrace:  backtrace)
+    ThreadUtils.use_other_connection(-> {
+      self.update!(status:     Status::FAILED,
+                   stopped_at: Time.now,
+                   detail:     detail,
+                   backtrace:  backtrace)
+    })
   end
 
   def failed?
@@ -134,7 +131,7 @@ class Task < ApplicationRecord
   # Pauses the instance by setting its status to {Status::PAUSED}.
   #
   def pause
-    self.update!(status: Status::PAUSED)
+    ThreadUtils.use_other_connection(-> { self.update!(status: Status::PAUSED) })
   end
 
   def paused?
@@ -162,7 +159,7 @@ class Task < ApplicationRecord
       self.started_at       = Time.now if self.started_at.blank?
       self.status           = Status::RUNNING if progress < 1
       self.status_text      = status_text if status_text.present?
-      self.save!
+      ThreadUtils.use_other_connection(-> { self.save! })
     end
   end
 
@@ -197,7 +194,7 @@ class Task < ApplicationRecord
     self.stopped_at       = Time.now
     self.backtrace        = nil
     self.status_text      = status_text if status_text.present?
-    self.save!
+    ThreadUtils.use_other_connection(-> { self.save! })
   end
 
   def succeeded?
