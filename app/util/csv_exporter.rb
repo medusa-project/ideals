@@ -55,7 +55,7 @@ class CsvExporter
     # SQL is used for efficiency here--ActiveRecord would be super slow.
     sql = select_clause(elements) +
       from_clause +
-      "LEFT JOIN collection_item_memberships cim ON cim.item_id = i.id " +
+      join_clauses +
       where_clause +
       order_clause
     results = ActiveRecord::Base.connection.exec_query(sql)
@@ -91,7 +91,8 @@ class CsvExporter
     raise ArgumentError, "No elements provided." if elements.empty?
     sql = select_clause(elements) +
       from_clause +
-      "WHERE i.id IN (#{item_ids.join(",")}) " +
+      join_clauses +
+      "WHERE items.id IN (#{item_ids.join(",")}) " +
       order_clause
     results = ActiveRecord::Base.connection.exec_query(sql)
     to_csv(elements, results)
@@ -120,13 +121,14 @@ class CsvExporter
   # @return [String]
   #
   def select_clause(elements)
-    columns = ["i.id"]
+    columns = ["items.id", "handles.suffix"]
+    # handle column
     # files column
     columns << "array_to_string(
        array(
          SELECT b.filename
          FROM bitstreams b
-         WHERE b.item_id = i.id
+         WHERE b.item_id = items.id
          ORDER BY b.filename
        ), '||') AS filenames\n"
     # file_descriptions column
@@ -134,7 +136,7 @@ class CsvExporter
        array(
          SELECT b.description
          FROM bitstreams b
-         WHERE b.item_id = i.id
+         WHERE b.item_id = items.id
          ORDER BY b.filename
        ), '||') AS file_descriptions\n"
     # embargo_types column
@@ -142,7 +144,7 @@ class CsvExporter
        array(
          SELECT e.kind
          FROM embargoes e
-         WHERE e.item_id = i.id
+         WHERE e.item_id = items.id
          ORDER BY e.expires_at
        ), '||') AS embargo_types\n"
     # embargo_expirations column
@@ -150,7 +152,7 @@ class CsvExporter
        array(
          SELECT e.expires_at
          FROM embargoes e
-         WHERE e.item_id = i.id
+         WHERE e.item_id = items.id
          ORDER BY e.expires_at
        ), '||') AS embargo_expirations\n"
     # embargo_exempt_user_groups column
@@ -160,7 +162,7 @@ class CsvExporter
          FROM embargoes e
          LEFT JOIN embargoes_user_groups eug ON e.id = eug.embargo_id
          LEFT JOIN user_groups ug on eug.user_group_id = ug.id
-         WHERE e.item_id = i.id
+         WHERE e.item_id = items.id
          ORDER BY e.expires_at
        ), '||') AS embargo_exempt_user_groups\n"
     # embargo_reasons column
@@ -168,7 +170,7 @@ class CsvExporter
        array(
          SELECT e.reason
          FROM embargoes e
-         WHERE e.item_id = i.id
+         WHERE e.item_id = items.id
          ORDER BY e.expires_at
        ), '||') AS embargo_reason\n"
     # Element columns
@@ -178,7 +180,7 @@ class CsvExporter
           SELECT replace(replace(ae.string || '&&<' || coalesce(ae.uri, '') || '>', '&&<>', ''), '||&&', '')
           FROM ascribed_elements ae
           LEFT JOIN registered_elements re ON ae.registered_element_id = re.id
-          WHERE ae.item_id = i.id
+          WHERE ae.item_id = items.id
             AND re.name = '#{element}'
             AND (length(ae.string) > 0 OR length(ae.uri) > 0)
           ), '||') AS e_#{index}\n"
@@ -187,11 +189,16 @@ class CsvExporter
   end
 
   def from_clause
-    "FROM items i "
+    "FROM items "
+  end
+
+  def join_clauses
+    "LEFT JOIN handles ON handles.item_id = items.id\n" +
+    "LEFT JOIN collection_item_memberships cim ON cim.item_id = items.id "
   end
 
   def order_clause
-    "ORDER BY i.id;"
+    "ORDER BY items.id;"
   end
 
   def to_csv(elements, results)

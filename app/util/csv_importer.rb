@@ -27,10 +27,11 @@
 #
 # ## Header row
 #
-# The first column, `id`, refers to an item's internal database ID. The next
-# several columns refer to various system-level item properties. The remaining
-# columns correspond to the elements in the effective {MetadataProfile} of the
-# collection that apply to the item.
+# The first column, `id`, refers to an item's internal database ID. The second
+# column, `handle`, refers to an item's handle. (These columns cannot be
+# modified.) The next several columns refer to various system-level item
+# properties. The remaining columns correspond to the elements in the effective
+# {MetadataProfile} of the collection that apply to the item.
 #
 # All columns are required except metadata columns. When a metadata column is
 # missing, the corresponding metadata elements of the items in the CSV file
@@ -114,7 +115,7 @@ class CsvImporter
 
   MULTI_VALUE_DELIMITER  = "||"
   NEW_ITEM_INDICATOR     = "+"
-  REQUIRED_COLUMNS       = %w[id files file_descriptions embargo_types
+  REQUIRED_COLUMNS       = %w[id handle files file_descriptions embargo_types
                               embargo_expirations embargo_exempt_user_groups
                               embargo_reasons]
 
