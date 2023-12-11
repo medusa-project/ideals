@@ -67,18 +67,10 @@ class ThreadUtils
   ##
   # @param proc [Proc]
   #
-  def self.use_other_connection(proc)
+  def self.use_other_connection(proc) # TODO: fix this
     # In test, ActiveRecord does not use a different database connection across
     # threads, which can cause deadlocks
-    if Rails.env.test?
-      proc.call
-    else
-      Thread.new do
-        ActiveRecord::Base.connection_pool.with_connection do
-          proc.call
-        end
-      end.join
-    end
+    proc.call
   end
 
 end
