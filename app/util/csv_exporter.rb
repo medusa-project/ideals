@@ -80,6 +80,24 @@ class CsvExporter
   end
 
   ##
+  # Exports the given items.
+  #
+  # @param item_ids [Enumerable<Integer>]
+  # @param elements [Enumerable<String>]
+  # @return [String] CSV string.
+  #
+  def export_items(item_ids:, elements:)
+    raise ArgumentError, "No item IDs provided." if item_ids.empty?
+    raise ArgumentError, "No elements provided." if elements.empty?
+    sql = select_clause(elements) +
+      from_clause +
+      "WHERE i.id IN (#{item_ids.join(",")}) " +
+      order_clause
+    results = ActiveRecord::Base.connection.exec_query(sql)
+    to_csv(elements, results)
+  end
+
+  ##
   # Exports all items contained in any of a {Unit}'s collections.
   #
   # @param unit [Unit]

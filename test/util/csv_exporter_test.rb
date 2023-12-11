@@ -95,6 +95,34 @@ class CsvExporterTest < ActiveSupport::TestCase
                  rows[0]
   end
 
+  # export_items()
+
+  test "export_items() raises an error when given an empty item_ids array" do
+    assert_raises ArgumentError do
+      @instance.export_items(item_ids: [])
+    end
+  end
+
+  test "export_items() raises an error when given an empty elements array" do
+    assert_raises ArgumentError do
+      @instance.export_items(item_ids: [items(:southeast_approved).id],
+                             elements: [])
+    end
+  end
+
+  test "export_items() exports the given items" do
+    item_ids = [
+      items(:southeast_approved).id,
+      items(:southeast_collection1_collection1_item1).id
+    ]
+    csv  = @instance.export_items(item_ids: item_ids,
+                                  elements: metadata_profiles(:southeast_default).elements.map(&:name))
+    rows = CSV.parse(csv)
+    assert_equal 1 + item_ids.length, rows.length
+    assert_equal CsvImporter::REQUIRED_COLUMNS + %w[dc:title dc:description dc:subject],
+                 rows[0]
+  end
+
   # export_unit()
 
   test "export_unit() includes child units in the CSV" do

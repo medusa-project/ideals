@@ -205,16 +205,21 @@ class Item < ApplicationRecord
 
   ##
   # Creates a zip file containing all of the bitstreams of all the given items
-  # and uploads it to the application bucket under the given key.
+  # and uploads it to the application bucket under the given key. The files
+  # within the zip file are organized by item handle, with the handle prefix as
+  # the root directory, and each item's handle suffix as a subdirectory within.
   #
-  # All of the given items should be of the same institution.
+  # All of the given items should have the same effective metadata profile (the
+  # one given).
   #
   # @param item_ids [Enumerable<Integer>]
+  # @param metadata_profile [MetadataProfile]
   # @param dest_key [String] Destination key within the application bucket.
   # @param print_progress [Boolean]
   # @param task [Task] Optional.
   #
   def self.create_zip_file(item_ids:,
+                           metadata_profile:,
                            dest_key:,
                            print_progress: false,
                            task:           nil)
@@ -230,13 +235,17 @@ class Item < ApplicationRecord
       uncached do
         Dir.mktmpdir do |tmpdir|
           stuffdir = File.join(tmpdir, "items")
-          index    = 0
+          FileUtils.mkdir_p(stuffdir)
+
+          # Add a CSV file containing item metadata.
+          csv = CsvExporter.new.export_items(item_ids: item_ids,
+                                             elements: metadata_profile.elements.map(&:name))
+          File.write(File.join(stuffdir, "items.csv"), csv)
+
+          index = 0
           item_ids.each do |item_id|
             item = Item.find(item_id)
-            item.bitstreams.where.not(permanent_key: nil).each do |bs|
-              # N.B.: we could ascribe a download event to the bitstream here,
-              # but we don't, in the expectation that this is more of an
-              # administrative feature
+            item.bitstreams.where.not(permanent_key: nil).each do |bs| # TODO: authorization
               dest_dir = File.join(stuffdir, item.handle&.handle || "#{item.id}")
               FileUtils.mkdir_p(dest_dir)
               dest_path = File.join(dest_dir, bs.filename)

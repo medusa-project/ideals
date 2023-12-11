@@ -7,6 +7,21 @@ namespace :items do
     Embargo.where("expires_at < NOW()").delete_all
   end
 
+  desc "Export all items in a collection"
+  task :export_collection, [:collection_id] => :environment do |task, args|
+    collection = Collection.find(args[:collection_id])
+    download   = Download.create!(institution: collection.institution,
+                                  filename:    "collection-#{collection.id}-#{Time.now.to_i}.zip")
+    Item.create_zip_file(item_ids:         collection.items.where(stage: Item::Stages::APPROVED).pluck(:id),
+                         metadata_profile: collection.effective_metadata_profile,
+                         dest_key:         download.object_key,
+                         print_progress:   true)
+    scheme = (Rails.env.development? || Rails.env.test?) ? "http" : "https"
+    puts "File is ready!"
+    puts "Download URL: #{scheme}://#{collection.institution.fqdn}/downloads/#{download.key}/file"
+    puts "S3 URL:       s3://#{ObjectStore::BUCKET}/#{download.key}"
+  end
+
   desc "Import items from a SAF package"
   task :import_saf, [:package_path, :mapfile_path, :collection_id] => :environment do |task, args|
     # Argument validation and setup.
@@ -23,7 +38,7 @@ namespace :items do
   end
 
   desc "Import items from a SAF package"
-  task :batch_assign_embargo, [ :mapfile_path, :embargo_json] => :environment do |task, args|
+  task :batch_assign_embargo, [:mapfile_path, :embargo_json] => :environment do |task, args|
     if File.exist?(args[:embargo_json])
       embargo=JSON.parse(File.read(args[:embargo_json]))
     end

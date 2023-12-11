@@ -77,14 +77,33 @@ class ItemTest < ActiveSupport::TestCase
   # create_zip_file()
 
   test "create_zip_file() creates a zip file" do
-    setup_s3
     item_ids = [items(:southeast_approved).id, items(:southeast_multiple_bitstreams).id]
     dest_key   = "institutions/test/downloads/file.zip"
-    Item.create_zip_file(item_ids: item_ids, dest_key: dest_key)
+    Item.create_zip_file(item_ids:         item_ids,
+                         metadata_profile: metadata_profiles(:southeast_default),
+                         dest_key:         dest_key)
 
-    bucket = ::Configuration.instance.storage[:bucket]
-    assert S3Client.instance.head_object(bucket: bucket,
-                                         key:    dest_key).content_length > 0
+    assert ObjectStore.instance.object_exists?(key: dest_key)
+  end
+
+  test "create_zip_file() creates a zip file containing the expected files" do
+    item_ids = [items(:southeast_approved).id, items(:southeast_multiple_bitstreams).id]
+    dest_key   = "institutions/test/downloads/file.zip"
+    Item.create_zip_file(item_ids:         item_ids,
+                         metadata_profile: metadata_profiles(:southeast_default),
+                         dest_key:         dest_key)
+
+    Dir.mktmpdir do |tmpdir|
+      zip_file = File.join(tmpdir, "test.zip")
+      ObjectStore.instance.get_object(key:             dest_key,
+                                      response_target: zip_file)
+      `cd #{tmpdir} && unzip #{zip_file}`
+      files    = ZipUtils.archived_files(zip_file)
+      csv_file = files.find{ |f| f[:name].end_with?(".csv") }
+      assert csv_file[:length] > 0
+      pdf_file = files.find{ |f| f[:name].end_with?(".pdf") }
+      assert pdf_file[:length] > 0
+    end
   end
 
   # all_access_embargoes()

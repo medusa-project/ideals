@@ -51,18 +51,6 @@ namespace :bitstreams do
     end
   end
 
-  desc "Export all bitstreams attached to all items in a collection"
-  task :export_collection, [:collection_id] => :environment do |task, args|
-    collection = Collection.find(args[:collection_id])
-    download   = Download.create!(institution: collection.institution,
-                                  filename:    "collection-#{collection.id}-#{Time.now.to_i}.zip")
-    Item.create_zip_file(item_ids:       collection.items.where(stage: Item::Stages::APPROVED).pluck(:id),
-                         dest_key:       download.object_key,
-                         print_progress: true)
-    scheme = (Rails.env.development? || Rails.env.test?) ? "http" : "https"
-    puts "File is ready at the following URL:\n\n#{scheme}://#{collection.institution.fqdn}/downloads/#{download.key}/file"
-  end
-
   desc "Read the full text of bitstreams for which this has not been done yet"
   task :read_full_text, [:thread_count] => :environment do |task, args|
     num_threads = args[:thread_count].to_i
