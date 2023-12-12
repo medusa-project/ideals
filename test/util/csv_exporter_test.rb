@@ -14,6 +14,12 @@ class CsvExporterTest < ActiveSupport::TestCase
     end
   end
 
+  test "export() does not include any empty quoted strings" do
+    unit = units(:southeast_unit1)
+    csv  = @instance.export(units: [unit])
+    assert !csv.include?("\"\"")
+  end
+
   test "export() respects the units argument" do
     unit       = units(:southeast_unit1)
     all_units  = [unit]
