@@ -123,87 +123,66 @@ class CsvExporter
   def select_clause(elements)
     columns = ["items.id", "handles.suffix"]
     # files column
-    columns << "replace(
-          array_to_string(
-            array(
-              SELECT b.filename
-              FROM bitstreams b
-              WHERE b.item_id = items.id
-              ORDER BY b.filename
-            ),
-          '||'),
-        '""', NULL) AS filenames\n"
+    columns << "array_to_string(
+       array(
+         SELECT b.filename
+         FROM bitstreams b
+         WHERE b.item_id = items.id
+         ORDER BY b.filename
+       ), '||') AS filenames\n"
     # file_descriptions column
-    columns << "replace(
-         array_to_string(
-           array(
-             SELECT b.description
-             FROM bitstreams b
-             WHERE b.item_id = items.id
-             ORDER BY b.filename
-           ),
-         '||'),
-       '""', NULL) AS file_descriptions\n"
+    columns << "array_to_string(
+       array(
+         SELECT b.description
+         FROM bitstreams b
+         WHERE b.item_id = items.id
+         ORDER BY b.filename
+       ), '||') AS file_descriptions\n"
     # embargo_types column
-    columns << "replace(
-         array_to_string(
-           array(
-             SELECT e.kind
-             FROM embargoes e
-             WHERE e.item_id = items.id
-             ORDER BY e.expires_at
-           ),
-         '||'),
-       '""', NULL) AS embargo_types\n"
+    columns << "array_to_string(
+       array(
+         SELECT e.kind
+         FROM embargoes e
+         WHERE e.item_id = items.id
+         ORDER BY e.expires_at
+       ), '||') AS embargo_types\n"
     # embargo_expirations column
-    columns << "replace(
-         array_to_string(
-           array(
-             SELECT e.expires_at
-             FROM embargoes e
-             WHERE e.item_id = items.id
-             ORDER BY e.expires_at
-           ),
-         '||'),
-       '""', NULL) AS embargo_expirations\n"
+    columns << "array_to_string(
+       array(
+         SELECT e.expires_at
+         FROM embargoes e
+         WHERE e.item_id = items.id
+         ORDER BY e.expires_at
+       ), '||') AS embargo_expirations\n"
     # embargo_exempt_user_groups column
-    columns << "replace(
-         array_to_string(
-           array(
-             SELECT ug.key
-             FROM embargoes e
-             LEFT JOIN embargoes_user_groups eug ON e.id = eug.embargo_id
-             LEFT JOIN user_groups ug on eug.user_group_id = ug.id
-             WHERE e.item_id = items.id
-             ORDER BY e.expires_at
-           ),
-         '||'),
-       '""', NULL) AS embargo_exempt_user_groups\n"
+    columns << "array_to_string(
+       array(
+         SELECT ug.key
+         FROM embargoes e
+         LEFT JOIN embargoes_user_groups eug ON e.id = eug.embargo_id
+         LEFT JOIN user_groups ug on eug.user_group_id = ug.id
+         WHERE e.item_id = items.id
+         ORDER BY e.expires_at
+       ), '||') AS embargo_exempt_user_groups\n"
     # embargo_reasons column
-    columns << "replace(
-         array_to_string(
-           array(
-             SELECT e.reason
-             FROM embargoes e
-             WHERE e.item_id = items.id
-             ORDER BY e.expires_at
-           ),
-         '||'),
-       '""', NULL) AS embargo_reason\n"
+    columns << "array_to_string(
+       array(
+         SELECT e.reason
+         FROM embargoes e
+         WHERE e.item_id = items.id
+         ORDER BY e.expires_at
+       ), '||') AS embargo_reason\n"
     # Element columns
     elements.each_with_index do |element, index|
-      columns << "replace(
-          array_to_string(
-            array(
-              SELECT replace(replace(ae.string || '&&<' || coalesce(ae.uri, '') || '>', '&&<>', ''), '||&&', '')
-              FROM ascribed_elements ae
-              LEFT JOIN registered_elements re ON ae.registered_element_id = re.id
-              WHERE ae.item_id = items.id
-                AND re.name = '#{element}'
-                AND (length(ae.string) > 0 OR length(ae.uri) > 0)
-            ),
-          '||'),
-        '""', NULL) AS e_#{index}\n"
+      columns << "array_to_string(
+        array(
+          SELECT replace(replace(ae.string || '&&<' || coalesce(ae.uri, '') || '>', '&&<>', ''), '||&&', '')
+          FROM ascribed_elements ae
+          LEFT JOIN registered_elements re ON ae.registered_element_id = re.id
+          WHERE ae.item_id = items.id
+            AND re.name = '#{element}'
+            AND (length(ae.string) > 0 OR length(ae.uri) > 0)
+          ), '||') AS e_#{index}\n"
     end
     "SELECT " + columns.join(", ") + " "
   end
@@ -222,7 +201,7 @@ class CsvExporter
   end
 
   def to_csv(elements, results)
-    CSV.generate(headers: true) do |csv|
+    CSV.generate(headers: true, quote_empty: false) do |csv|
       csv << CsvImporter::REQUIRED_COLUMNS + elements
       results.each do |row|
         csv << row.values
