@@ -655,7 +655,8 @@ class Bitstream < ApplicationRecord
   # Invokes an asynchronous job to call {read_full_text} in the background.
   #
   def read_full_text_async
-    ReadFullTextJob.perform_later(bitstream: self)
+    task = Task.create!(name: ReadFullTextJob.to_s)
+    ReadFullTextJob.perform_later(bitstream: self, task: task)
   end
 
   ##

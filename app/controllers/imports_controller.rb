@@ -116,12 +116,8 @@ class ImportsController < ApplicationController
   #
   def update
     begin
+      @import.task = Task.create!(name: ImportJob.to_s)
       @import.update!(import_params)
-      # Reset the associated Task. This is only a brief UI nicety as the
-      # importer will handle the brunt of this once it starts.
-      @import.task&.update!(percent_complete: 0,
-                            status:           Task::Status::PENDING,
-                            status_text:      "Waiting to import items")
     rescue => e
       render partial: "shared/validation_messages",
              locals: { object: @import.errors.any? ? @import : e },

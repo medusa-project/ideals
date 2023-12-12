@@ -6,23 +6,29 @@ class ZipItemsJobTest < ActiveSupport::TestCase
     setup_s3
   end
 
-  test "perform() creates a correct Task" do
+  test "perform() updates the Task given to it" do
     item_ids    = [items(:southeast_approved).id,
                    items(:southeast_multiple_bitstreams).id]
     download    = Download.create!(institution: institutions(:southeast))
     institution = institutions(:southeast)
     user        = users(:southeast)
+    task        = tasks(:pending)
+
     ZipItemsJob.perform_now(item_ids:         item_ids,
                             metadata_profile: institution.default_metadata_profile,
                             download:         download,
                             institution:      institution,
-                            user:             user)
+                            user:             user,
+                            task:             task)
 
-    task = Task.all.order(created_at: :desc).limit(1).first
+    task.reload
     assert_equal "ZipItemsJob", task.name
     assert_equal institution, task.institution
     assert_equal user, task.user
     assert !task.indeterminate
+    assert_equal ZipItemsJob::QUEUE.to_s, task.queue
+    assert_not_empty task.job_id
+    assert_not_nil task.started_at
     assert task.status_text.start_with?("Generating")
   end
 

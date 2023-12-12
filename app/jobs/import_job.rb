@@ -19,9 +19,14 @@ class ImportJob < ApplicationJob
   def perform(**args)
     import    = args[:import]
     submitter = args[:user]
-    # This job is a little different in that we want to share the Import's Task
-    # rather than allowing the superclass to create one.
     self.task = import.task
+    self.task&.update!(name:          self.class.name,
+                       user:          submitter,
+                       institution:   import.institution,
+                       indeterminate: false,
+                       queue:         QUEUE,
+                       job_id:        self.job_id,
+                       started_at:    Time.now)
     begin
       Importer.new.import(import, submitter)
     ensure

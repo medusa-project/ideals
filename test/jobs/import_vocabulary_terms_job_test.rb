@@ -13,19 +13,23 @@ class ImportVocabularyTermsJobTest < ActiveSupport::TestCase
     FileUtils.cp(csv, @csv_path)
   end
 
-  test "perform() creates a correct Task" do
+  test "perform() updates the Task given to it" do
     vocabulary = vocabularies(:southwest_one)
     user       = users(:southwest)
+    task       = tasks(:pending)
     ImportVocabularyTermsJob.perform_now(vocabulary: vocabulary,
                                          pathname:   @csv_path,
-                                         user:       user)
+                                         user:       user,
+                                         task:       task)
 
-    task = Task.all.order(created_at: :desc).limit(1).first
+    task.reload
     assert_equal "ImportVocabularyTermsJob", task.name
     assert_equal vocabulary.institution, task.institution
     assert_equal user, task.user
     assert !task.indeterminate
     assert_not_nil task.started_at
+    assert_not_empty task.job_id
+    assert_equal ImportVocabularyTermsJob::QUEUE.to_s, task.queue
     assert_equal "Importing vocabulary terms into #{vocabulary.name}",
                  task.status_text
   end

@@ -8,11 +8,9 @@
 # 1. Implementations must define a `QUEUE` constant with a value of one of the
 #    {ApplicationJob::Queue} constant values.
 # 2. Implementations' {perform} method must accept a hash argument.
-# 3. In their {perform} method, they should access the task noting that it may
-#    be nil. Most necessary properties should get set automatically, but the
-#    {Task#status_text} property will need updating. It may also want to update
-#    other properties like {Task#indeterminate} or any other property that
-#    hasn't been set the way it should by {create_or_associate_task}.
+# 3. In their {perform} method, they should update the properties of the {Task}
+#    that is passed into them. They shouldn't create their own {Task} because
+#    it could lead to multiple tasks being created for the same job.
 #
 # Implementations should not rescue errors, and should rethrow them if they do.
 #
@@ -58,26 +56,17 @@ class ApplicationJob < ActiveJob::Base
   rescue_from(Exception) do |e|
     fail_task(e)
     if Rails.env.demo? || Rails.env.production?
-      message = IdealsMailer.error_body(e)
+      message = IdealsMailer.error_body(e) # TODO: include some other arguments, user at least
       IdealsMailer.error(message).deliver_now
     end
     raise e
   end
 
   ##
-  # Override if no {Task} should be created.
-  #
-  # @return [Boolean]
-  #
-  def has_task?
-    true
-  end
-
-  ##
   # @return [Task,nil] Task associated with the job.
   #
   def task
-    if has_task? && !@task && self.job_id
+    if !@task && self.job_id
       @task = Task.find_by_job_id(self.job_id)
     end
     @task
@@ -96,11 +85,9 @@ class ApplicationJob < ActiveJob::Base
   # N.B. this only gets called when {perform_later} is used.
   #
   def do_after_enqueue
-    create_or_associate_task if has_task?
   end
 
   def do_before_perform
-    create_or_associate_task if has_task?
     self.task&.update!(status:     Task::Status::RUNNING,
                        started_at: Time.now)
   end
@@ -111,33 +98,6 @@ class ApplicationJob < ActiveJob::Base
 
 
   private
-
-  def create_or_associate_task
-    if arguments[0].respond_to?(:dig)
-      user        = arguments[0].dig(:user)
-      institution = arguments[0].dig(:institution)
-      task        = arguments[0].dig(:task)
-    else
-      user = institution = task = nil
-    end
-    if task
-      task.update!(job_id: self.job_id)
-    else
-      Task.create!(name:        self.class.name,
-                   user:        user,
-                   institution: institution,
-                   status_text: "Waiting...",
-                   job_id:      self.job_id,
-                   queue:       self.class::QUEUE)
-    end
-  rescue ActiveRecord::RecordNotUnique
-    # job_id is violating a uniqueness constraint. Assuming that job_id is a
-    # UUID, this can only mean that a Task corresponding to this job has
-    # already been created due to the ActiveJob engine having called its
-    # after_enqueue callback(s) (and therefore this method) multiple times,
-    # which is probably a bug, but one that can be worked around by rescuing
-    # this.
-  end
 
   ##
   # @param e [Exception]

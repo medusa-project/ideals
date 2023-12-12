@@ -7,14 +7,23 @@ class ImportVocabularyTermsJob < ApplicationJob
   queue_as QUEUE
 
   ##
-  # @param args [Hash] Hash with `vocabulary`, `pathname`, and `user` keys.
+  # @param args [Hash] Hash with `:vocabulary`, `:pathname`, `:user`, and
+  #                    `:task` keys.
   #
   def perform(**args)
     vocabulary = args[:vocabulary]
     pathname   = args[:pathname]
-    task       = self.task&.update!(institution: vocabulary.institution,
-                                    status_text: "Importing vocabulary terms "\
-                                                 "into #{vocabulary.name}")
+    user       = args[:user]
+    self.task  = args[:task]
+    self.task&.update!(name:          self.class.name,
+                       user:          user,
+                       institution:   vocabulary.institution,
+                       indeterminate: false,
+                       queue:         QUEUE,
+                       job_id:        self.job_id,
+                       started_at:    Time.now,
+                       status_text:   "Importing vocabulary terms into "\
+                                      "#{vocabulary.name}")
     begin
       vocabulary.import_terms_from_csv(pathname: pathname, task: task)
     ensure

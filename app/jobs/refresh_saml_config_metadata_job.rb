@@ -10,7 +10,7 @@ class RefreshSamlConfigMetadataJob < ApplicationJob
   # N.B.: in development & test, instead of fetching the real OAF metadata,
   # the `oaf_metadata.xml` file fixture is used.
   #
-  # @param args [Hash] Hash with `:institution` and `:user` keys.
+  # @param args [Hash] Hash with `:institution`, `:user`, and `:task` keys.
   #                    `:configuration_file` or `:configuration_url` keys are
   #                    optional for non-federated institutions.
   #
@@ -18,8 +18,15 @@ class RefreshSamlConfigMetadataJob < ApplicationJob
     institution = args[:institution]
     config_file = args[:configuration_file]
     config_url  = args[:configuration_url]
-
-    self.task&.update!(indeterminate: true,
+    user        = args[:user]
+    self.task   = args[:task]
+    self.task&.update!(name:          self.class.name,
+                       user:          user,
+                       institution:   institution,
+                       indeterminate: true,
+                       queue:         QUEUE,
+                       job_id:        self.job_id,
+                       started_at:    Time.now,
                        status_text:   "Updating SAML configuration "\
                                       "metadata for #{institution.name}")
     is_temp_file = false

@@ -16,7 +16,8 @@ namespace :jobs do
     if Rails.application.config.active_job.queue_adapter == :async
       puts "The :async ActiveJob adapter doesn't work with rake tasks. Exiting."
     else
-      SleepJob.perform_later(duration: 30)
+      task = Task.create!(name: SleepJob.to_s)
+      SleepJob.perform_later(duration: 30, task: task)
       "Job enqueued. You should see a new task appear at /tasks."
     end
   end

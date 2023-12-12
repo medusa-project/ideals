@@ -14,18 +14,22 @@ class CacheSubmittableCollectionsJob < ApplicationJob
   queue_as QUEUE
 
   ##
-  # @param args [Hash] Hash with `:user`, `:client_ip`, and `:client_hostname`
-  #                    keys. Also, optionally a `:task` key if you want to
-  #                    override that.
+  # @param args [Hash] Hash with `:user`, `:client_ip`, `:client_hostname`, and
+  #                    `:task` keys.
   #
   def perform(**args)
     user            = args[:user]
     client_ip       = args[:client_ip]
     client_hostname = args[:client_hostname]
-    self.task     ||= args[:task]
+    self.task       = args[:task]
 
-    self.task&.update!(indeterminate: false,
+    self.task&.update!(name:          self.class.name,
+                       user:          user,
                        institution:   user.institution,
+                       indeterminate: false,
+                       queue:         QUEUE,
+                       job_id:        self.job_id,
+                       started_at:    Time.now,
                        status_text:   "Caching submittable collections for user #{user.email}")
     user.update!(caching_submittable_collections_task_id: self.task&.id)
 

@@ -74,9 +74,11 @@ class SessionsController < ApplicationController
       (!user.submittable_collections_cached_at ||
         (user.submittable_collections_cached_at &&
           user.submittable_collections_cached_at < 12.hours.ago))
+      task = Task.create!(name: CacheSubmittableCollectionsJob.to_s)
       CacheSubmittableCollectionsJob.perform_later(user:            user,
                                                    client_ip:       request_context.client_ip,
-                                                   client_hostname: request_context.client_hostname)
+                                                   client_hostname: request_context.client_hostname,
+                                                   task:            task)
     end
 
     return_url_ = return_url

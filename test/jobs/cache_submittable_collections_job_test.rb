@@ -2,18 +2,22 @@ require 'test_helper'
 
 class CacheSubmittableCollectionsJobTest < ActiveSupport::TestCase
 
-  test "perform() creates a correct Task" do
+  test "perform() updates the Task given to it" do
     user = users(:southwest_shibboleth)
+    task = tasks(:pending)
 
     CacheSubmittableCollectionsJob.perform_now(user:            user,
                                                client_ip:       "127.0.0.1",
-                                               client_hostname: "localhost")
+                                               client_hostname: "localhost",
+                                               task:            task)
 
-    task = Task.all.order(created_at: :desc).limit(1).first
+    task.reload
     assert_equal "CacheSubmittableCollectionsJob", task.name
     assert_equal user, task.user
-    assert !task.indeterminate
     assert_equal user.institution, task.institution
+    assert !task.indeterminate
+    assert_equal CacheSubmittableCollectionsJob::QUEUE.to_s, task.queue
+    assert_not_empty task.job_id
     assert_equal "Caching submittable collections for user #{user.email}",
                  task.status_text
   end
@@ -29,7 +33,8 @@ class CacheSubmittableCollectionsJobTest < ActiveSupport::TestCase
 
     CacheSubmittableCollectionsJob.perform_now(user:            user,
                                                client_ip:       "127.0.0.1",
-                                               client_hostname: "localhost")
+                                               client_hostname: "localhost",
+                                               task:            tasks(:pending))
     assert_equal 2, user.cached_submittable_collections.count
   end
 
@@ -38,7 +43,8 @@ class CacheSubmittableCollectionsJobTest < ActiveSupport::TestCase
 
     CacheSubmittableCollectionsJob.perform_now(user:            user,
                                                client_ip:       "127.0.0.1",
-                                               client_hostname: "localhost")
+                                               client_hostname: "localhost",
+                                               task:            tasks(:pending))
     assert Time.now - user.submittable_collections_cached_at < 10.seconds
   end
 
@@ -48,7 +54,8 @@ class CacheSubmittableCollectionsJobTest < ActiveSupport::TestCase
 
     CacheSubmittableCollectionsJob.perform_now(user:            user,
                                                client_ip:       "127.0.0.1",
-                                               client_hostname: "localhost")
+                                               client_hostname: "localhost",
+                                               task:            tasks(:pending))
     assert_nil user.caching_submittable_collections_task_id
   end
 

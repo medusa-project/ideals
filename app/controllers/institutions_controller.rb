@@ -269,17 +269,21 @@ class InstitutionsController < ApplicationController
   # Responds to `PATCH /institutions/:id/refresh-saml-config-metadata`
   #
   def refresh_saml_config_metadata
+    task = Task.create!(name: RefreshSamlConfigMetadataJob.to_s)
     if params[:configuration_file].present?
       RefreshSamlConfigMetadataJob.perform_later(institution:        @institution,
                                                  configuration_file: params[:configuration_file],
-                                                 user:               current_user)
+                                                 user:               current_user,
+                                                 task:               task)
     elsif params[:configuration_url].present?
       RefreshSamlConfigMetadataJob.perform_later(institution:       @institution,
                                                  configuration_url: params[:configuration_url],
-                                                 user:              current_user)
+                                                 user:              current_user,
+                                                 task:              task)
     else
       RefreshSamlConfigMetadataJob.perform_later(institution: @institution,
-                                                 user:        current_user)
+                                                 user:        current_user,
+                                                 task:        task)
     end
   rescue => e
     flash['error'] = "#{e}"
@@ -950,9 +954,11 @@ class InstitutionsController < ApplicationController
       File.open(tempfile, "wb") do |file|
         file.write(p[:favicon].read)
       end
+      task = Task.create!(name: UploadFaviconsJob.to_s)
       UploadFaviconsJob.perform_later(master_favicon_path: tempfile.path,
                                       institution:         @institution,
-                                      user:                current_user)
+                                      user:                current_user,
+                                      task:                task)
     end
     if p[:banner_image]
       @institution.upload_banner_image(io:        p[:banner_image],

@@ -6,22 +6,26 @@ class UploadFaviconsJobTest < ActiveSupport::TestCase
     setup_s3
   end
 
-  test "perform() creates a correct Task" do
+  test "perform() updates the Task given to it" do
     Dir.mktmpdir do |tmpdir|
       path = File.join(tmpdir, "escher_lego.png")
       FileUtils.cp(file_fixture("escher_lego.png"), path)
 
       institution = institutions(:southwest)
       user        = users(:southwest)
+      task        = tasks(:pending)
       UploadFaviconsJob.perform_now(master_favicon_path: path,
                                     institution:         institution,
-                                    user:                user)
+                                    user:                user,
+                                    task:                task)
 
-      task = Task.all.order(created_at: :desc).limit(1).first
+      task.reload
       assert_equal "UploadFaviconsJob", task.name
       assert_equal institution, task.institution
       assert_equal user, task.user
-      assert !task.indeterminate
+      assert task.indeterminate
+      assert_equal UploadFaviconsJob::QUEUE.to_s, task.queue
+      assert_not_empty task.job_id
       assert_not_nil task.started_at
       assert_equal "Processing favicons", task.status_text
     end

@@ -18,13 +18,15 @@ class ZipBitstreamsJob < ApplicationJob
   #
   # @param args [Hash] Hash with a `:bitstreams` key containing an array of
   #                    {Bitstream}s; a `:download` key pointing to a {Download}
-  #                    instance; an `:item_id` key; and a `:user` key.
+  #                    instance; an `:item_id` key; a `:user` key, and a
+  #                    `:task` key.
   # @see ZipItemsJob
   #
   def perform(**args)
     bitstreams  = args[:bitstreams]
     download    = args[:download]
     item_id     = args[:item_id]
+    user        = args[:user]
     institution = nil
     if item_id
       filename    = "item-#{item_id}.zip"
@@ -32,10 +34,16 @@ class ZipBitstreamsJob < ApplicationJob
     else
       filename = "#{SecureRandom.hex[0..15]}.zip"
     end
-    self.task&.update!(download:    download,
-                       institution: institution,
-                       started_at:  Time.now,
-                       status_text: "Creating zip file")
+    self.task = args[:task]
+    self.task&.update!(name:          self.class.name,
+                       download:      download,
+                       user:          user,
+                       institution:   institution,
+                       indeterminate: true,
+                       queue:         QUEUE,
+                       job_id:        self.job_id,
+                       started_at:    Time.now,
+                       status_text:   "Creating zip file")
 
     ActiveRecord::Base.transaction do
       download.update!(filename: filename)

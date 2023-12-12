@@ -49,10 +49,12 @@ class DerivativeGenerator
     key   = derivative_image_key(region: region, size: size, format: :jpg)
     unless store.object_exists?(key: key)
       if generate_async
+        task = Task.create!(name: GenerateDerivativeImageJob.to_s)
         GenerateDerivativeImageJob.perform_later(bitstream: @bitstream,
                                                  region:    region,
                                                  size:      size,
-                                                 format:    :jpg)
+                                                 format:    :jpg,
+                                                 task:      task)
         return nil
       else
         self.generate_image_derivative(region: region,

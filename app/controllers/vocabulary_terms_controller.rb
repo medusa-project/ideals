@@ -64,9 +64,11 @@ class VocabularyTermsController < ApplicationController
         csv = params[:csv].read.force_encoding("UTF-8")
         tempfile.write(csv)
         tempfile.close
+        task = Task.create!(name: ImportVocabularyTermsJob.to_s)
         ImportVocabularyTermsJob.perform_later(vocabulary: @vocabulary,
                                                pathname:   tempfile.path,
-                                               user:       current_user)
+                                               user:       current_user,
+                                               task:       task)
       rescue => e
         tempfile.close
         tempfile.unlink

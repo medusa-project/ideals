@@ -10,10 +10,10 @@ class ImportJobTest < ActiveSupport::TestCase
     teardown_s3
   end
 
-  test "perform() associates a correct Task to the import" do
+  test "perform() updates the Task given to it" do
     fixture = file_fixture("csv/new.csv")
     import  = imports(:southeast_csv_file_new)
-    import.update!(task:     nil,
+    import.update!(task:     tasks(:pending),
                    filename: File.basename(fixture),
                    length:   File.size(fixture))
     ObjectStore.instance.put_object(key:  import.file_key,
@@ -29,13 +29,15 @@ class ImportJobTest < ActiveSupport::TestCase
     assert_equal user, task.user
     assert !task.indeterminate
     assert_not_nil task.started_at
+    assert_equal ImportJob::QUEUE.to_s, task.queue
+    assert_not_empty task.job_id
     assert task.status_text.start_with?("Import")
   end
 
   test "perform() deletes the import file" do
     fixture = file_fixture("csv/new.csv")
     import  = imports(:southeast_csv_file_new)
-    import.update!(task:     nil,
+    import.update!(task:     tasks(:pending),
                    filename: File.basename(fixture),
                    length:   File.size(fixture))
     ObjectStore.instance.put_object(key:  import.file_key,

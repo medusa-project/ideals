@@ -6,17 +6,23 @@ class ReadFullTextJobTest < ActiveSupport::TestCase
     setup_s3
   end
 
-  test "perform() creates a correct Task" do
+  test "perform() updates the Task given to it" do
     bs   = bitstreams(:southeast_approved_in_permanent)
     user = users(:southeast)
+    task = tasks(:pending)
 
-    ReadFullTextJob.perform_now(bitstream: bs, user: user)
+    ReadFullTextJob.perform_now(bitstream: bs,
+                                user:      user,
+                                task:      task)
 
-    task = Task.all.order(created_at: :desc).limit(1).first
+    task.reload
     assert_equal "ReadFullTextJob", task.name
     assert_equal user.institution, task.institution
     assert_equal user, task.user
     assert task.indeterminate
+    assert_equal ReadFullTextJob::QUEUE.to_s, task.queue
+    assert_not_empty task.job_id
+    assert_not_nil task.started_at
     assert task.status_text.start_with?("Reading full text")
   end
 

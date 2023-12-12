@@ -6,10 +6,6 @@ class RefreshOpensearchJob < ApplicationJob
 
   queue_as QUEUE
 
-  def has_task?
-    false
-  end
-
   ##
   # @param args [Hash] Empty hash.
   #

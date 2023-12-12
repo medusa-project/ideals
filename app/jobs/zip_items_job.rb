@@ -16,19 +16,26 @@ class ZipItemsJob < ApplicationJob
   # attribute is updated to reflect its filename within the application bucket.
   #
   # @param args [Hash] Hash with `:item_ids`, `:metadata_profile`, `:download`,
-  #                    and `:user` keys.
+  #                    `:user`, and `:task` keys.
   # @see ZipBitstreamsJob
   #
   def perform(**args)
     item_ids         = args[:item_ids]
     metadata_profile = args[:metadata_profile]
     download         = args[:download]
-    filename         = "items-#{SecureRandom.hex[0..15]}.zip"
+    user             = args[:user]
+    self.task        = args[:task]
+    self.task&.update!(name:          self.class.name,
+                       download:      download,
+                       user:          user,
+                       institution:   download.institution,
+                       indeterminate: true,
+                       queue:         QUEUE,
+                       job_id:        self.job_id,
+                       started_at:    Time.now,
+                       status_text:   "Preparing a #{item_ids.count}-item zip file")
 
-    self.task&.update!(download:    download,
-                       institution: download.institution,
-                       started_at:  Time.now,
-                       status_text: "Preparing a #{item_ids.count}-item zip file")
+    filename = "items-#{SecureRandom.hex[0..15]}.zip"
     ActiveRecord::Base.transaction do
       download.update!(filename: filename)
       Item.create_zip_file(item_ids:         item_ids,
