@@ -22,6 +22,25 @@ namespace :items do
     puts "S3 URL:       s3://#{ObjectStore::BUCKET}/#{download.key}"
   end
 
+  desc "Import items from a CSV file or package"
+  task :import_csv, [:package_path, :collection_id] => :environment do |task, args|
+    store        = ObjectStore.instance
+    collection   = Collection.find(args[:collection_id])
+    package_path = File.expand_path(args[:package_path])
+    import       = Import.create!(collection:  collection,
+                                  institution: collection.institution,
+                                  format:      Import::Format::CSV_FILE,
+                                  filename:    File.basename(package_path))
+    begin
+      store.put_object(key:  import.file_key,
+                       path: package_path)
+      Importer.new.import(import, nil)
+      puts "Import succeeded."
+    ensure
+      store.delete_object(key: import.file_key)
+    end
+  end
+
   desc "Import items from a SAF package"
   task :import_saf, [:package_path, :mapfile_path, :collection_id] => :environment do |task, args|
     # Argument validation and setup.
