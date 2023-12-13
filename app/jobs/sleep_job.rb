@@ -28,9 +28,13 @@ class SleepJob < ApplicationJob
                        started_at:    Time.now,
                        status:        Task::Status::RUNNING,
                        status_text:   "Sleeping for #{duration} seconds")
-    duration.times do |i|
-      self.task&.update!(percent_complete: i / duration.to_f)
-      sleep 1
+    # Use a transaction in order to test that the task updates don't happen
+    # within it.
+    ActiveRecord::Base.transaction do
+      duration.times do |i|
+        self.task&.update!(percent_complete: i / duration.to_f)
+        sleep 1
+      end
     end
   end
 
