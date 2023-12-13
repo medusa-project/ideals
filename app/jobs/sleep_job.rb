@@ -22,7 +22,6 @@ class SleepJob < ApplicationJob
     duration = args[:duration].to_i
     self.task = args[:task]
     self.task&.update!(name:          self.class.name,
-                       indeterminate: true,
                        queue:         QUEUE,
                        job_id:        self.job_id,
                        started_at:    Time.now,
