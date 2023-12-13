@@ -105,7 +105,7 @@ class ApplicationJob < ActiveJob::Base
   def fail_task(e)
     self.task&.update!(status:     Task::Status::FAILED,
                        stopped_at: Time.now,
-                       detail:     "#{e}",
+                       detail:     "#{e.class}: #{e}",
                        backtrace:  self.task&.backtrace || e.backtrace)
   end
 
