@@ -32,9 +32,6 @@ const ImportsView = {
             const uploadFile = function(file, uploadURI) {
                 console.debug("uploadFile() invoked with " + file.name);
                 const startTime = new Date().getTime();
-                const formData  = new FormData();
-                formData.append("file", file);
-
                 xhr.open("PUT", uploadURI, true);
                 xhr.upload.addEventListener("progress", function (e) {
                     const progressBar = $("#progress-bar");
@@ -78,7 +75,7 @@ const ImportsView = {
                 xhr.onerror = function(e) {
                     console.error(e);
                 };
-                xhr.send(formData);
+                xhr.send(file);
             };
 
             panel.on("hide.bs.modal", function() {
