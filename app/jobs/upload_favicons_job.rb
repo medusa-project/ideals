@@ -23,6 +23,7 @@ class UploadFaviconsJob < ApplicationJob
                        queue:         QUEUE,
                        job_id:        self.job_id,
                        started_at:    Time.now,
+                       status:        Task::Status::RUNNING,
                        status_text:   "Processing favicons")
     begin
       File.open(tempfile, "r") do |file|

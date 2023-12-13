@@ -33,6 +33,7 @@ class ZipItemsJob < ApplicationJob
                        queue:         QUEUE,
                        job_id:        self.job_id,
                        started_at:    Time.now,
+                       status:        Task::Status::RUNNING,
                        status_text:   "Preparing a #{item_ids.count}-item zip file")
 
     filename = "items-#{SecureRandom.hex[0..15]}.zip"

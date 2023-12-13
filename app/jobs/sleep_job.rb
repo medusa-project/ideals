@@ -26,6 +26,7 @@ class SleepJob < ApplicationJob
                        queue:         QUEUE,
                        job_id:        self.job_id,
                        started_at:    Time.now,
+                       status:        Task::Status::RUNNING,
                        status_text:   "Sleeping for #{duration} seconds")
     duration.times do |i|
       self.task&.update!(percent_complete: i / duration.to_f)

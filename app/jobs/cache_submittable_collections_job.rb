@@ -30,6 +30,7 @@ class CacheSubmittableCollectionsJob < ApplicationJob
                        queue:         QUEUE,
                        job_id:        self.job_id,
                        started_at:    Time.now,
+                       status:        Task::Status::RUNNING,
                        status_text:   "Caching submittable collections for user #{user.email}")
     user.update!(caching_submittable_collections_task_id: self.task&.id)
 

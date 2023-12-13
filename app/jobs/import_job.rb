@@ -26,6 +26,7 @@ class ImportJob < ApplicationJob
                        indeterminate: false,
                        queue:         QUEUE,
                        job_id:        self.job_id,
+                       status:        Task::Status::RUNNING,
                        started_at:    Time.now)
     begin
       Importer.new.import(import, submitter)

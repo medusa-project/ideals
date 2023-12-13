@@ -43,6 +43,7 @@ class ZipBitstreamsJob < ApplicationJob
                        queue:         QUEUE,
                        job_id:        self.job_id,
                        started_at:    Time.now,
+                       status:        Task::Status::RUNNING,
                        status_text:   "Creating zip file")
 
     ActiveRecord::Base.transaction do

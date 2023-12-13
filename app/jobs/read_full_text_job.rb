@@ -21,6 +21,7 @@ class ReadFullTextJob < ApplicationJob
                        queue:         QUEUE,
                        job_id:        self.job_id,
                        started_at:    Time.now,
+                       status:        Task::Status::RUNNING,
                        status_text:   "Reading full text of #{bitstream.filename}")
 
     bitstream.read_full_text

@@ -28,6 +28,7 @@ class GenerateDerivativeImageJob < ApplicationJob
                        queue:         QUEUE,
                        job_id:        self.job_id,
                        started_at:    Time.now,
+                       status:        Task::Status::RUNNING,
                        status_text:   "Generating #{region}/#{size} #{format} "\
                                       "derivative image for #{bs.filename} "\
                                       "[item ID #{bs.item_id}] [bitstream ID #{bs.id}]")

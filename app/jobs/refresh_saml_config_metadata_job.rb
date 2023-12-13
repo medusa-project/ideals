@@ -27,6 +27,7 @@ class RefreshSamlConfigMetadataJob < ApplicationJob
                        queue:         QUEUE,
                        job_id:        self.job_id,
                        started_at:    Time.now,
+                       status:        Task::Status::RUNNING,
                        status_text:   "Updating SAML configuration "\
                                       "metadata for #{institution.name}")
     is_temp_file = false
