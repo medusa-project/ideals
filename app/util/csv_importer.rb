@@ -122,7 +122,7 @@ class CsvImporter
   ##
   # Imports items from a CSV string.
   #
-  # @param csv [String] CSV string.
+  # @param pathname [String]               Pathname of the CSV file.
   # @param file_paths [Enumerable<String>] Absolute paths of files that are
   #                                        referenced in the CSV's `files`
   #                                        column.
@@ -137,37 +137,46 @@ class CsvImporter
   # @param task [Task]                     Supply to receive status updates.
   # @return [void]
   #
-  def import(csv:,
+  def import(pathname:,
              file_paths:         [],
              submitter:,
              primary_collection:,
              imported_items:     [],
              print_progress:     false,
              task:               nil)
-    rows     = CSV.parse(csv)
-    num_rows = rows.length - 1 # exclude header
+    num_rows = 0
+    File.foreach(pathname) do
+      num_rows += 1
+    end
     progress = print_progress ? Progress.new(num_rows) : nil
     # Work inside a transaction to avoid any incompletely created items. If
     # any items fail, we want the whole import to fail.
     Import.transaction do
       begin
-        validate_header(row:                rows[0],
-                        submission_profile: primary_collection.effective_submission_profile)
-        rows[1..].each_with_index do |row, row_index|
+        row_index  = 0
+        header_row = nil
+        CSV.foreach(pathname) do |row|
+          if row_index == 0
+            header_row = row
+            validate_header(row:                header_row,
+                            submission_profile: primary_collection.effective_submission_profile)
+            row_index += 1
+            next
+          end
           # Create or update the item.
           item_id = row[REQUIRED_COLUMNS.index("id")]&.strip
           raise ArgumentError, "Missing item ID" if item_id.blank?
           if item_id == NEW_ITEM_INDICATOR
             item = create_item(submitter:          submitter,
                                primary_collection: primary_collection,
-                               element_names:      rows[0][REQUIRED_COLUMNS.length..],
+                               element_names:      header_row[REQUIRED_COLUMNS.length..],
                                row:                row,
                                file_paths:         file_paths)
           else
             item = Item.find(item_id)
             item = update_item(item:          item,
                                submitter:     submitter,
-                               element_names: rows[0][REQUIRED_COLUMNS.length..],
+                               element_names: header_row[REQUIRED_COLUMNS.length..],
                                row:           row,
                                file_paths:    file_paths)
           end
@@ -176,8 +185,9 @@ class CsvImporter
             handle:  item.handle&.handle
           }
           status_text = "Importing #{num_rows} items from CSV"
-          progress&.report(row_index + 1, status_text)
-          task&.progress(row_index + 1 / (num_rows - 1).to_f,
+          row_index += 1
+          progress&.report(row_index, status_text)
+          task&.progress(row_index / (num_rows - 1).to_f,
                          status_text: status_text)
         end
       rescue => e

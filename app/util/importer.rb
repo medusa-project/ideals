@@ -72,7 +72,7 @@ class Importer
         return Import::Format::SAF
       elsif root_files.find{ |f| f.downcase.end_with?(".csv") }
         import.task.update!(status_text: "Importing items from CSV package")
-        CsvImporter.new.import(csv:                File.read(root_files.find{ |f| f.downcase.end_with?(".csv") }),
+        CsvImporter.new.import(pathname:           root_files.find{ |f| f.downcase.end_with?(".csv") },
                                file_paths:         Dir[tmpdir + "/**/*"],
                                submitter:          submitter,
                                primary_collection: import.collection,
@@ -84,7 +84,7 @@ class Importer
       end
     elsif file.split(".").last.downcase == "csv"
       import.task.update!(status_text: "Importing items from CSV file")
-      CsvImporter.new.import(csv:                File.read(file),
+      CsvImporter.new.import(pathname:           file,
                              submitter:          submitter,
                              primary_collection: import.collection,
                              imported_items:     [],

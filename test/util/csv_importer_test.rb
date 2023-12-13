@@ -18,55 +18,80 @@ class CsvImporterTest < ActiveSupport::TestCase
     csv = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS - %w[id]
     end
+    file = Tempfile.new(%w[test, .csv])
+    File.write(file, csv)
+
     assert_raises ArgumentError do
-      @instance.import(csv:                csv,
+      @instance.import(pathname:           file.path,
                        submitter:          users(:southwest_sysadmin),
                        primary_collection: collections(:southeast_empty))
     end
+  ensure
+    file.unlink
   end
 
   test "import() raises an error for a missing files column" do
     csv = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS - %w[files]
     end
+    file = Tempfile.new(%w[test, .csv])
+    File.write(file, csv)
+
     assert_raises ArgumentError do
-      @instance.import(csv:                csv,
+      @instance.import(pathname:           file.path,
                        submitter:          users(:southwest_sysadmin),
                        primary_collection: collections(:southeast_empty))
     end
+  ensure
+    file.unlink
   end
 
   test "import() raises an error for a missing file_descriptions column" do
     csv = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS - %w[file_descriptions]
     end
+    file = Tempfile.new(%w[test, .csv])
+    File.write(file, csv)
+
     assert_raises ArgumentError do
-      @instance.import(csv:                csv,
+      @instance.import(pathname:           file.path,
                        submitter:          users(:southwest_sysadmin),
                        primary_collection: collections(:southeast_empty))
     end
+  ensure
+    file.unlink
   end
 
   test "import() raises an error for a missing embargo_types column" do
     csv = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS - %w[embargo_types]
     end
+    file = Tempfile.new(%w[test, .csv])
+    File.write(file, csv)
+
     assert_raises ArgumentError do
-      @instance.import(csv:                csv,
+      @instance.import(pathname:           file.path,
                        submitter:          users(:southwest_sysadmin),
                        primary_collection: collections(:southeast_empty))
     end
+  ensure
+    file.unlink
   end
 
   test "import() raises an error for a missing embargo_expirations column" do
     csv = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS - %w[embargo_expirations]
     end
+    file = Tempfile.new(%w[test, .csv])
+    File.write(file, csv)
+
     assert_raises ArgumentError do
-      @instance.import(csv:                csv,
+      @instance.import(pathname:           file.path,
                        submitter:          users(:southwest_sysadmin),
                        primary_collection: collections(:southeast_empty))
     end
+  ensure
+    file.unlink
   end
 
   test "import() raises an error for a missing embargo_exempt_user_groups
@@ -74,22 +99,32 @@ class CsvImporterTest < ActiveSupport::TestCase
     csv = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS - %w[embargo_exempt_user_groups]
     end
+    file = Tempfile.new(%w[test, .csv])
+    File.write(file, csv)
+
     assert_raises ArgumentError do
-      @instance.import(csv:                csv,
+      @instance.import(pathname:           file.path,
                        submitter:          users(:southwest_sysadmin),
                        primary_collection: collections(:southeast_empty))
     end
+  ensure
+    file.unlink
   end
 
   test "import() raises an error for a missing embargo_reasons column" do
     csv = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS - %w[embargo_reasons]
     end
+    file = Tempfile.new(%w[test, .csv])
+    File.write(file, csv)
+
     assert_raises ArgumentError do
-      @instance.import(csv:                csv,
+      @instance.import(pathname:           file.path,
                        submitter:          users(:southwest_sysadmin),
                        primary_collection: collections(:southeast_empty))
     end
+  ensure
+    file.unlink
   end
 
   test "import() raises an error when a column is missing for an element that
@@ -98,11 +133,16 @@ class CsvImporterTest < ActiveSupport::TestCase
       row << CsvImporter::REQUIRED_COLUMNS
       row << ["+", nil, nil, nil, nil, nil, nil, nil]
     end
+    file = Tempfile.new(%w[test, .csv])
+    File.write(file, csv)
+
     assert_raises ArgumentError do
-      @instance.import(csv:                csv,
+      @instance.import(pathname:           file.path,
                        submitter:          users(:southwest_sysadmin),
                        primary_collection: collections(:southeast_empty))
     end
+  ensure
+    file.unlink
   end
 
   test "import() raises an error when a column is blank for an element that is
@@ -111,11 +151,16 @@ class CsvImporterTest < ActiveSupport::TestCase
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title]
       row << ["+", nil, nil, nil, nil, nil, nil, nil, ""]
     end
+    file = Tempfile.new(%w[test, .csv])
+    File.write(file, csv)
+
     assert_raises ArgumentError do
-      @instance.import(csv:                csv,
+      @instance.import(pathname:           file.path,
                        submitter:          users(:southwest_sysadmin),
                        primary_collection: collections(:southeast_empty))
     end
+  ensure
+    file.unlink
   end
 
   test "import() parses multi-value elements correctly" do
@@ -123,7 +168,10 @@ class CsvImporterTest < ActiveSupport::TestCase
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title dc:creator]
       row << ["+", nil, nil, nil, nil, nil, nil, nil, "Title", "Bob||Susan||Chris"]
     end
-    @instance.import(csv:                csv,
+    file = Tempfile.new(%w[test, .csv])
+    File.write(file, csv)
+
+    @instance.import(pathname:           file.path,
                      file_paths:         [],
                      submitter:          users(:southwest_sysadmin),
                      primary_collection: collections(:southeast_empty))
@@ -132,6 +180,8 @@ class CsvImporterTest < ActiveSupport::TestCase
     assert creators.include?("Bob")
     assert creators.include?("Susan")
     assert creators.include?("Chris")
+  ensure
+    file.unlink
   end
 
   test "import() assigns positions to multi-value elements" do
@@ -139,7 +189,10 @@ class CsvImporterTest < ActiveSupport::TestCase
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title dc:creator]
       row << ["+", nil, nil, nil, nil, nil, nil, nil, "Title", "Bob||Susan||Chris"]
     end
-    @instance.import(csv:                csv,
+    file = Tempfile.new(%w[test, .csv])
+    File.write(file, csv)
+
+    @instance.import(pathname:           file.path,
                      file_paths:         [],
                      submitter:          users(:southeast_admin),
                      primary_collection: collections(:southeast_empty))
@@ -152,6 +205,8 @@ class CsvImporterTest < ActiveSupport::TestCase
     assert_equal 1, creators[0]
     assert_equal 2, creators[1]
     assert_equal 3, creators[2]
+  ensure
+    file.unlink
   end
 
   test "import() creates a new item" do
@@ -159,21 +214,26 @@ class CsvImporterTest < ActiveSupport::TestCase
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title]
       row << ["+", nil, nil, nil, nil, nil, nil, nil, "New Item"]
     end
-    @instance.import(csv:                csv,
+    file = Tempfile.new(%w[test, .csv])
+    File.write(file, csv)
+
+    @instance.import(pathname:           file.path,
                      file_paths:         [],
                      submitter:          users(:southwest_sysadmin),
                      primary_collection: collections(:southeast_empty))
     item = Item.order(created_at: :desc).limit(1).first
     assert_equal Item::Stages::APPROVED, item.stage
     assert_equal "New Item", item.title
+  ensure
+    file.unlink
   end
 
   test "import() raises an error for a missing file" do
     package_path = File.join(file_fixture_path, "packages", "csv", "missing_file")
-    csv          = File.read(File.join(package_path, "package.csv"))
+    csv_path     = File.join(package_path, "package.csv")
     files        = []
     assert_raises do
-      @instance.import(csv:                csv,
+      @instance.import(pathname:           csv_path,
                        file_paths:         files,
                        submitter:          users(:southwest_admin),
                        primary_collection: collections(:southwest_unit1_empty))
@@ -182,10 +242,10 @@ class CsvImporterTest < ActiveSupport::TestCase
 
   test "import() attaches Bitstreams to new items" do
     package_path = File.join(file_fixture_path, "packages", "csv", "valid_items")
-    csv          = File.read(File.join(package_path, "package.csv"))
+    csv_path     = File.join(package_path, "package.csv")
     files        = Dir.glob(package_path + "/**/*").select{ |n| File.file?(n) }
 
-    @instance.import(csv:                csv,
+    @instance.import(pathname:           csv_path,
                      file_paths:         files,
                      submitter:          users(:southwest_admin),
                      primary_collection: collections(:southwest_unit1_empty))
@@ -210,13 +270,17 @@ class CsvImporterTest < ActiveSupport::TestCase
       row << [item.id, nil, "escher_lego.png", nil, nil, nil, nil, nil, "Title"]
     end
     files = [file_fixture("escher_lego.png").to_s]
+    file  = Tempfile.new(%w[test, .csv])
+    File.write(file, csv)
 
     assert_difference "Bitstream.count", 1 do
-      @instance.import(csv:                csv,
+      @instance.import(pathname:           file.path,
                        file_paths:         files,
                        submitter:          users(:southwest_admin),
                        primary_collection: collections(:southwest_unit1_empty))
     end
+  ensure
+    file.unlink
   end
 
   test "import() marks the first attached Bitstream as primary" do
@@ -228,8 +292,10 @@ class CsvImporterTest < ActiveSupport::TestCase
       row << [item.id, nil, files.join("||"), nil, nil, nil, nil, nil, "Title"]
     end
     files = files.map{ |f| file_fixture(f).to_s }
+    file  = Tempfile.new(%w[test, .csv])
+    File.write(file, csv)
 
-    @instance.import(csv:                csv,
+    @instance.import(pathname:           file.path,
                      file_paths:         files,
                      submitter:          users(:southwest_admin),
                      primary_collection: collections(:southwest_unit1_empty))
@@ -239,6 +305,8 @@ class CsvImporterTest < ActiveSupport::TestCase
     assert b.primary?
     b = item.bitstreams.where(filename: "pooh.jpg").first
     assert !b.primary?
+  ensure
+    file.unlink
   end
 
   test "import() sets bundle positions on attached bitstreams" do
@@ -250,8 +318,10 @@ class CsvImporterTest < ActiveSupport::TestCase
       row << [item.id, nil, files.join("||"), nil, nil, nil, nil, nil, "Title"]
     end
     files = files.map{ |f| file_fixture(f).to_s }
+    file  = Tempfile.new(%w[test, .csv])
+    File.write(file, csv)
 
-    @instance.import(csv:                csv,
+    @instance.import(pathname:           file.path,
                      file_paths:         files,
                      submitter:          users(:southwest_admin),
                      primary_collection: collections(:southwest_unit1_empty))
@@ -260,27 +330,34 @@ class CsvImporterTest < ActiveSupport::TestCase
     item.bitstreams.order(:bundle_position).each_with_index do |bs, index|
       assert_equal index, bs.bundle_position
     end
+  ensure
+    file.unlink
   end
 
   test "import() ignores files that are already attached to an item" do
-    item  = items(:southwest_unit1_collection1_item1)
-    csv   = CSV.generate do |row|
+    item = items(:southwest_unit1_collection1_item1)
+    csv  = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title]
       row << [item.id, nil, "approved.png", nil, nil, nil, nil, nil, "Title"]
     end
+    file = Tempfile.new(%w[test, .csv])
+    File.write(file, csv)
+
     assert_no_difference "Bitstream.count" do
-      @instance.import(csv:                csv,
+      @instance.import(pathname:           file.path,
                        file_paths:         ["this shouldn't be used"],
                        submitter:          users(:southwest_admin),
                        primary_collection: collections(:southwest_unit1_empty))
     end
+  ensure
+    file.unlink
   end
 
   test "import() attaches correct Embargoes to items" do
     package_path = File.join(file_fixture_path, "packages", "csv", "valid_items")
-    csv          = File.read(File.join(package_path, "package.csv"))
+    csv_path     = File.join(package_path, "package.csv")
 
-    @instance.import(csv:                csv,
+    @instance.import(pathname:           csv_path,
                      file_paths:         [],
                      submitter:          users(:southwest_admin),
                      primary_collection: collections(:southwest_unit1_empty))
@@ -302,13 +379,18 @@ class CsvImporterTest < ActiveSupport::TestCase
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title]
       row << ["+", nil, nil, nil, nil, nil, nil, nil, "New Item"]
     end
+    file = Tempfile.new(%w[test, .csv])
+    File.write(file, csv)
+
     imported_items = []
-    @instance.import(csv:                csv,
+    @instance.import(pathname:           file.path,
                      file_paths:         [],
                      submitter:          users(:southwest_sysadmin),
                      primary_collection: collections(:southeast_empty),
                      imported_items:     imported_items)
     assert_equal 1, imported_items.length
+  ensure
+    file.unlink
   end
 
   test "import() raises an error when an unrecognized element is present in the
@@ -317,11 +399,16 @@ class CsvImporterTest < ActiveSupport::TestCase
       row << CsvImporter::REQUIRED_COLUMNS + %w[bogus:bogus]
       row << ["+", nil, nil, nil, nil, nil, nil, nil, "New Value"]
     end
+    file = Tempfile.new(%w[test, .csv])
+    File.write(file, csv)
+
     assert_raises ArgumentError do
-      @instance.import(csv:                csv,
+      @instance.import(pathname:           file.path,
                        submitter:          users(:southwest_sysadmin),
                        primary_collection: collections(:southeast_empty))
     end
+  ensure
+    file.unlink
   end
 
   test "import() raises an error when a non-existent item ID is present in the
@@ -330,12 +417,17 @@ class CsvImporterTest < ActiveSupport::TestCase
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title]
       row << ["999999", nil, nil, nil, nil, nil, nil, "New Value"]
     end
+    file = Tempfile.new(%w[test, .csv])
+    File.write(file, csv)
+
     assert_raises ActiveRecord::RecordNotFound do
-      @instance.import(csv:                csv,
+      @instance.import(pathname:           file.path,
                        file_paths:         [],
                        submitter:          users(:southwest_sysadmin),
                        primary_collection: collections(:southeast_empty))
     end
+  ensure
+    file.unlink
   end
 
   test "import() raises an error for a blank item ID cell" do
@@ -343,88 +435,118 @@ class CsvImporterTest < ActiveSupport::TestCase
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title]
       row << [nil, nil, nil, nil, nil, nil, nil, "New Value"]
     end
+    file = Tempfile.new(%w[test, .csv])
+    File.write(file, csv)
+
     assert_raises do
-      @instance.import(csv:                csv,
+      @instance.import(pathname:           file.path,
                        submitter:          users(:southwest_sysadmin),
                        primary_collection: collections(:southeast_empty))
     end
+  ensure
+    file.unlink
   end
 
   test "import() updates an existing item" do
     item = items(:southeast_item1)
-    csv = CSV.generate do |row|
+    csv  = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title]
       row << [item.id, nil, nil, nil, nil, nil, nil, nil, "New Title"]
     end
-    @instance.import(csv:                csv,
+    file = Tempfile.new(%w[test, .csv])
+    File.write(file, csv)
+
+    @instance.import(pathname:           file.path,
                      file_paths:         [],
                      submitter:          users(:southwest_sysadmin),
                      primary_collection: collections(:southeast_empty))
     item.reload
     assert_equal "New Title", item.title
+  ensure
+    file.unlink
   end
 
   test "import() deletes elements corresponding to blank element values" do
     item = items(:southeast_described)
-    csv = CSV.generate do |row|
+    csv  = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title dc:subject]
       row << [item.id, nil, nil, nil, nil, nil, nil, nil, "Title", ""]
     end
-    @instance.import(csv:                csv,
+    file = Tempfile.new(%w[test, .csv])
+    File.write(file, csv)
+
+    @instance.import(pathname:           file.path,
                      file_paths:         [],
                      submitter:          users(:southwest_sysadmin),
                      primary_collection: collections(:southeast_empty))
     item.reload
     assert_nil item.element("dc:subject")
+  ensure
+    file.unlink
   end
 
   test "import() does not modify elements other than those contained in the
   CSV" do
     item = items(:southeast_described)
-    csv = CSV.generate do |row|
+    csv  = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title]
       row << [item.id, nil, nil, nil, nil, nil, nil, nil, "New Title"]
     end
-    @instance.import(csv:                csv,
+    file = Tempfile.new(%w[test, .csv])
+    File.write(file, csv)
+
+    @instance.import(pathname:           file.path,
                      file_paths:         [],
                      submitter:          users(:southwest_sysadmin),
                      primary_collection: collections(:southeast_empty))
     item.reload
     assert_equal "New Title", item.element("dc:title").string      # new value
     assert_equal "Some subject", item.element("dc:subject").string # existing value
+  ensure
+    file.unlink
   end
 
   test "import() succeeds the import's task upon success" do
     item = items(:southeast_described)
-    csv = CSV.generate do |row|
+    task = tasks(:pending)
+    csv  = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title]
       row << [item.id, nil, nil, nil, nil, nil, nil, nil, "New Title"]
     end
-    task = Task.create!(name: "TestImport", status_text: "Lorem Ipsum")
-    @instance.import(csv:                csv,
+    file = Tempfile.new(%w[test, .csv])
+    File.write(file, csv)
+
+    @instance.import(pathname:           file.path,
                      file_paths:         [],
                      submitter:          users(:southwest_sysadmin),
                      primary_collection: collections(:southeast_empty),
                      task:               task)
     assert_equal Task::Status::SUCCEEDED, task.status
     assert_equal 1, task.percent_complete
+  ensure
+    file.unlink
   end
 
   test "import() fails the import's task upon error" do
     item = items(:southeast_described)
+    task = tasks(:pending)
     csv = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[bogus:bogus]
       row << [item.id, nil, nil, nil, nil, nil, nil, "Bogus element value"]
     end
-    task = Task.create!(name: "TestImport", status_text: "Lorem Ipsum")
+    file = Tempfile.new(%w[test, .csv])
+    File.write(file, csv)
+
     assert_raises do
-      @instance.import(csv:                csv,
+      @instance.import(pathname:           file.path,
                        submitter:          users(:southwest_sysadmin),
                        primary_collection: collections(:southeast_empty),
                        task:               task)
     end
     assert_equal Task::Status::FAILED, task.status
     assert_equal 0, task.percent_complete
+  ensure
+    file.unlink
   end
 
 end
