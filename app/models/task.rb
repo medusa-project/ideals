@@ -99,6 +99,11 @@ class Task < ApplicationRecord
 
   before_save :constrain_progress
 
+  # Instances will often be updated from inside transactions, outside of which
+  # any updates would not be visible. So, we use a different database
+  # connection.
+  establish_connection "#{Rails.env}_2".to_sym
+
   ##
   # @return [Time,nil]
   #
