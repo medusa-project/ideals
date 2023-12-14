@@ -3,12 +3,6 @@
 ##
 # Encapsulates an outgoing and incoming Medusa AMQP message.
 #
-# N.B.: When working within a transaction, instances should be persisted using
-# a separate database connection. (See {ThreadUtils#use_other_connection}.) The
-# objective is to maintain an instance corresponding to each message sent to
-# Medusa, but consider the case of e.g. an instance created inside a
-# transaction that rolls back after a message has already been sent.
-#
 # # Attributes
 #
 # * `bitstream_id`   "Soft" foreign key to {Bitstream}. May be `nil` if the

@@ -406,15 +406,13 @@ class Bitstream < ApplicationRecord
     return nil if self.medusa_uuid.blank?
     # N.B.: MessageHandler will nil out medusa_uuid and medusa_key upon success.
     # See inline comment in ingest_into_medusa() for an explanation of this
-    ThreadUtils.use_other_connection(-> {
-      institution ||= self.institution
-      message = self.messages.build(operation:   Message::Operation::DELETE,
-                                    medusa_uuid: self.medusa_uuid,
-                                    medusa_key:  self.medusa_key,
-                                    institution: institution)
-      message.save!
-      message.send_message
-    })
+    institution ||= self.institution
+    message = self.messages.build(operation:   Message::Operation::DELETE,
+                                  medusa_uuid: self.medusa_uuid,
+                                  medusa_key:  self.medusa_key,
+                                  institution: institution)
+    message.save!
+    message.send_message
   end
 
   ##
@@ -521,19 +519,17 @@ class Bitstream < ApplicationRecord
     raise ArgumentError, "Permanent key is not set" if self.permanent_key.blank?
     raise ArgumentError, "Owning item does not have a handle" if !self.item.handle || self.item.handle&.suffix&.blank?
 
-    ThreadUtils.use_other_connection(-> {
-      # The staging key (this is Medusa AMQP interface terminology, not
-      # Bitstream terminology) is relative to the permanent key prefix because
-      # Medusa is configured to look only within that prefix.
-      staging_key = [self.item_id, self.filename].join("/")
-      target_key  = self.class.medusa_key(self.item.handle.handle, self.filename)
-      message     = self.messages.build(operation:   Message::Operation::INGEST,
-                                        staging_key: staging_key,
-                                        target_key:  target_key,
-                                        institution: self.institution)
-      message.save!
-      message.send_message
-    })
+    # The staging key (this is Medusa AMQP interface terminology, not
+    # Bitstream terminology) is relative to the permanent key prefix because
+    # Medusa is configured to look only within that prefix.
+    staging_key = [self.item_id, self.filename].join("/")
+    target_key  = self.class.medusa_key(self.item.handle.handle, self.filename)
+    message     = self.messages.build(operation:   Message::Operation::INGEST,
+                                      staging_key: staging_key,
+                                      target_key:  target_key,
+                                      institution: self.institution)
+    message.save!
+    message.send_message
   end
 
   ##

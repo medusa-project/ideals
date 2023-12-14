@@ -64,13 +64,4 @@ class ThreadUtils
     puts "" if print_progress
   end
 
-  ##
-  # @param proc [Proc]
-  #
-  def self.use_other_connection(proc) # TODO: fix this
-    # In test, ActiveRecord does not use a different database connection across
-    # threads, which can cause deadlocks
-    proc.call
-  end
-
 end
