@@ -44,14 +44,16 @@ class ImportTest < ActiveSupport::TestCase
     assert !File.exist?(@instance.file)
   end
 
-  test "delete_file() deletes the associated bucket object" do
+  # delete_object()
+
+  test "delete_object() deletes the corresponding bucket object" do
     fixture = file_fixture("zip.zip")
     @instance.update!(filename: "zip.zip",
                       length:   File.size(fixture))
     ObjectStore.instance.put_object(key:  @instance.file_key,
                                         path: fixture)
 
-    @instance.delete_file
+    @instance.delete_object
     assert !ObjectStore.instance.object_exists?(key: @instance.file_key)
   end
 
@@ -107,18 +109,6 @@ class ImportTest < ActiveSupport::TestCase
 
     @instance.download
     assert File.exist?(@instance.file)
-  end
-
-  test "download() deletes the downloaded file from the application S3 bucket" do
-    fixture = file_fixture("zip.zip")
-    store   = ObjectStore.instance
-    @instance.update!(filename: "zip.zip",
-                      length:   File.size(fixture))
-    store.put_object(key:  @instance.file_key,
-                     path: fixture)
-
-    @instance.download
-    assert !store.object_exists?(key: @instance.file_key)
   end
 
   # file()
@@ -230,19 +220,6 @@ class ImportTest < ActiveSupport::TestCase
     @instance.task.succeed
     @instance.save!
     assert !File.exist?(@instance.file)
-  end
-
-  test "save() deletes the bucket object when the task is succeeded" do
-    # Upload the file to the bucket
-    fixture = file_fixture("zip.zip")
-    @instance.update!(filename: "zip.zip",
-                      length:   File.size(fixture))
-    ObjectStore.instance.put_object(key:  @instance.file_key,
-                                    path: fixture)
-
-    @instance.task.succeed
-    @instance.save!
-    assert !ObjectStore.instance.object_exists?(key: @instance.file_key)
   end
 
 end

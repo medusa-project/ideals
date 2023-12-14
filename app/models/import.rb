@@ -57,12 +57,18 @@ class Import < ApplicationRecord
   serialize :imported_items, coder: JSON
 
   before_save :delete_file, if: -> { task&.succeeded? }
-  before_destroy :delete_file
+  before_destroy :delete_file, :delete_object
 
   def delete_file
     if self.id.present? && self.institution_id.present? &&
+      self.filename.present? && File.exist?(self.file)
+      File.delete(self.file)
+    end
+  end
+
+  def delete_object
+    if self.id.present? && self.institution_id.present? &&
       self.filename.present?
-      File.delete(self.file) if File.exist?(self.file)
       ObjectStore.instance.delete_object(key: self.file_key)
     end
   end
@@ -79,7 +85,6 @@ class Import < ApplicationRecord
     store = ObjectStore.instance
     FileUtils.mkdir_p(File.dirname(file))
     store.get_object(key: self.file_key, response_target: file)
-    store.delete_object(key: self.file_key)
   end
 
   ##
