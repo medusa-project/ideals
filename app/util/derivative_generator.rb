@@ -164,8 +164,8 @@ class DerivativeGenerator
       @bitstream.update!(derivative_generation_succeeded:    true,
                          derivative_generation_attempted_at: Time.now)
     ensure
-      FileUtils.rm(source_tempfile) if source_tempfile
-      FileUtils.rm(deriv_path) rescue nil
+      FileUtils.rm(source_tempfile) if source_tempfile && File.exist?(source_tempfile)
+      FileUtils.rm(deriv_path) if deriv_path && File.exist?(deriv_path)
     end
   end
 
