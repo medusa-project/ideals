@@ -47,7 +47,7 @@ gem "natural_sort"
 # Assists in parsing IP address CIDR ranges.
 gem "netaddr"
 # Enables local-credential logins.
-gem "omniauth-identity"
+gem "omniauth-identity", git: "https://github.com/medusa-project/omniauth-identity.git"
 gem "omniauth-rails_csrf_protection"
 gem "omniauth-saml"
 gem "omniauth-shibboleth"
