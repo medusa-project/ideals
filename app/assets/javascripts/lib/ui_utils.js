@@ -11,6 +11,11 @@ IDEALS.UIUtils.FADE_TIME = 200;
 IDEALS.UIUtils.KEY_DELAY = 1500;
 
 /**
+ * Amount of time to wait after the last keyup before firing an XHR.
+ */
+IDEALS.UIUtils.REFRESH_FREQUENCY = 5000;
+
+/**
  * Renders a chart into a canvas using chart.js (https://www.chartjs.org).
  *
  * @param canvas {jQuery} Canvas element.

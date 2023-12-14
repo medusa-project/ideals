@@ -4,10 +4,9 @@
 const TasksView = {
 
     initialize: function() {
-        const ROOT_URL          = $("input[name='root_url']").val();
-        const REFRESH_FREQUENCY = 5000;
-        const filterDiv         = $("#task-filter");
-        const form              = filterDiv.find("form");
+        const ROOT_URL  = $("input[name='root_url']").val();
+        const filterDiv = $("#task-filter");
+        const form      = filterDiv.find("form");
 
         const attachResultsEventListeners = function () {
             $(".page-link").on("click", function (e) {
@@ -37,7 +36,7 @@ const TasksView = {
 
         setInterval(function () {
             refreshResults($(".page-item.active a").attr("href"));
-        }, REFRESH_FREQUENCY);
+        }, IDEALS.UIUtils.REFRESH_FREQUENCY);
 
         let timeout = null;
         filterDiv.find("input").on("keyup", function () {
