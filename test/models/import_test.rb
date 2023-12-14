@@ -177,6 +177,20 @@ class ImportTest < ActiveSupport::TestCase
                  @instance.file_key
   end
 
+  # presigned_download_url()
+
+  test "presigned_download_url() raises an error if filename is not set" do
+    @instance.filename = nil
+    assert_raises do
+      @instance.presigned_download_url
+    end
+  end
+
+  test "presigned_download_url() returns a URL" do
+    @instance.filename = "zip.zip"
+    assert_not_nil @instance.presigned_download_url
+  end
+
   # presigned_upload_url()
 
   test "presigned_upload_url() raises an error if filename is not set" do

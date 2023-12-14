@@ -114,11 +114,20 @@ class Import < ApplicationRecord
   end
 
   ##
-  # @return [Array<Hash>]
+  # @return [String]
+  #
+  def presigned_download_url
+    ObjectStore.instance.presigned_download_url(key:        self.file_key,
+                                                expires_in: 300,
+                                                response_content_disposition: "attachment")
+  end
+
+  ##
+  # @return [String]
   #
   def presigned_upload_url
     ObjectStore.instance.presigned_upload_url(key:        self.file_key,
-                                                  expires_in: 30)
+                                              expires_in: 30)
   end
 
   ##
