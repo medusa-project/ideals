@@ -1,3 +1,10 @@
+- pagination = paginate(count: @count, page: @current_page, per_page: @window,
+                        permitted_params: @permitted_params)
+
+.row.justify-content-md-center
+  .col-md-auto
+    = pagination
+
 - if @imports.any?
   %table.table
     %thead
@@ -41,3 +48,7 @@
                   Upload&hellip;
 - else
   %p No imports to show.
+
+.row.justify-content-md-center
+  .col-md-auto
+    = pagination

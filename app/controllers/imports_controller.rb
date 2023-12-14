@@ -72,10 +72,17 @@ class ImportsController < ApplicationController
   #
   def index
     authorize Import
-    @imports = Import.
+    @permitted_params = params.permit(Search::RESULTS_PARAMS +
+                                        Search::SIMPLE_SEARCH_PARAMS)
+    @start            = [@permitted_params[:start].to_i.abs, MAX_START].min
+    @window           = window_size
+    @imports          = Import.
       where(institution: current_institution).
-      where("created_at > ?", 6.months.ago).
       order(created_at: :desc)
+    @count            = @imports.count
+    @imports          = @imports.limit(@window).offset(@start)
+    @current_page     = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
+
     respond_to do |format|
       format.js
       format.html

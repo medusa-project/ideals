@@ -130,6 +130,11 @@ const ImportsView = {
         });
 
         function attachEventListeners() {
+            $(".page-link").on("click", function (e) {
+                e.preventDefault();
+                refreshResults($(this).attr("href"));
+            });
+
             $("button.edit-import").on("click", function () {
                 const importID = $(this).data("import-id");
                 const url = ROOT_URL + "/imports/" + importID + "/edit";
@@ -149,10 +154,12 @@ const ImportsView = {
 
         attachEventListeners();
 
-        // Reload the imports table every 5 seconds
-        setInterval(function () {
+        const refreshResults = function(url) {
+            if (!url) {
+                url = ROOT_URL + "/imports";
+            }
             $.ajax({
-                url: ROOT_URL + "/imports",
+                url: url,
                 success: function (data) {
                     // index.js.erb will take it from here
                     attachEventListeners();
@@ -161,7 +168,10 @@ const ImportsView = {
                     console.error(data);
                 }
             });
-        }, 5000);
+        };
+        setInterval(function () {
+            refreshResults($(".page-item.active a").attr("href"));
+        }, IDEALS.UIUtils.REFRESH_FREQUENCY);
     }
 };
 
