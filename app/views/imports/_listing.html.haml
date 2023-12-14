@@ -45,7 +45,11 @@
                                                          "data-bs-toggle": "modal",
                                                          role:             "button"}
                   %i.fa.fa-upload
-                  Upload&hellip;
+                  Upload File&hellip;
+              - if (!import.task || [Task::Status::PENDING].include?(import.task&.status)) && policy(import).destroy?
+                = link_to(import_path(import), method: :delete, class: "btn btn-sm btn-danger", data: { confirm: "Are you sure you want to delete this import? "}) do
+                  %i.fa.fa-trash
+                  Delete
 - else
   %p No imports to show.
 

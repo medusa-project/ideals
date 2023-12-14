@@ -129,6 +129,50 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
     assert_equal user, import.user
   end
 
+  # destroy()
+
+  test "destroy() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    delete import_path(@import)
+    assert_response :not_found
+  end
+
+  test "destroy() redirects to root page for logged-out users" do
+    delete import_path(@import)
+    assert_redirected_to @import.institution.scope_url
+  end
+
+  test "destroy() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    delete import_path(@import)
+    assert_response :forbidden
+  end
+
+  test "destroy() destroys the import" do
+    log_in_as(users(:southwest_admin))
+    assert_difference "Import.count", -1 do
+      delete import_path(@import)
+    end
+  end
+
+  test "destroy() redirects to imports view for non-sysadmins" do
+    log_in_as(users(:southwest_admin))
+    delete import_path(@import)
+    assert_redirected_to imports_path
+  end
+
+  test "destroy() redirects to the import's institution for sysadmins" do
+    log_in_as(users(:southwest_sysadmin))
+    delete import_path(@import)
+    assert_redirected_to institution_path(@import.institution)
+  end
+
+  test "destroy() returns HTTP 404 for a missing import" do
+    log_in_as(users(:southwest_admin))
+    delete "/imports/99999"
+    assert_response :not_found
+  end
+
   # edit()
 
   test "edit() returns HTTP 404 for unscoped requests" do

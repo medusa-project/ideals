@@ -24,6 +24,10 @@ class ImportPolicy < ApplicationPolicy
     index
   end
 
+  def destroy
+    update
+  end
+
   def edit
     update
   end

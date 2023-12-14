@@ -59,6 +59,26 @@ class ImportsController < ApplicationController
   end
 
   ##
+  # Responds to `DELETE /imports/:id`
+  #
+  def destroy
+    institution = @import.institution
+    @import.destroy!
+  rescue => e
+    flash['error'] = "#{e}"
+  else
+    toast!(title:   "Import deleted",
+           message: "The import into \"#{@import.collection.title}\" has "\
+                    "been deleted.")
+  ensure
+    if current_user_is_sysadmin?
+      redirect_to institution_path(institution)
+    else
+      redirect_to imports_path
+    end
+  end
+
+  ##
   # Returns content for the "upload package" form.
   #
   # Responds to `GET /imports/:id/edit` (XHR only)
