@@ -174,7 +174,9 @@ class UsersController < ApplicationController
       render plain: "A task is already in progress.", status: :conflict
       return
     end
-    @task = Task.create!(name: CacheSubmittableCollectionsJob.name)
+    @task = Task.create!(name:        CacheSubmittableCollectionsJob.name,
+                         user:        @user,
+                         institution: @user.institution)
     CacheSubmittableCollectionsJob.perform_later(user:            @user,
                                                  client_ip:       request_context.client_ip,
                                                  client_hostname: request_context.client_hostname,
