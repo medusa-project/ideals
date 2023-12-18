@@ -111,13 +111,13 @@ class UsersController < ApplicationController
   #
   def show_submittable_collections
     respond_to do |format|
+      format.html do
+        set_submittable_collections_ivars
+        render partial: "show_submittable_collections_tab"
+      end
       format.json do
         set_submittable_collections_ivars(apply_window: false)
         render "show_submittable_collections"
-      end
-      format.any do
-        set_submittable_collections_ivars
-        render partial: "show_submittable_collections_tab"
       end
     end
   end
