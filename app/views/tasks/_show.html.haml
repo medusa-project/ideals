@@ -22,6 +22,12 @@
   %dt Queue
   %dd
     %code= task.queue
+  %dt Institution
+  %dd
+    - if task.institution
+      = task.institution.name
+    - else
+      None
   %dt User
   %dd
     - if task.user
