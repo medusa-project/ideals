@@ -242,6 +242,11 @@
                 = link_to("https://docs.google.com/document/d/1yAFOUC_gKrtH7cF7ZB0Vu3M989CI_26gF3O55kio2OU/edit?usp=sharing", class: "dropdown-item", target: "_blank") do
                   %i.fa.fa-arrow-up-right-from-square
                   System Administrator's Guide
+            - if current_user_is_sysadmin? || InstitutionAdministrator.where(user: current_user).exists?
+              %li
+                = link_to("https://docs.google.com/document/d/1PM6NxZnGW_bA4kyxa-JHxvL2D2GZXfHYkbHWgmabrgA/edit?usp=sharing", class: "dropdown-item", target: "_blank") do
+                  %i.fa.fa-arrow-up-right-from-square
+                  Change Log
               %li
                 %hr.dropdown-divider
             %li
