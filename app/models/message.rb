@@ -44,10 +44,10 @@ class Message < ApplicationRecord
   validates :operation, inclusion: { in: Operation.constants.map{ |c| Operation.const_get(c) },
                                      message: "%{value} is not a valid operation" }
 
-  # Instances will often be updated from inside transactions, outside of which
-  # any updates would not be visible. So, we use a different database
-  # connection.
-  establish_connection "#{Rails.env}_2".to_sym
+  # See {Task} for an explanation of this.
+  unless Rails.env.test?
+    establish_connection "#{Rails.env}_2".to_sym
+  end
 
   ##
   # @return [String] Console representation of the instance.
