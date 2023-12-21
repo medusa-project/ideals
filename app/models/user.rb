@@ -316,7 +316,7 @@ class User < ApplicationRecord
                 client_hostname: client_hostname)
     # Check for institution admin.
     return true if consider_institution_admin &&
-      institution_admin?(collection.institution,
+      institution_admin?(collection&.institution,
                          client_ip:       client_ip,
                          client_hostname: client_hostname)
     # Check for unit admin.
