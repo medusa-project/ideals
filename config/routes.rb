@@ -108,6 +108,8 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/authentication", to: "institutions#show_authentication", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/buried-items", to: "institutions#show_buried_items", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/depositing", to: "institutions#show_depositing", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/edit-administering-groups", to: "institutions#edit_administering_groups", via: :get,
@@ -179,6 +181,8 @@ Rails.application.routes.draw do
     match "/user-groups", to: "institutions#show_user_groups", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/vocabularies", to: "institutions#show_vocabularies", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/withdrawn-items", to: "institutions#show_withdrawn_items", via: :get,
           constraints: lambda { |request| request.xhr? }
 
     match "/banner-image", to: "institutions#remove_banner_image", via: :delete

@@ -971,6 +971,31 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # show_buried_items()
+
+  test "show_buried_items() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_buried_items_path(@institution), xhr: true
+    assert_response :not_found
+  end
+
+  test "show_buried_items() returns HTTP 403 for logged-out users" do
+    get institution_buried_items_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_buried_items() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    get institution_buried_items_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_buried_items() returns HTTP 200 for authorized users" do
+    log_in_as(users(:southwest_admin))
+    get institution_buried_items_path(@institution), xhr: true
+    assert_response :ok
+  end
+
   # show_depositing()
 
   test "show_depositing() returns HTTP 404 for unscoped requests" do
@@ -1518,6 +1543,31 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   test "show_vocabularies() returns HTTP 200 for authorized users" do
     log_in_as(users(:southwest_sysadmin))
     get institution_vocabularies_path(@institution), xhr: true
+    assert_response :ok
+  end
+
+  # show_withdrawn_items()
+
+  test "show_withdrawn_items() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_withdrawn_items_path(@institution), xhr: true
+    assert_response :not_found
+  end
+
+  test "show_withdrawn_items() returns HTTP 403 for logged-out users" do
+    get institution_withdrawn_items_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_withdrawn_items() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    get institution_withdrawn_items_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_withdrawn_items() returns HTTP 200 for authorized users" do
+    log_in_as(users(:southwest_admin))
+    get institution_withdrawn_items_path(@institution), xhr: true
     assert_response :ok
   end
 

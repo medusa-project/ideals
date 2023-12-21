@@ -18,10 +18,37 @@
   = icon_for(@institution)
   = @institution.name
 
+- show_access                  = policy(@institution).show_access?
+- show_authentication          = policy(@institution).show_authentication?
+- show_buried_items            = policy(@institution).show_buried_items?
+- show_depositing              = policy(@institution).show_depositing?
+- show_element_mappings        = policy(@institution).show_element_mappings?
+- show_element_namespaces      = policy(@institution).show_element_namespaces?
+- show_element_registry        = policy(@institution).show_element_registry?
+- show_imports                 = policy(@institution).show_imports?
+- show_index_pages             = policy(@institution).show_index_pages?
+- show_invitees                = policy(@institution).show_invitees?
+- show_metadata_profiles       = policy(@institution).show_metadata_profiles?
+- show_prebuilt_searches       = policy(@institution).show_prebuilt_searches?
+- show_preservation            = policy(@institution).show_preservation?
+- show_properties              = policy(@institution).show_properties?
+- show_review_submissions      = policy(@institution).show_review_submissions?
+- show_settings                = policy(@institution).show_settings?
+- show_statistics              = policy(@institution).show_statistics?
+- show_submission_profiles     = policy(@institution).show_submission_profiles?
+- show_submissions_in_progress = policy(@institution).show_submissions_in_progress?
+- show_theme                   = policy(@institution).show_theme?
+- show_units                   = policy(@institution).show_units?
+- show_usage                   = policy(@institution).show_usage?
+- show_user_groups             = policy(@institution).show_user_groups?
+- show_users                   = policy(@institution).show_users?
+- show_vocabularies            = policy(@institution).show_vocabularies?
+- show_withdrawn_items         = policy(@institution).show_withdrawn_items?
+
 .d-flex
   .nav.nav-pills.flex-column.me-3{role:               "tablist",
                                   "aria-orientation": "vertical"}
-    - if policy(@institution).show_properties?
+    - if show_properties
       %button#properties-tab.nav-link.active{"data-bs-target": "#properties-tab-content",
                                              "data-bs-toggle": "pill",
                                              role:             "tab",
@@ -30,7 +57,7 @@
                                              "aria-selected":  "true"}
         = icon_for(:info)
         Properties
-    - if policy(@institution).show_settings?
+    - if show_settings
       %button#settings-tab.nav-link{"data-bs-target": "#settings-tab-content",
                                     "data-bs-toggle": "pill",
                                     role:             "tab",
@@ -39,7 +66,7 @@
                                     "aria-selected":  "false"}
         %i.fa.fa-cog
         General Settings
-    - if policy(@institution).show_authentication?
+    - if show_authentication
       %button#authentication-tab.nav-link{"data-bs-target": "#authentication-tab-content",
                                           "data-bs-toggle": "pill",
                                           role:             "tab",
@@ -48,7 +75,7 @@
                                           "aria-selected":  "false"}
         %i.fa.fa-lock
         Authentication
-    - if policy(@institution).show_preservation?
+    - if show_preservation
       %button#preservation-tab.nav-link{"data-bs-target": "#preservation-tab-content",
                                         "data-bs-toggle": "pill",
                                         role:             "tab",
@@ -59,7 +86,7 @@
         Preservation
         - if @institution.outgoing_message_queue.blank?
           %i.fa.fa-exclamation-triangle.text-danger
-    - if policy(@institution).show_theme?
+    - if show_theme
       %button#theme-tab.nav-link{"data-bs-target":       "#theme-tab-content",
                                  "data-bs-toggle":       "pill",
                                  role:                   "tab",
@@ -69,7 +96,7 @@
                                  "data-institution-key": @institution.key}
         %i.fa.fa-palette
         Theme
-    - if policy(@institution).show_depositing?
+    - if show_depositing
       %button#depositing-tab.nav-link{"data-bs-target": "#depositing-tab-content",
                                     "data-bs-toggle":   "pill",
                                     role:               "tab",
@@ -78,7 +105,7 @@
                                     "aria-selected":    "false"}
         %i.fa.fa-plus
         Deposit Agreement
-    - if policy(@institution).show_review_submissions?
+    - if show_review_submissions
       %button#review-submissions-tab.nav-link{"data-bs-target": "#review-submissions-tab-content",
                                               "data-bs-toggle": "pill",
                                               role:             "tab",
@@ -89,7 +116,7 @@
         Review Submissions
         - if @review_count > 0
           %span.badge.rounded-pill.text-bg-primary= @review_count
-    - if policy(@institution).show_submissions_in_progress?
+    - if show_submissions_in_progress
       %button#submissions-in-progress-tab.nav-link{"data-bs-target": "#submissions-in-progress-tab-content",
                                                    "data-bs-toggle": "pill",
                                                    role:             "tab",
@@ -100,7 +127,30 @@
         Submissions in Progress
         - if @submissions_in_progress_count > 0
           %span.badge.rounded-pill.text-bg-primary= @submissions_in_progress_count
-    - if policy(@institution).show_units?
+    - if show_withdrawn_items
+      %button#withdrawn-items-tab.nav-link{"data-bs-target": "#withdrawn-items-tab-content",
+                                           "data-bs-toggle": "pill",
+                                           role:             "tab",
+                                           type:             "button",
+                                           "aria-controls":  "withdrawn-items-tab-content",
+                                           "aria-selected":  "false"}
+        %i.fa.fa-cubes-stacked
+        Withdrawn Items
+        - if @withdrawn_items_count > 0
+          %span.badge.rounded-pill.text-bg-primary= @withdrawn_items_count
+    - if show_buried_items
+      %button#deleted-items-tab.nav-link{"data-bs-target": "#deleted-items-tab-content",
+                                         "data-bs-toggle": "pill",
+                                         role:             "tab",
+                                         type:             "button",
+                                         "aria-controls":  "deleted-items-tab-content",
+                                         "aria-selected":  "false"}
+        = icon_for(:delete)
+        Deleted Items
+        - if @buried_items_count > 0
+          %span.badge.rounded-pill.text-bg-primary= @buried_items_count
+
+    - if show_units
       %button#units-tab.nav-link{"data-bs-target": "#units-tab-content",
                                  "data-bs-toggle": "pill",
                                  role:             "tab",
@@ -109,7 +159,7 @@
                                  "aria-selected":  "false"}
         = icon_for(Unit)
         Units
-    - if policy(@institution).show_element_mappings?
+    - if show_element_mappings
       %button#element-mappings-tab.nav-link{"data-bs-target": "#element-mappings-tab-content",
                                             "data-bs-toggle": "pill",
                                             role:             "tab",
@@ -118,7 +168,7 @@
                                             "aria-selected":  "false"}
         = icon_for(RegisteredElement)
         Element Mappings
-    - if policy(@institution).show_element_namespaces?
+    - if show_element_namespaces
       %button#element-namespaces-tab.nav-link{"data-bs-target": "#element-namespaces-tab-content",
                                               "data-bs-toggle": "pill",
                                               role:             "tab",
@@ -127,7 +177,7 @@
                                               "aria-selected":  "false"}
         %i.fa.fa-code
         Element Namespaces
-    - if policy(@institution).show_element_registry?
+    - if show_element_registry
       %button#element-registry-tab.nav-link{"data-bs-target": "#element-registry-tab-content",
                                             "data-bs-toggle": "pill",
                                             role:             "tab",
@@ -136,7 +186,7 @@
                                             "aria-selected":  "false"}
         = icon_for(RegisteredElement)
         Element Registry
-    - if policy(@institution).show_metadata_profiles?
+    - if show_metadata_profiles
       %button#metadata-profiles-tab.nav-link{"data-bs-target": "#metadata-profiles-tab-content",
                                              "data-bs-toggle": "pill",
                                              role:             "tab",
@@ -145,7 +195,7 @@
                                              "aria-selected":  "false"}
         = icon_for(MetadataProfile)
         Metadata Profiles
-    - if policy(@institution).show_submission_profiles?
+    - if show_submission_profiles
       %button#submission-profiles-tab.nav-link{"data-bs-target": "#submission-profiles-tab-content",
                                                "data-bs-toggle": "pill",
                                                role:             "tab",
@@ -154,7 +204,7 @@
                                                "aria-selected":  "false"}
         = icon_for(SubmissionProfile)
         Submission Profiles
-    - if policy(@institution).show_vocabularies?
+    - if show_vocabularies
       %button#vocabularies-tab.nav-link{"data-bs-target": "#vocabularies-tab-content",
                                         "data-bs-toggle": "pill",
                                         role:             "tab",
@@ -163,7 +213,7 @@
                                         "aria-selected":  "false"}
         = icon_for(Vocabulary)
         Vocabularies
-    - if policy(@institution).show_prebuilt_searches?
+    - if show_prebuilt_searches
       %button#prebuilt-searches-tab.nav-link{"data-bs-target": "#prebuilt-searches-tab-content",
                                              "data-bs-toggle": "pill",
                                              role:             "tab",
@@ -172,7 +222,7 @@
                                              "aria-selected":  "false"}
         = icon_for(PrebuiltSearch)
         Prebuilt Searches
-    - if policy(@institution).show_index_pages?
+    - if show_index_pages
       %button#index-pages-tab.nav-link{"data-bs-target": "#index-pages-tab-content",
                                        "data-bs-toggle": "pill",
                                        role:             "tab",
@@ -181,7 +231,7 @@
                                        "aria-selected":  "false"}
         = icon_for(IndexPage)
         Index Pages
-    - if policy(@institution).show_imports?
+    - if show_imports
       %button#imports-tab.nav-link{"data-bs-target": "#imports-tab-content",
                                    "data-bs-toggle": "pill",
                                    role:             "tab",
@@ -190,7 +240,7 @@
                                    "aria-selected":  "false"}
         = icon_for(Import)
         Imports
-    - if policy(@institution).show_invitees?
+    - if show_invitees
       %button#invitees-tab.nav-link{"data-bs-target": "#invitees-tab-content",
                                     "data-bs-toggle": "pill",
                                     role:             "tab",
@@ -199,7 +249,7 @@
                                     "aria-selected":  "false"}
         = icon_for(Invitee)
         Invitees
-    - if policy(@institution).show_users?
+    - if show_users
       %button#users-tab.nav-link{"data-bs-target": "#users-tab-content",
                                  "data-bs-toggle": "pill",
                                  role:             "tab",
@@ -208,7 +258,7 @@
                                  "aria-selected":  "false"}
         = icon_for(User)
         Users
-    - if policy(@institution).show_user_groups?
+    - if show_user_groups
       %button#user-groups-tab.nav-link{"data-bs-target": "#user-groups-tab-content",
                                        "data-bs-toggle": "pill",
                                        role:             "tab",
@@ -217,7 +267,7 @@
                                        "aria-selected":  "false"}
         = icon_for(UserGroup)
         User Groups
-    - if policy(@institution).show_access?
+    - if show_access
       %button#access-tab.nav-link{"data-bs-target":       "#access-tab-content",
                                   "data-bs-toggle":       "pill",
                                   role:                   "tab",
@@ -227,7 +277,7 @@
                                   "data-institution-key": @institution.key}
         %i.fa.fa-users
         Access
-    - if policy(@institution).show_statistics?
+    - if show_statistics
       %button#statistics-tab.nav-link{"data-bs-target":       "#statistics-tab-content",
                                       "data-bs-toggle":       "pill",
                                       role:                   "tab",
@@ -237,7 +287,7 @@
                                       "data-institution-key": @institution.key}
         %i.fa.fa-chart-bar
         Statistics
-    - if policy(@institution).show_usage?
+    - if show_usage
       %button#usage-tab.nav-link{"data-bs-target":       "#usage-tab-content",
                                  "data-bs-toggle":       "pill",
                                  role:                   "tab",
@@ -249,124 +299,134 @@
         Usage
 
   .tab-content.w-100
-    - if policy(@institution).show_properties?
+    - if show_properties
       #properties-tab-content.tab-pane.fade.show.active{role:              "tabpanel",
                                                         "aria-labelledby": "properties-tab"}
         = spinner
 
-    - if policy(@institution).show_settings?
+    - if show_settings
       #settings-tab-content.tab-pane.fade{role:              "tabpanel",
                                           "aria-labelledby": "settings-tab"}
         = spinner
 
-    - if policy(@institution).show_authentication?
+    - if show_authentication
       #authentication-tab-content.tab-pane.fade{role:              "tabpanel",
                                                 "aria-labelledby": "authentication-tab"}
         = spinner
 
-    - if policy(@institution).show_element_mappings?
+    - if show_buried_items
+      #deleted-items-tab-content.tab-pane.fade{role:              "tabpanel",
+                                               "aria-labelledby": "deleted-items-tab"}
+        = spinner
+
+    - if show_element_mappings
       #element-mappings-tab-content.tab-pane.fade{role:              "tabpanel",
                                                   "aria-labelledby": "element-mappings-tab"}
         = spinner
 
-    - if policy(@institution).show_element_namespaces?
+    - if show_element_namespaces
       #element-namespaces-tab-content.tab-pane.fade{role:              "tabpanel",
                                                     "aria-labelledby": "element-namespaces-tab"}
         = spinner
 
-    - if policy(@institution).show_element_registry?
+    - if show_element_registry
       #element-registry-tab-content.tab-pane.fade{role:              "tabpanel",
                                                   "aria-labelledby": "element-registry-tab"}
         = spinner
 
-    - if policy(@institution).show_metadata_profiles?
+    - if show_metadata_profiles
       #metadata-profiles-tab-content.tab-pane.fade{role:              "tabpanel",
                                                    "aria-labelledby": "metadata-profiles-tab"}
         = spinner
 
-    - if policy(@institution).show_submission_profiles?
+    - if show_submission_profiles
       #submission-profiles-tab-content.tab-pane.fade{role:              "tabpanel",
                                                      "aria-labelledby": "submission-profiles-tab"}
         = spinner
 
-    - if policy(@institution).show_vocabularies?
+    - if show_vocabularies
       #vocabularies-tab-content.tab-pane.fade{role:              "tabpanel",
                                               "aria-labelledby": "vocabularies-tab"}
         = spinner
 
-    - if policy(@institution).show_prebuilt_searches?
+    - if show_prebuilt_searches
       #prebuilt-searches-tab-content.tab-pane.fade{role:              "tabpanel",
                                                    "aria-labelledby": "prebuilt-searches-tab"}
         = spinner
 
-    - if policy(@institution).show_index_pages?
+    - if show_index_pages
       #index-pages-tab-content.tab-pane.fade{role:              "tabpanel",
                                              "aria-labelledby": "index-pages-tab"}
         = spinner
 
-    - if policy(@institution).show_preservation?
+    - if show_preservation
       #preservation-tab-content.tab-pane.fade{role:              "tabpanel",
                                               "aria-labelledby": "preservation-tab"}
         = spinner
 
-    - if policy(@institution).show_theme?
+    - if show_theme
       #theme-tab-content.tab-pane.fade{role:              "tabpanel",
                                        "aria-labelledby": "theme-tab"}
         = spinner
 
-    - if policy(@institution).show_depositing?
+    - if show_depositing
       #depositing-tab-content.tab-pane.fade{role:              "tabpanel",
                                             "aria-labelledby": "depositing-tab"}
         = spinner
 
-    - if policy(@institution).show_units?
+    - if show_units
       #units-tab-content.tab-pane.fade{role:              "tabpanel",
                                        "aria-labelledby": "units-tab"}
         = spinner
 
-    - if policy(@institution).show_review_submissions?
+    - if show_review_submissions
       #review-submissions-tab-content.tab-pane.fade{role:              "tabpanel",
                                                     "aria-labelledby": "review-submissions-tab"}
         = spinner
 
-    - if policy(@institution).show_submissions_in_progress?
+    - if show_submissions_in_progress
       #submissions-in-progress-tab-content.tab-pane.fade{role:              "tabpanel",
                                                          "aria-labelledby": "submissions-in-progress-tab"}
         = spinner
 
-    - if policy(@institution).show_imports?
+    - if show_imports
       #imports-tab-content.tab-pane.fade{role:              "tabpanel",
                                          "aria-labelledby": "imports-tab"}
         = spinner
 
-    - if policy(@institution).show_invitees?
+    - if show_invitees
       #invitees-tab-content.tab-pane.fade{role:              "tabpanel",
                                           "aria-labelledby": "invitees-tab"}
         = spinner
 
-    - if policy(@institution).show_users?
+    - if show_users
       #users-tab-content.tab-pane.fade{role:              "tabpanel",
                                        "aria-labelledby": "users-tab"}
         = spinner
 
-    - if policy(@institution).show_user_groups?
+    - if show_user_groups
       #user-groups-tab-content.tab-pane.fade{role:              "tabpanel",
                                              "aria-labelledby": "user-groups-tab"}
         = spinner
 
-    - if policy(@institution).show_statistics?
+    - if show_statistics
       #statistics-tab-content.tab-pane.fade{role:              "tabpanel",
                                             "aria-labelledby": "statistics-tab"}
         = spinner
 
-    - if policy(@institution).show_usage?
+    - if show_usage
       #usage-tab-content.tab-pane.fade{role:              "tabpanel",
                                        "aria-labelledby": "usage-tab"}
         = spinner
 
-    - if policy(@institution).show_access?
+    - if show_access
       #access-tab-content.tab-pane.fade{role:              "tabpanel",
                                         "aria-labelledby": "access-tab"}
+        = spinner
+
+    - if show_withdrawn_items
+      #withdrawn-items-tab-content.tab-pane.fade{role:              "tabpanel",
+                                                 "aria-labelledby": "withdrawn-items-tab"}
         = spinner
 
 = render partial: "shared/xhr_modal",

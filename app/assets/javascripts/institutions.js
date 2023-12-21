@@ -132,6 +132,37 @@ const InstitutionView = {
             });
         });
 
+        $("#deleted-items-tab").on("show.bs.tab", function () {
+            const url = ROOT_URL + "/institutions/" + institutionKey + "/buried-items";
+            $.get(url, function (data) {
+                $("#deleted-items-tab-content").html(data);
+
+                const attachResultsEventListeners = function() {
+                    $(".page-link").on("click", function(e) {
+                        e.preventDefault();
+                        refreshResults($(this).attr("href"));
+                    });
+                };
+                attachResultsEventListeners();
+
+                const refreshResults = function(url) {
+                    const container = $("#deleted-items-tab-content");
+                    container.html(IDEALS.UIUtils.Spinner());
+                    if (!url) {
+                        url = ROOT_URL + "/institutions/" + institutionKey + "/buried-items";
+                    }
+                    $.ajax({
+                        method:  "GET",
+                        url:     url,
+                        success: function(data) {
+                            container.html(data);
+                            attachResultsEventListeners();
+                        }
+                    });
+                };
+            });
+        });
+
         $("#depositing-tab").on("show.bs.tab", function () {
             const url = ROOT_URL + "/institutions/" + institutionKey + "/depositing";
             $.get(url, function (data) {
@@ -445,6 +476,37 @@ const InstitutionView = {
             $.get(url, function (data) {
                 $("#element-namespaces-tab-content").html(data);
                 ElementNamespacesView.initialize();
+            });
+        });
+
+        $("#withdrawn-items-tab").on("show.bs.tab", function () {
+            const url = ROOT_URL + "/institutions/" + institutionKey + "/withdrawn-items";
+            $.get(url, function (data) {
+                $("#withdrawn-items-tab-content").html(data);
+
+                const attachResultsEventListeners = function() {
+                    $(".page-link").on("click", function(e) {
+                        e.preventDefault();
+                        refreshResults($(this).attr("href"));
+                    });
+                };
+                attachResultsEventListeners();
+
+                const refreshResults = function(url) {
+                    const container = $("#withdrawn-items-tab-content");
+                    container.html(IDEALS.UIUtils.Spinner());
+                    if (!url) {
+                        url = ROOT_URL + "/institutions/" + institutionKey + "/withdrawn-items";
+                    }
+                    $.ajax({
+                        method:  "GET",
+                        url:     url,
+                        success: function(data) {
+                            container.html(data);
+                            attachResultsEventListeners();
+                        }
+                    });
+                };
             });
         });
     }

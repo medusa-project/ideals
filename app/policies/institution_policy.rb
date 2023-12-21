@@ -115,7 +115,7 @@ class InstitutionPolicy < ApplicationPolicy
     # This is a hack for UIUC only that prevents non-UIUC sysadmins from
     # accessing it, requested here:
     # https://github.com/medusa-project/ideals-issues/issues/107
-    # An alternate approach could be to add another access level beyond
+    # A different approach could be to add another access level beyond
     # sysadmin, like super admin, and make us at UIUC super admins while CARLI
     # remains sysadmins, and make UIUC super admin-only.
     if @institution.key == "uiuc" && @user.institution.key != "uiuc"
@@ -134,6 +134,10 @@ class InstitutionPolicy < ApplicationPolicy
 
   def show_authentication
     show_settings
+  end
+
+  def show_buried_items
+    show
   end
 
   def show_depositing
@@ -222,6 +226,10 @@ class InstitutionPolicy < ApplicationPolicy
 
   def show_vocabularies
     show_metadata_profiles
+  end
+
+  def show_withdrawn_items
+    show
   end
 
   def statistics_by_range

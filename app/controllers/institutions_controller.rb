@@ -7,6 +7,8 @@
 #
 class InstitutionsController < ApplicationController
 
+  include Search
+
   before_action :ensure_institution_host, :ensure_logged_in
   before_action :set_institution, except: [:create, :index, :new]
   before_action :authorize_institution, except: [:create, :index, :new]
@@ -36,16 +38,14 @@ class InstitutionsController < ApplicationController
   # Responds to `DELETE /institutions/:key`
   #
   def destroy
-    begin
-      @institution.destroy!
-    rescue => e
-      flash['error'] = "#{e}"
-    else
-      toast!(title:   "Institution deleted",
-             message: "The \"#{@institution.name}\" institution has been deleted.")
-    ensure
-      redirect_to institutions_path
-    end
+    @institution.destroy!
+  rescue => e
+    flash['error'] = "#{e}"
+  else
+    toast!(title:   "Institution deleted",
+           message: "The \"#{@institution.name}\" institution has been deleted.")
+  ensure
+    redirect_to institutions_path
   end
 
   ##
@@ -358,6 +358,8 @@ class InstitutionsController < ApplicationController
   def show
     @review_count                  = review_items(0, 0).count
     @submissions_in_progress_count = submissions_in_progress(0, 0).count
+    @buried_items_count            = buried_items(0, 0).count
+    @withdrawn_items_count         = withdrawn_items(0, 0).count
   end
 
   ##
@@ -376,6 +378,21 @@ class InstitutionsController < ApplicationController
   #
   def show_authentication
     render partial: "show_authentication_tab"
+  end
+
+  ##
+  # Renders HTML for the deleted items tab in show-institution view.
+  #
+  # Responds to `GET /institutions/:key/buried-items` (XHR only)
+  #
+  def show_buried_items
+    @permitted_params = params.permit(RESULTS_PARAMS)
+    @start            = [@permitted_params[:start].to_i.abs, MAX_START].min
+    @window           = window_size
+    @items            = buried_items(@start, @window)
+    @count            = @items.count
+    @current_page     = @items.page
+    render partial: "items/listing"
   end
 
   ##
@@ -660,6 +677,21 @@ class InstitutionsController < ApplicationController
   end
 
   ##
+  # Renders HTML for the withdrawn items tab in show-institution view.
+  #
+  # Responds to `GET /institutions/:key/withdrawn-items` (XHR only)
+  #
+  def show_withdrawn_items
+    @permitted_params = params.permit(RESULTS_PARAMS)
+    @start            = [@permitted_params[:start].to_i.abs, MAX_START].min
+    @window           = window_size
+    @items            = withdrawn_items(@start, @window)
+    @count            = @items.count
+    @current_page     = @items.page
+    render partial: "items/listing"
+  end
+
+  ##
   # Provides statistics within a date range as CSV.
   #
   # Responds to `GET /institutions/:key/statistics-by-range`
@@ -870,17 +902,6 @@ class InstitutionsController < ApplicationController
                                         :service_name)
   end
 
-  def review_items(start, limit)
-    Item.search.
-      institution(@institution).
-      aggregations(false).
-      filter(Item::IndexFields::STAGE, Item::Stages::SUBMITTED).
-      filter(Item::IndexFields::INSTITUTION_KEY, @institution.key).
-      order(Item::IndexFields::CREATED).
-      start(start).
-      limit(limit)
-  end
-
   def settings_params
     params.require(:institution).permit(# General Settings tab
                                         :about_html, :about_url,
@@ -936,16 +957,6 @@ class InstitutionsController < ApplicationController
                                         :primary_hover_color)
   end
 
-  def submissions_in_progress(start, limit)
-    Item.search.
-      institution(@institution).
-      aggregations(false).
-      filter(Item::IndexFields::STAGE, Item::Stages::SUBMITTING).
-      order(Item::IndexFields::CREATED).
-      start(start).
-      limit(limit)
-  end
-
   def upload_images
     p = params[:institution]
     if p[:favicon]
@@ -978,6 +989,47 @@ class InstitutionsController < ApplicationController
       @institution.upload_header_image(io:        p[:header_image],
                                        extension: p[:header_image].original_filename.split(".").last)
     end
+  end
+
+  def buried_items(start, limit)
+    Item.search.
+      institution(@institution).
+      aggregations(false).
+      filter(Item::IndexFields::STAGE, Item::Stages::BURIED).
+      order(@institution.title_element.indexed_sort_field).
+      start(start).
+      limit(limit)
+  end
+
+  def review_items(start, limit)
+    Item.search.
+      institution(@institution).
+      aggregations(false).
+      filter(Item::IndexFields::STAGE, Item::Stages::SUBMITTED).
+      filter(Item::IndexFields::INSTITUTION_KEY, @institution.key).
+      order(Item::IndexFields::CREATED).
+      start(start).
+      limit(limit)
+  end
+
+  def submissions_in_progress(start, limit)
+    Item.search.
+      institution(@institution).
+      aggregations(false).
+      filter(Item::IndexFields::STAGE, Item::Stages::SUBMITTING).
+      order(Item::IndexFields::CREATED).
+      start(start).
+      limit(limit)
+  end
+
+  def withdrawn_items(start, limit)
+    Item.search.
+      institution(@institution).
+      aggregations(false).
+      filter(Item::IndexFields::STAGE, Item::Stages::WITHDRAWN).
+      order(@institution.title_element.indexed_sort_field).
+      start(start).
+      limit(limit)
   end
 
 end
