@@ -506,6 +506,8 @@ module ApplicationHelper
       icon = "fa fa-cog"
     when "Symbol"
       case entity
+      when :delete
+        icon = "fa fa-trash-can"
       when :download
         icon = "fa fa-download"
       when :help
