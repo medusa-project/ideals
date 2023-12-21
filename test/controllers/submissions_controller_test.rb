@@ -53,6 +53,17 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "complete() redirects to the edit-submission form when the item has no
+  effective primary collection" do
+    item = items(:southeast_submitting)
+    item.collection_item_memberships.destroy_all
+    assert_nil item.effective_primary_collection
+
+    log_in_as(item.submitter)
+    post submission_complete_path(item)
+    assert_redirected_to edit_submission_path(item)
+  end
+
+  test "complete() redirects to the edit-submission form when the item has no
   associated bitstreams" do
     item = items(:southeast_submitting)
     item.bitstreams.destroy_all
