@@ -24,6 +24,7 @@ class SubmissionsController < ApplicationController
   def complete
     raise "Item is not in a submitting state." unless @item.submitting?
     begin
+      raise "Item has no effective primary collection" unless @item.effective_primary_collection
       raise "Item has no attached files" if @item.bitstreams.count < 1
       # Normally at the end of the updating process, UpdateItemCommand would
       # add an event of Type::UPDATE with a `before_changes` property
