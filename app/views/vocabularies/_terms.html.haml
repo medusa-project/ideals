@@ -29,7 +29,7 @@
                                     class:  "btn btn-danger btn-sm",
                                     method: :delete,
                                     data: { confirm: "Are you sure you want to delete this term?" }) do
-                %i.fa.fa-trash
+                = icon_for(:delete)
                 Delete
           %td= term.displayed_value
           %td= term.stored_value

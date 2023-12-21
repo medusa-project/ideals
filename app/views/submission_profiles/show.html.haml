@@ -23,7 +23,7 @@
                                                  role:   "button",
                                                  method: :delete,
                                                  data:   { confirm: "Are you sure you want to delete this profile?" }) do
-      %i.fa.fa-trash
+      = icon_for(:delete)
       Delete
 
 %h1= @profile.name
@@ -82,7 +82,7 @@
                         class: 'btn btn-danger btn-sm',
                         method: :delete,
                         data: { confirm: 'Are you sure you want to delete this element?' }) do
-                %i.fa.fa-trash
+                = icon_for(:delete)
                 Delete
           %h5.card-title.mb-3= element.registered_element.label
           %dl.mb-0

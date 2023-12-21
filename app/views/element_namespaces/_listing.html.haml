@@ -19,7 +19,7 @@
                       class: "btn btn-danger btn-sm",
                       method: :delete,
                       data: { confirm: "Are you sure you want to delete this namespace?" }) do
-              %i.fa.fa-trash
+              = icon_for(:delete)
               Delete
         %td
           %code= namespace.prefix

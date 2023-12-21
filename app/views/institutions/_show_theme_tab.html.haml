@@ -63,7 +63,7 @@
           .float-end
             = link_to(institution_favicon_path(@institution),
                       method: :delete, class: "btn btn-danger btn-sm") do
-              %i.fa.fa-trash
+              = icon_for(:delete)
               Delete
       .card-body
         - if @institution.has_favicon
@@ -81,7 +81,7 @@
           .float-end
             = link_to(institution_header_image_path(@institution),
                       method: :delete, class: "btn btn-danger btn-sm") do
-              %i.fa.fa-trash
+              = icon_for(:delete)
               Delete
       .card-body{style: "background-color: #{@institution.header_background_color}; "\
                         "color: #{ColorUtils.optimize_text_contrast(@institution.header_background_color)}"}
@@ -100,7 +100,7 @@
           .float-end
             = link_to(institution_banner_image_path(@institution),
                       method: :delete, class: "btn btn-danger btn-sm") do
-              %i.fa.fa-trash
+              = icon_for(:delete)
               Delete
       .card-body
         - if @institution.banner_image_filename.present?
@@ -115,7 +115,7 @@
           .float-end
             = link_to(institution_footer_image_path(@institution),
                       method: :delete, class: "btn btn-danger btn-sm") do
-              %i.fa.fa-trash
+              = icon_for(:delete)
               Delete
       .card-body{style: "background-color: #{@institution.footer_background_color}; "\
                         "color: #{ColorUtils.optimize_text_contrast(@institution.footer_background_color)}"}

@@ -17,7 +17,7 @@
                       class:          "dropdown-item",
                       method:         :post,
                       "data-confirm": "Are you sure you want to delete this unit? This operation is reversible. If you would prefer to delete it permanently, please contact a system administrator.") do
-              %i.fa.fa-trash
+              = icon_for(:delete)
               Delete
         - if can_destroy
           %li
@@ -25,7 +25,7 @@
                       class:          "dropdown-item",
                       method:         :delete,
                       "data-confirm": "Are you sure you want to permanently delete this unit? This cannot be undone.") do
-              %i.fa.fa-trash
+              = icon_for(:delete)
               Delete Permanently
         - if @unit.buried? && can_exhume
           %li

@@ -35,5 +35,5 @@
         = link_to(invitee_path(invitee),
                   method: :delete, class: "dropdown-item",
                   data: { confirm: "Are you sure you want to delete #{invitee.email}?\n\nNo notification will be sent." }) do
-          %i.fa.fa-trash
+          = icon_for(:delete)
           Delete
