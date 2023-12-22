@@ -69,7 +69,7 @@ class DerivativeGenerator
   # @return [String]
   #
   def derivative_key_prefix
-    [Bitstream::INSTITUTION_KEY_PREFIX,
+    [ObjectStore::INSTITUTION_KEY_PREFIX,
      @bitstream.institution.key,
      "derivatives",
      @bitstream.id].join("/")

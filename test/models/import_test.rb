@@ -169,7 +169,7 @@ class ImportTest < ActiveSupport::TestCase
     fixture = file_fixture("zip.zip")
     @instance.update!(filename: fixture.basename)
 
-    assert_equal [Bitstream::INSTITUTION_KEY_PREFIX,
+    assert_equal [ObjectStore::INSTITUTION_KEY_PREFIX,
                       @instance.institution.key,
                       "imports",
                       @instance.id,

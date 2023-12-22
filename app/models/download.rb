@@ -93,7 +93,7 @@ class Download < ApplicationRecord
     return nil unless self.institution
     return nil if self.filename.blank?
     [
-      Bitstream::INSTITUTION_KEY_PREFIX,
+      ObjectStore::INSTITUTION_KEY_PREFIX,
       self.institution.key,
       "downloads",
       self.filename

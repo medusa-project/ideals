@@ -174,8 +174,6 @@ class Bitstream < ApplicationRecord
 
   LOGGER = CustomLogger.new(Bitstream)
 
-  INSTITUTION_KEY_PREFIX = "institutions" # TODO: move this to ObjectStore
-
   ##
   # Contains constants corresponding to the allowed values of {bundle}.
   #
@@ -312,7 +310,7 @@ class Bitstream < ApplicationRecord
   # @return [String]
   #
   def self.permanent_key(institution_key:, item_id:, filename:)
-    [INSTITUTION_KEY_PREFIX, institution_key, "storage", item_id,
+    [ObjectStore::INSTITUTION_KEY_PREFIX, institution_key, "storage", item_id,
      filename].join("/")
   end
 
@@ -323,7 +321,7 @@ class Bitstream < ApplicationRecord
   # @return [String]
   #
   def self.staging_key(institution_key:, item_id:, filename:)
-    [INSTITUTION_KEY_PREFIX, institution_key, "uploads", item_id,
+    [ObjectStore::INSTITUTION_KEY_PREFIX, institution_key, "uploads", item_id,
      filename].join("/")
   end
 

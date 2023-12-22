@@ -58,7 +58,7 @@ class DerivativeGeneratorTest < ActiveSupport::TestCase
   # derivative_key_prefix()
 
   test "derivative_key_prefix() returns a correct key" do
-    assert_equal [Bitstream::INSTITUTION_KEY_PREFIX,
+    assert_equal [ObjectStore::INSTITUTION_KEY_PREFIX,
                   @bitstream.institution.key,
                   "derivatives",
                   @bitstream.id].join("/"),

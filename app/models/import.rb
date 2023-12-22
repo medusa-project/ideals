@@ -106,7 +106,7 @@ class Import < ApplicationRecord
     raise "Instance is not persisted" if self.id.blank?
     raise "Instance is not associated with an institution" unless self.institution_id
     raise "Filename is not set" if self.filename.blank?
-    [Bitstream::INSTITUTION_KEY_PREFIX,
+    [ObjectStore::INSTITUTION_KEY_PREFIX,
      self.institution.key,
      "imports",
      self.id,

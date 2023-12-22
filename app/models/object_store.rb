@@ -10,9 +10,10 @@ class ObjectStore
 
   include Singleton
 
-  BUCKET              = ::Configuration.instance.storage[:bucket]
-  INSTITUTION_KEY_TAG = "institution_key"
-  MAX_UPLOAD_SIZE     = 2 ** 30 * 5 # 5 GB
+  BUCKET                 = ::Configuration.instance.storage[:bucket]
+  INSTITUTION_KEY_PREFIX = "institutions"
+  INSTITUTION_KEY_TAG    = "institution_key"
+  MAX_UPLOAD_SIZE        = 2 ** 30 * 5 # 5 GB
 
   ##
   # @param source_key [String]
