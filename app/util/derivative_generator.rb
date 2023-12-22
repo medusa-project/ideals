@@ -100,8 +100,7 @@ class DerivativeGenerator
 
     key = derivative_pdf_key
     unless store.object_exists?(key: key)
-      # TODO: update libreoffice and remove this conditional
-      self.generate_pdf_derivative if format.derivative_generator != "libreoffice"
+      self.generate_pdf_derivative
     end
     store.presigned_download_url(key: key, expires_in: expiry)
   end

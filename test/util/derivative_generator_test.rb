@@ -93,7 +93,6 @@ class DerivativeGeneratorTest < ActiveSupport::TestCase
 
   test "derivative_pdf_url() returns the URL of a PDF for a bitstream that can
   be converted into PDF" do
-    skip # TODO: unskip this when openoffice is enabled again
     @bitstream = bitstreams(:southwest_unit1_collection1_item1_doc)
     @generator = DerivativeGenerator.new(@bitstream)
     url        = @generator.derivative_pdf_url
