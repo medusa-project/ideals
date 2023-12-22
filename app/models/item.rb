@@ -899,9 +899,9 @@ class Item < ApplicationRecord
     if !@email_sent_after_submission &&
         stage_was == Stages::SUBMITTING &&
         stage == Stages::SUBMITTED
-      IdealsMailer.item_submitted(self).deliver_now
+      IdealsMailer.item_submitted(self).deliver_later
       if effective_primary_collection&.submissions_reviewed
-        IdealsMailer.item_requires_review(self).deliver_now
+        IdealsMailer.item_requires_review(self).deliver_later
       end
       @sent_email_after_submission = true
     end

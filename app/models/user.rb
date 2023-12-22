@@ -601,7 +601,7 @@ class User < ApplicationRecord
                                                  "[auth hash: #{YAML::dump(auth)}]",
                                          user:   self)
       Rails.logger.error(@message)
-      IdealsMailer.error(@message).deliver_now unless Rails.env.development?
+      IdealsMailer.error(@message).deliver_later unless Rails.env.development?
     end
   end
 
@@ -642,7 +642,7 @@ class User < ApplicationRecord
                                                  "[auth hash: #{auth.as_json}]",
                                          user:   self)
       Rails.logger.error(@message)
-      IdealsMailer.error(@message).deliver_now unless Rails.env.development?
+      IdealsMailer.error(@message).deliver_later unless Rails.env.development?
     end
   end
 

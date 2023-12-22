@@ -74,8 +74,9 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     item = items(:southeast_submitted)
     assert ActionMailer::Base.deliveries.empty?
     log_in_as(users(:southeast_admin))
-    patch item_approve_path(item)
-    assert !ActionMailer::Base.deliveries.empty?
+    assert_enqueued_emails 1 do
+      patch item_approve_path(item)
+    end
   end
 
   # bury()
@@ -671,8 +672,9 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     item = items(:southeast_submitted)
     assert ActionMailer::Base.deliveries.empty?
     log_in_as(users(:southeast_admin))
-    patch item_reject_path(item)
-    assert !ActionMailer::Base.deliveries.empty?
+    assert_enqueued_emails 1 do
+      patch item_reject_path(item)
+    end
   end
 
   # review()

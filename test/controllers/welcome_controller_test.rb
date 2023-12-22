@@ -53,16 +53,17 @@ class WelcomeControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "contact() sends an email when all arguments are valid" do
-    post contact_path, params: {
-      answer:              "cats",
-      correct_answer_hash: Digest::MD5.hexdigest("cats#{ApplicationHelper::CAPTCHA_SALT}"),
-      page_url:            "http://example.org",
-      name:                "My Name",
-      email:               "me@example.org",
-      comment:             "Hello"
-    }, xhr: true
-    assert_response :ok
-    assert !ActionMailer::Base.deliveries.empty?
+    assert_enqueued_emails 1 do
+      post contact_path, params: {
+        answer:              "cats",
+        correct_answer_hash: Digest::MD5.hexdigest("cats#{ApplicationHelper::CAPTCHA_SALT}"),
+        page_url:            "http://example.org",
+        name:                "My Name",
+        email:               "me@example.org",
+        comment:             "Hello"
+      }, xhr: true
+      assert_response :ok
+    end
   end
 
   # index()

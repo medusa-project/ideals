@@ -170,8 +170,8 @@ class Invitee < ApplicationRecord
     unless pending?
       raise "A reception email can only be sent to a pending invitee."
     end
-    IdealsMailer.account_request_received(self).deliver_now
-    IdealsMailer.account_request_action_required(self).deliver_now
+    IdealsMailer.account_request_received(self).deliver_later
+    IdealsMailer.account_request_action_required(self).deliver_later
   end
 
   def send_rejection_email
@@ -179,7 +179,7 @@ class Invitee < ApplicationRecord
       raise "An rejection email can only be sent to a pending invitee."
     end
     mail = IdealsMailer.account_denied(self)
-    mail.deliver_now
+    mail.deliver_later
   end
 
   ##

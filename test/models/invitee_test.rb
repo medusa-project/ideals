@@ -221,7 +221,7 @@ class InviteeTest < ActiveSupport::TestCase
 
   test "send_reception_email() sends two emails if the instance is pending" do
     @instance.approval_state = Invitee::ApprovalState::PENDING
-    assert_emails 2 do
+    assert_enqueued_emails 2 do
       @instance.send_reception_emails
     end
   end
@@ -239,7 +239,7 @@ class InviteeTest < ActiveSupport::TestCase
 
   test "send_rejection_email() sends an email if the instance is rejected" do
     @instance.approval_state = Invitee::ApprovalState::REJECTED
-    assert_emails 1 do
+    assert_enqueued_emails 1 do
       @instance.send_rejection_email
     end
   end

@@ -33,7 +33,7 @@ class WelcomeController < ApplicationController
                            from_name:  params[:name],
                            from_email: params[:email],
                            comment:    params[:comment],
-                           to_email:   feedback_email).deliver_now
+                           to_email:   feedback_email).deliver_later
     rescue => e
       LOGGER.error("#{e}")
       render plain: "An error occurred on the server. If this error " +
