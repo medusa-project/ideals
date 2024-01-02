@@ -476,6 +476,26 @@ class OaiPmhController < ApplicationController
       end
     end
 
+    # from & until validation
+    from = get_token_from
+    if from.present?
+      begin
+        Time.parse(from)
+      rescue
+        @errors << { code: "badArgument",
+                     description: "Illegal value of `from` argument." }
+      end
+    end
+    until_ = get_token_until
+    if until_.present?
+      begin
+        Time.parse(until_)
+      rescue
+        @errors << { code: "badArgument",
+                     description: "Illegal value of `until` argument." }
+      end
+    end
+
     @request_args = params.except(:controller, :action).to_unsafe_hash
   end
 

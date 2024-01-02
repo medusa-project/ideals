@@ -228,10 +228,28 @@ class OaiPmhControllerTest < ActionDispatch::IntegrationTest
     assert_select "error", "Illegal argument: dogs"
   end
 
-  test "ListIdentifiers returns errors when arguments are invalid" do
+  test "ListIdentifiers returns an error for an invalid metadataPrefix argument" do
     get "/oai-pmh", params: { verb: "ListIdentifiers", metadataPrefix: "cats" }
     assert_select "error", "The metadata format identified by the "\
     "metadataPrefix argument is not supported by this repository."
+  end
+
+  test "ListIdentifiers returns an error for an invalid from argument" do
+    get "/oai-pmh", params: {
+      verb:           "ListIdentifiers",
+      metadataPrefix: "oai_dc",
+      from:           "cats"
+    }
+    assert_select "error", "Illegal value of `from` argument."
+  end
+
+  test "ListIdentifiers returns an error for an invalid until argument" do
+    get "/oai-pmh", params: {
+      verb:           "ListIdentifiers",
+      metadataPrefix: "oai_dc",
+      until:          "cats"
+    }
+    assert_select "error", "Illegal value of `until` argument."
   end
 
   test "ListIdentifiers disallows all other arguments when resumptionToken is present" do
@@ -320,6 +338,24 @@ class OaiPmhControllerTest < ActionDispatch::IntegrationTest
                            "repository."
   end
 
+  test "ListRecords returns an error for an invalid from argument" do
+    get "/oai-pmh", params: {
+      verb:           "ListRecords",
+      metadataPrefix: "oai_dc",
+      from:           "cats"
+    }
+    assert_select "error", "Illegal value of `from` argument."
+  end
+
+  test "ListRecords returns an error for an invalid until argument" do
+    get "/oai-pmh", params: {
+      verb:           "ListRecords",
+      metadataPrefix: "oai_dc",
+      until:          "cats"
+    }
+    assert_select "error", "Illegal value of `until` argument."
+  end
+
   test "ListRecords disallows all other arguments when resumptionToken is present" do
     handle = handles(:southeast_collection1)
     get "/oai-pmh", params: { verb:            "ListRecords",
@@ -381,7 +417,8 @@ class OaiPmhControllerTest < ActionDispatch::IntegrationTest
   def xsd_validate(params_)
     get "/oai-pmh", params: params_
     doc    = Nokogiri::XML(response.body)
-    xsd    = Nokogiri::XML::Schema(File.read(File.join(Rails.root, "test", "fixtures", "files", "OAI-PMH.xsd")))
+    xsd    = Nokogiri::XML::Schema(File.read(File.join(
+      Rails.root, "test", "fixtures", "files", "OAI-PMH.xsd")))
     result = xsd.validate(doc)
     puts result if result.any?
     result.empty?
