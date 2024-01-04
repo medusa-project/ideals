@@ -58,7 +58,8 @@ class ImportJobTest < ActiveSupport::TestCase
     ObjectStore.instance.put_object(key:  import.file_key,
                                     path: fixture)
 
-    format = ImportJob.perform_now(import: import)
+    format = ImportJob.perform_now(import: import,
+                                   user:   users(:southeast_admin))
     assert_equal Import::Format::CSV_FILE, format
   end
 
@@ -72,7 +73,8 @@ class ImportJobTest < ActiveSupport::TestCase
     ObjectStore.instance.put_object(key:  import.file_key,
                                     path: csv_package)
 
-    format = ImportJob.perform_now(import: import)
+    format = ImportJob.perform_now(import: import,
+                                   user:   users(:southeast_admin))
     assert_equal Import::Format::CSV_PACKAGE, format
   end
 

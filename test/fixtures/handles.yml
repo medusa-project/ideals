@@ -2,11 +2,11 @@
 
 southwest_unit1_collection1:
   collection: southwest_unit1_collection1
-  suffix:     5014
+  suffix:     5000
 
 southwest_unit1_collection1_item1:
   item:   southwest_unit1_collection1_item1
-  suffix: 5000
+  suffix: 5001
 
 ################################### southeast ####################################
 
@@ -14,54 +14,62 @@ southwest_unit1_collection1_item1:
 
 southeast_collection1:
   collection: southeast_collection1
-  suffix:     5001
+  suffix:     5002
+
+southeast_collection2:
+  collection: southeast_collection2
+  suffix:     5003
+
+southeast_empty:
+  collection: southeast_empty
+  suffix:     5004
 
 # item handles
 
 southeast_item1:
   item:   southeast_item1
-  suffix: 5002
+  suffix: 5005
 
 southeast_approved:
   item:   southeast_approved
-  suffix: 5003
+  suffix: 5006
 
 southeast_awaiting_ingest_into_medusa:
   item:   southeast_awaiting_ingest_into_medusa
-  suffix: 5004
+  suffix: 5007
 
 southeast_in_medusa:
   item:   southeast_in_medusa
-  suffix: 5005
+  suffix: 5008
 
 southeast_described:
   item:   southeast_described
-  suffix: 5006
+  suffix: 5009
 
 southeast_embargoed:
   item:   southeast_embargoed
-  suffix: 5007
+  suffix: 5010
 
 southeast_undescribed:
   item:   southeast_undescribed
-  suffix: 5008
+  suffix: 5011
 
 southeast_submitting:
   item:   southeast_submitting
-  suffix: 5009
+  suffix: 5012
 
 southeast_withdrawn:
   item:   southeast_withdrawn
-  suffix: 5010
+  suffix: 5013
 
 southeast_buried:
   item:   southeast_buried
-  suffix: 5011
+  suffix: 5014
 
 southeast_multiple_bitstreams:
   item:   southeast_multiple_bitstreams
-  suffix: 5012
+  suffix: 5015
 
 southeast_collection1_collection1_item1:
   item:   southeast_collection1_collection1_item1
-  suffix: 5013
+  suffix: 5016

@@ -121,7 +121,17 @@ class CsvExporter
   # @return [String]
   #
   def select_clause(elements)
-    columns = ["items.id", "handles.suffix"]
+    columns = ["items.id", "item_handles.suffix AS item_handle"]
+    # collection_handles column
+    columns << "array_to_string(
+       array(
+         SELECT CONCAT('#{Handle.prefix}/', h.suffix) AS suffix
+         FROM handles h
+         LEFT JOIN collection_item_memberships cim ON cim.item_id = items.id
+         WHERE cim.item_id = items.id
+         AND h.collection_id = cim.collection_id
+         ORDER BY cim.primary DESC NULLS LAST
+       ), '||') AS collection_handles\n"
     # files column
     columns << "array_to_string(
        array(
@@ -192,7 +202,7 @@ class CsvExporter
   end
 
   def join_clauses
-    "LEFT JOIN handles ON handles.item_id = items.id\n" +
+    "LEFT JOIN handles item_handles ON item_handles.item_id = items.id\n" +
     "LEFT JOIN collection_item_memberships cim ON cim.item_id = items.id "
   end
 

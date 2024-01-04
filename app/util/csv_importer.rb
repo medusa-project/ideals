@@ -29,14 +29,27 @@
 #
 # The first column, `id`, refers to an item's internal database ID. The second
 # column, `handle`, refers to an item's handle. (These columns cannot be
-# modified.) The next several columns refer to various system-level item
-# properties. The remaining columns correspond to the elements in the effective
+# modified.)
+#
+# The third column, `collection_handles`, refers to the handles of the
+# collections to which the item belongs. There may be multiple handles listed
+# in this column, separated by a double pipe (`||`), as an item may belong to
+# multiple collections. If this is the case, the first handle listed will
+# correspond to the item's primary collection. Whether or not there are
+# multiple handles, the first handle in this column must match that of the
+# collection associated with the import.
+#
+# The next several columns refer to various other item properties
+# These columns are collectively listed in {CsvImporter#REQUIRED_COLUMNS}.
+#
+# The remaining columns correspond to the elements in the effective
 # {MetadataProfile} of the collection that apply to the item.
 #
-# All columns are required except metadata columns. When a metadata column is
-# missing, the corresponding metadata elements of the items in the CSV file
-# will be left unchanged. For new items in the CSV file, a missing metadata
-# column may be an error depending on whether it is required or not.
+# All columns are required to exist (even if empty) except metadata columns.
+# When a metadata column is missing, the corresponding metadata elements of the
+# items in the CSV file will be left unchanged. For new items in the CSV file,
+# a missing metadata column may be an error depending on whether it is required
+# or not.
 #
 # ## Non-header rows
 #
@@ -48,6 +61,13 @@
 #
 # The next group of cells correspond to various system properties of the item:
 #
+# * `handle`                     The item's handle. This is for informational
+#                                purposes only--it cannot be updated by
+#                                changing the value.
+# * `collection_handle`          The handle of the item's owning {Collection}.
+#                                Changing the value to the handle of some other
+#                                collection will cause the item to be moved
+#                                into it.
 # * `files`                      Names of all files attached to an item. For
 #                                uploads, this may be a path relative to a
 #                                package root in which the CSV resides.
@@ -113,11 +133,12 @@
 #
 class CsvImporter
 
-  MULTI_VALUE_DELIMITER  = "||"
-  NEW_ITEM_INDICATOR     = "+"
-  REQUIRED_COLUMNS       = %w[id handle files file_descriptions embargo_types
-                              embargo_expirations embargo_exempt_user_groups
-                              embargo_reasons]
+  MULTI_VALUE_DELIMITER = "||"
+  NEW_ITEM_INDICATOR    = "+"
+  REQUIRED_COLUMNS      = %w[id handle collection_handles files
+                             file_descriptions embargo_types
+                             embargo_expirations embargo_exempt_user_groups
+                             embargo_reasons]
 
   ##
   # Imports items from a CSV string.
@@ -126,8 +147,12 @@ class CsvImporter
   # @param file_paths [Enumerable<String>] Absolute paths of files that are
   #                                        referenced in the CSV's `files`
   #                                        column.
-  # @param submitter [User]
-  # @param primary_collection [Collection] Collection to import new items into.
+  # @param submitter [User]                The user performing the import.
+  # @param primary_collection [Collection] Collection associated with the
+  #                                        import. This may be the collection
+  #                                        that items are added to if it is
+  #                                        not overridden by the
+  #                                        `collection_handles` column.
   # @param imported_items [Array<Hash>]    For each imported item, whether
   #                                        created or updated, a hash
   #                                        containing `:item_id` and `:handle`
@@ -144,6 +169,9 @@ class CsvImporter
              imported_items:     [],
              print_progress:     false,
              task:               nil)
+    raise ArgumentError, "Pathname is nil" unless pathname
+    raise ArgumentError, "File does not exist: #{pathname}" unless File.exist?(pathname)
+    raise ArgumentError, "Nil submitter argument" unless submitter
     num_rows = 0
     File.foreach(pathname) do
       num_rows += 1
@@ -174,18 +202,19 @@ class CsvImporter
                                file_paths:         file_paths)
           else
             item = Item.find(item_id)
-            item = update_item(item:          item,
-                               submitter:     submitter,
-                               element_names: header_row[REQUIRED_COLUMNS.length..],
-                               row:           row,
-                               file_paths:    file_paths)
+            item = update_item(item:               item,
+                               submitter:          submitter,
+                               primary_collection: primary_collection,
+                               element_names:      header_row[REQUIRED_COLUMNS.length..],
+                               row:                row,
+                               file_paths:         file_paths)
           end
           imported_items << {
             item_id: item.id,
             handle:  item.handle&.handle
           }
           status_text = "Importing #{num_rows} items from CSV"
-          row_index += 1
+          row_index  += 1
           progress&.report(row_index, status_text)
           task&.progress(row_index / (num_rows - 1).to_f,
                          status_text: status_text)
@@ -213,6 +242,10 @@ class CsvImporter
                                  stage:              Item::Stages::APPROVED,
                                  event_description:  "Item imported from CSV.").execute
     item.assign_handle
+    move_into_collections(item:               item,
+                          primary_collection: primary_collection,
+                          collection_handles: row[2],
+                          submitter:          submitter)
     associate_bitstreams(item:       item,
                          row:        row,
                          file_paths: file_paths) if file_paths
@@ -227,12 +260,17 @@ class CsvImporter
 
   def update_item(item:,
                   submitter:,
+                  primary_collection:,
                   element_names:,
                   row:,
-                  file_paths:    nil)
+                  file_paths:         nil)
     UpdateItemCommand.new(item:        item,
                           user:        submitter,
                           description: "Updated via CSV").execute do
+      move_into_collections(item:               item,
+                            primary_collection: primary_collection,
+                            collection_handles: row[2],
+                            submitter:          submitter)
       associate_bitstreams(item:       item,
                            row:        row,
                            file_paths: file_paths)
@@ -351,6 +389,45 @@ class CsvImporter
   end
 
   ##
+  # @param item [Item]                     Item to move.
+  # @param primary_collection [Collection] Collection associated with the
+  #                                        import.
+  # @param collection_handles [String]     Value of the `collection_handles`
+  #                                        column.
+  # @param submitter [User]                User performing the import.
+  #
+  def move_into_collections(item:,
+                            primary_collection:,
+                            collection_handles:,
+                            submitter:)
+    return if collection_handles.blank?
+    collection_handles = collection_handles.split(MULTI_VALUE_DELIMITER)
+    return if collection_handles.empty?
+    item.collection_item_memberships.destroy_all
+    collection_handles.each_with_index do |handle, index|
+      suffix = handle.split("/").last.strip
+      handle = Handle.find_by_suffix(suffix)
+      unless handle
+        raise ArgumentError, "Collection with handle #{handle} does not exist"
+      end
+      collection = handle.collection
+      if index == 0 && collection != primary_collection
+        raise ArgumentError, "The first handle in the collection_handles "\
+                             "column must be that of the collection "\
+                             "associated with the import"
+      end
+      unless submitter.effective_collection_admin?(collection)
+        raise ArgumentError, "User #{submitter} does not have permission to "\
+                             "add items to #{collection.title}"
+      end
+      unless item.collections.include?(collection)
+        item.collection_item_memberships.build(collection: handle.collection,
+                                               primary:    index == 0).save!
+      end
+    end
+  end
+
+  ##
   # @param row [Hash<String>]
   # @param submission_profile [SubmissionProfile]
   #
@@ -364,7 +441,7 @@ class CsvImporter
     end
     REQUIRED_COLUMNS.each_with_index do |column, index|
       if row[index] != column
-        raise ArgumentError, "Missing #{column} column"
+        raise ArgumentError, "Missing #{column} column (expected at position #{index + 1})"
       end
     end
   end
