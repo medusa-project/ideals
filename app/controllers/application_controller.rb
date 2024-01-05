@@ -19,7 +19,6 @@ class ApplicationController < ActionController::Base
   rescue_from NotFoundError, with: :rescue_not_found
 
   before_action :redirect_to_main_host, :log_out_disabled_user
-  after_action :copy_flash_to_response_headers
 
   layout -> { institution_host? ? "application_scoped" : "application_global" }
 
@@ -401,23 +400,8 @@ class ApplicationController < ActionController::Base
     client
   end
 
-  private
 
-  ##
-  # Stores the flash message and type (`error` or `success`) in the response
-  # headers, where they can be accessed from a JavaScript AJAX callback.
-  #
-  def copy_flash_to_response_headers
-    if request.xhr?
-      if flash['error'].present?
-        response.headers['X-Ideals-Message-Type'] = 'error'
-        response.headers['X-Ideals-Message']      = flash['error']
-      elsif flash['success'].present?
-        response.headers['X-Ideals-Message-Type'] = 'success'
-        response.headers['X-Ideals-Message']      = flash['success']
-      end
-    end
-  end
+  private
 
   ##
   # When a user account is disabled, the user is prevented from logging in (via
