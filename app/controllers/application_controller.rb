@@ -177,10 +177,6 @@ class ApplicationController < ActionController::Base
     session[:login_return_url] = request.env["REQUEST_URI"]
   end
 
-  def redirect_path
-    session[:previous_url] || root_url
-  end
-
 
   protected
 
