@@ -10,10 +10,12 @@
 class RequestContext
 
   ##
-  # N.B.: we've told ActiveJob this class exists using
-  # `config/initializers/active_job.rb`.
+  # N.B.: this class is required if we want to be able to pass instances to
+  # {ActiveJob}s (which we do). We've used `config/initializers/active_job.rb`
+  # to tell ActiveJob that this class exists.
   #
   class RequestContextSerializer < ActiveJob::Serializers::ObjectSerializer
+
     def serialize?(argument)
       argument.kind_of?(RequestContext)
     end
@@ -29,12 +31,14 @@ class RequestContext
     end
 
     def deserialize(hash)
-      RequestContext.new(client_hostname: hash["client_hostname"],
-                         client_ip:       hash["client_ip"],
-                         user:            hash['user'],
-                         institution:     hash['institution'],
-                         role_limit:      hash['role_limit'])
+      hash = hash.symbolize_keys
+      RequestContext.new(client_hostname: hash[:client_hostname],
+                         client_ip:       hash[:client_ip],
+                         user:            hash[:user],
+                         institution:     hash[:institution],
+                         role_limit:      hash[:role_limit])
     end
+
   end
 
   ##
