@@ -215,14 +215,16 @@ class Item < ApplicationRecord
   # @param item_ids [Enumerable<Integer>]
   # @param metadata_profile [MetadataProfile]
   # @param dest_key [String] Destination key within the application bucket.
+  # @param request_context [RequestContext]
   # @param print_progress [Boolean]
   # @param task [Task] Optional.
   #
   def self.create_zip_file(item_ids:,
                            metadata_profile:,
                            dest_key:,
-                           print_progress: false,
-                           task:           nil)
+                           request_context:,
+                           print_progress:   false,
+                           task:             nil)
     now         = Time.now
     count       = item_ids.count
     raise ArgumentError, "No items provided" if count < 1
@@ -245,7 +247,8 @@ class Item < ApplicationRecord
           index = 0
           item_ids.each do |item_id|
             item = Item.find(item_id)
-            item.bitstreams.where.not(permanent_key: nil).each do |bs| # TODO: authorization
+            item.bitstreams.where.not(permanent_key: nil).each do |bs|
+              next unless BitstreamPolicy.new(request_context, bs).download?
               dest_dir = File.join(stuffdir, item.handle&.handle || "#{item.id}")
               FileUtils.mkdir_p(dest_dir)
               dest_path = File.join(dest_dir, bs.filename)

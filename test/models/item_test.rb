@@ -77,21 +77,35 @@ class ItemTest < ActiveSupport::TestCase
   # create_zip_file()
 
   test "create_zip_file() creates a zip file" do
-    item_ids = [items(:southeast_approved).id, items(:southeast_multiple_bitstreams).id]
-    dest_key   = "institutions/test/downloads/file.zip"
+    item_ids        = [items(:southeast_approved).id,
+                       items(:southeast_multiple_bitstreams).id]
+    dest_key        = "institutions/test/downloads/file.zip"
+    request_context = RequestContext.new(client_ip:       "127.0.0.1",
+                                         client_hostname: "example.org",
+                                         user:            users(:southeast),
+                                         institution:     institutions(:southeast),
+                                         role_limit:      Role::NO_LIMIT)
     Item.create_zip_file(item_ids:         item_ids,
                          metadata_profile: metadata_profiles(:southeast_default),
-                         dest_key:         dest_key)
+                         dest_key:         dest_key,
+                         request_context:  request_context)
 
     assert ObjectStore.instance.object_exists?(key: dest_key)
   end
 
   test "create_zip_file() creates a zip file containing the expected files" do
-    item_ids = [items(:southeast_approved).id, items(:southeast_multiple_bitstreams).id]
-    dest_key   = "institutions/test/downloads/file.zip"
+    item_ids        = [items(:southeast_approved).id,
+                       items(:southeast_multiple_bitstreams).id]
+    dest_key        = "institutions/test/downloads/file.zip"
+    request_context = RequestContext.new(client_ip:       "127.0.0.1",
+                                         client_hostname: "example.org",
+                                         user:            users(:southeast),
+                                         institution:     institutions(:southeast),
+                                         role_limit:      Role::NO_LIMIT)
     Item.create_zip_file(item_ids:         item_ids,
                          metadata_profile: metadata_profiles(:southeast_default),
-                         dest_key:         dest_key)
+                         dest_key:         dest_key,
+                         request_context:  request_context)
 
     Dir.mktmpdir do |tmpdir|
       zip_file = File.join(tmpdir, "test.zip")
@@ -99,6 +113,39 @@ class ItemTest < ActiveSupport::TestCase
                                       response_target: zip_file)
       `cd #{tmpdir} && unzip #{zip_file}`
       files    = ZipUtils.archived_files(zip_file)
+      csv_file = files.find{ |f| f[:name].end_with?(".csv") }
+      assert csv_file[:length] > 0
+      pdf_file = files.find{ |f| f[:name].end_with?(".pdf") }
+      assert pdf_file[:length] > 0
+    end
+  end
+
+  test "create_zip_file() respects user authorization" do
+    items           = [items(:southeast_approved),
+                       items(:southeast_multiple_bitstreams)]
+    bitstream_count = items.sum{ |it| it.bitstreams.count }
+    items[1].bitstreams.each do |bs|
+      bs.update!(role: Role::SYSTEM_ADMINISTRATOR)
+    end
+    item_ids        = items.map(&:id)
+    dest_key        = "institutions/test/downloads/file.zip"
+    request_context = RequestContext.new(client_ip:       "127.0.0.1",
+                                         client_hostname: "example.org",
+                                         user:            nil,
+                                         institution:     institutions(:southeast),
+                                         role_limit:      Role::NO_LIMIT)
+    Item.create_zip_file(item_ids:         item_ids,
+                         metadata_profile: metadata_profiles(:southeast_default),
+                         dest_key:         dest_key,
+                         request_context:  request_context)
+
+    Dir.mktmpdir do |tmpdir|
+      zip_file = File.join(tmpdir, "test.zip")
+      ObjectStore.instance.get_object(key:             dest_key,
+                                      response_target: zip_file)
+      `cd #{tmpdir} && unzip #{zip_file}`
+      files    = ZipUtils.archived_files(zip_file)
+      assert files.length < bitstream_count
       csv_file = files.find{ |f| f[:name].end_with?(".csv") }
       assert csv_file[:length] > 0
       pdf_file = files.find{ |f| f[:name].end_with?(".pdf") }

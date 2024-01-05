@@ -16,7 +16,7 @@ class ZipItemsJob < ApplicationJob
   # attribute is updated to reflect its filename within the application bucket.
   #
   # @param args [Hash] Hash with `:item_ids`, `:metadata_profile`, `:download`,
-  #                    `:user`, and `:task` keys.
+  #                    `:user`, `:request_context`, and `:task` keys.
   # @see ZipBitstreamsJob
   #
   def perform(**args)
@@ -24,6 +24,7 @@ class ZipItemsJob < ApplicationJob
     metadata_profile = args[:metadata_profile]
     download         = args[:download]
     user             = args[:user]
+    request_context  = args[:request_context]
     self.task        = args[:task]
     self.task&.update!(name:          self.class.name,
                        download:      download,
@@ -42,6 +43,7 @@ class ZipItemsJob < ApplicationJob
       Item.create_zip_file(item_ids:         item_ids,
                            metadata_profile: metadata_profile,
                            dest_key:         download.object_key,
+                           request_context:  request_context,
                            task:             self.task)
     end
   end

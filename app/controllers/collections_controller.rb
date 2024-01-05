@@ -39,6 +39,7 @@ class CollectionsController < ApplicationController
                                     metadata_profile: @collection.institution.default_metadata_profile,
                                     download:         download,
                                     user:             current_user,
+                                    request_context:  request_context,
                                     task:             task)
           redirect_to download_url(download)
         else

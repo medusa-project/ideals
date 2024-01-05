@@ -7,18 +7,24 @@ class ZipItemsJobTest < ActiveSupport::TestCase
   end
 
   test "perform() updates the Task given to it" do
-    item_ids    = [items(:southeast_approved).id,
-                   items(:southeast_multiple_bitstreams).id]
-    download    = Download.create!(institution: institutions(:southeast))
-    institution = institutions(:southeast)
-    user        = users(:southeast)
-    task        = tasks(:pending)
+    item_ids        = [items(:southeast_approved).id,
+                       items(:southeast_multiple_bitstreams).id]
+    download        = Download.create!(institution: institutions(:southeast))
+    institution     = institutions(:southeast)
+    user            = users(:southeast)
+    request_context = RequestContext.new(client_ip:       "127.0.0.1",
+                                         client_hostname: "example.org",
+                                         user:            user,
+                                         institution:     institution,
+                                         role_limit:      Role::NO_LIMIT)
+    task            = tasks(:pending)
 
     ZipItemsJob.perform_now(item_ids:         item_ids,
                             metadata_profile: institution.default_metadata_profile,
                             download:         download,
                             institution:      institution,
                             user:             user,
+                            request_context:  request_context,
                             task:             task)
 
     task.reload
