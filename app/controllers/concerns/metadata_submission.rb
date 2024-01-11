@@ -10,8 +10,8 @@ module MetadataSubmission
 
   ##
   # Builds and ascribes {AscribedElement}s to an {Item} based on user input.
-  # Any existing elements ascribed to the item are deleted. The item is not
-  # saved.
+  # Any existing elements ascribed to the item are deleted. **The item is not
+  # saved.**
   #
   # Submitted metadata is expected to be in the following form (in the params):
   #

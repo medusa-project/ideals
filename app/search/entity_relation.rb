@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+##
+# Relation for cross-entity search.
+#
 class EntityRelation < AbstractRelation
 
   def initialize

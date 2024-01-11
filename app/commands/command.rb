@@ -3,12 +3,12 @@
 ##
 # Abstract superclass for commands in the
 # [command pattern](https://en.wikipedia.org/wiki/Command_pattern).
-# The reason for using this pattern is to encapsulate object mutation along
-# with recording of audit information.
+# This pattern encapsulates object mutation along with recording of audit
+# information (generally with the help of {Event}).
 #
 # It would be simpler to do a basic version of auditing using ActiveRecord
-# callbacks, but this approach may be limited when considering associations and
-# complex updates.
+# callbacks, but this approach is limited when considering associations and
+# complex/multi-step updates.
 #
 class Command
 

@@ -15,8 +15,8 @@ module Search
 
   def self.advanced_search_params
     # N.B.: technically we could constrain the elements array here to only
-    # those in the current institution's metadata profile, but opening it up to
-    # all elements is a little simpler and shouldn't cause any problems.
+    # those in the current institution's metadata profiles, but opening it up
+    # to all elements is a little simpler and shouldn't cause any problems.
     [:full_text, { elements: RegisteredElement.pluck(:name) }]
   end
 

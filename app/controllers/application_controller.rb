@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+##
+# Controller from which all other controllers inherit.
+#
 class ApplicationController < ActionController::Base
 
   MAX_START = 10000
@@ -23,6 +26,10 @@ class ApplicationController < ActionController::Base
   layout -> { institution_host? ? "application_scoped" : "application_global" }
 
   ##
+  # Authorizes user access to some object. The object must have a corresponding
+  # policy class, which lives in the app/policies folder and has a class name
+  # matching that of the object but with `Policy` appended to it.
+  #
   # @param entity [Class] Model or any other object to which access can be
   #               authorized.
   # @param policy_class [ApplicationPolicy] Alternative policy class to use.
@@ -70,11 +77,13 @@ class ApplicationController < ActionController::Base
 
   ##
   # Returns the institution whose FQDN corresponds to the `X-Forwarded-Host`
-  # request header. Note that in global scope, there will not be such an
-  # institution, in which case the {Institution#default default institution}
-  # will be returned, which won't be what is wanted. Therefore this method
-  # should only be used after the scope is known--either from a controller
-  # action with a known scope, or after using {institution_host?}.
+  # request header.
+  #
+  # N.B.: in global scope, there will not be such an institution, in which case
+  # the {Institution#default default institution} will be returned, which won't
+  # be what is wanted. Therefore this method should only be used after the
+  # scope is known--either from a controller action with a known scope, or
+  # after {institution_host?} returns `true`.
   #
   # @return [Institution]
   # @see institution_host?
@@ -84,7 +93,7 @@ class ApplicationController < ActionController::Base
   end
 
   ##
-  # @return [User] The logged-in user, or `nil` if there is none.
+  # @return [User] The logged-in user, or `nil` if there isn't one.
   #
   def current_user
     unless @current_user
@@ -100,6 +109,9 @@ class ApplicationController < ActionController::Base
   end
 
   ##
+  # Shortcut to invoking {User#sysadmin?} on the return value of
+  # {#current_user}.
+  #
   # @return [Boolean]
   #
   def current_user_is_sysadmin?
@@ -115,6 +127,10 @@ class ApplicationController < ActionController::Base
     helpers.institution_host?
   end
 
+  ##
+  # @return [Boolean] Equivalent to checking whether {#current_user} returns a
+  #                   {User}.
+  #
   def logged_in?
     current_user.present?
   end
@@ -201,7 +217,7 @@ class ApplicationController < ActionController::Base
     redirect_to root_path if logged_in?
   end
 
-  def rescue_gone(e)
+  def rescue_gone
     respond_to do |format|
       format.html { render "errors/error410", status: :gone }
       format.json { head status: :gone }
@@ -210,16 +226,18 @@ class ApplicationController < ActionController::Base
   end
 
   ##
-  # By default, Rails logs [ActionController::InvalidAuthenticityToken]s at
-  # error level. This only bloats the logs, so we handle it differently.
+  # By default, Rails logs {ActionController::InvalidAuthenticityToken}s at
+  # error level. This provides no benefit and bloats our logs, so we handle it
+  # differently.
   #
   def rescue_invalid_auth_token
     render plain: "Invalid authenticity token.", status: :bad_request
   end
 
   ##
-  # By default, Rails logs [ActionController::InvalidCrossOriginRequest]s at
-  # error level. This only bloats the logs, so we handle it differently.
+  # By default, Rails logs {ActionController::InvalidCrossOriginRequest}s at
+  # error level. This provides no benefit and bloats our logs, so we handle it
+  # differently.
   #
   def rescue_invalid_cross_origin_request
     # do nothing to avoid a DoubleRenderError
@@ -379,6 +397,11 @@ class ApplicationController < ActionController::Base
 
   ##
   # Sets the toast.
+  #
+  # @param title [String]
+  # @param message [String]
+  # @param icon [String,Symbol]
+  #
   # @see ApplicationHelper#toast!
   #
   def toast!(title: nil, message:, icon: nil)
@@ -386,7 +409,7 @@ class ApplicationController < ActionController::Base
   end
 
   ##
-  # @return [Integer] Effective window size a.k.a. results limit based on the
+  # @return [Integer] Effective window size a.k.a. result limit based on the
   #                   application configuration and `window` query argument.
   #
   def window_size
@@ -405,9 +428,9 @@ class ApplicationController < ActionController::Base
 
   ##
   # When a user account is disabled, the user is prevented from logging in (via
-  # {SessionsController}). But if they are already logged in, we don't want to
-  # let them keep roaming around. Hence this before_action which verifies their
-  # account per-request.
+  # {SessionsController#create}). But if they are already logged in, we don't
+  # want to let them keep roaming around. Thus this before_action which
+  # verifies their account per-request.
   #
   def log_out_disabled_user
     user = current_user

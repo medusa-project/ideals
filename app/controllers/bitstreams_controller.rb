@@ -15,8 +15,9 @@
 #
 # Bitstreams can be downloaded in two ways:
 #
-# 1. By proxying them through the application via {data}. This is not advised,
-#    as it ties up a request connection.
+# 1. By proxying them through the application via {data}. This is not ideal,
+#    as it ties up a request connection, but it helps work around JavaScript
+#    sandboxing.
 # 2. By redirecting to a presigned S3 URL using {object}.
 #
 # Also, for PDFs and PDF-like formats, PDF format can be requested by adding
@@ -60,7 +61,7 @@ class BitstreamsController < ApplicationController
   rescue_from Aws::S3::Errors::InvalidRange, with: :rescue_invalid_range
 
   ##
-  # Creates a new bitstream in the staging area.
+  # Creates a new bitstream in the staging area and returns HTTP 201.
   #
   # Responds to `POST /items/:item_id/bitstreams`
   #
@@ -86,9 +87,8 @@ class BitstreamsController < ApplicationController
 
   ##
   # Retrieves a bitstream's data by proxying the S3 bucket. This is not very
-  # efficient but may be useful or necessary in some cases. Generally, {object}
-  # is preferred, as it will redirect to the S3 object, thereby not tying up a
-  # request connection.
+  # efficient but may be useful or necessary in some cases. {object} should be
+  # used instead if possible.
   #
   # Responds to `GET /items/:item_id/bitstreams/:id/data`.
   #
@@ -157,7 +157,7 @@ class BitstreamsController < ApplicationController
   end
 
   ##
-  # Deletes {Bitstream}s via the file table in the submission form.
+  # Deletes {Bitstream}s using the file table in the submission form.
   #
   # Responds to `DELETE /items/:item_id/bitstreams/:id`
   #
@@ -171,7 +171,7 @@ class BitstreamsController < ApplicationController
   end
 
   ##
-  # Used for editing bitstream properties.
+  # Returns an edit form for bitstream properties (not the file itself).
   #
   # Responds to GET `/items/:item_id/bitstreams/:id/edit` (XHR only)
   #
