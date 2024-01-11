@@ -71,6 +71,14 @@ const UnitView = {
             const url = ROOT_URL + "/units/" + unitID + "/collections";
             $.get(url, function(data) {
                 $("#collections-tab-content").html(data);
+                $('.add-collection').on("click", function() {
+                    const url = ROOT_URL + "/collections/new" +
+                        "?collection%5Binstitution_id%5D=" + institutionID +
+                        "&primary_unit_id=" + unitID;
+                    $.get(url, function(data) {
+                        $("#add-collection-modal .modal-body").html(data);
+                    });
+                });
             });
         });
 
