@@ -71,11 +71,8 @@ class ImportsController < ApplicationController
            message: "The import into \"#{@import.collection.title}\" has "\
                     "been deleted.")
   ensure
-    if current_user_is_sysadmin?
-      redirect_to institution_path(institution)
-    else
-      redirect_to imports_path
-    end
+    redirect_back fallback_location: current_user_is_sysadmin? ?
+                                       institution_path(institution) : imports_path
   end
 
   ##
