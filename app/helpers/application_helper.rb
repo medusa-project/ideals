@@ -824,7 +824,7 @@ module ApplicationHelper
   # @return [String]
   #
   def search_status(total_num_results, start, num_results_shown, noun)
-    return "No #{noun.pluralize} to show" if start > total_num_results
+    return "No #{noun.pluralize} to show." if start >= total_num_results
     last = [total_num_results, start + num_results_shown].min
     raw(sprintf("Showing %d&ndash;%d of %s %s",
                 start + 1, last,
