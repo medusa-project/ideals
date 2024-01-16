@@ -125,7 +125,7 @@ class CsvExporter
     # collection_handles column
     columns << "array_to_string(
        array(
-         SELECT CONCAT('#{Handle.prefix}/', h.suffix) AS suffix
+         SELECT h.suffix AS suffix
          FROM handles h
          LEFT JOIN collection_item_memberships cim ON cim.item_id = items.id
          WHERE cim.item_id = items.id
