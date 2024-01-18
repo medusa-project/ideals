@@ -64,10 +64,10 @@
 # * `handle`                     The item's handle. This is for informational
 #                                purposes only--it cannot be updated by
 #                                changing the value.
-# * `collection_handle`          The handle of the item's owning {Collection}.
-#                                Changing the value to the handle of some other
-#                                collection will cause the item to be moved
-#                                into it.
+# * `collection_handles`         The handles of the item's owning
+#                                {Collection}s. Items can be moved into or out
+#                                of other non-primary collections by changing
+#                                this value.
 # * `files`                      Names of all files attached to an item. For
 #                                uploads, this may be a path relative to a
 #                                package root in which the CSV resides.
