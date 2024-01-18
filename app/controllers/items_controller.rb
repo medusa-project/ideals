@@ -294,7 +294,7 @@ class ItemsController < ApplicationController
   #
   def recent
     @permitted_params = params.permit(:start)
-    @start            = [@permitted_params[:start].to_i.abs, MAX_START].min
+    @start            = [@permitted_params[:start].to_i.abs, max_start].min
     @window           = window_size
     @items            = Item.search.
       institution(current_institution).
@@ -327,7 +327,7 @@ class ItemsController < ApplicationController
   def review
     authorize Item
     @permitted_params = params.permit(Search::RESULTS_PARAMS)
-    @start            = [@permitted_params[:start].to_i.abs, MAX_START].min
+    @start            = [@permitted_params[:start].to_i.abs, max_start].min
     @window           = window_size
     @items            = Item.search.
         institution(current_institution).

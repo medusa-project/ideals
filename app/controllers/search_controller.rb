@@ -16,7 +16,7 @@ class SearchController < ApplicationController
     @permitted_params = params.permit(Search::SIMPLE_SEARCH_PARAMS +
                                         Search::advanced_search_params +
                                         Search::RESULTS_PARAMS)
-    @start            = [@permitted_params[:start].to_i.abs, MAX_START].min
+    @start            = [@permitted_params[:start].to_i.abs, max_start].min
     @window           = window_size
     @items            = EntityRelation.new.
       aggregations(true).

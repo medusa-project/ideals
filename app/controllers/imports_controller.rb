@@ -91,7 +91,7 @@ class ImportsController < ApplicationController
     authorize Import
     @permitted_params = params.permit(Search::RESULTS_PARAMS +
                                         Search::SIMPLE_SEARCH_PARAMS)
-    @start            = [@permitted_params[:start].to_i.abs, MAX_START].min
+    @start            = [@permitted_params[:start].to_i.abs, max_start].min
     @window           = window_size
     @imports          = Import.
       where(institution: current_institution).
