@@ -445,7 +445,7 @@ class InstitutionsController < ApplicationController
   #
   def show_embargoed_items
     @permitted_params = params.permit(RESULTS_PARAMS)
-    @start            = [@permitted_params[:start].to_i.abs, MAX_START].min
+    @start            = [@permitted_params[:start].to_i.abs, max_start].min
     @window           = window_size
     @items            = embargoed_items(@start, @window)
     @count            = @items.count
