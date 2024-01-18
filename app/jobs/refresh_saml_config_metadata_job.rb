@@ -46,7 +46,7 @@ class RefreshSamlConfigMetadataJob < ApplicationJob
       end
       institution.update_from_saml_metadata(xml_file)
     ensure
-      xml_file.unlink if is_temp_file
+      xml_file.unlink if is_temp_file && xml_file.respond_to?(:unlink)
     end
   end
 
