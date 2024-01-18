@@ -215,8 +215,12 @@ class ApplicationController < ActionController::Base
     redirect_to root_path if logged_in?
   end
 
+  ##
+  # @return Maximum OpenSearch-safe start/offset within a results list.
+  # @see window_size
+  #
   def max_start
-    10000 - window_size
+    OpenSearchIndex::MAX_RESULT_WINDOW - window_size
   end
 
   def rescue_gone
@@ -413,11 +417,18 @@ class ApplicationController < ActionController::Base
   ##
   # @return [Integer] Effective window size a.k.a. result limit based on the
   #                   application configuration and `window` query argument.
+  # @see max_start
   #
   def window_size
-    default = Setting.integer(Setting::Key::RESULT_WINDOW_DEFAULT, 25)
-    min     = Setting.integer(Setting::Key::RESULT_WINDOW_MIN, 10)
-    max     = Setting.integer(Setting::Key::RESULT_WINDOW_MAX, 100)
+    default_default = 25
+    default_min     = 20
+    default_max     = 100
+    default = Setting.integer(Setting::Key::RESULT_WINDOW_DEFAULT, default_default)
+    default = default_default if default < 1
+    min     = Setting.integer(Setting::Key::RESULT_WINDOW_MIN, default_min)
+    min     = default_min if min < 1
+    max     = Setting.integer(Setting::Key::RESULT_WINDOW_MAX, default_max)
+    max     = default_max if max < 1
     client  = params[:window].to_i
     if client < min || client > max
       return default
