@@ -48,8 +48,12 @@ class CsvExporter
       elements = profile.elements.map(&:name)
     end
 
+    # Only items that belong to any of these collections primarily are
+    # included. Otherwise, they may be subject to different metadata profiles
+    # which could cause their metadata to not align with the columns in the
+    # CSV, resulting in metadata loss.
     where_clause = collection_ids.any? ?
-                     "WHERE cim.collection_id IN (#{collection_ids.join(", ")}) " :
+                     "WHERE cim.collection_id IN (#{collection_ids.join(", ")}) AND cim.primary = true " :
                      "WHERE 1 = 2 "
 
     # SQL is used for efficiency here--ActiveRecord would be super slow.
@@ -92,7 +96,7 @@ class CsvExporter
     sql = select_clause(elements) +
       from_clause +
       join_clauses +
-      "WHERE items.id IN (#{item_ids.join(",")}) " +
+      "WHERE items.id IN (#{item_ids.join(",")}) AND cim.primary = true " +
       order_clause
     results = ActiveRecord::Base.connection.exec_query(sql)
     to_csv(elements, results)
