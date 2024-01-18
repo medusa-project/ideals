@@ -387,7 +387,7 @@ class InstitutionsController < ApplicationController
   #
   def show_buried_items
     @permitted_params = params.permit(RESULTS_PARAMS)
-    @start            = [@permitted_params[:start].to_i.abs, MAX_START].min
+    @start            = [@permitted_params[:start].to_i.abs, max_start].min
     @window           = window_size
     @items            = buried_items(@start, @window)
     @count            = @items.count
@@ -446,7 +446,7 @@ class InstitutionsController < ApplicationController
     authorize Import
     @permitted_params = params.permit(Search::RESULTS_PARAMS +
                                         Search::SIMPLE_SEARCH_PARAMS)
-    @start            = [@permitted_params[:start].to_i.abs, MAX_START].min
+    @start            = [@permitted_params[:start].to_i.abs, max_start].min
     @window           = window_size
     @imports          = Import.
       where(institution: @institution).
@@ -476,7 +476,7 @@ class InstitutionsController < ApplicationController
     @permitted_params = params.permit(Search::RESULTS_PARAMS +
                                         Search::SIMPLE_SEARCH_PARAMS +
                                         [:approval_state, :institution_id])
-    @start            = [@permitted_params[:start].to_i.abs, MAX_START].min
+    @start            = [@permitted_params[:start].to_i.abs, max_start].min
     @window           = window_size
     @invitees         = Invitee.
       where(institution: @institution).
@@ -583,7 +583,7 @@ class InstitutionsController < ApplicationController
   #
   def show_submissions_in_progress
     @permitted_params = params.permit(Search::RESULTS_PARAMS)
-    @start            = [@permitted_params[:start].to_i.abs, MAX_START].min
+    @start            = [@permitted_params[:start].to_i.abs, max_start].min
     @window           = window_size
     @items            = submissions_in_progress(@start, @window)
     @count            = @items.count
@@ -665,7 +665,7 @@ class InstitutionsController < ApplicationController
     @permitted_params = params.permit(Search::RESULTS_PARAMS +
                                         Search::SIMPLE_SEARCH_PARAMS +
                                         [:institution_id])
-    @start            = [@permitted_params[:start].to_i.abs, MAX_START].min
+    @start            = [@permitted_params[:start].to_i.abs, max_start].min
     @window           = window_size
     @vocabularies     = Vocabulary.
       where(institution: @institution).
@@ -683,7 +683,7 @@ class InstitutionsController < ApplicationController
   #
   def show_withdrawn_items
     @permitted_params = params.permit(RESULTS_PARAMS)
-    @start            = [@permitted_params[:start].to_i.abs, MAX_START].min
+    @start            = [@permitted_params[:start].to_i.abs, max_start].min
     @window           = window_size
     @items            = withdrawn_items(@start, @window)
     @count            = @items.count

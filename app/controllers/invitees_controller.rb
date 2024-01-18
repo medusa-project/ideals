@@ -234,7 +234,7 @@ class InviteesController < ApplicationController
     @permitted_params = params.permit(Search::RESULTS_PARAMS +
                                         Search::SIMPLE_SEARCH_PARAMS +
                                         [:approval_state, :institution_id])
-    @start            = [@permitted_params[:start].to_i.abs, MAX_START].min
+    @start            = [@permitted_params[:start].to_i.abs, max_start].min
     @window           = window_size
     @invitees         = Invitee.
       where("LOWER(email) LIKE ?", "%#{@permitted_params[:q]&.downcase}%").

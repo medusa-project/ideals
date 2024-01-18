@@ -66,7 +66,7 @@ class TasksController < ApplicationController
     @permitted_params = params.permit(Search::RESULTS_PARAMS +
                                         Search::SIMPLE_SEARCH_PARAMS +
                                         [:institution_id, :queue, :status, :status_text])
-    @start            = [@permitted_params[:start].to_i.abs, MAX_START].min
+    @start            = [@permitted_params[:start].to_i.abs, max_start].min
     @window           = window_size
     @tasks            = Task.all.order(created_at: :desc)
     if institution

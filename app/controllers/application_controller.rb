@@ -5,8 +5,6 @@
 #
 class ApplicationController < ActionController::Base
 
-  MAX_START = 10000
-
   protect_from_forgery with: :exception
   helper_method :current_user, :current_user_is_sysadmin?, :logged_in?,
                 :request_context, :to_do_list
@@ -215,6 +213,10 @@ class ApplicationController < ActionController::Base
 
   def ensure_logged_out
     redirect_to root_path if logged_in?
+  end
+
+  def max_start
+    10000 - window_size
   end
 
   def rescue_gone

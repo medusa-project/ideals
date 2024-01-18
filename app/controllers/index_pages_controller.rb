@@ -92,7 +92,7 @@ class IndexPagesController < ApplicationController
   #
   def show
     @permitted_params = params.permit(:letter, :q, :start)
-    @start            = [@permitted_params[:start].to_i.abs, MAX_START].min
+    @start            = [@permitted_params[:start].to_i.abs, max_start].min
     @window           = 50
     reg_e_ids         = @index_page.registered_element_ids
     if reg_e_ids.any?
