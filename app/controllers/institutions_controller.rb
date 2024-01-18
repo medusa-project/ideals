@@ -359,6 +359,7 @@ class InstitutionsController < ApplicationController
     @review_count                  = review_items(0, 0).count
     @submissions_in_progress_count = submissions_in_progress(0, 0).count
     @buried_items_count            = buried_items(0, 0).count
+    @embargoed_items_count         = embargoed_items(0, 0).count
     @withdrawn_items_count         = withdrawn_items(0, 0).count
   end
 
@@ -435,6 +436,21 @@ class InstitutionsController < ApplicationController
   def show_element_registry
     @elements = @institution.registered_elements.order(:label)
     render partial: "show_element_registry_tab"
+  end
+
+  ##
+  # Renders HTML for the embargoed items tab in show-institution view.
+  #
+  # Responds to `GET /institutions/:key/embargoed-items` (XHR only)
+  #
+  def show_embargoed_items
+    @permitted_params = params.permit(RESULTS_PARAMS)
+    @start            = [@permitted_params[:start].to_i.abs, MAX_START].min
+    @window           = window_size
+    @items            = embargoed_items(@start, @window)
+    @count            = @items.count
+    @current_page     = @items.page
+    render partial: "items/listing", locals: { show_embargoed_normally: true }
   end
 
   ##
@@ -996,6 +1012,17 @@ class InstitutionsController < ApplicationController
       institution(@institution).
       aggregations(false).
       filter(Item::IndexFields::STAGE, Item::Stages::BURIED).
+      order(@institution.title_element.indexed_sort_field).
+      start(start).
+      limit(limit)
+  end
+
+  def embargoed_items(start, limit)
+    Item.search.
+      institution(@institution).
+      aggregations(false).
+      must_exist(Item::IndexFields::EMBARGOES).
+      must_not(Item::IndexFields::STAGE, Item::Stages::WITHDRAWN).
       order(@institution.title_element.indexed_sort_field).
       start(start).
       limit(limit)

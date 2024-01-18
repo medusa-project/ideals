@@ -1,3 +1,5 @@
+- show_embargoed_normally = defined?(show_embargoed_normally) ? show_embargoed_normally : false
+
 - pagination = paginate(count:            @count, |
                         page:             @current_page, |
                         per_page:         @window, |
@@ -12,8 +14,9 @@
     = pagination
 
 = resource_list(@items,
-                use_resource_host: false,
-                show_institution:  !institution_host?)
+                use_resource_host:       false,
+                show_institution:        !institution_host?,
+                show_embargoed_normally: show_embargoed_normally)
 
 .row.justify-content-md-center
   .col-md-auto

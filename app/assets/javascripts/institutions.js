@@ -266,6 +266,37 @@ const InstitutionView = {
             });
         });
 
+        $("#embargoed-items-tab").on("show.bs.tab", function () {
+            const url = ROOT_URL + "/institutions/" + institutionKey + "/embargoed-items";
+            $.get(url, function (data) {
+                $("#embargoed-items-tab-content").html(data);
+
+                const attachResultsEventListeners = function() {
+                    $(".page-link").on("click", function(e) {
+                        e.preventDefault();
+                        refreshResults($(this).attr("href"));
+                    });
+                };
+                attachResultsEventListeners();
+
+                const refreshResults = function(url) {
+                    const container = $("#embargoed-items-tab-content");
+                    container.html(IDEALS.UIUtils.Spinner());
+                    if (!url) {
+                        url = ROOT_URL + "/institutions/" + institutionKey + "/embargoed-items";
+                    }
+                    $.ajax({
+                        method:  "GET",
+                        url:     url,
+                        success: function(data) {
+                            container.html(data);
+                            attachResultsEventListeners();
+                        }
+                    });
+                };
+            });
+        });
+
         $("#imports-tab").on("show.bs.tab", function () {
             const url = ROOT_URL + "/institutions/" + institutionKey + "/imports";
             $.get(url, function (data) {

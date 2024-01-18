@@ -1539,6 +1539,59 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.show_element_registry?
   end
 
+  # show_embargoed_items?()
+
+  test "show_embargoed_items?() returns false with a nil request context" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @institution)
+    policy = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_embargoed_items?
+  end
+
+  test "show_embargoed_items?() does not authorize non-sysadmins" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_embargoed_items?
+  end
+
+  test "show_embargoed_items?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.show_embargoed_items?
+  end
+
+  test "show_embargoed_items?() authorizes administrators of the same
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.show_embargoed_items?
+  end
+
+  test "show_embargoed_items?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, institutions(:northeast))
+    assert !policy.show_embargoed_items?
+  end
+
+  test "show_embargoed_items?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_embargoed_items?
+  end
+
   # show_imports?()
 
   test "show_imports?() returns false with a nil request context" do

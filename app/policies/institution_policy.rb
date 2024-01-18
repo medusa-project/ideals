@@ -156,6 +156,10 @@ class InstitutionPolicy < ApplicationPolicy
     show_metadata_profiles
   end
 
+  def show_embargoed_items
+    show
+  end
+
   def show_imports
     show_metadata_profiles
   end
