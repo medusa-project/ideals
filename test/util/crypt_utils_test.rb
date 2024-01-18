@@ -65,6 +65,17 @@ class CryptUtilsTest < ActiveSupport::TestCase
     end
   end
 
+  test "generate_cert() raises an error when the not_after argument is less
+  than one year from now" do
+    assert_raises ArgumentError do
+      CryptUtils.generate_cert(key:          CryptUtils.generate_key,
+                               organization: "Acme, Inc.",
+                               common_name:  "Cats",
+                               not_before:   Time.now,
+                               not_after:    Time.now + 200.days)
+    end
+  end
+
   test "generate_cert() when given a string key returns a correct value" do
     key  = CryptUtils.generate_key
     cert = CryptUtils.generate_cert(key:          key.private_to_pem,

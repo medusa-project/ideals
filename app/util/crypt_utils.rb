@@ -31,6 +31,10 @@ class CryptUtils
     raise ArgumentError, "Missing common_name argument" unless common_name
     raise ArgumentError, "Missing not_before argument" unless not_before
     raise ArgumentError, "Missing not_after argument" unless not_after
+    if not_after < 1.year.from_now
+      raise ArgumentError, "not_after argument must be at least a year from now"
+    end
+
     unless key.kind_of?(OpenSSL::PKey::RSA)
       key = OpenSSL::PKey::RSA.new(key)
     end
