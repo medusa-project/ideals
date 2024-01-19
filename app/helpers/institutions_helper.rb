@@ -52,9 +52,10 @@ module InstitutionsHelper
     html <<       "<dt>Signature Algorithm</dt>"
     html <<       "<dd>"
     html <<         cert.signature_algorithm
-    if cert.signature_algorithm != "sha256WithRSAEncryption"
-      html << boolean(false, style: :word, false_value: "INVALID")
-    end
+    -# TODO: what about sha1WithRSAEncryption?
+    -#if cert.signature_algorithm != "sha256WithRSAEncryption"
+    -#  html << boolean(false, style: :word, false_value: "INVALID")
+    -#end
     html <<       "</dd>"
     html <<       "<dt>Subject</dt>"
     html <<       "<dd>"
