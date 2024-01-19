@@ -124,6 +124,7 @@
 # * `saml_metadata_url`                 Caches the value entered into the URL
 #                                       field when supplying SAML metadata from
 #                                       A URL.
+# * `saml_sp_entity_id`                 SAML SP entity ID.
 # * `saml_sp_next_public_cert`          SAML X.509 public certificate with a
 #                                       later expiration than
 #                                       {saml_sp_public_cert} to facilitate
@@ -464,6 +465,13 @@ class Institution < ApplicationRecord
   end
 
   ##
+  # @return [String]
+  #
+  def default_saml_sp_entity_id
+    [scope_url, "entity"].join("/")
+  end
+
+  ##
   # @return [SubmissionProfile]
   #
   def default_submission_profile
@@ -709,7 +717,7 @@ class Institution < ApplicationRecord
   # @return [String]
   #
   def saml_sp_entity_id
-    [scope_url, "entity"].join("/")
+    read_attribute(:saml_sp_entity_id) || default_saml_sp_entity_id
   end
 
   ##

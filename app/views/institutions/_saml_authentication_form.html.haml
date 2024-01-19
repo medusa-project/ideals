@@ -37,6 +37,9 @@
     .col-lg-6
       %h5 Service Provider
       .mb-3
+        = f.label :saml_sp_entity_id, "Entity ID"
+        = f.text_field :saml_sp_entity_id, class: "form-control"
+      .mb-3
         = f.label :saml_sp_private_key, "Private Key"
         = f.text_area :saml_sp_private_key, rows: 10, class: "form-control"
       .mb-3

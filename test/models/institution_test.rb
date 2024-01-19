@@ -301,6 +301,12 @@ class InstitutionTest < ActiveSupport::TestCase
     assert @instance.default_metadata_profile.institution_default
   end
 
+  # default_saml_sp_entity_id()
+
+  test "default_saml_sp_entity_id() returns a correct value" do
+    assert_equal "#{@instance.scope_url}/entity", @instance.default_saml_sp_entity_id
+  end
+
   # default_submission_profile()
 
   test "default_submission_profile() returns the default submission profile" do
@@ -981,8 +987,9 @@ class InstitutionTest < ActiveSupport::TestCase
 
   # saml_sp_entity_id()
 
-  test "saml_sp_entity_id() returns a correct value" do
-    assert_equal "#{@instance.scope_url}/entity", @instance.saml_sp_entity_id
+  test "saml_sp_entity_id() returns the default entity ID when not set" do
+    assert_equal @instance.default_saml_sp_entity_id,
+                 @instance.saml_sp_entity_id
   end
 
   # saml_sp_next_public_cert

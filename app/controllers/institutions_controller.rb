@@ -953,6 +953,7 @@ class InstitutionsController < ApplicationController
                                         :saml_idp_sso_post_service_url,
                                         :saml_idp_sso_redirect_service_url,
                                         :saml_last_name_attribute,
+                                        :saml_sp_entity_id,
                                         :saml_sp_next_public_cert,
                                         :saml_sp_private_key,
                                         :saml_sp_public_cert,
