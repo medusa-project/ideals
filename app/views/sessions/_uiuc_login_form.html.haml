@@ -1,6 +1,6 @@
 .text-center
   -# Show this in development even though it doesn't work there, for styling reasons
-  = link_to(netid_login_path, class: "btn btn-primary p-4") do
+  = button_to("/auth/saml", method: :post, class: "btn btn-primary p-4") do
     = image_tag "library_wordmark_horizontal_1.png",
         style: "height: 2em",
         alt: "University of Illinois Logo"
