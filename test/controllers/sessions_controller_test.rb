@@ -155,17 +155,4 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_url
   end
 
-  # new_netid()
-
-  test "new_netid() from the global scope redirects to root path" do
-    host! ::Configuration.instance.main_host
-    get netid_login_path
-    assert_redirected_to root_path
-  end
-
-  test "new_netid() redirects to the NetID login path" do
-    get netid_login_path
-    assert_redirected_to @institution.scope_url + "/auth/developer"
-  end
-
 end

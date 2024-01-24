@@ -7,7 +7,6 @@ Rails.application.routes.draw do
   match "/auth/failure", to: "sessions#auth_failed", as: :auth_failed, via: [:get, :post]
   match "/login", to: "sessions#new", as: :login, via: :get
   match "/logout", to: "sessions#destroy", as: :logout, via: :all
-  match "/netid-login", to: "sessions#new_netid", as: :netid_login, via: :get
 
   # About
   match "/about", to: "welcome#about", via: :get, as: "about"

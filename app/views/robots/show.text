@@ -7,7 +7,6 @@ Disallow: /health
 Disallow: /invitees
 Disallow: /login
 Disallow: /logout
-Disallow: /netid-login
 Disallow: /oai-pmh
 Disallow: /register
 Disallow: /reset-password

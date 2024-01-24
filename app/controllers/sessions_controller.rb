@@ -2,8 +2,8 @@
 
 class SessionsController < ApplicationController
 
-  skip_before_action :verify_authenticity_token, except: [:new, :new_netid]
-  before_action :require_institution_host, only: [:new, :new_netid]
+  skip_before_action :verify_authenticity_token, except: :new
+  before_action :require_institution_host, only: :new
 
   ##
   # Provides a "back door" login form. This is not linked to from anywhere
