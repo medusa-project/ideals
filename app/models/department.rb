@@ -28,7 +28,7 @@ class Department < ApplicationRecord
   #
   def self.from_omniauth(attrs)
     name = attrs[ITRUST_DEPARTMENT_CODE_ATTRIBUTE]
-    Department.new(name: name)
+    name.present? ? Department.new(name: name) : nil
   end
 
 end
