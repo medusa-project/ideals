@@ -266,14 +266,12 @@ class InstitutionTest < ActiveSupport::TestCase
   test "auth_enabled?() returns false if no authentication methods are enabled" do
     @instance.local_auth_enabled = false
     @instance.saml_auth_enabled = false
-    @instance.shibboleth_auth_enabled = false
     assert !@instance.auth_enabled?
   end
 
   test "auth_enabled?() returns false if an authentication method is enabled" do
     @instance.local_auth_enabled = true
     @instance.saml_auth_enabled = false
-    @instance.shibboleth_auth_enabled = false
     assert @instance.auth_enabled?
   end
 
@@ -1031,31 +1029,15 @@ class InstitutionTest < ActiveSupport::TestCase
     assert_equal "test test", @instance.service_name
   end
 
-  # shibboleth_extra_attributes
-
-  test "shibboleth_extra_attributes can be set to a CSV string" do
-    @instance.update!(shibboleth_extra_attributes: "dogs, cats, foxes")
-    assert_equal %w(dogs cats foxes), @instance.shibboleth_extra_attributes
-  end
-
   # sso_enabled?()
 
   test "sso_enabled?() returns true when saml_auth_enabled is true" do
-    @instance.saml_auth_enabled       = true
-    @instance.shibboleth_auth_enabled = false
+    @instance.saml_auth_enabled = true
     assert @instance.sso_enabled?
   end
 
-  test "sso_enabled?() returns true when shibboleth_auth_enabled is true" do
-    @instance.saml_auth_enabled       = false
-    @instance.shibboleth_auth_enabled = true
-    assert @instance.sso_enabled?
-  end
-
-  test "sso_enabled?() returns false when both saml_auth_enabled and
-  shibboleth_auth_enabled are false" do
-    @instance.saml_auth_enabled       = false
-    @instance.shibboleth_auth_enabled = false
+  test "sso_enabled?() returns false when saml_auth_enabled is false" do
+    @instance.saml_auth_enabled = false
     assert !@instance.sso_enabled?
   end
 

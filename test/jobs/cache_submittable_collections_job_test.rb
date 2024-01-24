@@ -3,7 +3,7 @@ require 'test_helper'
 class CacheSubmittableCollectionsJobTest < ActiveSupport::TestCase
 
   test "perform() updates the Task given to it" do
-    user = users(:southwest_shibboleth)
+    user = users(:southwest_saml)
     task = tasks(:pending)
 
     CacheSubmittableCollectionsJob.perform_now(user:            user,
@@ -23,7 +23,7 @@ class CacheSubmittableCollectionsJobTest < ActiveSupport::TestCase
   end
 
   test "perform() associates submittable Collections with the User" do
-    user       = users(:southwest_shibboleth)
+    user       = users(:southwest_saml)
     collection = collections(:southwest_unit1_collection1)
     collection.submitting_users << user
     collection.save!
@@ -39,7 +39,7 @@ class CacheSubmittableCollectionsJobTest < ActiveSupport::TestCase
   end
 
   test "perform() sets submittable_collections_cached_at" do
-    user = users(:southwest_shibboleth)
+    user = users(:southwest_saml)
 
     CacheSubmittableCollectionsJob.perform_now(user:            user,
                                                client_ip:       "127.0.0.1",
@@ -50,7 +50,7 @@ class CacheSubmittableCollectionsJobTest < ActiveSupport::TestCase
 
   test "perform() nullifies caching_submittable_collections_task_id when
   complete" do
-    user = users(:southwest_shibboleth)
+    user = users(:southwest_saml)
 
     CacheSubmittableCollectionsJob.perform_now(user:            user,
                                                client_ip:       "127.0.0.1",

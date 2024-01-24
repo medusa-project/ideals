@@ -31,10 +31,9 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
          xhr: true,
          params: {
            institution: {
-             name:              "New Institution",
-             key:               "new",
-             fqdn:              "new.org",
-             shibboleth_org_dn: "new"
+             name: "New Institution",
+             key:  "new",
+             fqdn: "new.org"
            }
          }
     assert_response :forbidden
@@ -46,12 +45,11 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
          xhr: true,
          params: {
            institution: {
-             name:              "New Institution",
-             service_name:      "New",
-             key:               "new",
-             fqdn:              "new.org",
-             shibboleth_org_dn: "new",
-             main_website_url:  "https://new.org"
+             name:             "New Institution",
+             service_name:     "New",
+             key:              "new",
+             fqdn:             "new.org",
+             main_website_url: "https://new.org"
            }
          }
     assert_response :ok
@@ -65,12 +63,11 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
            xhr: true,
            params: {
              institution: {
-               name:              "New Institution",
-               service_name:      "New",
-               key:               "new",
-               fqdn:              "new.org",
-               shibboleth_org_dn: "new",
-               main_website_url:  "https://new.org"
+               name:             "New Institution",
+               service_name:     "New",
+               key:              "new",
+               fqdn:             "new.org",
+               main_website_url: "https://new.org"
              }
            }
     end
@@ -413,31 +410,6 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   test "edit_settings() returns HTTP 200" do
     log_in_as(users(:southwest_admin))
     get institution_edit_settings_path(@institution), xhr: true
-    assert_response :ok
-  end
-
-  # edit_shibboleth_authentication()
-
-  test "edit_shibboleth_authentication() returns HTTP 404 for unscoped requests" do
-    host! ::Configuration.instance.main_host
-    get institution_edit_shibboleth_authentication_path(@institution), xhr: true
-    assert_response :not_found
-  end
-
-  test "edit_shibboleth_authentication() returns HTTP 403 for logged-out users" do
-    get institution_edit_shibboleth_authentication_path(@institution), xhr: true
-    assert_response :forbidden
-  end
-
-  test "edit_shibboleth_authentication() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:southwest))
-    get institution_edit_shibboleth_authentication_path(@institution), xhr: true
-    assert_response :forbidden
-  end
-
-  test "edit_shibboleth_authentication() returns HTTP 200" do
-    log_in_as(users(:southwest_admin))
-    get institution_edit_shibboleth_authentication_path(@institution), xhr: true
     assert_response :ok
   end
 

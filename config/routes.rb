@@ -134,8 +134,6 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/edit-settings", to: "institutions#edit_settings", via: :get,
           constraints: lambda { |request| request.xhr? }
-    match "/edit-shibboleth-authentication", to: "institutions#edit_shibboleth_authentication", via: :get,
-          constraints: lambda { |request| request.xhr? }
     match "/edit-theme", to: "institutions#edit_theme", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/element-mappings", to: "institutions#show_element_mappings", via: :get,

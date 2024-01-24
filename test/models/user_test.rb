@@ -46,32 +46,6 @@ class UserTest < ActiveSupport::TestCase
     }
   }
 
-  SHIBBOLETH_AUTH_HASH = {
-    provider: "shibboleth",
-    uid: "ShibbolethUser@example.org",
-    info: {
-      name: "Shib Boleth",
-      email: "ShibbolethUser@example.org"
-    },
-    credentials: {},
-    extra: {
-      raw_info: {
-        eppn: "ShibbolethUser@example.org",
-        "unscoped-affiliation": "member;staff;employee",
-        uid: "example",
-        sn: "Boleth",
-        "org-dn": "o=Southeast University,dc=southeast,dc=edu",
-        nickname: "",
-        givenName: "Shib",
-        member: "urn:mace:southeast.edu:urbana:library:units:ideals:library ideals admin",
-        iTrustAffiliation: "member;staff;employee",
-        departmentCode: "Example Department",
-        programCode: nil,
-        levelCode: nil
-      }
-    }
-  }
-
   # fetch_from_omniauth_local()
 
   test "fetch_from_omniauth_local() with a matching email returns the user" do
@@ -142,29 +116,6 @@ class UserTest < ActiveSupport::TestCase
     }
     assert_nil User.fetch_from_omniauth_saml(auth,
                                              email_location: Institution::SAMLEmailLocation::ATTRIBUTE)
-  end
-
-  # fetch_from_omniauth_shibboleth()
-
-  test "fetch_from_omniauth_shibboleth() with a matching email returns the user" do
-    user = users(:southwest)
-    auth = {
-      provider: "shibboleth",
-      info: {
-        email: user.email
-      }
-    }
-    assert_equal user, User.fetch_from_omniauth_shibboleth(auth)
-  end
-
-  test "fetch_from_omniauth_shibboleth() with a non-matching email returns nil" do
-    auth = {
-      provider: "shibboleth",
-      info: {
-        email: "bogus@example.org"
-      }
-    }
-    assert_nil User.fetch_from_omniauth_shibboleth(auth)
   end
 
   # from_autocomplete_string()
@@ -260,36 +211,8 @@ class UserTest < ActiveSupport::TestCase
     assert_equal "OpenAthensUser@example.org", user.email
   end
 
-  test "from_omniauth() returns a new user when given a Shibboleth auth
-  hash for which no database match exists" do
-    user = User.from_omniauth(SHIBBOLETH_AUTH_HASH,
-                              institution: institutions(:southwest))
-    assert_equal "Shib Boleth", user.name
-    assert_equal "ShibbolethUser@example.org", user.email
-    assert_equal institutions(:southeast), user.institution
-    assert_equal "Example Department", user.department.name
-    assert_equal Affiliation.find_by_key(Affiliation::FACULTY_STAFF_KEY),
-                 user.affiliation
-  end
-
-  test "from_omniauth() returns an existing user when given a Shibboleth auth
-  hash for which a database match exists" do
-    @user.update!(email: SHIBBOLETH_AUTH_HASH[:info][:email])
-
-    user = User.from_omniauth(SHIBBOLETH_AUTH_HASH,
-                              institution: institutions(:southeast))
-    assert_equal @user, user
-    assert_equal "Shib Boleth", user.name
-    assert_equal "ShibbolethUser@example.org", user.email
-    # the institution shouldn't change
-    assert_equal institutions(:southwest), user.institution
-    assert_equal "Example Department", user.department.name
-    assert_equal Affiliation.find_by_key(Affiliation::FACULTY_STAFF_KEY),
-                 user.affiliation
-  end
-
-  test "from_omniauth() returns an updated user when given a Shibboleth
-  developer auth hash" do
+  test "from_omniauth() returns an updated user when given a developer auth
+  hash" do
     assert_not_nil User.from_omniauth(
       {
         provider: "developer",

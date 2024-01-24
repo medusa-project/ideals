@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 ##
-# University department associated with a {UserGroup} and a
-# {#User::AuthType::SHIBBOLETH} user.
+# University department associated with a {UserGroup} and a UIUC user.
 #
 # This table is not normalized--multiple same-named departments may exist,
 # associated with different entities, with {name} being used for comparison.
@@ -16,9 +15,17 @@
 #
 class Department < ApplicationRecord
 
+  ITRUST_DEPARTMENT_CODE_ATTRIBUTE = "urn:oid:1.3.6.1.4.1.11483.1.122"
+
   belongs_to :user, optional: true
   belongs_to :user_group, optional: true
 
   normalizes :name, with: -> (value) { value.squish }
+
+  def self.from_omniauth(auth)
+    auth = auth.deep_stringify_keys
+    name = auth.dig("extra", "raw_info", ITRUST_DEPARTMENT_CODE_ATTRIBUTE)
+    Department.new(name: name)
+  end
 
 end

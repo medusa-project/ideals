@@ -63,10 +63,6 @@ class InstitutionPolicy < ApplicationPolicy
     update_settings
   end
 
-  def edit_shibboleth_authentication
-    edit_local_authentication
-  end
-
   def edit_theme
     edit_settings
   end

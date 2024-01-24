@@ -122,13 +122,6 @@ const InstitutionView = {
                         modalBody.html(data);
                     });
                 });
-                $("button.edit-shibboleth-authentication").on("click", function () {
-                    const url = ROOT_URL + "/institutions/" + institutionKey + "/edit-shibboleth-authentication";
-                    $.get(url, function (data) {
-                        const modalBody = $("#edit-shibboleth-authentication-modal .modal-body");
-                        modalBody.html(data);
-                    });
-                });
             });
         });
 

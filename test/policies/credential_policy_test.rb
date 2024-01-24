@@ -57,7 +57,7 @@ class CredentialPolicyTest < ActiveSupport::TestCase
 
   test "edit_password?() does not authorize non-sysadmins other than the user
   being edited" do
-    user    = users(:southwest_shibboleth)
+    user    = users(:southwest_saml)
     context = RequestContext.new(user:        user,
                                  institution: @credential.user.institution)
     policy  = CredentialPolicy.new(context, @credential)
@@ -238,7 +238,7 @@ class CredentialPolicyTest < ActiveSupport::TestCase
 
   test "update_password?() does not authorize non-sysadmins other than the user
   being updated" do
-    user    = users(:southwest_shibboleth)
+    user    = users(:southwest_saml)
     context = RequestContext.new(user:        user,
                                  institution: @credential.user.institution)
     policy = CredentialPolicy.new(context, @credential)

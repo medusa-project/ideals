@@ -147,14 +147,6 @@ class InstitutionsController < ApplicationController
   end
 
   ##
-  # Responds to `GET /institutions/:key/edit-shibboleth-authentication`
-  #
-  def edit_shibboleth_authentication
-    render partial: "institutions/shibboleth_authentication_form",
-           locals: { institution: @institution }
-  end
-
-  ##
   # Used for editing the theme.
   #
   # Responds to `GET /institutions/:key/edit-theme` (XHR only)
@@ -958,12 +950,6 @@ class InstitutionsController < ApplicationController
                                         :saml_sp_private_key,
                                         :saml_sp_public_cert,
                                         :saml_idp_sso_binding_urn,
-                                        :shibboleth_auth_enabled,
-                                        :shibboleth_email_attribute,
-                                        :shibboleth_extra_attributes,
-                                        :shibboleth_host,
-                                        :shibboleth_name_attributes,
-                                        :shibboleth_org_dn,
                                         :sso_federation,
                                         # Theme tab
                                         :active_link_color,

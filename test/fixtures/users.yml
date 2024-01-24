@@ -2,8 +2,8 @@
 # N.B.: every local-auth user in this file MUST have a corresponding
 # Credential in `credentials.yml`.
 #
-# N.B. 2: to place a Shibboleth user in an AD group, edit the `ad.groups` key
-# in the config/environments/test.yml file.
+# N.B. 2: to place a SAML user in an AD group, edit the `ad.groups` key in
+# config/environments/test.yml.
 #
 
 ################################# northeast #################################
@@ -50,12 +50,6 @@ southwest_saml:
   institution: southwest
   name:        Southwest University SAML User
   email:       saml@southwest.edu
-  enabled:     true
-
-southwest_shibboleth:
-  institution: southwest
-  name:        Southwest University Shibboleth User
-  email:       shib@southwest.edu
   enabled:     true
 
 ################################### southeast ###################################

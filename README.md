@@ -196,10 +196,7 @@ These tasks are run via cron in the demo and production environments:
 Authentication is handled by [OmniAuth](https://github.com/omniauth/omniauth).
 OmniAuth supports many different providers, but the ones used by this app are:
 
-* [Shibboleth](https://github.com/toyokazu/omniauth-shibboleth): handles SSO
-  authentication for UIUC only.
-* [SAML](https://github.com/omniauth/omniauth-saml): handles SSO authentication
-  for many CARLI member institutions, as well as CARLI itself.
+* [SAML](https://github.com/omniauth/omniauth-saml): handles SSO authentication.
 * [Local identity](https://github.com/omniauth/omniauth-identity):
   credentials are stored in a `credentials` database table associated with the
   `users` table.
@@ -212,9 +209,8 @@ provider) calls back to `/auth/:provider/callback`, which is handled by
 
 OmniAuth and its providers are configured in `config/initializers/omniauth.rb`.
 Providers can be configured globally when they work the same across all
-institutions (local identity), or work with only one institution (Shibboleth).
-But the SAML provider in particular needs to be customized per-institution, so
-that each institution can work with its own identity provider (IdP).
+institutions (local identity), but the SAML provider in particular needs to be
+customized per-institution.
 
 Users who have associated local credentials can also log in via some other
 provider, if configured, but not vice versa.

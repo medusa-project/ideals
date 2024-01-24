@@ -50,7 +50,6 @@ gem "netaddr"
 gem "omniauth-identity", git: "https://github.com/medusa-project/omniauth-identity.git"
 gem "omniauth-rails_csrf_protection"
 gem "omniauth-saml"
-gem "omniauth-shibboleth"
 # Our database
 gem "pg"
 # Our application server

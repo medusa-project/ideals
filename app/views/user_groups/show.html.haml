@@ -1,8 +1,8 @@
 - provide :body_id, "show_user_group"
 - provide :title, @user_group.name
 
-- can_edit                   = policy(@user_group).edit?
-- show_shibboleth_dimensions = @user_group.institution&.shibboleth_auth_enabled || !@user_group.institution
+- can_edit             = policy(@user_group).edit?
+- show_uiuc_dimensions = @user_group.institution&.key == "uiuc" || !@user_group.institution
 
 .btn-group.float-end{role: "group"}
   - if can_edit
@@ -98,7 +98,7 @@
 
     .row.mb-3
       .col-sm-4
-        - if show_shibboleth_dimensions
+        - if show_uiuc_dimensions
           .card
             .card-body
               - if can_edit
@@ -112,7 +112,7 @@
               %h4.card-title
                 Departments
                 %small
-                  %span.badge.bg-primary SHIBBOLETH ONLY
+                  %span.badge.bg-primary UIUC ONLY
               - if @departments.any?
                 %ul
                   - @departments.each do |department|
@@ -120,7 +120,7 @@
               - else
                 %p None
       .col-sm-4
-        - if show_shibboleth_dimensions
+        - if show_uiuc_dimensions
           .card
             .card-body
               - if can_edit
@@ -134,7 +134,7 @@
               %h4.card-title
                 Affiliations
                 %small
-                  %span.badge.bg-primary SHIBBOLETH ONLY
+                  %span.badge.bg-primary UIUC ONLY
               - if @affiliations.any?
                 %ul
                   - @affiliations.each do |affiliation|
@@ -143,7 +143,7 @@
                 %p None
 
       .col-sm-4
-        - if show_shibboleth_dimensions
+        - if show_uiuc_dimensions
           .card
             .card-body
               - if can_edit
@@ -157,7 +157,7 @@
               %h4.card-title
                 AD Groups
                 %small
-                  %span.badge.bg-primary SHIBBOLETH ONLY
+                  %span.badge.bg-primary UIUC ONLY
               - if @ad_groups.any?
                 %ul
                   - @ad_groups.each do |group|

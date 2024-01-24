@@ -18,13 +18,13 @@
 class Login < ApplicationRecord
 
   class Provider
-    # Credentials are stored in the `credentials` table.
-    LOCAL      = 0
-    # Used only by UIUC.
-    SHIBBOLETH = 1
+    LOCAL = 0
     # Used by many CARLI member institutions, and CARLI itself.
-    SAML       = 2
+    SAML  = 2
 
+    ##
+    # @return [Enumerable<Integer>]
+    #
     def self.all
       self.constants.map{ |c| self.const_get(c) }.sort
     end
@@ -35,7 +35,9 @@ class Login < ApplicationRecord
         "Local"
       when SAML
         "SAML"
-      when SHIBBOLETH
+      when 1
+        # SHIBBOLETH (removed, but there are still some old Logins in the
+        # database associated with this provider)
         "Shibboleth"
       else
         "Unknown"
@@ -65,16 +67,12 @@ class Login < ApplicationRecord
       auth[:extra][:raw_info]        = auth[:extra][:raw_info].attributes
       auth[:extra][:response_object] = nil
     end
-
     case auth[:provider]
-    when "shibboleth", "developer"
-      self.provider = Provider::SHIBBOLETH
-    when "saml"
+    when "saml", "developer"
       self.provider = Provider::SAML
     when "identity"
       self.provider = Provider::LOCAL
     end
-
     super(auth)
   end
 

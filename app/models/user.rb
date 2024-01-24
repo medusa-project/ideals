@@ -11,9 +11,6 @@
 # * For local authentication, the user either requests to join a particular
 #   institution, or is invited into a particular institution by a sysadmin at
 #   the time they are invited to register.
-# * For Shibboleth authentication, the user's "org DN" provided by the IdP is
-#   matched against an institution's {Institution#shibboleth_org_dn} property
-#   at login.
 # * For SAML authentication, the user is made a member of the institution
 #   matching the request host at login.
 #
@@ -42,12 +39,12 @@ class User < ApplicationRecord
 
   include Breadcrumb
 
-  # Only Shibboleth users will have one of these.
+  # Only UIUC users will have one of these.
   belongs_to :affiliation, optional: true
   belongs_to :caching_submittable_collections_task, class_name: "Task",
              optional: true
   belongs_to :institution, optional: true
-  # Only Shibboleth users will have one of these.
+  # Only UIUC users will have one of these.
   has_one :department
   has_one :credential, inverse_of: :user
   # This relationship is not "live" - it needs to be populated manually
@@ -119,17 +116,6 @@ class User < ApplicationRecord
   end
 
   ##
-  # @param auth [OmniAuth::AuthHash]
-  # @return [User] Instance corresponding to the given auth hash, or nil if not
-  #                found.
-  #
-  def self.fetch_from_omniauth_shibboleth(auth)
-    auth  = auth.deep_symbolize_keys
-    email = auth.dig(:info, :email)
-    User.find_by_email(email)
-  end
-
-  ##
   # @param string [String] Autocomplete text field string.
   # @return [User] Instance corresponding to the given string. May be `nil`.
   # @see to_autocomplete
@@ -147,18 +133,14 @@ class User < ApplicationRecord
   ##
   # @param auth [OmniAuth::AuthHash, Hash]
   # @param institution [Institution] The returned user will be assigned to this
-  #        institution. (Only applies to SAML users. Shibboleth users will
-  #        instead be assigned to the institution matching the "org DN"
-  #        attribute in the auth hash, and local credential users will be
-  #        assigned to the institution of the corresponding {Invitee}.)
+  #        institution. (Only applies to SAML users. Local credential users
+  #        will be assigned to the institution of the corresponding {Invitee}.)
   # @return [User] Instance corresponding to the given auth hash. If one was
   #                not found, it is created.
   #
   def self.from_omniauth(auth, institution:)
     case auth[:provider]
-    when "developer", "shibboleth"
-      User.from_omniauth_shibboleth(auth)
-    when "saml"
+    when "saml", "developer"
       User.from_omniauth_saml(auth, institution: institution)
     when "identity"
       User.from_omniauth_local(auth)
@@ -194,25 +176,13 @@ class User < ApplicationRecord
                                          email_location:  institution.saml_email_location,
                                          email_attribute: institution.saml_email_attribute)
     user ||= User.new
-    user.send(:update_from_saml, auth, institution)
-    user
-  end
-
-  ##
-  # @private
-  #
-  def self.from_omniauth_shibboleth(auth)
-    user = User.fetch_from_omniauth_shibboleth(auth) || User.new
-    user.send(:update_from_shibboleth, auth)
+    user.send(:update_from_omniauth_saml, auth, institution)
     user
   end
 
   ##
   # Performs an LDAP query to determine whether the instance belongs to the
-  # given AD group. Groups are assigned only to
-  # {AuthMethod::SHIBBOLETH Shibboleth users}, but this method will work for
-  # users who have signed in via Shibboleth before, had groups assigned to them
-  # then, and then signed in via some other method later.
+  # given AD group. Groups are exposed only to UIUC users.
   #
   # N.B.: in development and test environments, no query is executed, and
   # instead the return value is `true` if the `ad.groups` key in the
@@ -498,7 +468,7 @@ class User < ApplicationRecord
   ##
   # @return [String] The NetID (the user component of the email). This works
   #                  regardless of authentication method, even though
-  #                  technically only UofI Shibboleth users have NetIDs.
+  #                  technically only UofI users have NetIDs.
   #
   def netid
     return nil unless self.email.respond_to?(:split)
@@ -574,7 +544,7 @@ class User < ApplicationRecord
   # @param institution [Institution] Only set if the instance does not already
   #                                  have an institution set.
   #
-  def update_from_saml(auth, institution)
+  def update_from_omniauth_saml(auth, institution)
     auth  = auth.deep_symbolize_keys
     attrs = auth[:extra][:raw_info].attributes.deep_stringify_keys
 
@@ -593,53 +563,16 @@ class User < ApplicationRecord
     self.name = [attrs[institution.saml_first_name_attribute]&.first,
                  attrs[institution.saml_last_name_attribute]&.first].join(" ").strip
     self.name = self.email if self.name.blank?
+
+    # Only UIUC users will be expected to have these.
+    self.affiliation = Affiliation.from_omniauth(auth)
+    self.department  = Department.from_omniauth(auth)
     begin
       self.save!
     rescue => e
       @message = IdealsMailer.error_body(e,
                                          detail: "[user: #{YAML::dump(self)}]\n\n"\
                                                  "[auth hash: #{YAML::dump(auth)}]",
-                                         user:   self)
-      Rails.logger.error(@message)
-      IdealsMailer.error(@message).deliver_later unless Rails.env.development?
-    end
-  end
-
-  ##
-  # @param auth [OmniAuth::AuthHash]
-  #
-  def update_from_shibboleth(auth)
-    auth = auth.deep_stringify_keys
-    # By design, logging in overwrites certain existing user properties with
-    # current information from the Shib IdP. By supplying this custom
-    # attribute, we can preserve the user properties that are set up in test
-    # fixture data.
-    return if auth.dig("extra", "raw_info", "overwriteUserAttrs") == "false"
-
-    # N.B.: we have to be careful accessing this hash because not all providers
-    # will populate all properties.
-    self.email       = auth["info"]["email"]
-    self.name        = "#{auth.dig("extra", "raw_info", "givenName")} "\
-                       "#{auth.dig("extra", "raw_info", "sn")}"
-    self.name        = self.email if self.name.blank?
-    org_dn           = auth.dig("extra", "raw_info", "org-dn")
-    # UIS accounts will not have an org DN--eventually these users will be
-    # converted into OpenAthens/SAML users and moved into the UIS space, and we
-    # will fall back to nil here instead of UIUC.
-    unless self.institution
-      self.institution = org_dn.present? ?
-                           Institution.find_by_shibboleth_org_dn(org_dn) :
-                           Institution.find_by_key("uiuc")
-    end
-    self.affiliation = Affiliation.from_shibboleth(auth)
-    dept             = auth.dig("extra", "raw_info", "departmentCode")
-    self.department  = Department.create!(name: dept) if dept
-    begin
-      self.save!
-    rescue => e
-      @message = IdealsMailer.error_body(e,
-                                         detail: "[user: #{self.as_json}]\n\n"\
-                                                 "[auth hash: #{auth.as_json}]",
                                          user:   self)
       Rails.logger.error(@message)
       IdealsMailer.error(@message).deliver_later unless Rails.env.development?

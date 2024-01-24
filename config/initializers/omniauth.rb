@@ -43,47 +43,17 @@ SAML_SETUP_PROC = lambda do |env|
 end
 
 Rails.application.config.middleware.use OmniAuth::Builder do
+  # The developer provider is available only in development and test.
+  if Rails.env.development? || Rails.env.test?
+    provider :developer
+  end
+
   # The identity provider (for local password logins) is available in all
   # environments.
   provider :identity,
            model:                  Credential,
            fields:                 [:email, :name],
            locate_conditions:      -> (request) { { model.auth_key => request.params['auth_key']&.downcase } }
-
-  # The Shibboleth (UIUC) developer provider is available only in development
-  # and test.
-  if Rails.env.development? || Rails.env.test?
-    provider :developer
-  else
-    # The real Shibboleth provider is available in all other environments.
-    # UIUC is the only tenant that uses this, and only because it's what we
-    # knew how to do long before we added the SAML provider, but switching to
-    # the SAML provider would require updating our iTrust registrations.
-    provider :shibboleth, {
-      uid_field: "eppn",
-      # N.B.: overwriteUserAttrs is a custom property needed in testing
-      extra_fields: %w[
-        eppn
-        unscoped-affiliation
-        uid
-        sn
-        org-dn
-        nickname
-        givenName
-        member
-        iTrustAffiliation
-        departmentName
-        programCode
-        levelCode
-        overwriteUserAttrs
-      ],
-      request_type: "header",
-      info_fields: {
-        name: "displayName",
-        email: "mail"
-      }
-    }
-  end
 
   # SAML (everybody else) is available in all environments.
   # N.B.: this provider needs further setup at request time, as its properties

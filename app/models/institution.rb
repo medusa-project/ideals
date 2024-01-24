@@ -138,17 +138,6 @@
 # * `service_name`                      Name of the service that the
 #                                       institution is running. For example, at
 #                                       UIUC, this would be "IDEALS."
-# * `shibboleth_auth_enabled`           Whether Shibboleth authentication is
-#                                       enabled.
-# * `shibboleth_email_attribute`        Shibboleth email attribute.
-# * `shibboleth_extra_attributes`       Array of extra attributes to request
-#                                       from the Shibboleth IdP. This can also
-#                                       be set to a comma-separated string
-#                                       which will be transformed into an array
-#                                       upon save.
-# * `shibboleth_name_attribute`         Shibboleth name attribute.
-# * `shibboleth_org_dn`                 Value of an `eduPersonOrgDN` attribute
-#                                       from the Shibboleth IdP.
 # * `sso_federation`                    Set to one of the
 #                                       {Institution::SSOFederation} constant
 #                                       values.
@@ -248,8 +237,6 @@ class Institution < ApplicationRecord
   has_many :users
   has_many :vocabularies
 
-  serialize :shibboleth_extra_attributes, coder: JSON
-
   normalizes :copyright_notice, :google_analytics_measurement_id,
              :saml_idp_encryption_cert, :saml_idp_encryption_cert2,
              :saml_idp_signing_cert, :saml_idp_signing_cert2,
@@ -306,8 +293,6 @@ class Institution < ApplicationRecord
                :add_default_element_mappings, :add_default_element_namespaces,
                :add_default_metadata_profile, :add_default_submission_profile,
                :add_default_index_pages, :add_default_user_groups
-
-  before_save :arrayize_shibboleth_extra_attributes_csv
 
   ##
   # @param extension [String]
@@ -436,7 +421,7 @@ class Institution < ApplicationRecord
   # @return [Boolean] Whether at least one authentication method is enabled.
   #
   def auth_enabled?
-    local_auth_enabled || saml_auth_enabled || shibboleth_auth_enabled
+    local_auth_enabled || saml_auth_enabled
   end
 
   ##
@@ -732,7 +717,7 @@ class Institution < ApplicationRecord
   # @return [Boolean]
   #
   def sso_enabled?
-    saml_auth_enabled || shibboleth_auth_enabled
+    saml_auth_enabled
   end
 
   ##
@@ -1144,21 +1129,6 @@ class Institution < ApplicationRecord
                                     defines_institution: false)
     admins.save!
     self.administrator_groups.build(user_group: admins).save!
-  end
-
-  ##
-  # {shibboleth_extra_attributes} is a serialized array. This method allows us
-  # to set it to a comma-separated string (from e.g. a textarea) and have it
-  # auto-transformed into an array.
-  #
-  def arrayize_shibboleth_extra_attributes_csv
-    if self.shibboleth_extra_attributes.kind_of?(String) &&
-      self.shibboleth_extra_attributes&.include?(",") &&
-      !self.shibboleth_extra_attributes.start_with?("[") &&
-      !self.shibboleth_extra_attributes.end_with?("]")
-      self.shibboleth_extra_attributes =
-        self.shibboleth_extra_attributes.split(",").map(&:strip)
-    end
   end
 
   def disallow_key_changes

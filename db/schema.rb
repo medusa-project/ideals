@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_01_19_023719) do
+ActiveRecord::Schema[7.1].define(version: 2024_01_18_235844) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -379,7 +379,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_19_023719) do
   create_table "institutions", force: :cascade do |t|
     t.string "key", null: false
     t.string "name", null: false
-    t.string "shibboleth_org_dn"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "fqdn", null: false
@@ -429,10 +428,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_19_023719) do
     t.string "google_analytics_measurement_id"
     t.boolean "local_auth_enabled", default: true, null: false
     t.boolean "saml_auth_enabled", default: false, null: false
-    t.boolean "shibboleth_auth_enabled", default: false, null: false
-    t.string "shibboleth_email_attribute", default: "mail"
-    t.string "shibboleth_name_attribute", default: "displayName"
-    t.text "shibboleth_extra_attributes", default: "[]"
     t.text "saml_sp_public_cert"
     t.text "saml_sp_private_key"
     t.text "deposit_form_disagreement_help", default: "The selections you have made indicate that you are not ready to deposit your dataset. Our curators are available to discuss your dataset with you. Please contact us!", null: false
@@ -456,7 +451,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_19_023719) do
     t.index ["name"], name: "index_institutions_on_name", unique: true
     t.index ["outgoing_message_queue"], name: "index_institutions_on_outgoing_message_queue", unique: true
     t.index ["saml_auto_cert_rotation"], name: "index_institutions_on_saml_auto_cert_rotation"
-    t.index ["shibboleth_org_dn"], name: "index_institutions_on_shibboleth_org_dn", unique: true
   end
 
   create_table "invitees", force: :cascade do |t|

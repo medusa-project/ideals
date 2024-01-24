@@ -110,7 +110,7 @@ class UserGroup < ApplicationRecord
   # OR (has an IP address or hostname matching one of the host patterns)
   # OR (belongs to an associated department)
   # OR (is of an associated affiliation)
-  # OR (is a Shibboleth user AND belongs to an associated AD Group)
+  # OR (belongs to an associated AD Group)
   # ```
   #
   # @param user [User]

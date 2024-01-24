@@ -13,14 +13,6 @@
                               role:             "tab",
                               "aria-controls":  "saml-tab-pane",
                               "aria-selected":  "false"} SAML
-  - if @institution.key == "uiuc"
-    %li.nav-item{role: "presentation"}
-      %button#shibboleth-tab.nav-link{"data-bs-toggle": "tab",
-                                      "data-bs-target": "#shibboleth-tab-pane",
-                                      type:             "button",
-                                      role:             "tab",
-                                      "aria-controls":  "shibboleth-tab-pane",
-                                      "aria-selected":  "true"} Shibboleth
 
 .tab-content
   #local-tab-pane.tab-pane.fade.show.active{role:              "tabpanel",
@@ -238,59 +230,9 @@
                   - else
                     = boolean(false, style: :word, false_value: "NOT SET")
 
-  - if @institution.key == "uiuc"
-    #shibboleth-tab-pane.tab-pane.fade{role:              "tabpanel",
-                                       "aria-labelledby": "shibboleth-tab",
-                                       tabindex:          "0"}
-      - if policy(@institution).edit_shibboleth_authentication?
-        .btn-group.float-end{role: "group"}
-          -# Edit button
-          %button.btn.btn-light.edit-shibboleth-authentication{"data-bs-target":       "#edit-shibboleth-authentication-modal",
-                                                               "data-bs-toggle":       "modal",
-                                                               type:                   "button",
-                                                               "data-institution-key": @institution.key }
-            %i.fa.fa-pencil-alt
-            Edit
-
-      .clearfix.mb-3
-
-      %dl
-        %dt Enabled
-        %dd
-          = boolean(@institution.shibboleth_auth_enabled, style: :word)
-        %dt Organization DN
-        %dd
-          - if @institution.shibboleth_org_dn.present?
-            %code= @institution.shibboleth_org_dn
-          - else
-            = boolean(false, style: :word, false_value: "NOT SET")
-        %dt Email Attribute
-        %dd
-          - if @institution.shibboleth_email_attribute.present?
-            %code= @institution.shibboleth_email_attribute
-          - else
-            = boolean(false, style: :word, false_value: "NOT SET")
-        %dt Name Attribute
-        %dd
-          - if @institution.shibboleth_name_attribute.present?
-            %code= @institution.shibboleth_name_attribute
-          - else
-            = boolean(false, style: :word, false_value: "NOT SET")
-        %dt Extra Attributes
-        %dd
-          - if @institution.shibboleth_extra_attributes.present?
-            %ul
-              - @institution.shibboleth_extra_attributes.sort.each do |attr|
-                %li
-                  %code= attr
-          - else
-            = boolean(false, style: :word, false_value: "NONE")
-
 = render partial: "shared/xhr_modal",
          locals: { id: "edit-local-authentication-modal", title: "Edit Local Authentication" }
 = render partial: "shared/xhr_modal",
          locals: { id: "edit-saml-authentication-modal", title: "Edit SAML Authentication", size: :xl }
 = render partial: "shared/xhr_modal",
          locals: { id: "supply-saml-configuration-modal", title: "Supply SAML Configuration" }
-= render partial: "shared/xhr_modal",
-         locals: { id: "edit-shibboleth-authentication-modal", title: "Edit Shibboleth Authentication" }

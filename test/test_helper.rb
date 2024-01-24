@@ -44,9 +44,9 @@ class ActiveSupport::TestCase
 
   ##
   # @param user [User]
-  # @param provider [Symbol] `:saml`, `:shibboleth`, or `:local`. If omitted,
-  #                          and the user has an associated {Credential},
-  #                          local is assumed; otherwise :shibboleth.
+  # @param provider [Symbol] `:saml` or `:local`. If omitted, and the user has
+  #                          an associated {Credential}, local is assumed;
+  #                          otherwise saml.
   #
   def log_in_as(user, provider = nil)
     raise "User is nil" if user.nil?
@@ -55,8 +55,6 @@ class ActiveSupport::TestCase
     unless provider
       if user.credential
         provider = :local
-      elsif user.institution.key == "southeast"
-        provider = :shibboleth
       else
         provider = :saml
       end
@@ -75,29 +73,6 @@ class ActiveSupport::TestCase
               overwriteUserAttrs: "false",
               emailAddress: [user.email]
             )
-          }
-        }
-      }
-    when :shibboleth
-      # N.B. 1: See "request_type option" section for info about using
-      # omniauth-shibboleth in development:
-      # https://github.com/toyokazu/omniauth-shibboleth
-      #
-      # N.B. 2: the keys in the auth hash must be present in
-      # config/shibboleth.xml.
-      post "/auth/shibboleth/callback", env: {
-        "omniauth.auth": {
-          provider:          "shibboleth",
-          "Shib-Session-ID": SecureRandom.hex,
-          uid:               user.email,
-          info: {
-            email: user.email
-          },
-          extra: {
-            raw_info: {
-              "org-dn":           user.institution.shibboleth_org_dn,
-              overwriteUserAttrs: "false"
-            }
           }
         }
       }

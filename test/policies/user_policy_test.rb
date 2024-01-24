@@ -54,7 +54,7 @@ class UserPolicyTest < ActiveSupport::TestCase
 
   test "edit_properties?() does not authorize non-sysadmins other than the one
   being edited" do
-    user    = users(:southwest_shibboleth)
+    user    = users(:southwest_saml)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserPolicy.new(context, @object_user)
@@ -351,7 +351,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "show?() does not authorize non-sysadmins" do
-    user    = users(:southwest_shibboleth)
+    user    = users(:southwest_saml)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserPolicy.new(context, @object_user)
@@ -404,7 +404,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_credentials?() does not authorize non-sysadmins" do
-    user    = users(:southwest_shibboleth)
+    user    = users(:southwest_saml)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserPolicy.new(context, @object_user)
@@ -439,7 +439,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_logins?() does not authorize non-sysadmins" do
-    user    = users(:southwest_shibboleth)
+    user    = users(:southwest_saml)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserPolicy.new(context, @object_user)
@@ -474,7 +474,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_properties?() does not authorize non-sysadmins" do
-    user    = users(:southwest_shibboleth)
+    user    = users(:southwest_saml)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserPolicy.new(context, @object_user)
@@ -509,7 +509,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_submittable_collections?() does not authorize non-sysadmins" do
-    user    = users(:southwest_shibboleth)
+    user    = users(:southwest_saml)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserPolicy.new(context, @object_user)
@@ -544,7 +544,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_submitted_items?() does not authorize non-sysadmins" do
-    user    = users(:southwest_shibboleth)
+    user    = users(:southwest_saml)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserPolicy.new(context, @object_user)
@@ -579,7 +579,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "show_submissions_in_progress?() does not authorize non-sysadmins" do
-    user    = users(:southwest_shibboleth)
+    user    = users(:southwest_saml)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserPolicy.new(context, @object_user)
@@ -614,7 +614,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "submitted_item_results?() does not authorize non-sysadmins" do
-    user    = users(:southwest_shibboleth)
+    user    = users(:southwest_saml)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserPolicy.new(context, @object_user)
@@ -649,7 +649,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "update_properties?() does not authorize non-sysadmins" do
-    user    = users(:southwest_shibboleth)
+    user    = users(:southwest_saml)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserPolicy.new(context, @object_user)
@@ -712,7 +712,7 @@ class UserPolicyTest < ActiveSupport::TestCase
   end
 
   test "update_submittable_collections?() does not authorize non-sysadmins" do
-    user    = users(:southwest_shibboleth)
+    user    = users(:southwest_saml)
     context = RequestContext.new(user:        user,
                                  institution: user.institution)
     policy  = UserPolicy.new(context, @object_user)

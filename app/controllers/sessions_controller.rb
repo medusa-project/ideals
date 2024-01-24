@@ -18,19 +18,6 @@ class SessionsController < ApplicationController
   end
 
   ##
-  # Redirects to the Shibboleth login flow. Responds to
-  # `GET/POST /netid-login`.
-  #
-  def new_netid
-    if Rails.env.development? || Rails.env.test?
-      redirect_to "/auth/developer"
-    else
-      target = "https://#{current_institution.fqdn}/auth/shibboleth/callback"
-      redirect_to "/Shibboleth.sso/Login?target=#{target}"
-    end
-  end
-
-  ##
   # Handles callbacks from the auth provider (OmniAuth). Responsible for
   # translating an authentication hash into a {User}, assigning the user to
   # an {Institution}, and setting the user's ID in the session.

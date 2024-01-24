@@ -49,8 +49,6 @@ southeast:
   fqdn:                           southeast.edu
   name:                           Southeast University
   service_name:                   Southeast IR
-  shibboleth_org_dn:              o=Southeast University,dc=southeast,dc=edu
-  shibboleth_extra_attributes:    "<%= JSON.generate(%w(eppn unscoped-affiliation uid sn org-dn givenName member iTrustAffiliation departmentName programCode levelCode overwriteUserAttrs)).gsub('"', '\"') %>"
   main_website_url:               https://southeast.edu
   feedback_email:                 feedback@southeast.edu
   outgoing_message_queue:         southeast_to_nowhere
