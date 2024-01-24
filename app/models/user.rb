@@ -551,7 +551,7 @@ class User < ApplicationRecord
     # By design, logging in overwrites certain existing user properties with
     # current information from the IdP. By supplying this custom attribute,
     # we can preserve the user properties that are set up in test fixture data.
-    return if attrs[:overwriteUserAttrs] == "false"
+    return if attrs['overwriteUserAttrs'] == "false"
 
     self.institution ||= institution
     case institution.saml_email_location
@@ -565,8 +565,8 @@ class User < ApplicationRecord
     self.name = self.email if self.name.blank?
 
     # Only UIUC users will be expected to have these.
-    self.affiliation = Affiliation.from_omniauth(auth)
-    self.department  = Department.from_omniauth(auth)
+    self.affiliation = Affiliation.from_omniauth(attrs)
+    self.department  = Department.from_omniauth(attrs)
     begin
       self.save!
     rescue => e

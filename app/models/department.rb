@@ -22,9 +22,12 @@ class Department < ApplicationRecord
 
   normalizes :name, with: -> (value) { value.squish }
 
-  def self.from_omniauth(auth)
-    auth = auth.deep_stringify_keys
-    name = auth.dig("extra", "raw_info", ITRUST_DEPARTMENT_CODE_ATTRIBUTE)
+  ##
+  # @param attrs [OneLogin::RubySaml::Attributes]
+  # @return [Department]
+  #
+  def self.from_omniauth(attrs)
+    name = attrs.multi(ITRUST_DEPARTMENT_CODE_ATTRIBUTE)
     Department.new(name: name)
   end
 
