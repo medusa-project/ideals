@@ -27,7 +27,7 @@ class Department < ApplicationRecord
   # @return [Department]
   #
   def self.from_omniauth(attrs)
-    name = attrs.multi(ITRUST_DEPARTMENT_CODE_ATTRIBUTE)
+    name = attrs[ITRUST_DEPARTMENT_CODE_ATTRIBUTE]
     Department.new(name: name)
   end
 

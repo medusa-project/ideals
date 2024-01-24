@@ -34,18 +34,18 @@ class Affiliation < ApplicationRecord
     if info # this will be nil when using the OmniAuth developer strategy
       # Explanation of this logic:
       # https://uofi.app.box.com/notes/801448983786?s=5k6iiozlhp5mui5b4vrbskn3pu968j8r
-      if info.multi(ITRUST_AFFILIATION_ATTRIBUTE).include?("staff") ||
-          info.multi(ITRUST_AFFILIATION_ATTRIBUTE).include?("allied")
+      if info[ITRUST_AFFILIATION_ATTRIBUTE].include?("staff") ||
+          info[ITRUST_AFFILIATION_ATTRIBUTE].include?("allied")
         key = FACULTY_STAFF_KEY
-      elsif info.multi(ITRUST_AFFILIATION_ATTRIBUTE).include?("student")
-        if %w(1G 1V 1M 1L).include?(info.multi(ITRUST_LEVEL_CODE_ATTRIBUTE))
+      elsif info[ITRUST_AFFILIATION_ATTRIBUTE].include?("student")
+        if %w(1G 1V 1M 1L).include?(info[ITRUST_LEVEL_CODE_ATTRIBUTE])
           key = GRADUATE_STUDENT_KEY
-        elsif info.multi(ITRUST_LEVEL_CODE_ATTRIBUTE) == "1U"
+        elsif info[ITRUST_LEVEL_CODE_ATTRIBUTE] == "1U"
           key = UNDERGRADUATE_STUDENT_KEY
         end
-        if %w(PHD CAS).include?(info.multi(ITRUST_PROGRAM_CODE_ATTRIBUTE).upcase)
+        if %w(PHD CAS).include?(info[ITRUST_PROGRAM_CODE_ATTRIBUTE].upcase)
           key = PHD_STUDENT_KEY
-        elsif info.multi(ITRUST_PROGRAM_CODE_ATTRIBUTE).present?
+        elsif info[ITRUST_PROGRAM_CODE_ATTRIBUTE].present?
           key = MASTERS_STUDENT_KEY
         end
       end

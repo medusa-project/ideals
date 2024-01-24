@@ -10,7 +10,7 @@ class DepartmentTest < ActiveSupport::TestCase
 
   test "from_omniauth() returns a correct instance" do
     attrs = OneLogin::RubySaml::Attributes.new({
-      Department::ITRUST_DEPARTMENT_CODE_ATTRIBUTE => "bugs"
+      Department::ITRUST_DEPARTMENT_CODE_ATTRIBUTE => ["bugs"]
     })
     dept = Department.from_omniauth(attrs)
     assert_equal "bugs", dept.name
