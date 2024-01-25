@@ -128,9 +128,9 @@ class IndexPagesController < ApplicationController
         pluck(:string)
       @current_page     = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
       # This may give us a little performance boost
-      @starting_letters = Rails.cache.fetch("index_page_#{@index_page.id} starting_letters",
+      @starting_chars = Rails.cache.fetch("index_page_#{@index_page.id} starting_chars",
                                             expires_in: 1.hour) do
-        starting_letters(reg_e_ids)
+        starting_chars(reg_e_ids)
       end
     else
       @count          = 0
