@@ -2,6 +2,11 @@ require 'test_helper'
 
 class AffiliationTest < ActiveSupport::TestCase
 
+  test "from_omniauth() returns nil if the argument is empty" do
+    attrs = OneLogin::RubySaml::Attributes.new
+    assert_nil Affiliation.from_omniauth(attrs)
+  end
+
   test "from_omniauth() returns a correct instance for a UIUC undergraduate
   student" do
     attrs = OneLogin::RubySaml::Attributes.new({

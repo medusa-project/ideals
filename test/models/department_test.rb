@@ -8,6 +8,11 @@ class DepartmentTest < ActiveSupport::TestCase
 
   # from_omniauth()
 
+  test "from_omniauth() returns nil if the argument is empty" do
+    attrs = OneLogin::RubySaml::Attributes.new
+    assert_nil Department.from_omniauth(attrs)
+  end
+
   test "from_omniauth() returns nil if the given attributes do not contain a
   department name" do
     attrs = OneLogin::RubySaml::Attributes.new({

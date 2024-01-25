@@ -26,26 +26,28 @@ class Affiliation < ApplicationRecord
   ITRUST_PROGRAM_CODE_ATTRIBUTE = "urn:oid:1.3.6.1.4.1.11483.1.40"
 
   ##
-  # @param info [OneLogin::RubySaml::Attributes]
+  # @param attrs [OneLogin::RubySaml::Attributes]
   # @return [Affiliation]
   #
-  def self.from_omniauth(info)
+  def self.from_omniauth(attrs)
     key = nil
-    if info # this will be nil when using the OmniAuth developer strategy
+    if attrs # this will be nil when using the OmniAuth developer strategy
       # Explanation of this logic:
       # https://uofi.app.box.com/notes/801448983786?s=5k6iiozlhp5mui5b4vrbskn3pu968j8r
-      if info[ITRUST_AFFILIATION_ATTRIBUTE].include?("staff") ||
-          info[ITRUST_AFFILIATION_ATTRIBUTE].include?("allied")
+      affiliation_attr  = attrs[ITRUST_AFFILIATION_ATTRIBUTE] || ""
+      level_code_attr   = attrs[ITRUST_LEVEL_CODE_ATTRIBUTE] || ""
+      program_code_attr = attrs[ITRUST_PROGRAM_CODE_ATTRIBUTE] || ""
+      if affiliation_attr.include?("staff") || affiliation_attr.include?("allied")
         key = FACULTY_STAFF_KEY
-      elsif info[ITRUST_AFFILIATION_ATTRIBUTE].include?("student")
-        if %w(1G 1V 1M 1L).include?(info[ITRUST_LEVEL_CODE_ATTRIBUTE])
+      elsif affiliation_attr.include?("student")
+        if %w(1G 1V 1M 1L).include?(level_code_attr)
           key = GRADUATE_STUDENT_KEY
-        elsif info[ITRUST_LEVEL_CODE_ATTRIBUTE] == "1U"
+        elsif level_code_attr == "1U"
           key = UNDERGRADUATE_STUDENT_KEY
         end
-        if %w(PHD CAS).include?(info[ITRUST_PROGRAM_CODE_ATTRIBUTE].upcase)
+        if %w(PHD CAS).include?(program_code_attr.upcase)
           key = PHD_STUDENT_KEY
-        elsif info[ITRUST_PROGRAM_CODE_ATTRIBUTE].present?
+        elsif program_code_attr.present?
           key = MASTERS_STUDENT_KEY
         end
       end
