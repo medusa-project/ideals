@@ -25,11 +25,12 @@ class CredentialsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to @credential.user.institution.scope_url
   end
 
-  test "create() returns HTTP 403 for unauthorized users" do
-    user = users(:southwest_sysadmin)
-    user.credential.destroy!
+  test "create() returns reload JavaScript for unauthorized users" do
+    user = users(:southwest)
+    user2 = users(:northeast)
+    user2.credential.destroy!
     log_in_as(user)
-    post user_credentials_path(user),
+    post user_credentials_path(user2),
          xhr: true,
          params: {
            credential: {
@@ -37,7 +38,7 @@ class CredentialsControllerTest < ActionDispatch::IntegrationTest
              password_confirmation: "MyNewPassword123!"
            }
          }
-    assert_response :forbidden
+    assert response.body.include?("window.location.reload()")
   end
 
   test "create() returns HTTP 200" do

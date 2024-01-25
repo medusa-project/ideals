@@ -35,6 +35,9 @@ class CredentialsController < ApplicationController
                                 password_confirmation: credential_password_params[:password_confirmation])
     authorize(credential)
     credential.save!
+  rescue NotAuthorizedError => e
+    flash['error'] = "#{e}"
+    render "shared/reload"
   rescue => e
     render partial: "shared/validation_messages",
            locals:  { object: credential&.errors&.any? ? credential : e },
