@@ -546,7 +546,11 @@ class User < ApplicationRecord
   #
   def update_from_omniauth_saml(auth, institution)
     auth  = auth.deep_symbolize_keys
-    attrs = auth[:extra][:raw_info].attributes.deep_stringify_keys
+    # raw_info will be nil when using the developer strategy
+    attrs = {}
+    if auth[:extra] && auth[:extra][:raw_info]
+      attrs = auth[:extra][:raw_info].attributes.deep_stringify_keys
+    end
 
     # By design, logging in overwrites certain existing user properties with
     # current information from the IdP. By supplying this custom attribute,

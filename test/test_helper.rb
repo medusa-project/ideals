@@ -44,44 +44,16 @@ class ActiveSupport::TestCase
 
   ##
   # @param user [User]
-  # @param provider [Symbol] `:saml` or `:local`. If omitted, and the user has
-  #                          an associated {Credential}, local is assumed;
-  #                          otherwise saml.
   #
-  def log_in_as(user, provider = nil)
+  def log_in_as(user)
     raise "User is nil" if user.nil?
     raise "User is disabled" unless user.enabled
     raise "User is not persisted" unless user.persisted?
-    unless provider
-      if user.credential
-        provider = :local
-      else
-        provider = :saml
-      end
-    end
-    case provider
-    when :saml
-      post "/auth/saml/callback", env: {
-        "omniauth.auth": {
-          provider:          "saml",
-          uid:               user.email,
-          info: {
-            email: user.email
-          },
-          extra: {
-            raw_info: OneLogin::RubySaml::Attributes.new(
-              overwriteUserAttrs: "false",
-              emailAddress: [user.email]
-            )
-          }
-        }
-      }
-    else
-      post "/auth/identity/callback", params: {
-        auth_key: user.email,
-        password: "password"
-      }
-    end
+
+    post "/auth/developer/callback", params: {
+      name:  user.email,
+      email: user.email
+    }
   end
 
   def log_out
