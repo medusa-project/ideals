@@ -36,7 +36,7 @@
                         permitted_params: @permitted_params, |
                         max_links:        9) |
 
-- if @starting_letters.any?
+- if @starting_chars.any?
   %ul.nav.nav-tabs{role: "tablist"}
     %li.nav-item
       %button#browse-tab.nav-link{"data-bs-toggle": "tab",
@@ -64,7 +64,7 @@
           %ul.nav.nav-pills.justify-content-md-center.mb-0
             %li.nav-item
               = link_to("All", @index_page, class: "nav-link #{(params[:letter].blank? && params[:q].blank?) ? "active" : ""}")
-            - @starting_letters.each do |row|
+            - @starting_chars.each do |row|
               %li.nav-item
                 = link_to(row['alpha'], index_page_path(@index_page, letter: row['alpha']),
                           class: "nav-link #{params[:letter]&.upcase == row['alpha'] ? "active" : ""}")
