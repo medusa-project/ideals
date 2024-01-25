@@ -133,10 +133,10 @@ class IndexPagesController < ApplicationController
         starting_letters(reg_e_ids)
       end
     else
-      @count            = 0
-      @current_page     = 1
-      @terms            = []
-      @starting_letters = []
+      @count          = 0
+      @current_page   = 1
+      @terms          = []
+      @starting_chars = []
     end
     @breadcrumbable   = @index_page
   end
@@ -180,20 +180,25 @@ class IndexPagesController < ApplicationController
     end
   end
 
-  def starting_letters(reg_e_ids)
+  def starting_chars(reg_e_ids)
     # This query doesn't take embargoes into account because doing so would
     # make it a lot slower. We assume that there are so few embargoed items
-    # with distinct starting letters that it's hardly ever going to matter.
-    sql = "SELECT DISTINCT(UNACCENT(UPPER(SUBSTR(string, 1, 1)))) AS alpha, COUNT(ae.id)
-    FROM ascribed_elements ae
-    INNER JOIN items i ON i.id = ae.item_id
-    WHERE i.institution_id = #{current_institution.id}
-      AND i.stage = #{Item::Stages::APPROVED}
-      AND ae.registered_element_id IN (#{reg_e_ids.join(",")})
-    GROUP BY alpha
-    ORDER BY alpha;"
-    results = ActiveRecord::Base.connection.execute(sql)
-    results.select{ |row| row['count'] > 0 }
+    # with distinct starting characters that it will practically never matter.
+    sql = "SELECT alpha, count
+    FROM (
+      SELECT DISTINCT(UNACCENT(UPPER(SUBSTR(string, 1, 1)))) AS alpha,
+        COUNT(ae.id) AS count
+      FROM ascribed_elements ae
+      INNER JOIN items i ON i.id = ae.item_id
+      WHERE i.institution_id = $1
+        AND i.stage = $2
+        AND ae.registered_element_id IN (#{reg_e_ids.join(",")})
+      GROUP BY alpha
+    ) t
+    WHERE count > 0
+    ORDER BY (alpha ~ '\\d')::int, alpha;"
+    values = [current_institution.id, Item::Stages::APPROVED]
+    ActiveRecord::Base.connection.exec_query(sql, "SQL", values)
   end
 
 end
