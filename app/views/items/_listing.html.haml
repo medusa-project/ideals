@@ -1,9 +1,9 @@
 - show_embargoed_normally = defined?(show_embargoed_normally) ? show_embargoed_normally : false
 
-- pagination = paginate(count:            @count, |
-                        page:             @current_page, |
-                        per_page:         @window, |
-                        permitted_params: @permitted_params) |
+- pagination = paginate(actual_count:     @count,
+                        page:             @current_page,
+                        per_page:         @window,
+                        permitted_params: @permitted_params)
 
 .card.mb-3
   #search-status.card-body.pt-3.pb-3

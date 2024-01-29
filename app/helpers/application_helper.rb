@@ -613,20 +613,19 @@ module ApplicationHelper
   end
 
   ##
-  # @param count [Integer] Total number of results. Note that this will be
-  #              limited internally to {OpenSearchIndex::MAX_RESULT_WINDOW}
-  #              to avoid overwhelming the search server.
+  # @param actual_count [Integer] Total number of results.
   # @param page [Integer]
   # @param per_page [Integer]
   # @param permitted_params [ActionController::Parameters]
   # @param max_links [Integer]
   #
-  def paginate(count:,
+  def paginate(actual_count:,
+               visible_count:    OpenSearchIndex::MAX_RESULT_WINDOW,
                page:,
                per_page:,
                permitted_params:,
-               max_links: MAX_PAGINATION_LINKS)
-    count = [count, OpenSearchIndex::MAX_RESULT_WINDOW].min
+               max_links:        MAX_PAGINATION_LINKS)
+    count      = [actual_count, visible_count].min
     return '' if count <= per_page
     num_pages  = (count / per_page.to_f).ceil
     first_page = [1, page - (max_links / 2.0).floor].max
