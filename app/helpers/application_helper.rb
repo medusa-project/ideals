@@ -714,21 +714,21 @@ module ApplicationHelper
   #                             primary.
   # @param use_resource_host [Boolean]
   # @param show_institution [Boolean]
-  # @param show_embargoed_normally [Boolean]
+  # @param show_private_normally [Boolean]
   # @return [String] HTML listing.
   #
   def resource_list(resources,
-                    primary_id:              nil,
-                    use_resource_host:       true,
-                    show_institution:        false,
-                    show_embargoed_normally: false) # TODO: split this into separate implementations for items & collections/units
+                    primary_id:            nil,
+                    use_resource_host:     true,
+                    show_institution:      false,
+                    show_private_normally: false) # TODO: split this into separate implementations for items & collections/units
     html = StringIO.new
     resources.each do |resource|
       html << resource_list_row(resource,
-                                primary:                 (primary_id == resource.id),
-                                use_resource_host:       use_resource_host,
-                                show_institution:        show_institution,
-                                show_embargoed_normally: show_embargoed_normally)
+                                primary:               (primary_id == resource.id),
+                                use_resource_host:     use_resource_host,
+                                show_institution:      show_institution,
+                                show_private_normally: show_private_normally)
     end
     raw(html.string)
   end
@@ -738,16 +738,16 @@ module ApplicationHelper
   # @param primary [Boolean] Whether to mark the resource as primary.
   # @param use_resource_host [Boolean]
   # @param show_institution [Boolean]
-  # @param show_embargoed_normally [Boolean]
+  # @param show_private_normally [Boolean]
   # @return [String] HTML string.
   # @private
   #
   def resource_list_row(resource,
-                        primary:                 false,
-                        use_resource_host:       true,
-                        show_institution:        false,
-                        show_embargoed_normally: false)
-    embargoed_item = !show_embargoed_normally &&
+                        primary:               false,
+                        use_resource_host:     true,
+                        show_institution:      false,
+                        show_private_normally: false)
+    embargoed_item = !show_private_normally &&
       resource.kind_of?(Item) &&
       resource.embargoed_for?(user:            current_user,
                               client_hostname: request_context.client_hostname,

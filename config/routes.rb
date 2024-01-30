@@ -141,8 +141,6 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/elements", to: "institutions#show_element_registry", via: :get,
           constraints: lambda { |request| request.xhr? }
-    match "/embargoed-items", to: "institutions#show_embargoed_items", via: :get,
-          constraints: lambda { |request| request.xhr? }
     match "/imports", to: "institutions#show_imports", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/index-pages", to: "institutions#show_index_pages", via: :get,
@@ -154,6 +152,8 @@ Rails.application.routes.draw do
     match "/prebuilt-searches", to: "institutions#show_prebuilt_searches", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/preservation", to: "institutions#show_preservation", via: :get,
+          constraints: lambda { |request| request.xhr? }
+    match "/private-items", to: "institutions#show_private_items", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/properties", to: "institutions#show_properties", via: :get,
           constraints: lambda { |request| request.xhr? }

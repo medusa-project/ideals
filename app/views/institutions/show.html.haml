@@ -25,13 +25,13 @@
 - show_element_mappings        = policy(@institution).show_element_mappings?
 - show_element_namespaces      = policy(@institution).show_element_namespaces?
 - show_element_registry        = policy(@institution).show_element_registry?
-- show_embargoed_items         = policy(@institution).show_embargoed_items?
 - show_imports                 = policy(@institution).show_imports?
 - show_index_pages             = policy(@institution).show_index_pages?
 - show_invitees                = policy(@institution).show_invitees?
 - show_metadata_profiles       = policy(@institution).show_metadata_profiles?
 - show_prebuilt_searches       = policy(@institution).show_prebuilt_searches?
 - show_preservation            = policy(@institution).show_preservation?
+- show_private_items           = policy(@institution).show_private_items?
 - show_properties              = policy(@institution).show_properties?
 - show_review_submissions      = policy(@institution).show_review_submissions?
 - show_settings                = policy(@institution).show_settings?
@@ -128,17 +128,17 @@
         Submissions in Progress
         - if @submissions_in_progress_count > 0
           %span.badge.rounded-pill.text-bg-primary= @submissions_in_progress_count
-    - if show_embargoed_items
-      %button#embargoed-items-tab.nav-link{"data-bs-target": "#embargoed-items-tab-content",
-                                           "data-bs-toggle": "pill",
-                                           role:             "tab",
-                                           type:             "button",
-                                           "aria-controls":  "embargoed-items-tab-content",
-                                           "aria-selected":  "false"}
+    - if show_private_items
+      %button#private-items-tab.nav-link{"data-bs-target": "#private-items-tab-content",
+                                         "data-bs-toggle": "pill",
+                                         role:             "tab",
+                                         type:             "button",
+                                         "aria-controls":  "private-items-tab-content",
+                                         "aria-selected":  "false"}
         = icon_for(Embargo)
-        Embargoed Items
-        - if @embargoed_items_count > 0
-          %span.badge.rounded-pill.text-bg-primary= @embargoed_items_count
+        Private Items
+        - if @private_items_count > 0
+          %span.badge.rounded-pill.text-bg-primary= @private_items_count
     - if show_withdrawn_items
       %button#withdrawn-items-tab.nav-link{"data-bs-target": "#withdrawn-items-tab-content",
                                            "data-bs-toggle": "pill",
@@ -330,9 +330,9 @@
                                                "aria-labelledby": "deleted-items-tab"}
         = spinner
 
-    - if show_embargoed_items
-      #embargoed-items-tab-content.tab-pane.fade{role:              "tabpanel",
-                                                 "aria-labelledby": "embargoed-items-tab"}
+    - if show_private_items
+      #private-items-tab-content.tab-pane.fade{role:              "tabpanel",
+                                               "aria-labelledby": "private-items-tab"}
         = spinner
 
     - if show_element_mappings
