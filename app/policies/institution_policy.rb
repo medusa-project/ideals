@@ -152,10 +152,6 @@ class InstitutionPolicy < ApplicationPolicy
     show_metadata_profiles
   end
 
-  def show_embargoed_items
-    show
-  end
-
   def show_imports
     show_metadata_profiles
   end
@@ -178,6 +174,10 @@ class InstitutionPolicy < ApplicationPolicy
 
   def show_preservation
     effective_sysadmin(@user, @role_limit)
+  end
+
+  def show_private_items
+    show
   end
 
   def show_properties

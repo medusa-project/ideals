@@ -1,9 +1,9 @@
-- show_embargoed_normally = defined?(show_embargoed_normally) ? show_embargoed_normally : false
+- show_private_normally = defined?(show_private_normally) ? show_private_normally : false
 
-- pagination = paginate(count:            @count, |
-                        page:             @current_page, |
-                        per_page:         @window, |
-                        permitted_params: @permitted_params) |
+- pagination = paginate(actual_count:     @count,
+                        page:             @current_page,
+                        per_page:         @window,
+                        permitted_params: @permitted_params)
 
 .card.mb-3
   #search-status.card-body.pt-3.pb-3
@@ -14,9 +14,9 @@
     = pagination
 
 = resource_list(@items,
-                use_resource_host:       false,
-                show_institution:        !institution_host?,
-                show_embargoed_normally: show_embargoed_normally)
+                use_resource_host:     false,
+                show_institution:      !institution_host?,
+                show_private_normally: show_private_normally)
 
 .row.justify-content-md-center
   .col-md-auto

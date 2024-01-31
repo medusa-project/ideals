@@ -92,40 +92,12 @@ class IndexPagesController < ApplicationController
   #
   def show
     @permitted_params = params.permit(:letter, :q, :start)
-    @start            = [@permitted_params[:start].to_i.abs, max_start].min
+    @start            = @permitted_params[:start].to_i.abs
     @window           = 50
     reg_e_ids         = @index_page.registered_element_ids
     if reg_e_ids.any?
-      # This query includes terms from embargoed items because taking those
-      # into account would greatly slow it down. We assume that there
-      # are few enough embargoed items that it isn't going to matter much.
-      @terms            = AscribedElement.
-        select(:string).
-        distinct.
-        joins(:item).
-        where("items.institution_id": current_institution.id,
-              "items.stage":          Item::Stages::APPROVED,
-              registered_element_id:  reg_e_ids).
-        order(:string)
-      # N.B.: attackers are known to attempt SQL injections here, which will
-      # cause a flood of ArgumentError emails unless we rescue.
-      begin
-        if params[:letter]
-          @terms = @terms.where("UNACCENT(LOWER(string)) LIKE ?", "#{params[:letter].downcase}%")
-        elsif params[:q]
-          @terms = @terms.where("UNACCENT(LOWER(string)) LIKE ?", "%#{params[:q].downcase}%")
-        end
-      rescue ArgumentError => e
-        if e.message.include?("string contains null byte")
-          raise ActionDispatch::Http::Parameters::ParseError
-        else
-          raise e
-        end
-      end
-      @count            = @terms.count
-      @terms            = @terms.offset(@start).
-        limit(@window).
-        pluck(:string)
+      @count            = term_count(reg_e_ids)
+      @terms            = terms(reg_e_ids, @start, @window)
       @current_page     = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
       # This may give us a little performance boost
       @starting_chars = Rails.cache.fetch("index_page_#{@index_page.id} starting_chars",
@@ -138,7 +110,7 @@ class IndexPagesController < ApplicationController
       @terms          = []
       @starting_chars = []
     end
-    @breadcrumbable   = @index_page
+    @breadcrumbable = @index_page
   end
 
   ##
@@ -199,6 +171,74 @@ class IndexPagesController < ApplicationController
     ORDER BY (alpha ~ '\\d')::int, alpha;"
     values = [current_institution.id, Item::Stages::APPROVED]
     ActiveRecord::Base.connection.exec_query(sql, "SQL", values)
+  end
+
+  def term_count(reg_e_ids)
+    values = [current_institution.id, Item::Stages::APPROVED]
+    # This query includes terms from embargoed items because taking those
+    # into account would greatly slow it down. We assume that there
+    # are few enough embargoed items that it isn't going to matter much.
+    sql = "SELECT COUNT(DISTINCT(string)) AS count
+          FROM ascribed_elements ae
+          INNER JOIN items i ON i.id = ae.item_id
+          WHERE i.institution_id = $1
+            AND i.stage = $2
+            AND ae.registered_element_id IN (#{reg_e_ids.join(",")}) "
+    # N.B.: attackers are known to attempt SQL injections here, which will
+    # cause a flood of ArgumentError emails unless we rescue.
+    begin
+      if params[:letter]
+        sql += "AND UNACCENT(LOWER(string)) LIKE $3 "
+        values << "#{params[:letter].downcase}%"
+      elsif params[:q]
+        sql += "AND UNACCENT(LOWER(string)) LIKE $3 "
+        values << "%#{params[:q].downcase}%"
+      end
+    rescue ArgumentError => e
+      if e.message.include?("string contains null byte")
+        raise ActionDispatch::Http::Parameters::ParseError
+      else
+        raise e
+      end
+    end
+    ActiveRecord::Base.connection.exec_query(sql, "SQL", values)[0]['count']
+  end
+
+  def terms(reg_e_ids, start, window)
+    values = [current_institution.id, Item::Stages::APPROVED]
+    # This query includes terms from embargoed items because taking those
+    # into account would greatly slow it down. We assume that there
+    # are few enough embargoed items that it isn't going to matter much.
+    sql = "SELECT string
+            FROM (
+              SELECT DISTINCT(string) AS string
+              FROM ascribed_elements ae
+              INNER JOIN items i ON i.id = ae.item_id
+              WHERE i.institution_id = $1
+                AND i.stage = $2
+                AND ae.registered_element_id IN (#{reg_e_ids.join(",")}) "
+    # N.B.: attackers are known to attempt SQL injections here, which will
+    # cause a flood of ArgumentError emails unless we rescue.
+    begin
+      if params[:letter]
+        sql += "AND UNACCENT(LOWER(string)) LIKE $3 "
+        values << "#{params[:letter].downcase}%"
+      elsif params[:q]
+        sql += "AND UNACCENT(LOWER(string)) LIKE $3 "
+        values << "%#{params[:q].downcase}%"
+      end
+    rescue ArgumentError => e
+      if e.message.include?("string contains null byte")
+        raise ActionDispatch::Http::Parameters::ParseError
+      else
+        raise e
+      end
+    end
+    sql += ") t
+            ORDER BY (string ~ '\\d')::int, string
+            OFFSET #{start}
+            LIMIT #{window};"
+    ActiveRecord::Base.connection.exec_query(sql, "SQL", values).map{ |r| r['string'] }
   end
 
 end

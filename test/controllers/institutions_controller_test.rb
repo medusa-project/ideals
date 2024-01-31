@@ -1068,31 +1068,6 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
-  # show_embargoed_items()
-
-  test "show_embargoed_items() returns HTTP 404 for unscoped requests" do
-    host! ::Configuration.instance.main_host
-    get institution_embargoed_items_path(@institution), xhr: true
-    assert_response :not_found
-  end
-
-  test "show_embargoed_items() returns HTTP 403 for logged-out users" do
-    get institution_embargoed_items_path(@institution), xhr: true
-    assert_response :forbidden
-  end
-
-  test "show_embargoed_items() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:southwest))
-    get institution_embargoed_items_path(@institution), xhr: true
-    assert_response :forbidden
-  end
-
-  test "show_embargoed_items() returns HTTP 200 for authorized users" do
-    log_in_as(users(:southwest_admin))
-    get institution_embargoed_items_path(@institution), xhr: true
-    assert_response :ok
-  end
-
   # show_imports()
 
   test "show_imports() returns HTTP 404 for unscoped requests" do
@@ -1240,6 +1215,31 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   test "show_preservation() returns HTTP 200 for authorized users" do
     log_in_as(users(:southwest_sysadmin))
     get institution_preservation_path(@institution), xhr: true
+    assert_response :ok
+  end
+
+  # show_private_items()
+
+  test "show_private_items() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_private_items_path(@institution), xhr: true
+    assert_response :not_found
+  end
+
+  test "show_private_items() returns HTTP 403 for logged-out users" do
+    get institution_private_items_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_private_items() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    get institution_private_items_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_private_items() returns HTTP 200 for authorized users" do
+    log_in_as(users(:southwest_admin))
+    get institution_private_items_path(@institution), xhr: true
     assert_response :ok
   end
 

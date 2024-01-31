@@ -30,11 +30,12 @@
 %h1
   = @index_page.name
 
-- pagination = paginate(count:            @count, |
-                        page:             @current_page, |
-                        per_page:         @window, |
-                        permitted_params: @permitted_params, |
-                        max_links:        9) |
+- pagination = paginate(actual_count:     @count,
+                        visible_count:    @count,
+                        page:             @current_page,
+                        per_page:         @window,
+                        permitted_params: @permitted_params,
+                        max_links:        9)
 
 - if @starting_chars.any?
   %ul.nav.nav-tabs{role: "tablist"}

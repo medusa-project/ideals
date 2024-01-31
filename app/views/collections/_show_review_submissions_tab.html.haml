@@ -1,7 +1,7 @@
 - if @review_count > 0
-  - pagination = paginate(count: @review_count,
-                          page: @review_current_page,
-                          per_page: @review_window,
+  - pagination = paginate(actual_count:     @review_count,
+                          page:             @review_current_page,
+                          per_page:         @review_window,
                           permitted_params: @review_permitted_params)
 
   .btn-group.float-end{role: "group"}

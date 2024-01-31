@@ -259,10 +259,10 @@ const InstitutionView = {
             });
         });
 
-        $("#embargoed-items-tab").on("show.bs.tab", function () {
-            const url = ROOT_URL + "/institutions/" + institutionKey + "/embargoed-items";
+        $("#private-items-tab").on("show.bs.tab", function () {
+            const url = ROOT_URL + "/institutions/" + institutionKey + "/private-items";
             $.get(url, function (data) {
-                $("#embargoed-items-tab-content").html(data);
+                $("#private-items-tab-content").html(data);
 
                 const attachResultsEventListeners = function() {
                     $(".page-link").on("click", function(e) {
@@ -273,10 +273,10 @@ const InstitutionView = {
                 attachResultsEventListeners();
 
                 const refreshResults = function(url) {
-                    const container = $("#embargoed-items-tab-content");
+                    const container = $("#private-items-tab-content");
                     container.html(IDEALS.UIUtils.Spinner());
                     if (!url) {
-                        url = ROOT_URL + "/institutions/" + institutionKey + "/embargoed-items";
+                        url = ROOT_URL + "/institutions/" + institutionKey + "/private-items";
                     }
                     $.ajax({
                         method:  "GET",
