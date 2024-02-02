@@ -1086,7 +1086,7 @@ class InstitutionTest < ActiveSupport::TestCase
 
     assert_equal "https://southwest.edu/entity",
                  @instance.saml_idp_entity_id
-    assert_equal "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST",
+    assert_equal "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
                  @instance.saml_idp_sso_binding_urn
     assert_equal "https://login.openathens.net/saml/2/POST/sso/southwest.edu",
                  @instance.saml_idp_sso_post_service_url
@@ -1114,7 +1114,7 @@ class InstitutionTest < ActiveSupport::TestCase
 
     @instance.update_from_saml_metadata(xml_file)
 
-    assert_equal "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST",
+    assert_equal "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
                  @instance.saml_idp_sso_binding_urn
     assert_equal "https://login.openathens.net/saml/2/POST/sso/southwest.edu",
                  @instance.saml_idp_sso_post_service_url
