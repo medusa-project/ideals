@@ -13,6 +13,16 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
   # create()
 
+  test "create() via GET with an invalid strategy returns HTTP 404" do
+    get "/auth/bogus/callback"
+    assert_response :not_found
+  end
+
+  test "create() via POST with an invalid strategy returns HTTP 404" do
+    post "/auth/bogus/callback"
+    assert_response :not_found
+  end
+
   test "create() with identity strategy with invalid credentials redirects to
   failure route" do
     post "/auth/identity/callback", params: {
@@ -104,21 +114,21 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
   test "create() with saml strategy with a disabled user redirects to the
   return URL" do
-    skip # TODO: figure out how to write this
+    skip
   end
 
   test "create() with saml strategy with sysadmin user of different institution
   redirects to the return URL" do
-    skip # TODO: figure out how to write this
+    skip
   end
 
   test "create() with saml strategy redirects to the institution root URL" do
-    skip # TODO: figure out how to write this
+    skip
   end
 
   test "create() with saml strategy with valid credentials ascribes a correct
   Login object" do
-    skip # TODO: figure out how to write this
+    skip
   end
 
   # destroy()
