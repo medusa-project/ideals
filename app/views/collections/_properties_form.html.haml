@@ -41,7 +41,7 @@
 
   .mb-3
     = f.label :metadata_profile_id, "Metadata Profile"
-    = f.select :metadata_profile_id, MetadataProfile.where(institution: current_institution).order(:name).pluck(:name, :id),
+    = f.select :metadata_profile_id, MetadataProfile.where(institution: f.object.institution).order(:name).pluck(:name, :id),
                { include_blank: true }, class: "form-select"
     %p.form-text
       = icon_for(:info)
@@ -50,7 +50,7 @@
 
   .mb-3
     = f.label :submission_profile_id, "Submission Profile"
-    = f.select :submission_profile_id, SubmissionProfile.where(institution: current_institution).order(:name).pluck(:name, :id),
+    = f.select :submission_profile_id, SubmissionProfile.where(institution: f.object.institution).order(:name).pluck(:name, :id),
                { include_blank: true }, class: "form-select"
     %p.form-text
       = icon_for(:info)
