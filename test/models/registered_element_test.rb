@@ -144,6 +144,32 @@ class RegisteredElementTest < ActiveSupport::TestCase
     assert_equal "test test", @instance.label
   end
 
+  # migrate_ascribed_elements()
+
+  test "migrate_ascribed_elements() raises an error when the given
+  RegisteredElement resides in different institutions" do
+    from_re = registered_elements(:southwest_dc_description)
+    to_re   = registered_elements(:northeast_dc_description)
+    assert_raises ArgumentError do
+      from_re.migrate_ascribed_elements(to_registered_element: to_re)
+    end
+  end
+
+  test "migrate_ascribed_elements() works properly" do
+    from_re = registered_elements(:southeast_dc_subject)
+    num_to_migrate = from_re.ascribed_elements.count
+    assert num_to_migrate > 0
+    to_re = registered_elements(:southeast_dc_description)
+    to_re.ascribed_elements.destroy_all
+
+    from_re.migrate_ascribed_elements(to_registered_element: to_re)
+
+    from_re.reload
+    to_re.reload
+    assert_equal 0, from_re.ascribed_elements.count
+    assert_equal num_to_migrate, to_re.ascribed_elements.count
+  end
+
   # name
 
   test "name must be present" do

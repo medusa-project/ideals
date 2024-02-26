@@ -66,6 +66,7 @@ class RegisteredElement < ApplicationRecord
   belongs_to :institution, optional: true
   belongs_to :vocabulary, optional: true
 
+  has_many :ascribed_elements, inverse_of: :registered_element
   has_many :metadata_profile_elements, inverse_of: :registered_element
   has_many :prebuilt_search_elements, inverse_of: :registered_element
   has_many :submission_profile_elements, inverse_of: :registered_element
@@ -140,6 +141,27 @@ class RegisteredElement < ApplicationRecord
     [TEXT_FIELD_PREFIX,
      "element",
      name.gsub(OpenSearchClient::RESERVED_CHARACTERS, "_")].join("_")
+  end
+
+  ##
+  # Migrates all {AscribedElement}s associated with the instance to a different
+  # instance.
+  #
+  # @param to_registered_element [RegisteredElement]
+  #
+  def migrate_ascribed_elements(to_registered_element:)
+    if self.institution != to_registered_element.institution
+      raise ArgumentError, "The given RegisteredElement must be in the same institution."
+    end
+    AscribedElement.uncached do
+      asc_elements = self.ascribed_elements
+      progress     = Progress.new(asc_elements.count)
+      asc_elements.update_all(registered_element_id: to_registered_element.id)
+      asc_elements.find_each.with_index do |e, index|
+        e.item.reindex
+        progress.report(index, "Reindexing affected items")
+      end
+    end
   end
 
   ##

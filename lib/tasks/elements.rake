@@ -22,16 +22,13 @@ namespace :elements do
     rename_registered_element(args[:registered_element_id], args[:new_element_name])
   end
 
-  desc "Migrates all ascribed element values from one particular registered element to another"
-  task :migrate_ascribed_element, [:ascribed_element_id, :new_element_id] => :environment do |task, args|
-    migrate_ascribed_element(args[:ascribed_element_id], args[:new_element_id])
+  desc "Migrates all ascribed elements from one registered element to another"
+  task :migrate_ascribed_element, [:registered_element_id, :new_element_id] => :environment do |task, args|
+    from_re = RegisteredElement.find(args[:registered_element_id])
+    to_re   = RegisteredElement.find(args[:new_element_id])
+    from_re.migrate_ascribed_elements(to_registered_element: to_re)
   end
 
-end
-
-def migrate_ascribed_element(previous_registered_element_id, new_registered_element_id)
-  AscribedElement.where(registered_element_id: previous_registered_element_id).
-    update_all(registered_element_id: new_registered_element_id)
 end
 
 def rename_registered_element(registered_element_id, new_element_name)
