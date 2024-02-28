@@ -148,8 +148,10 @@ class RegisteredElement < ApplicationRecord
   # instance.
   #
   # @param to_registered_element [RegisteredElement]
+  # @param reindex_items [Boolean] If this is false, all affected items must be
+  #                                manually reindexed afterwards.
   #
-  def migrate_ascribed_elements(to_registered_element:)
+  def migrate_ascribed_elements(to_registered_element:, reindex_items: true)
     if self.institution != to_registered_element.institution
       raise ArgumentError, "The given RegisteredElement must be in the same institution."
     end
@@ -157,9 +159,11 @@ class RegisteredElement < ApplicationRecord
       asc_elements = self.ascribed_elements
       progress     = Progress.new(asc_elements.count)
       asc_elements.update_all(registered_element_id: to_registered_element.id)
-      asc_elements.find_each.with_index do |e, index|
-        e.item.reindex
-        progress.report(index, "Reindexing affected items")
+      if reindex_items
+        asc_elements.find_each.with_index do |e, index|
+          e.item.reindex
+          progress.report(index, "Reindexing affected items")
+        end
       end
     end
   end
