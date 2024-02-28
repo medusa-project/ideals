@@ -27,12 +27,6 @@
                      max:   MetadataProfileElement::MAX_RELEVANCE_WEIGHT,
                      class: "form-control"
 
-  - unless f.object.global?
-    .mb-3
-      .form-check
-        = f.check_box :institution_default, class: 'form-check-input'
-        = f.label :institution_default, "Default", class: "form-check-label"
-
   - if f.object.new_record?
     .mb-3
       %h4 Initial Elements
