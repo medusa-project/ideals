@@ -23,10 +23,17 @@ namespace :elements do
   end
 
   desc "Migrates all ascribed elements from one registered element to another"
-  task :migrate_ascribed_element, [:registered_element_id, :new_element_id] => :environment do |task, args|
-    from_re = RegisteredElement.find(args[:registered_element_id])
-    to_re   = RegisteredElement.find(args[:new_element_id])
-    from_re.migrate_ascribed_elements(to_registered_element: to_re)
+  task :migrate_ascribed, [:institution_key,
+                           :from_registered_element_name,
+                           :to_registered_element_name] => :environment do |task, args|
+    institution = Institution.find_by_key(args[:institution_key])
+    from_re     = RegisteredElement.find_by(institution: institution,
+                                            name:        args[:from_registered_element_name])
+    to_re       = RegisteredElement.find_by(institution: institution,
+                                            name:        args[:to_registered_element_name])
+    from_re.migrate_ascribed_elements(to_registered_element: to_re,
+                                      reindex_items:         false)
+    puts "Done. Note that any affected items will have to be reindexed manually."
   end
 
 end
