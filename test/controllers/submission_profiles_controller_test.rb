@@ -135,10 +135,19 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test "destroy() destroys the profile" do
+  test "destroy() destroys a non-default profile" do
     log_in_as(users(:southwest_admin))
     @profile = submission_profiles(:southwest_default)
     assert_difference "SubmissionProfile.count", -1 do
+      delete submission_profile_path(@profile)
+    end
+  end
+
+  test "destroy() refuses to destroy the default profile" do
+    log_in_as(users(:southwest_admin))
+    @profile = submission_profiles(:southwest_default)
+    @profile.update!(institution_default: true)
+    assert_no_difference "SubmissionProfile.count" do
       delete submission_profile_path(@profile)
     end
   end

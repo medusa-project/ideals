@@ -62,6 +62,10 @@ class MetadataProfilesController < ApplicationController
   def destroy
     institution = @profile.institution
     begin
+      if @profile.institution_default
+        raise "The default metadata profile cannot be deleted. Set a "\
+                "different profile as the default and try again."
+      end
       @profile.destroy!
     rescue => e
       flash['error'] = "#{e}"

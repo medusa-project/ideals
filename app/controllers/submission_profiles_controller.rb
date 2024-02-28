@@ -59,6 +59,10 @@ class SubmissionProfilesController < ApplicationController
   def destroy
     institution = @profile.institution
     begin
+      if @profile.institution_default
+        raise "The default metadata profile cannot be deleted. Set a "\
+                "different profile as the default and try again."
+      end
       @profile.destroy!
     rescue => e
       flash['error'] = "#{e}"
@@ -76,7 +80,7 @@ class SubmissionProfilesController < ApplicationController
   end
 
   ##
-  # Responds to `GET /submission-profiles/:id` (XHR only)
+  # Responds to `GET /submission-profiles/:id/edit` (XHR only)
   #
   def edit
     render partial: "submission_profiles/form",
