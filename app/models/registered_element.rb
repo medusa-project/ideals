@@ -152,6 +152,9 @@ class RegisteredElement < ApplicationRecord
   #                                manually reindexed afterwards.
   #
   def migrate_ascribed_elements(to_registered_element:, reindex_items: true)
+    unless to_registered_element
+      raise ArgumentError, "Destination RegisteredElement is nil"
+    end
     if self.institution != to_registered_element.institution
       raise ArgumentError, "The given RegisteredElement must be in the same institution."
     end

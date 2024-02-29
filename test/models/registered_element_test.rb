@@ -155,6 +155,14 @@ class RegisteredElementTest < ActiveSupport::TestCase
     end
   end
 
+  test "migrate_ascribed_elements() raises an error when the RegisteredElement
+  argument is nil" do
+    from_re = registered_elements(:southwest_dc_description)
+    assert_raises ArgumentError do
+      from_re.migrate_ascribed_elements(to_registered_element: nil)
+    end
+  end
+
   test "migrate_ascribed_elements() works properly" do
     from_re = registered_elements(:southeast_dc_subject)
     num_to_migrate = from_re.ascribed_elements.count
