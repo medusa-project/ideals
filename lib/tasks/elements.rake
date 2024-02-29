@@ -26,11 +26,23 @@ namespace :elements do
   task :migrate_ascribed, [:institution_key,
                            :from_registered_element_name,
                            :to_registered_element_name] => :environment do |task, args|
+    # Institution
     institution = Institution.find_by_key(args[:institution_key])
-    from_re     = RegisteredElement.find_by(institution: institution,
-                                            name:        args[:from_registered_element_name])
-    to_re       = RegisteredElement.find_by(institution: institution,
-                                            name:        args[:to_registered_element_name])
+    unless institution
+      puts "No such institution." and return
+    end
+    # "From" RegisteredElement
+    from_re = RegisteredElement.find_by(institution: institution,
+                                        name:        args[:from_registered_element_name])
+    unless from_re
+      puts "No such \"from\" element." and return
+    end
+    # "To" RegisteredElement
+    to_re = RegisteredElement.find_by(institution: institution,
+                                      name:        args[:to_registered_element_name])
+    unless to_re
+      puts "No such \"to\" -element." and return
+    end
     from_re.migrate_ascribed_elements(to_registered_element: to_re,
                                       reindex_items:         false)
     puts "Done. Note that any affected items will have to be reindexed manually."
