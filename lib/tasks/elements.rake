@@ -41,11 +41,13 @@ namespace :elements do
     to_re = RegisteredElement.find_by(institution: institution,
                                       name:        args[:to_registered_element_name])
     unless to_re
-      puts "No such \"to\" -element." and return
+      puts "No such \"to\" element." and return
     end
     from_re.migrate_ascribed_elements(to_registered_element: to_re,
-                                      reindex_items:         false)
-    puts "Done. Note that any affected items will have to be reindexed manually."
+                                      reindex_items:         false,
+                                      output_log:            true)
+    puts "Done. Above are the IDs of all affected AscribedElements. "\
+           "Note that any affected items will have to be reindexed manually."
   end
 
 end
