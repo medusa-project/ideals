@@ -150,8 +150,11 @@ class RegisteredElement < ApplicationRecord
   # @param to_registered_element [RegisteredElement]
   # @param reindex_items [Boolean] If this is false, all affected items must be
   #                                manually reindexed afterwards.
+  # @param output_log [Boolean] Whether to output a log of what was migrated.
   #
-  def migrate_ascribed_elements(to_registered_element:, reindex_items: true)
+  def migrate_ascribed_elements(to_registered_element:,
+                                reindex_items:         true,
+                                output_log:            false)
     unless to_registered_element
       raise ArgumentError, "Destination RegisteredElement is nil"
     end
@@ -160,7 +163,8 @@ class RegisteredElement < ApplicationRecord
     end
     AscribedElement.uncached do
       asc_elements = self.ascribed_elements
-      progress     = Progress.new(asc_elements.count)
+      asc_elements.pluck(:id).each{ |id| puts id } if output_log
+      progress = Progress.new(asc_elements.count)
       asc_elements.update_all(registered_element_id: to_registered_element.id)
       if reindex_items
         asc_elements.find_each.with_index do |e, index|
