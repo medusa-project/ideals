@@ -59,7 +59,7 @@ const ItemsView = {
 
         // When the All Items tab is selected, remove all other search input.
         allItemsTab.on("show.bs.tab", function () {
-            window.location = "/items";
+            window.location = "/search";
         });
 
         // When the Simple Search or Advanced Search submit button is clicked,
