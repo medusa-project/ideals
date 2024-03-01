@@ -84,7 +84,10 @@
                         data: { confirm: 'Are you sure you want to delete this element?' }) do
                 = icon_for(:delete)
                 Delete
-          %h5.card-title.mb-3= element.registered_element.label
+          %h5.card-title.mb-3
+            = element.registered_element.label
+            &nbsp;&nbsp;
+            %code= element.name
           %dl.mb-0
             %dt Required
             %dd= boolean(element.required)

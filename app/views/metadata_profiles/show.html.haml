@@ -148,7 +148,10 @@
                           data: { confirm: 'Are you sure you want to delete this element?' }) do
                   = icon_for(:delete)
                   Delete
-            %td= element.label
+            %td
+              = element.label
+              %br
+              %code= element.name
             %td.boolean= boolean(element.visible)
             %td.boolean= boolean(element.searchable)
             %td.boolean= boolean(element.sortable)
