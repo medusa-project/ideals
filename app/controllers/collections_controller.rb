@@ -28,26 +28,15 @@ class CollectionsController < ApplicationController
   def all_files
     respond_to do |format|
       format.zip do
-        collection_ids = [@collection.id] + @collection.all_child_ids
-        item_ids       = []
-        policy_scope(Item.search.filter(Item::IndexFields::COLLECTIONS, collection_ids),
-                     policy_scope_class: ItemPolicy::Scope).each_id_in_batches do |result|
-          item_ids << result[:id]
-        end
-        if item_ids.any?
-          download = Download.create!(institution: @collection.institution,
-                                      ip_address:  request.remote_ip)
-          task     = Task.create!(name: ZipItemsJob.to_s)
-          ZipItemsJob.perform_later(item_ids:         item_ids,
-                                    metadata_profile: @collection.institution.default_metadata_profile,
-                                    download:         download,
-                                    user:             current_user,
-                                    request_context:  request_context,
-                                    task:             task)
-          redirect_to download_url(download)
-        else
-          head :no_content
-        end
+        download = Download.create!(institution: @collection.institution,
+                                    ip_address:  request.remote_ip)
+        task     = Task.create!(name: ZipCollectionJob.to_s)
+        ZipCollectionJob.perform_later(collection:       @collection,
+                                       download:         download,
+                                       user:             current_user,
+                                       request_context:  request_context,
+                                       task:             task)
+        redirect_to download_url(download)
       end
     end
   end
