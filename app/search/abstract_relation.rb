@@ -746,6 +746,9 @@ class AbstractRelation
         end
       end
 
+      j.fields ["_id"]
+      j._source false
+
       # Aggregations
       j.aggregations do
         if @aggregations
