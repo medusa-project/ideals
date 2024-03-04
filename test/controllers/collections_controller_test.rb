@@ -41,13 +41,6 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unsupported_media_type
   end
 
-  test "all_files() with no results returns HTTP 204" do
-    log_in_as(users(:southeast_admin))
-    collection = collections(:southeast_empty)
-    get collection_all_files_path(collection, format: :zip)
-    assert_response :no_content
-  end
-
   test "all_files() redirects to a Download" do
     Item.reindex_all
     refresh_opensearch

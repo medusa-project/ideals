@@ -12,6 +12,11 @@ southwest_default:
   name:                Default Profile
   institution_default: true
 
+southwest_unused:
+  institution:         southwest
+  name:                Unused Profile
+  institution_default: false
+
 ################################## southeast #####################################
 
 southeast_default:

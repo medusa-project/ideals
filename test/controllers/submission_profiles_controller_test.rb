@@ -136,8 +136,8 @@ class SubmissionProfilesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "destroy() destroys a non-default profile" do
-    log_in_as(users(:southeast_sysadmin))
-    @profile = submission_profiles(:southeast_unused)
+    log_in_as(users(:southwest_sysadmin))
+    @profile = submission_profiles(:southwest_unused)
     assert_difference "SubmissionProfile.count", -1 do
       delete submission_profile_path(@profile)
     end
