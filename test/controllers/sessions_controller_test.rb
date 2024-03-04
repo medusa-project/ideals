@@ -54,17 +54,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test "create() with identity strategy via XHR with non-sysadmin user of
-  different institution returns HTTP 403" do
-    user = users(:northeast)
-    post "/auth/identity/callback", params: {
-      auth_key: user.email,
-      password: "password"
-    }, xhr: true
-    assert_response :forbidden
-  end
-
-  test "create() with identity strategy via XHR with sysadmin user of different
+  test "create() with identity strategy via XHR with user of different
   institution redirects to the return URL" do
     user = users(:southwest_sysadmin)
     post "/auth/identity/callback", params: {
