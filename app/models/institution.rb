@@ -807,9 +807,11 @@ class Institution < ApplicationRecord
           self.saml_idp_sso_post_service_url = node.attr("Location")
         end
       end
-      self.saml_idp_sso_binding_urn = self.saml_idp_sso_post_service_url.present? ?
-                                        "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" :
-                                        "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+      if self.saml_idp_sso_binding_urn.blank?
+        self.saml_idp_sso_binding_urn = self.saml_idp_sso_redirect_service_url.present? ?
+                                          "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" :
+                                          "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+      end
 
       # IdP cert(s) - there should be at most 4 (two each for signing and
       # encryption).
