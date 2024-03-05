@@ -34,7 +34,8 @@ class BitstreamsControllerTest < ActionDispatch::IntegrationTest
          xhr: true,
          params: {
            bitstream: {
-             filename: "new.jpg"
+             filename: "new.jpg",
+             length: 1
            }
          }
     assert_response :forbidden

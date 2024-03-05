@@ -10,6 +10,7 @@ const PrebuiltSearchesView = {
             "prebuilt_search%5Binstitution_id%5D=" + institutionID;
         $.get(url, function (data) {
             $("#add-prebuilt-search-modal .modal-body").html(data);
+            new IDEALS.UIUtils.MultiElementList();
         });
     },
 

@@ -202,11 +202,12 @@ class ApplicationController < ActionController::Base
       if request.xhr?
         render plain: "403 Forbidden", status: :forbidden
       else
-        ins  = current_institution
-        host = ins ? ins.fqdn : ::Configuration.instance.main_host
-        flash['error'] = "Please log in."
+        ins    = current_institution
+        host   = ins ? ins.fqdn : ::Configuration.instance.main_host
         scheme = (Rails.env.development? || Rails.env.test?) ? "http" : "https"
-        redirect_to "#{scheme}://#{host}", allow_other_host: true
+        redirect_to "#{scheme}://#{host}",
+                    notice: "Please log in.",
+                    allow_other_host: true
       end
     end
   end

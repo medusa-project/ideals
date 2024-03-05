@@ -7,7 +7,10 @@
         = icon_for(:download)
         Export
       .dropdown-menu.dropdown-menu-right{"aria-labelledby": "export-button"}
-        = link_to(unit_items_path(@unit, format: :csv), class: "dropdown-item") do
+        %button.dropdown-item.download-csv{"data-unit-id":   @unit.id,
+                                           "data-bs-target": "#download-csv-modal",
+                                           "data-bs-toggle": "modal",
+                                           role:             "button"}
           All Items As CSV
 
 .clearfix.mb-3
@@ -61,3 +64,7 @@
     -# items/listing inserted here via XHR
 - else
   This unit does not contain any items.
+
+= render partial: "shared/xhr_modal",
+         locals: { id:    "download-csv-modal",
+                   title: "Download CSV" }

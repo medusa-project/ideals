@@ -136,10 +136,19 @@ class MetadataProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test "destroy() destroys the profile" do
-    log_in_as(users(:southeast_admin))
+  test "destroy() destroys a non-default profile" do
+    log_in_as(users(:southeast_sysadmin))
     profile = metadata_profiles(:southeast_unused)
     assert_difference "MetadataProfile.count", -1 do
+      delete metadata_profile_path(profile)
+    end
+  end
+
+  test "destroy() refuses to destroy the default profile" do
+    log_in_as(users(:southeast_sysadmin))
+    profile = metadata_profiles(:southeast_unused)
+    profile.update!(institution_default: true)
+    assert_no_difference "MetadataProfile.count" do
       delete metadata_profile_path(profile)
     end
   end

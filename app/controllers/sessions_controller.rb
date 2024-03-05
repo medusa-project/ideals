@@ -37,14 +37,15 @@ class SessionsController < ApplicationController
   #
   def create
     auth = request.env["omniauth.auth"]
+    unless %w[developer identity saml].include?(params[:provider])
+      render plain: "404 Not Found", status: :not_found
+      return
+    end
     user = User.from_omniauth(auth, institution: current_institution)
     if !user&.enabled
       unauthorized(message: "This user account is disabled.") and return
-    elsif user.institution != current_institution
-      unless user.sysadmin?(client_ip:       request_context.client_ip,
-                            client_hostname: request_context.client_hostname)
-        unauthorized(message: "You must log in via your home institution's domain.") and return
-      end
+    elsif params[:provider] == "saml" && user.institution != current_institution
+      unauthorized(message: "You must log in via your home institution's domain.") and return
     end
 
     begin

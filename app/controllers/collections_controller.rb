@@ -385,10 +385,14 @@ class CollectionsController < ApplicationController
       end
       format.csv do
         authorize(@collection, policy_method: :export_items)
-        send_data(CsvExporter.new.export_collection(@collection),
-                  type:        "text/csv",
-                  disposition: "attachment",
-                  filename:    "collection_#{@collection.id}_items.csv")
+        download = Download.create!(institution: @collection.institution,
+                                    ip_address:  request.remote_ip)
+        task     = Task.create!(name: GenerateCsvJob.to_s)
+        GenerateCsvJob.perform_later(collection: @collection,
+                                     download:   download,
+                                     user:       current_user,
+                                     task:       task)
+        redirect_to download_url(download)
       end
     end
   end

@@ -2,8 +2,6 @@
 
 class HandlesController < ApplicationController
 
-  layout false
-
   ##
   # Permanently redirects URLs from DSpace to their modern counterparts.
   #

@@ -75,11 +75,14 @@ class BitstreamsController < ApplicationController
           bs = Bitstream.new_in_staging(item:     @item,
                                         filename: StringUtils.sanitize_filename(bitstream_params[:filename]),
                                         length:   bitstream_params[:length])
+          authorize(bs)
           bs.save!
         end
       end
       response.header['Location'] = item_bitstream_url(@item, bs)
       head :created
+    rescue NotAuthorizedError => e
+      raise e
     rescue => e
       render plain: "#{e}", status: :bad_request
     end

@@ -148,6 +148,17 @@ const UnitView = {
                     hiddenPane.find("select > option:first-child").prop("selected", "selected");
                 });
 
+                $(".download-csv").on("click", function() {
+                    const modal   = $("#download-csv-modal")
+                    const unit_id = $(this).data("unit-id");
+                    // Initiate the download on the server. This will redirect to a
+                    // download status page which will get inserted into the modal body.
+                    const url = "/units/" + unit_id + "/items.csv";
+                    $.get(url, function(data) {
+                        new IDEALS.UIUtils.DownloadPanel(modal, data);
+                    });
+                });
+
                 const showOrHideDirectionRadios = function() {
                     const directionButtonGroup = directionRadios.parents(".btn-group");
                     if (sortMenu.val() === "") { // relevance/no sort
