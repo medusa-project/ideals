@@ -10,6 +10,8 @@ class ItemSubmissionTest < ActionDispatch::IntegrationTest
     host! @institution.fqdn
     @collection  = collections(:southwest_unit1_collection1)
     @user        = users(:southwest)
+    @collection.submitting_users << @user
+    @collection.save!
     log_in_as(@user)
     setup_s3
     setup_opensearch
