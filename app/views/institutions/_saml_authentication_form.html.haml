@@ -71,8 +71,8 @@
       .mb-3
         = f.label :saml_idp_sso_binding_urn, "SSO Binding"
         = f.select(:saml_idp_sso_binding_urn,
-                   options_for_select([["POST", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"],
-                                       ["Redirect", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"]],
+                   options_for_select([["Redirect", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"],
+                                       ["POST", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"]],
                                        f.object.saml_idp_sso_binding_urn),
                    {},
                    class: "form-select")
