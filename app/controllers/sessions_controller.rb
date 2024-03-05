@@ -44,8 +44,11 @@ class SessionsController < ApplicationController
     user = User.from_omniauth(auth, institution: current_institution)
     if !user&.enabled
       unauthorized(message: "This user account is disabled.") and return
-    elsif params[:provider] == "saml" && user.institution != current_institution
-      unauthorized(message: "You must log in via your home institution's domain.") and return
+    elsif user.institution != current_institution
+      unless user.sysadmin?(client_ip:       request_context.client_ip,
+                            client_hostname: request_context.client_hostname)
+        unauthorized(message: "You must log in via your home institution's domain.") and return
+      end
     end
 
     begin
