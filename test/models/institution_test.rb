@@ -1102,6 +1102,35 @@ class InstitutionTest < ActiveSupport::TestCase
   end
 
   test "update_from_saml_metadata() updates properties from metadata
+  containing one EntityDescriptor 2" do
+    @instance.saml_idp_sso_binding_urn          = nil
+    @instance.saml_idp_sso_post_service_url     = nil
+    @instance.saml_idp_sso_redirect_service_url = nil
+    @instance.saml_idp_signing_cert             = nil
+    @instance.saml_idp_signing_cert2            = nil
+    @instance.saml_idp_encryption_cert          = nil
+    @instance.saml_idp_encryption_cert2         = nil
+    xml_file = file_fixture("saml_lc.edu.xml")
+
+    @instance.update_from_saml_metadata(xml_file)
+
+    assert_equal "https://idp.lc.edu/openathens",
+                 @instance.saml_idp_entity_id
+    assert_equal "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
+                 @instance.saml_idp_sso_binding_urn
+    assert_nil @instance.saml_idp_sso_post_service_url
+    assert_equal "https://login.openathens.net/saml/2/sso/lc.edu",
+                 @instance.saml_idp_sso_redirect_service_url
+    header  = "-----BEGIN CERTIFICATE-----\n"
+    trailer = "\n-----END CERTIFICATE-----"
+    assert @instance.saml_idp_signing_cert.starts_with?(header)
+    assert @instance.saml_idp_signing_cert.ends_with?(trailer)
+    assert_nil @instance.saml_idp_signing_cert2
+    assert_not_nil @instance.saml_idp_encryption_cert
+    assert_nil @instance.saml_idp_encryption_cert2
+  end
+
+  test "update_from_saml_metadata() updates properties from metadata
   containing multiple EntityDescriptors" do
     @instance.saml_idp_sso_binding_urn          = nil
     @instance.saml_idp_sso_post_service_url     = nil
