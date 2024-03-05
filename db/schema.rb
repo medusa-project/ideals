@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_01_18_235844) do
+ActiveRecord::Schema[7.1].define(version: 2024_03_05_160119) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -439,7 +439,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_18_235844) do
     t.text "saml_idp_signing_cert2"
     t.text "saml_idp_encryption_cert"
     t.text "saml_idp_encryption_cert2"
-    t.string "saml_idp_sso_binding_urn", default: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+    t.string "saml_idp_sso_binding_urn", default: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
     t.string "saml_idp_sso_redirect_service_url"
     t.boolean "allow_user_registration", default: true, null: false
     t.string "saml_metadata_url"
