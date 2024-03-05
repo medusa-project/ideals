@@ -103,7 +103,6 @@ class User < ApplicationRecord
                                     email_location:,
                                     email_attribute: "emailAddress")
     auth  = auth.deep_symbolize_keys
-
     case email_location
     when Institution::SAMLEmailLocation::ATTRIBUTE
       attrs = auth[:extra][:raw_info].attributes.deep_stringify_keys
@@ -111,7 +110,6 @@ class User < ApplicationRecord
     else
       email = auth[:uid]
     end
-
     User.find_by_email(email)
   end
 
@@ -140,10 +138,12 @@ class User < ApplicationRecord
   #
   def self.from_omniauth(auth, institution:)
     case auth[:provider]
-    when "saml", "developer"
+    when "saml"
       User.from_omniauth_saml(auth, institution: institution)
     when "identity"
       User.from_omniauth_local(auth)
+    when "developer"
+      User.from_omniauth_developer(auth, institution: institution)
     else
       raise ArgumentError, "Unsupported auth provider"
     end
@@ -165,6 +165,19 @@ class User < ApplicationRecord
                       institution: invitee.institution)
     end
     user.save!
+    user
+  end
+
+  ##
+  # @private
+  #
+  def self.from_omniauth_developer(auth, institution:)
+    auth  = auth.deep_symbolize_keys
+    email = auth[:info][:email]
+    user  = User.find_by_email(email)
+    user ||= User.create!(institution: institution,
+                          email:       email,
+                          name:        email)
     user
   end
 
