@@ -807,7 +807,8 @@ class Institution < ApplicationRecord
           self.saml_idp_sso_post_service_url = node.attr("Location")
         end
       end
-      if self.saml_idp_sso_binding_urn.blank?
+      if (self.saml_idp_sso_redirect_service_url.blank? || self.saml_idp_sso_post_service_url.blank?) ||
+          self.saml_idp_sso_binding_urn.blank?
         self.saml_idp_sso_binding_urn = self.saml_idp_sso_redirect_service_url.present? ?
                                           "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" :
                                           "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
