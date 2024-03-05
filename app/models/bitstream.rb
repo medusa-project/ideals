@@ -246,7 +246,10 @@ class Bitstream < ApplicationRecord
     task&.update!(indeterminate: false,
                   started_at:    Time.now,
                   status_text:   status_text)
-    Dir.mktmpdir do |tmpdir|
+    # We should be able to use a block with mktmpdir, but when using an EFS
+    # filesystem, we get an error about "directory not empty".
+    tmpdir = Dir.mktmpdir
+    begin
       bitstreams.each_with_index do |bs, index|
         tmpfile = bs.download_to_temp_file
         FileUtils.mv(tmpfile.path, File.join(tmpdir, bs.filename))
@@ -263,6 +266,8 @@ class Bitstream < ApplicationRecord
         ObjectStore.instance.put_object(key:  dest_key,
                                         file: file)
       end
+    ensure
+      FileUtils.rm_rf(tmpdir)
     end
   end
 
