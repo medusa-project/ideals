@@ -216,6 +216,7 @@ class Item < ApplicationRecord
   # @param metadata_profile [MetadataProfile]
   # @param dest_key [String] Destination key within the application bucket.
   # @param request_context [RequestContext]
+  # @param include_csv_file [Boolean]
   # @param print_progress [Boolean]
   # @param task [Task] Optional.
   #
@@ -223,6 +224,7 @@ class Item < ApplicationRecord
                            metadata_profile:,
                            dest_key:,
                            request_context:,
+                           include_csv_file: true,
                            print_progress:   false,
                            task:             nil)
     now         = Time.now
@@ -239,10 +241,11 @@ class Item < ApplicationRecord
           stuffdir = File.join(tmpdir, "items")
           FileUtils.mkdir_p(stuffdir)
 
-          # Add a CSV file containing item metadata.
-          csv = CsvExporter.new.export_items(item_ids: item_ids,
-                                             elements: metadata_profile.elements.map(&:name))
-          File.write(File.join(stuffdir, "items.csv"), csv)
+          if include_csv_file
+            csv = CsvExporter.new.export_items(item_ids: item_ids,
+                                               elements: metadata_profile.elements.map(&:name))
+            File.write(File.join(stuffdir, "items.csv"), csv)
+          end
 
           index = 0
           item_ids.each do |item_id|
