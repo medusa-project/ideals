@@ -129,11 +129,21 @@ const CollectionView = {
 
                 $(".download-files").on("click", function() {
                     const modal         = $("#download-files-modal")
-                    const modal_body    = modal.find(".modal-body");
                     const collection_id = $(this).data("collection-id");
                     // Initiate the download on the server. This will redirect to a
                     // download status page which will get inserted into the modal body.
                     const url = "/collections/" + collection_id + "/all-files.zip";
+                    $.get(url, function(data) {
+                        new IDEALS.UIUtils.DownloadPanel(modal, data);
+                    });
+                });
+
+                $(".download-csv").on("click", function() {
+                    const modal         = $("#download-csv-modal")
+                    const collection_id = $(this).data("collection-id");
+                    // Initiate the download on the server. This will redirect to a
+                    // download status page which will get inserted into the modal body.
+                    const url = "/collections/" + collection_id + "/items.csv";
                     $.get(url, function(data) {
                         new IDEALS.UIUtils.DownloadPanel(modal, data);
                     });

@@ -360,10 +360,14 @@ class UnitsController < ApplicationController
       end
       format.csv do
         authorize(@unit, policy_method: :export_items)
-        send_data(CsvExporter.new.export_unit(@unit),
-                  type:        "text/csv",
-                  disposition: "attachment",
-                  filename:    "unit_#{@unit.id}_items.csv")
+        download = Download.create!(institution: @unit.institution,
+                                    ip_address:  request.remote_ip)
+        task     = Task.create!(name: GenerateCsvJob.to_s)
+        GenerateCsvJob.perform_later(unit:     @unit,
+                                     download: download,
+                                     user:     current_user,
+                                     task:     task)
+        redirect_to download_url(download)
       end
     end
   end

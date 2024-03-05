@@ -899,11 +899,13 @@ class CollectionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :forbidden
   end
 
-  test "show_items() returns HTTP 200 for CSV for unit administrators" do
+  test "show_items() redirects for CSV for unit administrators" do
     log_in_as(users(:southeast_admin))
     collection = collections(:southeast_collection1)
     get collection_items_path(collection, format: :csv)
-    assert_response :ok
+
+    download = Download.order(created_at: :desc).limit(1).first
+    assert_redirected_to download_path(download)
   end
 
   test "show_items() returns HTTP 410 for a buried collection" do
