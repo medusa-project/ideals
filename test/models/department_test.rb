@@ -16,14 +16,14 @@ class DepartmentTest < ActiveSupport::TestCase
   test "from_omniauth() returns nil if the given attributes do not contain a
   department name" do
     attrs = OneLogin::RubySaml::Attributes.new({
-                                                 Department::ITRUST_DEPARTMENT_CODE_ATTRIBUTE => [""]
+                                                 Department::SAML_DEPARTMENT_CODE_ATTRIBUTE => [""]
                                                })
     assert_nil Department.from_omniauth(attrs)
   end
 
   test "from_omniauth() returns a correct instance" do
     attrs = OneLogin::RubySaml::Attributes.new({
-      Department::ITRUST_DEPARTMENT_CODE_ATTRIBUTE => ["bugs"]
+      Department::SAML_DEPARTMENT_CODE_ATTRIBUTE => ["bugs"]
     })
     dept = Department.from_omniauth(attrs)
     assert_equal "bugs", dept.name

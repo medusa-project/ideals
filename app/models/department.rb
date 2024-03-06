@@ -15,7 +15,7 @@
 #
 class Department < ApplicationRecord
 
-  ITRUST_DEPARTMENT_CODE_ATTRIBUTE = "urn:oid:1.3.6.1.4.1.11483.1.122"
+  SAML_DEPARTMENT_CODE_ATTRIBUTE = "urn:oid:1.3.6.1.4.1.11483.1.122"
 
   belongs_to :user, optional: true
   belongs_to :user_group, optional: true
@@ -27,7 +27,7 @@ class Department < ApplicationRecord
   # @return [Department]
   #
   def self.from_omniauth(attrs)
-    name = attrs[ITRUST_DEPARTMENT_CODE_ATTRIBUTE]
+    name = attrs[SAML_DEPARTMENT_CODE_ATTRIBUTE]
     name.present? ? Department.new(name: name) : nil
   end
 
