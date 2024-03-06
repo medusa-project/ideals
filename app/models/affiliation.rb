@@ -44,7 +44,7 @@ class Affiliation < ApplicationRecord
       elsif level_code_attr == "1U"
         key = UNDERGRADUATE_STUDENT_KEY
       end
-      if %w(PHD CAS).include?(program_code_attr.upcase)
+      if program_code_attr.include?("PHD") || program_code_attr.include?("CAS")
         key = PHD_STUDENT_KEY
       elsif program_code_attr.present?
         key = MASTERS_STUDENT_KEY
