@@ -28,6 +28,7 @@ class Department < ApplicationRecord
   #
   def self.from_omniauth(attrs)
     name = attrs[SAML_DEPARTMENT_CODE_ATTRIBUTE]
+    name = name.first if name.respond_to?(:each)
     name.present? ? Department.new(name: name) : nil
   end
 
