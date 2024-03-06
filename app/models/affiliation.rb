@@ -53,4 +53,8 @@ class Affiliation < ApplicationRecord
     key ? Affiliation.find_by_key(key) : nil
   end
 
+  def to_s
+    name
+  end
+
 end

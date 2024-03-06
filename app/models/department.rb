@@ -31,4 +31,8 @@ class Department < ApplicationRecord
     name.present? ? Department.new(name: name) : nil
   end
 
+  def to_s
+    name
+  end
+
 end

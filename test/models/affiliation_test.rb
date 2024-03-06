@@ -2,6 +2,8 @@ require 'test_helper'
 
 class AffiliationTest < ActiveSupport::TestCase
 
+  # from_omniauth()
+
   test "from_omniauth() returns nil if the argument is empty" do
     attrs = OneLogin::RubySaml::Attributes.new
     assert_nil Affiliation.from_omniauth(attrs)
@@ -43,7 +45,7 @@ class AffiliationTest < ActiveSupport::TestCase
   test "from_omniauth() returns a correct instance for a UIUC Ph.D student" do
     attrs = OneLogin::RubySaml::Attributes.new({
       Affiliation::SAML_AFFILIATION_ATTRIBUTE  => %w[student person phone],
-      Affiliation::SAML_PROGRAM_CODE_ATTRIBUTE => ["PHD"],
+      Affiliation::SAML_PROGRAM_CODE_ATTRIBUTE => ["10KS1200PHD"],
       Affiliation::SAML_LEVEL_CODE_ATTRIBUTE   => [""]
     })
     affiliation = Affiliation.from_omniauth(attrs)
@@ -76,6 +78,13 @@ class AffiliationTest < ActiveSupport::TestCase
       Affiliation::SAML_LEVEL_CODE_ATTRIBUTE   => ["bogus"]
     })
     assert_nil Affiliation.from_omniauth(attrs)
+  end
+
+  # to_s()
+
+  test "to_s() returns the name" do
+    affiliation = affiliations(:faculty_staff)
+    assert_equal affiliation.name, affiliation.to_s
   end
 
 end

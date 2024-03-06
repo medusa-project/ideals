@@ -36,4 +36,10 @@ class DepartmentTest < ActiveSupport::TestCase
     assert_equal "test test", @instance.name
   end
 
+  # to_s()
+
+  test "to_s() returns the name" do
+    assert_equal @instance.name, @instance.to_s
+  end
+
 end
