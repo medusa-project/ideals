@@ -3,9 +3,11 @@ require 'rake'
 namespace :collections do
 
   desc "Export all files in a collection as a zip file"
-  task :export_files, [:collection_id, :dest_key] => :environment do |task, args|
+  task :export_files, [:collection_id, :user_email, :dest_key] => :environment do |task, args|
     collection      = Collection.find(args[:collection_id])
-    request_context = RequestContext.new(institution: collection.institution)
+    user            = User.find_by_email(args[:user_email])
+    request_context = RequestContext.new(institution: collection.institution,
+                                         user:        user)
     collection_ids  = [collection.id] + collection.all_child_ids
 
     puts "Compiling a list of item IDs"
@@ -18,7 +20,7 @@ namespace :collections do
     puts "Creating zip file"
     Item.create_zip_file(item_ids:         item_ids,
                          metadata_profile: collection.effective_metadata_profile,
-                         dest_key:         dest_key,
+                         dest_key:         args[:dest_key],
                          include_csv_file: false,
                          request_context:  request_context,
                          print_progress:   true)
