@@ -259,8 +259,8 @@ class Item < ApplicationRecord
                                               response_target: dest_path)
               task&.progress(index / count.to_f)
               progress&.report(index, "Downloading files")
-              index += 1
             end
+            index += 1
           end
 
           # Zip them all up
