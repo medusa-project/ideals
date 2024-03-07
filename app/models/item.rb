@@ -266,7 +266,7 @@ class Item < ApplicationRecord
           # Zip them all up
           zip_filename = "Item_create_zip_file-#{SecureRandom.hex}.zip"
           zip_pathname = File.join(tmpdir, zip_filename)
-          `cd #{tmpdir} && zip -r #{zip_filename} .`
+          `cd #{tmpdir} && zip -vr #{zip_filename} .`
 
           # Upload the zip file into the application S3 bucket.
           File.open(zip_pathname, "r") do |file|
