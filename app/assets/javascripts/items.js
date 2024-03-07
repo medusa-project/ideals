@@ -70,8 +70,7 @@ const ItemsView = {
                     otherTabContent = simpleSearchContent;
                     break;
             }
-            otherTabContent.find("input[type=text], input[type=search], textarea").val("");
-            otherTabContent.find("option:first-child").prop("selected", "selected");
+            otherTabContent.find("input, select, textarea").remove();
         });
 
         // When a date search type tab is changed, clear the input from
