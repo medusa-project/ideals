@@ -998,6 +998,7 @@ class InstitutionsController < ApplicationController
     Item.search.
       institution(@institution).
       aggregations(false).
+      include_buried.
       filter(Item::IndexFields::STAGE, Item::Stages::BURIED).
       order(@institution.title_element.indexed_sort_field).
       start(start).
