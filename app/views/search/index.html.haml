@@ -9,10 +9,8 @@
       %ul#search-tabs.nav.nav-pills.mb-0{role: "tablist"}
         %li.nav-item{role: "presentation"}
           %button#all-items-tab.nav-link.active{"data-bs-toggle": "pill",
-                                                "data-bs-target": "#all-items",
                                                 role:             "tab",
                                                 type:             "button",
-                                                "aria-controls":  "all-items",
                                                 "aria-selected":  "true"} All Items
         %li.nav-item{role: "presentation"}
           %button#simple-search-tab.nav-link{"data-bs-toggle": "pill",
@@ -29,9 +27,6 @@
                                                "aria-controls":  "advanced-search",
                                                "aria-selected":  "false"} Advanced Search
       .tab-content
-        #all-items.tab-pane.fade.show.active{role:              "tabpanel",
-                                             "aria-labelledby": "all-items-tab"}
-          -# this tab is empty
         #simple-search.tab-pane.fade.mt-3{role: "tabpanel",
                                           "aria-labelledby": "simple-search-tab"}
           .input-group.filter-field

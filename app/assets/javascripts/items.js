@@ -16,14 +16,14 @@ const ItemsView = {
         // of the fields in the other tab(s) when the form is submitted.
         // Keeping track of the current tab enables us to infer the non-current
         // tabs.
-        var currentTab;
-        allItemsTab.on("shown.bs.tab", function () {
-            currentTab = allItemsTab;
+        var currentTab = allItemsTab;
+        allItemsTab.on("click", function () {
+            window.location = "/search";
         });
-        simpleSearchTab.on("shown.bs.tab", function () {
+        simpleSearchTab.on("show.bs.tab", function () {
             currentTab = simpleSearchTab;
         });
-        advSearchTab.on("shown.bs.tab", function () {
+        advSearchTab.on("show.bs.tab", function () {
             currentTab = advSearchTab;
         });
 
@@ -40,7 +40,7 @@ const ItemsView = {
                     advSearchTab.tab('show');
                 }
             });
-            if (!found) {
+            if (!found && !allItemsTab.hasClass("active")) {
                 allItemsTab.tab('show');
             }
         }
@@ -55,11 +55,6 @@ const ItemsView = {
             IDEALS.UIUtils.DatePicker($(this).find("select:last"),
                 $(this).find("select:first"),
                 $(this).find("select:nth(1)"));
-        });
-
-        // When the All Items tab is selected, remove all other search input.
-        allItemsTab.on("show.bs.tab", function () {
-            window.location = "/search";
         });
 
         // When the Simple Search or Advanced Search submit button is clicked,
