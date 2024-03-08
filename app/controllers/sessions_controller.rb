@@ -36,24 +36,28 @@ class SessionsController < ApplicationController
   # Responds to `GET/POST /auth/:provider/callback`.
   #
   def create
-    auth = request.env["omniauth.auth"]
-    unless %w[developer identity saml].include?(params[:provider])
+    unless %w[saml identity developer].include?(params[:provider])
       render plain: "404 Not Found", status: :not_found
       return
     end
+    auth = request.env["omniauth.auth"]
     user = User.from_omniauth(auth, institution: current_institution)
-    if user&.email.blank? && params[:provider] == "saml"
-      unauthorized(message: "Failed to receive an email address. (Are the "\
-                            "email location and attribute set correctly?)") and return
-    elsif !user&.enabled
-      unauthorized(message: "This user account is disabled.") and return
-    elsif user.institution != current_institution
-      unless user.sysadmin?(client_ip:       request_context.client_ip,
-                            client_hostname: request_context.client_hostname)
+    if user
+      if user.email.blank? && params[:provider] == "saml"
+        unauthorized(message: "Failed to receive an email address. (Are the "\
+                              "email location and attribute set correctly?)") and return
+      elsif !user.enabled
+        unauthorized(message: "This user account is disabled.") and return
+      elsif user.institution != current_institution &&
+        !user.sysadmin?(client_ip:       request_context.client_ip,
+                        client_hostname: request_context.client_hostname)
         unauthorized(message: "You must log in via your home institution's domain.") and return
       end
+    else
+      unauthorized(message: "Unable to decode the authentication response.") and return
     end
 
+    # At this point, we know we have a valid user who is authorized to log in.
     begin
       hostname = Resolv.getname(request.remote_ip)
     rescue Resolv::ResolvError
