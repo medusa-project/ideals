@@ -33,8 +33,10 @@ class MetadataProfileElementPolicy < ApplicationPolicy
   end
 
   def update
-    if @element.metadata_profile.global?
-      return effective_sysadmin(@user, @role_limit)
+    if !@user
+      return LOGGED_OUT_RESULT
+    elsif effective_sysadmin?(@user, @role_limit)
+      return AUTHORIZED_RESULT
     elsif @ctx_institution != @element.metadata_profile.institution
       return WRONG_SCOPE_RESULT
     end

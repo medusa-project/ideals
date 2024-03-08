@@ -66,6 +66,15 @@ class SubmissionProfileElementPolicyTest < ActiveSupport::TestCase
     assert !policy.destroy?
   end
 
+  test "destroy?() authorizes sysadmins" do
+    @element = submission_profile_elements(:southeast_default_title)
+    user     = users(:southwest_sysadmin)
+    context  = RequestContext.new(user:        user,
+                                  institution: @element.submission_profile.institution)
+    policy   = SubmissionProfileElementPolicy.new(context, @element)
+    assert policy.destroy?
+  end
+
   test "destroy?() authorizes administrators of the same institution" do
     user    = users(:southwest_admin)
     context = RequestContext.new(user:        user,
@@ -124,6 +133,15 @@ class SubmissionProfileElementPolicyTest < ActiveSupport::TestCase
                                  institution: @element.submission_profile.institution)
     policy  = SubmissionProfileElementPolicy.new(context, @element)
     assert !policy.edit?
+  end
+
+  test "edit?() authorizes sysadmins" do
+    @element = submission_profile_elements(:southeast_default_title)
+    user     = users(:southwest_sysadmin)
+    context  = RequestContext.new(user:        user,
+                                  institution: @element.submission_profile.institution)
+    policy   = SubmissionProfileElementPolicy.new(context, @element)
+    assert policy.edit?
   end
 
   test "edit?() authorizes administrators of the same institution" do
@@ -228,6 +246,15 @@ class SubmissionProfileElementPolicyTest < ActiveSupport::TestCase
                                  institution: @element.submission_profile.institution)
     policy = SubmissionProfileElementPolicy.new(context, @element)
     assert !policy.update?
+  end
+
+  test "update?() authorizes sysadmins" do
+    @element = submission_profile_elements(:southeast_default_title)
+    user     = users(:southwest_sysadmin)
+    context  = RequestContext.new(user:        user,
+                                  institution: @element.submission_profile.institution)
+    policy   = SubmissionProfileElementPolicy.new(context, @element)
+    assert policy.update?
   end
 
   test "update?() authorizes administrators of the same institution" do

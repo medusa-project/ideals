@@ -9,7 +9,7 @@ class SubmissionProfileElementPolicy < ApplicationPolicy
 
   ##
   # @param request_context [RequestContext]
-  # @param element [MetadataProfileElement]
+  # @param element [SubmissionProfileElement]
   #
   def initialize(request_context, element)
     super(request_context)
@@ -33,7 +33,11 @@ class SubmissionProfileElementPolicy < ApplicationPolicy
   end
 
   def update
-    if @ctx_institution != @element.submission_profile.institution
+    if !@user
+      return LOGGED_OUT_RESULT
+    elsif effective_sysadmin?(@user, @role_limit)
+      return AUTHORIZED_RESULT
+    elsif @ctx_institution != @element.submission_profile.institution
       return WRONG_SCOPE_RESULT
     end
     effective_institution_admin(@user, @element.submission_profile.institution, @role_limit)

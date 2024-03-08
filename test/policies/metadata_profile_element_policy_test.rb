@@ -66,8 +66,7 @@ class MetadataProfileElementPolicyTest < ActiveSupport::TestCase
     assert !policy.destroy?
   end
 
-  test "destroy?() authorizes sysadmins to the global profile" do
-    @profile = metadata_profiles(:global)
+  test "destroy?() authorizes sysadmins" do
     @element = metadata_profile_elements(:global_title)
     user     = users(:southwest_sysadmin)
     context  = RequestContext.new(user:        user,
@@ -136,8 +135,7 @@ class MetadataProfileElementPolicyTest < ActiveSupport::TestCase
     assert !policy.edit?
   end
 
-  test "edit?() authorizes sysadmins to the global profile" do
-    @profile = metadata_profiles(:global)
+  test "edit?() authorizes sysadmins" do
     @element = metadata_profile_elements(:global_title)
     user     = users(:southwest_sysadmin)
     context  = RequestContext.new(user:        user,
@@ -250,8 +248,7 @@ class MetadataProfileElementPolicyTest < ActiveSupport::TestCase
     assert !policy.update?
   end
 
-  test "update?() authorizes sysadmins to the global profile" do
-    @profile = metadata_profiles(:global)
+  test "update?() authorizes sysadmins" do
     @element = metadata_profile_elements(:global_title)
     user     = users(:southwest_sysadmin)
     context  = RequestContext.new(user:        user,
