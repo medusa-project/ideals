@@ -70,7 +70,7 @@ class RegisteredElementsController < ApplicationController
   def index
     authorize RegisteredElement
     institution           = current_institution
-    @elements             = RegisteredElement.where(institution: institution).order(:name)
+    @elements             = RegisteredElement.where(institution: institution).order(:label)
     @unaccounted_prefixes = institution.registered_element_prefixes -
       institution.element_namespaces.map(&:prefix)
   end
