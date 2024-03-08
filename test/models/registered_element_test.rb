@@ -39,7 +39,27 @@ class RegisteredElementTest < ActiveSupport::TestCase
     end
   end
 
-  test "instances without attached AscribedElements can be destroyed" do
+  test "instances with attached MetadataProfileElements cannot be destroyed" do
+    profile = metadata_profiles(:southeast_unused)
+    profile.elements.build(registered_element: @instance,
+                           position:           0).save!
+    assert_raises ActiveRecord::InvalidForeignKey do
+      @instance.destroy!
+    end
+  end
+
+  test "instances with attached SubmissionProfileElements cannot be
+  destroyed" do
+    profile = submission_profiles(:southeast_unused)
+    profile.elements.build(registered_element: @instance,
+                           position:           0).save!
+    assert_raises ActiveRecord::InvalidForeignKey do
+      @instance.destroy!
+    end
+  end
+
+  test "instances without attached AscribedElements, MetadataProfileElements,
+  or SubmissionProfileElements can be destroyed" do
     assert registered_elements(:southeast_unused).destroy
   end
 
