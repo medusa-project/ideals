@@ -16,45 +16,56 @@
                                            type:             "button",
                                            "aria-controls":  "properties-tab-content",
                                            "aria-selected":  "true"}
+      = icon_for(:info)
       Properties
+
     %button#credentials-tab.nav-link{"data-bs-toggle": "pill",
                                      "data-bs-target": "#credentials-tab-content",
                                      role:             "tab",
                                      type:             "button",
                                      "aria-controls":  "credentials-tab-content",
                                      "aria-selected":  "true"}
+      %i.fa.fa-key
       Credentials
+
     %button#logins-tab.nav-link{"data-bs-toggle": "pill",
                                 "data-bs-target": "#logins-tab-content",
                                 role:             "tab",
                                 type:             "button",
                                 "aria-controls":  "logins-tab-content",
                                 "aria-selected":  "true"}
+      %i.fa.fa-sign-in-alt
       Most Recent Logins
+
     %button#submittable-collections-tab.nav-link{"data-bs-toggle": "pill",
                                                  "data-bs-target": "#submittable-collections-tab-content",
                                                  role:             "tab",
                                                  type:             "button",
                                                  "aria-controls":  "submittable-collections-tab-content",
                                                  "aria-selected":  "false"}
+      = icon_for(Collection)
       Submittable Collections
       %span.badge.rounded-pill.text-bg-secondary
         = @submittable_collections_count
+
     %button#submitted-items-tab.nav-link{"data-bs-toggle": "pill",
                                          "data-bs-target": "#submitted-items-tab-content",
                                          role:             "tab",
                                          type:             "button",
                                          "aria-controls":  "submitted-items-tab-content",
                                          "aria-selected":  "false"}
+      = icon_for(Item)
       Submitted Items
       %span.badge.rounded-pill.text-bg-secondary
         = @submitted_items_count
+
     %button#submissions-in-progress-tab.nav-link{"data-bs-toggle": "pill",
                                                  "data-bs-target": "#submissions-in-progress-tab-content",
                                                  role:             "tab",
                                                  type:             "button",
                                                  "aria-controls":  "submissions-in-progress-tab-content",
                                                  "aria-selected":  "false"}
+      %i.fa.fa-ellipsis
       Submissions In Progress
       %span.badge.rounded-pill.text-bg-secondary
         = @submissions_in_progress_count
