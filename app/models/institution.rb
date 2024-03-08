@@ -612,6 +612,8 @@ class Institution < ApplicationRecord
   #
   def nuke!
     raise "You maniac, you can only nuke an institution in test!" unless Rails.env.test?
+    self.metadata_profiles.destroy_all
+    self.submission_profiles.destroy_all
     self.imports.destroy_all
     self.users.destroy_all
     self.units.each do |unit|
