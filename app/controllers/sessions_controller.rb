@@ -42,7 +42,10 @@ class SessionsController < ApplicationController
       return
     end
     user = User.from_omniauth(auth, institution: current_institution)
-    if !user&.enabled
+    if user&.email.blank? && params[:provider] == "saml"
+      unauthorized(message: "Failed to receive an email address. (Are the "\
+                            "email location and attribute set correctly?)") and return
+    elsif !user&.enabled
       unauthorized(message: "This user account is disabled.") and return
     elsif user.institution != current_institution
       unless user.sysadmin?(client_ip:       request_context.client_ip,
