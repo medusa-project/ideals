@@ -558,24 +558,15 @@ class User < ApplicationRecord
   #                                  have an institution set.
   #
   def update_from_omniauth_saml(auth, institution)
-    auth  = auth.deep_symbolize_keys
-    # raw_info will be nil when using the developer strategy
-    attrs = {}
-    if auth[:extra] && auth[:extra][:raw_info]
-      attrs = auth[:extra][:raw_info].attributes.deep_stringify_keys
-    end
-
-    # By design, logging in overwrites certain existing user properties with
-    # current information from the IdP. By supplying this custom attribute,
-    # we can preserve the user properties that are set up in test fixture data.
-    return if attrs['overwriteUserAttrs'] == "false"
+    auth  = auth.deep_stringify_keys
+    attrs = auth["extra"]["raw_info"].attributes.deep_stringify_keys
 
     self.institution ||= institution
     case institution.saml_email_location
     when Institution::SAMLEmailLocation::ATTRIBUTE
       self.email = attrs[institution.saml_email_attribute]&.first
     else
-      self.email = auth[:uid]
+      self.email = auth["uid"]
     end
     self.name = [attrs[institution.saml_first_name_attribute]&.first,
                  attrs[institution.saml_last_name_attribute]&.first].join(" ").strip
