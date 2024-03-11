@@ -376,12 +376,11 @@ class Collection < ApplicationRecord
 
   ##
   # @return [MetadataProfile] The metadata profile assigned to the instance, or
-  #         the profile assigned to the primary unit, or the institution's
-  #         default profile as a last resort.
+  #         else the institution's default profile.
   #
   def effective_metadata_profile
     #noinspection RubyMismatchedReturnType
-    self.metadata_profile || self.primary_unit&.effective_metadata_profile
+    self.metadata_profile || self.institution.default_metadata_profile
   end
 
   ##

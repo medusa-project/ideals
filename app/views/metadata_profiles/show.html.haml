@@ -41,16 +41,6 @@
       %span.badge.rounded-pill.text-bg-secondary= @profile.elements.count
   - unless @profile.global?
     %li.nav-item
-      %button#units-tab.nav-link{"data-bs-target": "#units",
-                                 "data-bs-toggle": "tab",
-                                 role:             "tab",
-                                 type:             "button",
-                                 "aria-controls":  "units",
-                                 "aria-selected":  "false"}
-        = icon_for(Unit)
-        Directly Assigned Units
-        %span.badge.rounded-pill.text-bg-secondary= @units.count
-    %li.nav-item
       %button#collections-tab.nav-link{"data-bs-target": "#collections",
                                        "data-bs-toggle": "tab",
                                        role:             "tab",
@@ -166,12 +156,6 @@
                   = element.relevance_weight
 
   - unless @profile.global?
-    #units.tab-pane.fade{role:              "tabpanel",
-                         "aria-labelledby": "units-tab"}
-      - if @units.exists?
-        = resource_list(@units)
-      - else
-        This metadata profile is not directly assigned to any units.
     #collections.tab-pane.fade{role:              "tabpanel",
                                "aria-labelledby": "collections-tab"}
       - if @collections.exists?

@@ -293,21 +293,6 @@ class UnitTest < ActiveSupport::TestCase
     assert_equal 2, admins.length
   end
 
-  # effective_metadata_profile()
-
-  test "effective_metadata_profile() returns the assigned metadata profile" do
-    profile = metadata_profiles(:southeast_unused)
-    @instance.metadata_profile = profile
-    assert_equal profile, @instance.effective_metadata_profile
-  end
-
-  test "effective_metadata_profile() falls back to the institution's default
-  profile if no profile is assigned" do
-    @instance.metadata_profile = nil
-    assert_equal metadata_profiles(:southeast_default),
-                 @instance.effective_metadata_profile
-  end
-
   # exhume!()
 
   test "exhume!() exhumes a buried unit" do

@@ -52,7 +52,7 @@
               = filter_field
           #advanced-search.tab-pane.fade.mt-3{role: "tabpanel",
                                               "aria-labelledby": "advanced-search-tab"}
-            = advanced_search_form(@unit.effective_metadata_profile)
+            = advanced_search_form(@unit.institution.default_metadata_profile)
 
     .row.justify-content-between
       .col-8

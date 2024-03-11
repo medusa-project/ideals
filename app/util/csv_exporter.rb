@@ -44,7 +44,7 @@ class CsvExporter
     # Compile a list of elements to include.
     if elements.empty?
       profile  = collections.first&.effective_metadata_profile ||
-        units.first&.effective_metadata_profile
+        units.first&.institution&.default_metadata_profile
       elements = profile.elements.map(&:name)
     end
 

@@ -43,8 +43,6 @@ class MetadataProfile < ApplicationRecord
   has_many :elements, -> { order(:position) },
            class_name: "MetadataProfileElement", inverse_of: :metadata_profile,
            dependent: :destroy
-  has_many :units, inverse_of: :metadata_profile,
-           dependent: :restrict_with_exception
 
   normalizes :name, with: -> (value) { value.squish }
 

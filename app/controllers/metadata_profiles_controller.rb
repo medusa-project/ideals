@@ -122,7 +122,6 @@ class MetadataProfilesController < ApplicationController
   #
   def show
     # N.B.: these include only directly-assigned units and collections.
-    @units       = @profile.units
     @collections = @profile.collections
     @new_element = MetadataProfileElement.new
   end

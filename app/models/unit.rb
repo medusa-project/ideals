@@ -22,14 +22,6 @@
 # * `created_at`          Managed by ActiveRecord.
 # * `institution_id`      Foreign key to {Institution}.
 # * `introduction`        Introduction string. May contain HTML.
-# * `metadata_profile_id` Foreign key to {MetadataProfile}. Instances without
-#                         this set will use the
-#                         {Institution#default_metadata_profile default
-#                         metadata profile of the institution}. Child
-#                         collections may override it with their own
-#                         {metadata_profile} property. In most cases,
-#                         {effective_metadata_profile} should be used instead
-#                         of accessing this directly.
 # * `parent_id`           Foreign key to a parent {Unit}.
 # * `rights`              Rights string.
 # * `short_description`   Short description string.
@@ -64,7 +56,6 @@ class Unit < ApplicationRecord
   end
 
   belongs_to :institution
-  belongs_to :metadata_profile, inverse_of: :units, optional: true
   belongs_to :parent, class_name: "Unit", foreign_key: "parent_id", optional: true
 
   has_many :administrators, class_name: "UnitAdministrator"
@@ -282,16 +273,6 @@ class Unit < ApplicationRecord
   end
 
   ##
-  # @return [MetadataProfile] The metadata profile assigned to the instance, or
-  #         the owning institution's default metadata profile if no profile is
-  #         assigned to the instance.
-  #
-  def effective_metadata_profile
-    #noinspection RubyMismatchedReturnType
-    self.metadata_profile || self.institution.default_metadata_profile
-  end
-
-  ##
   # Un-buries an instance.
   #
   # @see bury!
@@ -362,8 +343,7 @@ class Unit < ApplicationRecord
           progress.report(entity_idx, "Moving #{unit.title} to #{institution.name}")
           unit.administrators.destroy_all
           unit.administrator_groups.destroy_all
-          unit.update!(institution_id:   institution.id,
-                       metadata_profile: nil)
+          unit.update!(institution_id: institution.id)
           unit.collections.each do |collection|
             progress.report(entity_idx, "Moving #{collection.title} to #{institution.name}")
             collection.administrators.destroy_all

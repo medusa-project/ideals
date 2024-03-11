@@ -26,14 +26,6 @@
     = f.label :rights
     = f.text_area :rights, class: "form-control"
 
-  .mb-3
-    = f.label :metadata_profile_id, "Metadata Profile"
-    = f.select :metadata_profile_id, MetadataProfile.where(institution: f.object.institution).order(:name).pluck(:name, :id),
-               { include_blank: true }, class: "form-select"
-    %p.form-text
-      = icon_for(:info)
-      If left blank, the default metadata profile will be used.
-
   .clearfix
     .float-end
       %button.btn.btn-light{"data-bs-dismiss": "modal", type: "button"} Cancel

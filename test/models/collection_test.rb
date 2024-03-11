@@ -371,18 +371,9 @@ class CollectionTest < ActiveSupport::TestCase
     assert_equal profile, @instance.effective_metadata_profile
   end
 
-  test "effective_metadata_profile() falls back to the primary unit's profile
-  if no profile is assigned" do
-    profile = metadata_profiles(:southeast_default)
-    @instance.metadata_profile = nil
-    @instance.primary_unit.metadata_profile = profile
-    assert_equal profile, @instance.effective_metadata_profile
-  end
-
   test "effective_metadata_profile() falls back to the institution's default
-  profile if no profile is assigned to the primary unit" do
+  profile if no profile is assigned" do
     @instance.metadata_profile = nil
-    @instance.primary_unit.metadata_profile = nil
     assert_equal metadata_profiles(:southeast_default),
                  @instance.effective_metadata_profile
   end

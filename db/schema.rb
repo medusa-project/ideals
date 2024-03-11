@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_03_11_185518) do
+ActiveRecord::Schema[7.1].define(version: 2024_03_11_195942) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -779,9 +779,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_11_185518) do
     t.text "introduction"
     t.text "rights"
     t.boolean "buried", default: false, null: false
-    t.bigint "metadata_profile_id"
     t.index ["institution_id"], name: "index_units_on_institution_id"
-    t.index ["metadata_profile_id"], name: "index_units_on_metadata_profile_id"
     t.index ["parent_id"], name: "index_units_on_parent_id"
   end
 
@@ -922,7 +920,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_11_185518) do
   add_foreign_key "unit_collection_memberships", "collections", on_update: :cascade, on_delete: :cascade
   add_foreign_key "unit_collection_memberships", "units", on_update: :cascade, on_delete: :cascade
   add_foreign_key "units", "institutions", on_update: :cascade, on_delete: :restrict
-  add_foreign_key "units", "metadata_profiles", on_update: :cascade, on_delete: :restrict
   add_foreign_key "units", "units", column: "parent_id", on_update: :cascade, on_delete: :restrict
   add_foreign_key "user_groups", "institutions", on_update: :cascade, on_delete: :cascade
   add_foreign_key "user_groups_users", "user_groups", on_update: :cascade, on_delete: :cascade

@@ -22,15 +22,6 @@
   %dt Handle URI
   %dd= @unit.handle&.permanent_url
   - if policy(@unit).show_extended_about?
-    %dt Metadata Profile
-    %dd
-      - if @unit.metadata_profile
-        - if policy(@metadata_profile).show?
-          = link_to(@metadata_profile.name, @metadata_profile)
-        - else
-          = @metadata_profile.name
-      - else
-        = raw("Not assigned (falling back to #{link_to(@metadata_profile.name, @metadata_profile)})")
     %dt File Downloads
     %dd= number_with_delimiter(@num_downloads)
     %dt Items Awaiting Review
