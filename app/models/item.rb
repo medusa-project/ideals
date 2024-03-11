@@ -8,16 +8,15 @@
 # Creates generally happen via {CreateItemCommand}, updates via
 # {UpdateItemCommand}. This will ensure that an appropriate {Event} is created
 # and associated with the instance. Deleting can still be done directly on the
-# instance without use of a {Command}--although {Stages::BURIED burial} is
-# often used instead.
+# instance without use of a {Command}--although {Item#bury! burial} is often
+# used instead.
 #
 # # Lifecycle
 #
-# An item may proceed through several "life stages", indicated by the {stage}
-# attribute and documented in the {Stages} class. {Stages::APPROVED} is where
-# most items spend most of their lives, but note that an approved item may
-# still be embargoed. (An embargo is basically an access limit, which may be
-# perpetual or timed.)
+# An item typically proceeds through several "life stages", indicated by the
+# {stage} attribute and documented in the {Stages} class. {Stages::APPROVED} is
+# where most items spend most of their lives, but note that an approved item
+# may still have one more associated {Embargo embargoes}.
 #
 # # Indexing
 #
@@ -38,6 +37,10 @@
 #                             assigned. The rest of the time, this attribute is
 #                             just a shortcut to avoid having to navigate that
 #                             relationship.
+# * `previous_stage`          Previous lifecycle stage. Updates automatically
+#                             when {stage} changes.
+# * `previous_stage_reason`   Previous lifecycle stage reason. Updates
+#                             automatically when {stage} changes.
 # * `stage`                   Lifecycle stage, whose value is one of the
 #                             {Stages} constant values.
 # * `stage_reason`            Reason for setting the {stage} attribute to its
@@ -188,7 +191,7 @@ class Item < ApplicationRecord
              optional: true
 
   before_save :email_after_submission, :prune_duplicate_elements
-  before_update :set_stage_reason
+  before_update :set_previous_stage
   before_destroy :restrict_in_archive_deletion, :destroy_bitstreams
 
   validates :temp_embargo_kind, inclusion: { in: Embargo::Kind::all },
@@ -693,7 +696,8 @@ class Item < ApplicationRecord
   def exhume!
     if stage == Item::Stages::BURIED
       transaction do
-        update!(stage: Item::Stages::APPROVED)
+        update!(stage:        self.previous_stage || Item::Stages::APPROVED,
+                stage_reason: self.previous_stage_reason)
         Event.create!(event_type:     Event::Type::UNDELETE,
                       item:           self,
                       before_changes: nil,
@@ -945,12 +949,14 @@ class Item < ApplicationRecord
     raise "Archived items cannot be deleted" if self.exists_in_medusa?
   end
 
-  ##
-  # Nils out {stage_reason} if the stage changed but the reason didn't. This
-  # ensures that {stage_reason} reflects the last stage change only
-  #
-  def set_stage_reason
-    self.stage_reason = nil if self.stage_changed? && !self.stage_reason_changed?
+  def set_previous_stage
+    if stage_changed?
+      self.previous_stage        = self.stage_was
+      self.previous_stage_reason = self.stage_reason_was
+      # Nil this out if the stage changed but the reason didn't, to ensure that
+      # it reflects the last stage change only.
+      self.stage_reason          = nil unless stage_reason_changed?
+    end
   end
 
   ##

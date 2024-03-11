@@ -883,7 +883,16 @@ class ItemTest < ActiveSupport::TestCase
 
   # exhume!()
 
-  test "exhume!() sets the stage to APPROVED" do
+  test "exhume!() sets the stage to the previous stage, if set" do
+    @instance = items(:southeast_buried)
+    @instance.update!(previous_stage:        Item::Stages::REJECTED,
+                      previous_stage_reason: "Felt like it")
+    @instance.exhume!
+    assert_equal Item::Stages::REJECTED, @instance.stage
+    assert_equal "Felt like it", @instance.stage_reason
+  end
+
+  test "exhume!() sets the stage to APPROVED if there is no previous stage" do
     @instance = items(:southeast_buried)
     @instance.exhume!
     assert_equal Item::Stages::APPROVED, @instance.stage
@@ -967,6 +976,25 @@ class ItemTest < ActiveSupport::TestCase
       "institution_id" => institution.id
     }
     assert_equal expected, @instance.owning_ids
+  end
+
+  # previous_stage
+
+  test "previous_stage updates when stage is changed" do
+    assert_nil @instance.previous_stage
+    stage = @instance.stage
+    @instance.update!(stage: Item::Stages::REJECTED)
+    assert_equal stage, @instance.previous_stage
+  end
+
+  # previous_stage_reason
+
+  test "previous_stage_reason updates when stage is changed" do
+    assert_nil @instance.previous_stage_reason
+    stage_reason = @instance.stage_reason
+    @instance.update!(stage:        Item::Stages::REJECTED,
+                      stage_reason: "new reason")
+    assert_equal stage_reason, @instance.previous_stage_reason
   end
 
   # primary_unit()
