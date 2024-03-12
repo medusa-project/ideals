@@ -35,8 +35,6 @@
           = link_to(@metadata_profile.name, @metadata_profile)
         - else
           = @metadata_profile.name
-      - elsif @collection.primary_unit&.metadata_profile
-        = raw("Not assigned (falling back to primary unit's profile: #{link_to(@metadata_profile.name, @metadata_profile)})")
       - else
         = raw("Not assigned (falling back to #{link_to(@metadata_profile.name, @metadata_profile)})")
     %dt Submission Profile
