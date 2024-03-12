@@ -43,9 +43,14 @@ class SessionsController < ApplicationController
     auth = request.env["omniauth.auth"]
     user = User.from_omniauth(auth, institution: current_institution)
     if user
-      if user.email.blank? && params[:provider] == "saml"
-        unauthorized(message: "Failed to receive an email address. (Are the "\
-                              "email location and attribute set correctly?)") and return
+      if user.email.blank?
+        if params[:provider] == "saml"
+          unauthorized(message: "Failed to find an email address in the SAML "\
+                                "response. (Are the email location and/or "\
+                                "attribute set correctly?)") and return
+        else
+          unauthorized(message: "No email address provided.") and return
+        end
       elsif !user.enabled
         unauthorized(message: "This user account is disabled.") and return
       elsif user.institution != current_institution &&
