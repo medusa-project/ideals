@@ -89,10 +89,8 @@ class ImportTest < ActiveSupport::TestCase
     fixture = file_fixture("zip.zip")
     @instance.update!(filename: "zip.zip",
                       length:   File.size(fixture))
-
-    File.open(@instance.file, "wb") do |file|
-      file << "hi"
-    end
+    FileUtils.mkdir_p(File.dirname(@instance.file))
+    File.write(@instance.file, "hello world")
     assert_raises do
       @instance.download
     end
