@@ -48,7 +48,7 @@
               = link_to(event.item) do
                 = icon_for(event.bitstream)
                 = event.bitstream.filename
-            - elsif event.login_id
+            - elsif event.login_id && event.login.user
               = link_to(event.login.user) do
                 = icon_for(event.login.user)
                 = event.login.user.name
