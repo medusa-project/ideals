@@ -39,7 +39,7 @@ class FacetTerm
   # @return [String]
   #
   def query
-    "#{self.facet.field}:#{self.name}"
+    [self.facet.field, self.name].select(&:present?).join(":")
   end
 
   ##
