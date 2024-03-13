@@ -776,6 +776,13 @@ class Item < ApplicationRecord
   end
 
   ##
+  # @return [Boolean] Whether {stage} is set to {Stages#REJECTED}.
+  #
+  def rejected?
+    self.stage == Stages::REJECTED
+  end
+
+  ##
   # @return [Bitstream]
   #
   def representative_bitstream

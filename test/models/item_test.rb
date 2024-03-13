@@ -1021,6 +1021,17 @@ class ItemTest < ActiveSupport::TestCase
       count
   end
 
+  # rejected?()
+
+  test "rejected?() returns true when the stage is set to rejected" do
+    @instance.stage = Item::Stages::REJECTED
+    assert @instance.rejected?
+  end
+
+  test "rejected?() returns false when the stage is not set to rejected" do
+    assert !@instance.rejected?
+  end
+
   # representative_bitstream()
 
   test "representative_bitstream() returns the primary bitstream if one exists" do
