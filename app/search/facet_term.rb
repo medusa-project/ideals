@@ -18,8 +18,11 @@ class FacetTerm
   #   @return [String]
   attr_accessor :name
 
-  def initialize
-    @count = 0
+  def initialize(name: nil, label: nil, facet: nil, count: 0)
+    @name  = name
+    @label = label
+    @facet = facet
+    @count = count
   end
 
   ##
