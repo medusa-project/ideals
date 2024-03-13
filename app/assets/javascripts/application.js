@@ -43,6 +43,7 @@
 //= require metadata_profiles
 //= require prebuilt_searches
 //= require registered_elements
+//= require search
 //= require submission_profiles
 //= require submissions
 //= require tasks
