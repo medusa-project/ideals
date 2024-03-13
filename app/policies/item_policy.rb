@@ -324,6 +324,10 @@ class ItemPolicy < ApplicationPolicy
     end
   end
 
+  def show_private
+    review
+  end
+
   def show_properties
     show_access
   end

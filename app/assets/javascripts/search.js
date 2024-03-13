@@ -57,6 +57,10 @@ const SearchView = {
                 $(this).find("select:nth(1)"));
         });
 
+        $("[name=item_type]").on("change", function() {
+            $(this).parents("form:first").submit();
+        });
+
         // When the Simple Search or Advanced Search submit button is clicked,
         // clear all form fields in the other tab pane, so they don't get sent
         // along as well.

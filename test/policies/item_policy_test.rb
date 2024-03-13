@@ -1728,6 +1728,65 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert !policy.show_metadata?
   end
 
+  # show_private?()
+
+  test "show_private?() does not authorize a nil user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @item.institution)
+    policy = ItemPolicy.new(context, @item)
+    assert !policy.show_private?
+  end
+
+  test "show_private?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.show_private?
+  end
+
+  test "show_private?() does not authorize non-sysadmins" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @item.institution)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.show_private?
+  end
+
+  test "show_private?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @item.institution)
+    policy = ItemPolicy.new(context, @item)
+    assert policy.show_private?
+  end
+
+  test "show_private?() authorizes administrators of the same institution" do
+    user = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @item.institution)
+    policy  = ItemPolicy.new(context, @item)
+    assert policy.show_private?
+  end
+
+  test "show_private?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: institutions(:northeast))
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.show_private?
+  end
+
+  test "show_private?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @item.institution,
+                                 role_limit:  Role::COLLECTION_SUBMITTER)
+    policy  = ItemPolicy.new(context, @item)
+    assert !policy.show_private?
+  end
+
   # show_properties?()
 
   test "show_properties?() does not authorize a nil user" do

@@ -318,6 +318,30 @@ module ApplicationHelper
   def facets_as_cards(facets, permitted_params)
     return nil unless facets
     html = StringIO.new
+    if institution_host? && policy(Item).show_private?
+      # This is a "fake" facet that is presented like the other facets in the
+      # UI, but doesn't work the same way.
+      facet       = Facet.new
+      facet.name  = "Item Type"
+      facet.field = ""
+      facet.terms << FacetTerm.new(name:  "public",
+                                   label: "Public",
+                                   facet: facet)
+      facet.terms << FacetTerm.new(name:  "private",
+                                   label: "Private",
+                                   facet: facet)
+      facet.terms << FacetTerm.new(name:  "rejected",
+                                   label: "Rejected",
+                                   facet: facet)
+      facet.terms << FacetTerm.new(name:  "withdrawn",
+                                   label: "Withdrawn",
+                                   facet: facet)
+      facet.terms << FacetTerm.new(name:  "deleted",
+                                   label: "Deleted",
+                                   facet: facet)
+      html << facet_card(facet, permitted_params, name: "item_type",
+                         control: "radio", checked_value: "public")
+    end
     facets.select{ |f| f.terms.any? }.each do |facet|
       html << facet_card(facet, permitted_params)
     end
@@ -747,11 +771,15 @@ module ApplicationHelper
                         use_resource_host:     true,
                         show_institution:      false,
                         show_private_normally: false)
-    embargoed_item = !show_private_normally &&
-      resource.kind_of?(Item) &&
-      resource.embargoed_for?(user:            current_user,
-                              client_hostname: request_context.client_hostname,
-                              client_ip:       request_context.client_ip)
+    embargoed_item = withdrawn_item = rejected_item = buried_item = false
+    if !show_private_normally && resource.kind_of?(Item)
+      embargoed_item = resource.embargoed_for?(user:            current_user,
+                                               client_hostname: request_context.client_hostname,
+                                               client_ip:       request_context.client_ip)
+      withdrawn_item = resource.withdrawn?
+      buried_item    = resource.buried?
+      rejected_item  = resource.rejected?
+    end
     thumb          = thumbnail_for(resource)
     if use_resource_host
       resource_url = polymorphic_url(resource, host: resource.institution.fqdn)
@@ -777,7 +805,7 @@ module ApplicationHelper
     html <<   "</div>"
     html <<   "<div class=\"flex-grow-1 ms-3\">"
     html <<     "<h5 class=\"mt-0 mb-0\">"
-    if embargoed_item
+    if embargoed_item && !policy(resource).show?
       html <<     resource.title
     else
       html <<     link_to(resource.title, resource_url)
@@ -788,6 +816,15 @@ module ApplicationHelper
     end
     if embargoed_item
       html <<     " <span class=\"badge text-bg-danger\">EMBARGOED</span>"
+    end
+    if withdrawn_item
+      html <<     " <span class=\"badge text-bg-danger\">WITHDRAWN</span>"
+    end
+    if rejected_item
+      html <<     " <span class=\"badge text-bg-danger\">REJECTED</span>"
+    end
+    if buried_item
+      html <<     " <span class=\"badge text-bg-danger\">DELETED</span>"
     end
     html <<     "</h5>"
 
@@ -954,28 +991,43 @@ module ApplicationHelper
   ##
   # @param facet [Facet]
   # @param permitted_params [ActionController::Parameters]
+  # @param name [String]
+  # @param control [String] Input type (`checkbox` or `radio`).
+  # @param checked_value [String] Value to pre-check.
   #
-  def facet_card(facet, permitted_params)
+  def facet_card(facet,
+                 permitted_params,
+                 name:          "fq[]",
+                 control:       "checkbox",
+                 checked_value: nil)
     panel = StringIO.new
     panel << "<div class=\"card facet\" id=\"#{facet.field}\">"
     panel <<   "<h5 class=\"card-header\">#{facet.name}</h5>"
     panel <<     '<div class="card-body">'
     panel <<       '<ul>'
     facet.terms.each do |term|
-      checked          = (permitted_params[:fq]&.include?(term.query)) ? "checked" : nil
-      checked_params   = term.removed_from_params(permitted_params.deep_dup).except(:start)
-      unchecked_params = term.added_to_params(permitted_params.deep_dup).except(:start)
-      term_label       = truncate(sanitize(term.label, tags: []), length: 80)
+      term_label = truncate(sanitize(term.label, tags: []), length: 80)
+      query      = term.query.gsub('"', '&quot;')
+      if name == "fq[]"
+        checked          = (permitted_params[:fq]&.include?(term.query)) ? "checked" : nil
+        checked_params   = term.removed_from_params(permitted_params.deep_dup).except(:start)
+        unchecked_params = term.added_to_params(permitted_params.deep_dup).except(:start)
+      elsif query == checked_value
+        checked = "checked"
+      else
+        checked = (params[name.to_sym] == query) ? "checked" : ""
+      end
       panel << '<li class="term">'
       panel <<   '<label>'
-      query =      term.query.gsub('"', '&quot;')
-      panel <<     "<input type=\"checkbox\" name=\"fq[]\" #{checked} "\
+      panel <<     "<input type=\"#{control}\" name=\"#{name}\" #{checked} "\
                        "data-query=\"#{query}\" "\
                        "data-checked-href=\"#{url_for(unchecked_params)}\" "\
                        "data-unchecked-href=\"#{url_for(checked_params)}\" "\
                        "value=\"#{query}\"> "
       panel <<       "<span class=\"term-name\">#{term_label}</span> "
-      panel <<       "<span class=\"count\">#{term.count}</span>"
+      if term.count > 0
+        panel <<     "<span class=\"count\">#{term.count}</span>"
+      end
       panel <<   '</label>'
       panel << '</li>'
     end
