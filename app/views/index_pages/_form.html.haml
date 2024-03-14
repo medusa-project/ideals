@@ -11,7 +11,7 @@
   %h5 Elements
 
   .mb-3
-    - current_institution.registered_elements.order(:label).each do |re|
+    - f.object.institution.registered_elements.order(:label).each do |re|
       .form-check
         = check_box_tag "registered_element_ids[]", re.id,
           f.object.registered_elements.find_by_id(re.id),
