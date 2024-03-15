@@ -844,7 +844,7 @@ module ApplicationHelper
         html << "<span class=\"institution\">"
         html <<   icon_for(resource.institution)
         html <<   " "
-        html <<   resource.institution.name
+        html <<   resource.institution&.name
         html << "</span>"
       end
       html << "<br><br>"
