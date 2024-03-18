@@ -29,19 +29,25 @@ body#global-landing {
   #map-section, #map-section .collapse, #map-section .collapsing {
     $section-color: #f5f5f5;
     background-color: $section-color;
-    #illinois-map {
-      fill: #84a4d3;
-      stroke: #213e65;
-      stroke-width: 3px;
-      max-width: 100%;
+    #map-container {
       height: 600px;
-      .institution-point {
-        stroke: orange;
-        fill: #941f1f;
-      }
-      .institution-point.selected {
-        fill: orange;
-        stroke: yellow;
+      overflow-y: hidden;
+      #illinois-map {
+        fill: #84a4d3;
+        margin-top: -75px;
+        margin-left: -110px;
+        stroke: #213e65;
+        stroke-width: 3px;
+        max-width: 100%;
+        height: 800px;
+        .institution-point {
+          fill: #136ab9;
+          stroke: #447daf;
+        }
+        .institution-point.selected {
+          fill: orange;
+          stroke: yellow;
+        }
       }
     }
     .right-column {
