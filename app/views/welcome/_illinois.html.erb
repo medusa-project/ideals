@@ -27,7 +27,7 @@
     <% @institutions.select{ |i| i.latitude_degrees.present? && i.longitude_degrees.present? }.each do |institution| %>
       <% long = SpaceUtils.dms_to_decimal(institution.longitude_degrees, institution.longitude_minutes, institution.longitude_seconds) %>
       <% lat  = SpaceUtils.dms_to_decimal(institution.latitude_degrees, institution.latitude_minutes, institution.latitude_seconds) %>
-      <% cx   = long %>
+      <% cx   = long + (w_bound - long) * 0.26 + 1.01 %>
       <% cy   = s_bound + lat_span - (lat - s_bound) %>
       <circle class="institution-point" id="<%= institution.key %>-point"
               data-institution-key="<%= institution.key %>"
