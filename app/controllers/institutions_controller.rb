@@ -905,9 +905,9 @@ class InstitutionsController < ApplicationController
   def properties_params
     params.require(:institution).permit(:fqdn, :key, :latitude_degrees,
                                         :latitude_minutes, :latitude_seconds,
-                                        :longitude_degrees, :longitude_minutes,
-                                        :longitude_seconds, :name,
-                                        :service_name)
+                                        :live, :longitude_degrees,
+                                        :longitude_minutes, :longitude_seconds,
+                                        :name, :service_name)
   end
 
   def settings_params

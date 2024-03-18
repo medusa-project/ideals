@@ -19,6 +19,7 @@
       %th Name
       %th Service Name
       %th Scope URL
+      %th Live
   %tbody
     - @institutions.each do |institution|
       %tr
@@ -29,6 +30,7 @@
         %td= link_to(institution.service_name, institution)
         %td
           %code= link_to(institution.scope_url, institution.scope_url)
+        %td= boolean(institution.live, style: :word)
 
 = render partial: "shared/xhr_modal",
          locals: { id: "add-institution-modal", title: "Add Institution" }

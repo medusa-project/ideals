@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_03_11_195942) do
+ActiveRecord::Schema[7.1].define(version: 2024_03_15_180326) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -444,6 +444,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_11_195942) do
     t.boolean "allow_user_registration", default: true, null: false
     t.string "saml_metadata_url"
     t.string "saml_sp_entity_id"
+    t.boolean "live", default: false, null: false
     t.index ["fqdn"], name: "index_institutions_on_fqdn", unique: true
     t.index ["incoming_message_queue"], name: "index_institutions_on_incoming_message_queue", unique: true
     t.index ["key"], name: "index_institutions_on_key", unique: true

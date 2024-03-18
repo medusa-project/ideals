@@ -20,6 +20,8 @@
   %dt Key
   %dd
     %code= @institution.key
+  %dt Live
+  %dd= boolean(@institution.live, style: :word)
   %dt Latitude
   %dd
     - if @institution.latitude_degrees.present? && @institution.latitude_minutes.present? && @institution.latitude_seconds.present?
