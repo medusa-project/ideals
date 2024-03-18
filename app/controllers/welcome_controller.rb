@@ -68,6 +68,8 @@ class WelcomeController < ApplicationController
     end
     @recent_items     = Item.search.
       aggregations(false).
+      filter(Item::IndexFields::INSTITUTION_KEY, @institutions.map(&:key)).
+      filter(Item::IndexFields::STAGE, Item::Stages::APPROVED).
       order(Item::IndexFields::CREATED => :desc).
       limit(4)
     @recent_items     = policy_scope(@recent_items, policy_scope_class: ItemPolicy::Scope)
