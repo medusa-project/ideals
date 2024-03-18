@@ -62,9 +62,10 @@ class WelcomeController < ApplicationController
     @institutions     = Institution.where(live: true).order(:name)
     @num_institutions = @institutions.count
     @num_items        = Rails.cache.fetch("global_num_items", expires_in: 12.hours) do
-      # We don't need to find only items in live institutions because those
-      # will generally have no or few items.
-      Item.where(stage: Item::Stages::APPROVED).count
+      Item.search.
+        non_embargoed.
+        filter(Item::IndexFields::STAGE, Item::Stages::APPROVED).
+        count
     end
     @recent_items     = Item.search.
       aggregations(false).
