@@ -132,6 +132,10 @@ class InstitutionPolicy < ApplicationPolicy
     show_settings
   end
 
+  def show_buried_items
+    show
+  end
+
   def show_depositing
     show
   end
@@ -160,10 +164,6 @@ class InstitutionPolicy < ApplicationPolicy
     show
   end
 
-  def show_items
-    show
-  end
-
   def show_metadata_profiles
     effective_sysadmin(@user, @role_limit)
   end
@@ -174,6 +174,10 @@ class InstitutionPolicy < ApplicationPolicy
 
   def show_preservation
     effective_sysadmin(@user, @role_limit)
+  end
+
+  def show_private_items
+    show
   end
 
   def show_properties
@@ -222,6 +226,10 @@ class InstitutionPolicy < ApplicationPolicy
 
   def show_vocabularies
     show_metadata_profiles
+  end
+
+  def show_withdrawn_items
+    show
   end
 
   def statistics_by_range
