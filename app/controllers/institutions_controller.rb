@@ -350,9 +350,6 @@ class InstitutionsController < ApplicationController
   def show
     @review_count                  = review_items(0, 0).count
     @submissions_in_progress_count = submissions_in_progress(0, 0).count
-    @buried_items_count            = buried_items(0, 0).count
-    @private_items_count           = private_items(0, 0).count
-    @withdrawn_items_count         = withdrawn_items(0, 0).count
   end
 
   ##
@@ -371,21 +368,6 @@ class InstitutionsController < ApplicationController
   #
   def show_authentication
     render partial: "show_authentication_tab"
-  end
-
-  ##
-  # Renders HTML for the deleted items tab in show-institution view.
-  #
-  # Responds to `GET /institutions/:key/buried-items` (XHR only)
-  #
-  def show_buried_items
-    @permitted_params = params.permit(RESULTS_PARAMS)
-    @start            = [@permitted_params[:start].to_i.abs, max_start].min
-    @window           = window_size
-    @items            = buried_items(@start, @window)
-    @count            = @items.count
-    @current_page     = @items.page
-    render partial: "items/listing"
   end
 
   ##
@@ -428,21 +410,6 @@ class InstitutionsController < ApplicationController
   def show_element_registry
     @elements = @institution.registered_elements.order(:label)
     render partial: "show_element_registry_tab"
-  end
-
-  ##
-  # Renders HTML for the private items tab in show-institution view.
-  #
-  # Responds to `GET /institutions/:key/private-items` (XHR only)
-  #
-  def show_private_items
-    @permitted_params = params.permit(RESULTS_PARAMS)
-    @start            = [@permitted_params[:start].to_i.abs, max_start].min
-    @window           = window_size
-    @items            = private_items(@start, @window)
-    @count            = @items.count
-    @current_page     = @items.page
-    render partial: "items/listing", locals: { show_private_normally: true }
   end
 
   ##
@@ -682,21 +649,6 @@ class InstitutionsController < ApplicationController
     @vocabularies     = @vocabularies.limit(@window).offset(@start)
     @current_page     = ((@start / @window.to_f).ceil + 1 if @window > 0) || 1
     render partial: "show_vocabularies_tab"
-  end
-
-  ##
-  # Renders HTML for the withdrawn items tab in show-institution view.
-  #
-  # Responds to `GET /institutions/:key/withdrawn-items` (XHR only)
-  #
-  def show_withdrawn_items
-    @permitted_params = params.permit(RESULTS_PARAMS)
-    @start            = [@permitted_params[:start].to_i.abs, max_start].min
-    @window           = window_size
-    @items            = withdrawn_items(@start, @window)
-    @count            = @items.count
-    @current_page     = @items.page
-    render partial: "items/listing"
   end
 
   ##
@@ -994,30 +946,6 @@ class InstitutionsController < ApplicationController
     end
   end
 
-  def buried_items(start, limit)
-    Item.search.
-      institution(@institution).
-      aggregations(false).
-      include_buried.
-      filter(Item::IndexFields::STAGE, Item::Stages::BURIED).
-      order(@institution.title_element.indexed_sort_field).
-      start(start).
-      limit(limit)
-  end
-
-  def private_items(start, limit)
-    Item.search.
-      institution(@institution).
-      aggregations(false).
-      filter_range("#{Item::IndexFields::EMBARGOES}.#{Embargo::IndexFields::ALL_ACCESS_EXPIRES_AT}",
-                   :gt,
-                   Time.now.strftime("%Y-%m-%d")).
-      must_not(Item::IndexFields::STAGE, Item::Stages::WITHDRAWN).
-      order(@institution.title_element.indexed_sort_field).
-      start(start).
-      limit(limit)
-  end
-
   def review_items(start, limit)
     Item.search.
       institution(@institution).
@@ -1035,16 +963,6 @@ class InstitutionsController < ApplicationController
       aggregations(false).
       filter(Item::IndexFields::STAGE, Item::Stages::SUBMITTING).
       order(Item::IndexFields::CREATED).
-      start(start).
-      limit(limit)
-  end
-
-  def withdrawn_items(start, limit)
-    Item.search.
-      institution(@institution).
-      aggregations(false).
-      filter(Item::IndexFields::STAGE, Item::Stages::WITHDRAWN).
-      order(@institution.title_element.indexed_sort_field).
       start(start).
       limit(limit)
   end

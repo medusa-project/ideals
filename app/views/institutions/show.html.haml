@@ -20,7 +20,6 @@
 
 - show_access                  = policy(@institution).show_access?
 - show_authentication          = policy(@institution).show_authentication?
-- show_buried_items            = policy(@institution).show_buried_items?
 - show_depositing              = policy(@institution).show_depositing?
 - show_element_mappings        = policy(@institution).show_element_mappings?
 - show_element_namespaces      = policy(@institution).show_element_namespaces?
@@ -28,10 +27,10 @@
 - show_imports                 = policy(@institution).show_imports?
 - show_index_pages             = policy(@institution).show_index_pages?
 - show_invitees                = policy(@institution).show_invitees?
+- show_items                   = policy(@institution).show_items?
 - show_metadata_profiles       = policy(@institution).show_metadata_profiles?
 - show_prebuilt_searches       = policy(@institution).show_prebuilt_searches?
 - show_preservation            = policy(@institution).show_preservation?
-- show_private_items           = policy(@institution).show_private_items?
 - show_properties              = policy(@institution).show_properties?
 - show_review_submissions      = policy(@institution).show_review_submissions?
 - show_settings                = policy(@institution).show_settings?
@@ -44,7 +43,6 @@
 - show_user_groups             = policy(@institution).show_user_groups?
 - show_users                   = policy(@institution).show_users?
 - show_vocabularies            = policy(@institution).show_vocabularies?
-- show_withdrawn_items         = policy(@institution).show_withdrawn_items?
 
 .d-flex
   .nav.nav-pills.flex-column.me-3{role:               "tablist",
@@ -128,39 +126,6 @@
         Submissions in Progress
         - if @submissions_in_progress_count > 0
           %span.badge.rounded-pill.text-bg-primary= @submissions_in_progress_count
-    - if show_private_items
-      %button#private-items-tab.nav-link{"data-bs-target": "#private-items-tab-content",
-                                         "data-bs-toggle": "pill",
-                                         role:             "tab",
-                                         type:             "button",
-                                         "aria-controls":  "private-items-tab-content",
-                                         "aria-selected":  "false"}
-        = icon_for(Embargo)
-        Private Items
-        - if @private_items_count > 0
-          %span.badge.rounded-pill.text-bg-primary= @private_items_count
-    - if show_withdrawn_items
-      %button#withdrawn-items-tab.nav-link{"data-bs-target": "#withdrawn-items-tab-content",
-                                           "data-bs-toggle": "pill",
-                                           role:             "tab",
-                                           type:             "button",
-                                           "aria-controls":  "withdrawn-items-tab-content",
-                                           "aria-selected":  "false"}
-        %i.fa.fa-cubes-stacked
-        Withdrawn Items
-        - if @withdrawn_items_count > 0
-          %span.badge.rounded-pill.text-bg-primary= @withdrawn_items_count
-    - if show_buried_items
-      %button#deleted-items-tab.nav-link{"data-bs-target": "#deleted-items-tab-content",
-                                         "data-bs-toggle": "pill",
-                                         role:             "tab",
-                                         type:             "button",
-                                         "aria-controls":  "deleted-items-tab-content",
-                                         "aria-selected":  "false"}
-        = icon_for(:delete)
-        Deleted Items
-        - if @buried_items_count > 0
-          %span.badge.rounded-pill.text-bg-primary= @buried_items_count
     - if show_units
       %button#units-tab.nav-link{"data-bs-target": "#units-tab-content",
                                  "data-bs-toggle": "pill",
@@ -170,6 +135,14 @@
                                  "aria-selected":  "false"}
         = icon_for(Unit)
         Units
+    - if show_items
+      %a#items-tab.nav-link{href: search_url(host: @institution.fqdn),
+                            target: "_blank",
+                            role:             "tab",
+                            type:             "button",
+                            "aria-selected":  "false"}
+        = icon_for(Item)
+        Items
     - if show_element_mappings
       %button#element-mappings-tab.nav-link{"data-bs-target": "#element-mappings-tab-content",
                                             "data-bs-toggle": "pill",
@@ -325,16 +298,6 @@
                                                 "aria-labelledby": "authentication-tab"}
         = spinner
 
-    - if show_buried_items
-      #deleted-items-tab-content.tab-pane.fade{role:              "tabpanel",
-                                               "aria-labelledby": "deleted-items-tab"}
-        = spinner
-
-    - if show_private_items
-      #private-items-tab-content.tab-pane.fade{role:              "tabpanel",
-                                               "aria-labelledby": "private-items-tab"}
-        = spinner
-
     - if show_element_mappings
       #element-mappings-tab-content.tab-pane.fade{role:              "tabpanel",
                                                   "aria-labelledby": "element-mappings-tab"}
@@ -438,11 +401,6 @@
     - if show_access
       #access-tab-content.tab-pane.fade{role:              "tabpanel",
                                         "aria-labelledby": "access-tab"}
-        = spinner
-
-    - if show_withdrawn_items
-      #withdrawn-items-tab-content.tab-pane.fade{role:              "tabpanel",
-                                                 "aria-labelledby": "withdrawn-items-tab"}
         = spinner
 
 = render partial: "shared/xhr_modal",

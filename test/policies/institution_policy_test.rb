@@ -1259,58 +1259,6 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.show_authentication?
   end
 
-  # show_buried_items?()
-
-  test "show_buried_items?() returns false with a nil request context" do
-    context = RequestContext.new(user:        nil,
-                                 institution: @institution)
-    policy = InstitutionPolicy.new(context, @institution)
-    assert !policy.show_buried_items?
-  end
-
-  test "show_buried_items?() does not authorize non-sysadmins" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: @institution)
-    policy = InstitutionPolicy.new(context, @institution)
-    assert !policy.show_buried_items?
-  end
-
-  test "show_buried_items?() authorizes sysadmins" do
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: @institution)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert policy.show_buried_items?
-  end
-
-  test "show_buried_items?() authorizes administrators of the same institution" do
-    user    = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: @institution)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert policy.show_buried_items?
-  end
-
-  test "show_buried_items?() does not authorize administrators of a different
-  institution" do
-    user    = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: @institution)
-    policy  = InstitutionPolicy.new(context, institutions(:northeast))
-    assert !policy.show_buried_items?
-  end
-
-  test "show_buried_items?() respects role limits" do
-    # sysadmin user limited to an insufficient role
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::LOGGED_IN)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert !policy.show_buried_items?
-  end
-
   # show_depositing?()
 
   test "show_depositing?() returns false with a nil request context" do
@@ -1608,6 +1556,58 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.show_invitees?
   end
 
+  # show_items?()
+
+  test "show_items?() returns false with a nil request context" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @institution)
+    policy = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_items?
+  end
+
+  test "show_items?() does not authorize non-sysadmins" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_items?
+  end
+
+  test "show_items?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.show_items?
+  end
+
+  test "show_items?() authorizes administrators of the same institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.show_items?
+  end
+
+  test "show_items?() does not authorize administrators of a different
+  institution" do
+    user    = users(:southwest_admin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, institutions(:northeast))
+    assert !policy.show_items?
+  end
+
+  test "show_items?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.show_items?
+  end
+
   # show_metadata_profiles?()
 
   test "show_metadata_profiles?() returns false with a nil request context" do
@@ -1711,59 +1711,6 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
                                  role_limit:  Role::LOGGED_IN)
     policy  = InstitutionPolicy.new(context, @institution)
     assert !policy.show_preservation?
-  end
-
-  # show_private_items?()
-
-  test "show_private_items?() returns false with a nil request context" do
-    context = RequestContext.new(user:        nil,
-                                 institution: @institution)
-    policy = InstitutionPolicy.new(context, @institution)
-    assert !policy.show_private_items?
-  end
-
-  test "show_private_items?() does not authorize non-sysadmins" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: @institution)
-    policy = InstitutionPolicy.new(context, @institution)
-    assert !policy.show_private_items?
-  end
-
-  test "show_private_items?() authorizes sysadmins" do
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: @institution)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert policy.show_private_items?
-  end
-
-  test "show_private_items?() authorizes administrators of the same
-  institution" do
-    user    = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: @institution)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert policy.show_private_items?
-  end
-
-  test "show_private_items?() does not authorize administrators of a different
-  institution" do
-    user    = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: @institution)
-    policy  = InstitutionPolicy.new(context, institutions(:northeast))
-    assert !policy.show_private_items?
-  end
-
-  test "show_private_items?() respects role limits" do
-    # sysadmin user limited to an insufficient role
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::LOGGED_IN)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert !policy.show_private_items?
   end
 
   # show_properties?()
@@ -2339,58 +2286,6 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
                                  role_limit:  Role::LOGGED_IN)
     policy  = InstitutionPolicy.new(context, @institution)
     assert !policy.show_vocabularies?
-  end
-
-  # show_withdrawn_items?()
-
-  test "show_withdrawn_items?() returns false with a nil request context" do
-    context = RequestContext.new(user:        nil,
-                                 institution: @institution)
-    policy = InstitutionPolicy.new(context, @institution)
-    assert !policy.show_withdrawn_items?
-  end
-
-  test "show_withdrawn_items?() does not authorize non-sysadmins" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: @institution)
-    policy = InstitutionPolicy.new(context, @institution)
-    assert !policy.show_withdrawn_items?
-  end
-
-  test "show_withdrawn_items?() authorizes sysadmins" do
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: @institution)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert policy.show_withdrawn_items?
-  end
-
-  test "show_withdrawn_items?() authorizes administrators of the same institution" do
-    user    = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: @institution)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert policy.show_withdrawn_items?
-  end
-
-  test "show_withdrawn_items?() does not authorize administrators of a different
-  institution" do
-    user    = users(:southwest_admin)
-    context = RequestContext.new(user:        user,
-                                 institution: @institution)
-    policy  = InstitutionPolicy.new(context, institutions(:northeast))
-    assert !policy.show_withdrawn_items?
-  end
-
-  test "show_withdrawn_items?() respects role limits" do
-    # sysadmin user limited to an insufficient role
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution,
-                                 role_limit:  Role::LOGGED_IN)
-    policy  = InstitutionPolicy.new(context, @institution)
-    assert !policy.show_withdrawn_items?
   end
 
   # statistics_by_range?()
