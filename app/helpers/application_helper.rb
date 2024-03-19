@@ -831,7 +831,7 @@ module ApplicationHelper
     if resource.kind_of?(Item)
       author = resource.authors.map(&:string).join("; ")
       date   = resource.elements.
-        select{ |e| e.name == resource.institution.date_approved_element.name }.
+        select{ |e| e.name == resource.institution&.date_approved_element&.name }.
         map{ |e| e.string.to_i.to_s }.
         reject{ |e| e == "0" }.
         join("; ")

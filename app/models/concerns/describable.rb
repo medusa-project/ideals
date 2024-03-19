@@ -20,7 +20,7 @@ module Describable
     #
     def authors
       self.elements.sort_by(&:position).
-        select{ |e| e.name == self.institution.author_element&.name }
+        select{ |e| e.name == self.institution&.author_element&.name } || []
     end
 
     ##
