@@ -4,6 +4,7 @@ class ApplicationControllerTest < ActionDispatch::IntegrationTest
 
   setup do
     host! institutions(:southwest).fqdn
+    setup_opensearch
   end
 
   test "disabled users are logged out" do
