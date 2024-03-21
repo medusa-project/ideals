@@ -128,18 +128,29 @@ const InstitutionView = {
         $("#deleted-items-tab").on("show.bs.tab", function () {
             const url = ROOT_URL + "/institutions/" + institutionKey + "/buried-items";
             $.get(url, function (data) {
-                $("#deleted-items-tab-content").html(data);
+                $("#deleted-items-results").html(data);
 
                 const attachResultsEventListeners = function() {
                     $(".page-link").on("click", function(e) {
                         e.preventDefault();
                         refreshResults($(this).attr("href"));
                     });
+                    let timeout = null;
+                    $("#deleted-items-tab-content").find("[name=q]").on("keyup", function() {
+                        clearTimeout(timeout);
+                        const query = $(this).parents("form").serialize();
+                        timeout = setTimeout(function() {
+                                const url = ROOT_URL + "/institutions/" + institutionKey +
+                                    "/buried-items?" + query;
+                                refreshResults(url);
+                            },
+                            IDEALS.UIUtils.KEY_DELAY);
+                    });
                 };
                 attachResultsEventListeners();
 
                 const refreshResults = function(url) {
-                    const container = $("#deleted-items-tab-content");
+                    const container = $("#deleted-items-results");
                     container.html(IDEALS.UIUtils.Spinner());
                     if (!url) {
                         url = ROOT_URL + "/institutions/" + institutionKey + "/buried-items";
@@ -249,7 +260,7 @@ const InstitutionView = {
                     });
                 });
             });
-        }).trigger("show.bs.tab");
+        });
 
         $("#element-registry-tab").on("show.bs.tab", function () {
             const url = ROOT_URL + "/institutions/" + institutionKey + "/elements";
@@ -259,10 +270,52 @@ const InstitutionView = {
             });
         });
 
-        $("#private-items-tab").on("show.bs.tab", function () {
+        $("#private-items-tab, #items-tab").on("show.bs.tab", function () {
             const url = ROOT_URL + "/institutions/" + institutionKey + "/private-items";
             $.get(url, function (data) {
-                $("#private-items-tab-content").html(data);
+                $("#private-items-results").html(data);
+
+                const attachResultsEventListeners = function() {
+                    $(".page-link").on("click", function(e) {
+                        e.preventDefault();
+                        refreshResults($(this).attr("href"));
+                    });
+                    let timeout = null;
+                    $("#private-items-tab-content").find("[name=q]").on("keyup", function() {
+                        clearTimeout(timeout);
+                        const query = $(this).parents("form").serialize();
+                        timeout = setTimeout(function() {
+                                const url = ROOT_URL + "/institutions/" + institutionKey +
+                                    "/private-items?" + query;
+                                refreshResults(url);
+                            },
+                            IDEALS.UIUtils.KEY_DELAY);
+                    });
+                };
+                attachResultsEventListeners();
+
+                const refreshResults = function(url) {
+                    const container = $("#private-items-results");
+                    container.html(IDEALS.UIUtils.Spinner());
+                    if (!url) {
+                        url = ROOT_URL + "/institutions/" + institutionKey + "/private-items";
+                    }
+                    $.ajax({
+                        method:  "GET",
+                        url:     url,
+                        success: function(data) {
+                            container.html(data);
+                            attachResultsEventListeners();
+                        }
+                    });
+                };
+            });
+        });
+
+        $("#rejected-items-tab").on("show.bs.tab", function () {
+            const url = ROOT_URL + "/institutions/" + institutionKey + "/rejected-items";
+            $.get(url, function (data) {
+                $("#rejected-items-results").html(data);
 
                 const attachResultsEventListeners = function() {
                     $(".page-link").on("click", function(e) {
@@ -270,13 +323,24 @@ const InstitutionView = {
                         refreshResults($(this).attr("href"));
                     });
                 };
+                let timeout = null;
+                $("#rejected-items-tab-content").find("[name=q]").on("keyup", function() {
+                    clearTimeout(timeout);
+                    const query = $(this).parents("form").serialize();
+                    timeout = setTimeout(function() {
+                            const url = ROOT_URL + "/institutions/" + institutionKey +
+                                "/rejected-items?" + query;
+                            refreshResults(url);
+                        },
+                        IDEALS.UIUtils.KEY_DELAY);
+                });
                 attachResultsEventListeners();
 
                 const refreshResults = function(url) {
-                    const container = $("#private-items-tab-content");
+                    const container = $("#rejected-items-results");
                     container.html(IDEALS.UIUtils.Spinner());
                     if (!url) {
-                        url = ROOT_URL + "/institutions/" + institutionKey + "/private-items";
+                        url = ROOT_URL + "/institutions/" + institutionKey + "/rejected-items";
                     }
                     $.ajax({
                         method:  "GET",
@@ -506,18 +570,29 @@ const InstitutionView = {
         $("#withdrawn-items-tab").on("show.bs.tab", function () {
             const url = ROOT_URL + "/institutions/" + institutionKey + "/withdrawn-items";
             $.get(url, function (data) {
-                $("#withdrawn-items-tab-content").html(data);
+                $("#withdrawn-items-results").html(data);
 
                 const attachResultsEventListeners = function() {
                     $(".page-link").on("click", function(e) {
                         e.preventDefault();
                         refreshResults($(this).attr("href"));
                     });
+                    let timeout = null;
+                    $("#withdrawn-items-tab-content").find("[name=q]").on("keyup", function() {
+                        clearTimeout(timeout);
+                        const query = $(this).parents("form").serialize();
+                        timeout = setTimeout(function() {
+                                const url = ROOT_URL + "/institutions/" + institutionKey +
+                                    "/withdrawn-items?" + query;
+                                refreshResults(url);
+                            },
+                            IDEALS.UIUtils.KEY_DELAY);
+                    });
                 };
                 attachResultsEventListeners();
 
                 const refreshResults = function(url) {
-                    const container = $("#withdrawn-items-tab-content");
+                    const container = $("#withdrawn-items-results");
                     container.html(IDEALS.UIUtils.Spinner());
                     if (!url) {
                         url = ROOT_URL + "/institutions/" + institutionKey + "/withdrawn-items";

@@ -28,6 +28,7 @@
 - show_imports                 = policy(@institution).show_imports?
 - show_index_pages             = policy(@institution).show_index_pages?
 - show_invitees                = policy(@institution).show_invitees?
+- show_items                   = policy(@institution).show_items?
 - show_metadata_profiles       = policy(@institution).show_metadata_profiles?
 - show_prebuilt_searches       = policy(@institution).show_prebuilt_searches?
 - show_preservation            = policy(@institution).show_preservation?
@@ -128,39 +129,6 @@
         Submissions in Progress
         - if @submissions_in_progress_count > 0
           %span.badge.rounded-pill.text-bg-primary= @submissions_in_progress_count
-    - if show_private_items
-      %button#private-items-tab.nav-link{"data-bs-target": "#private-items-tab-content",
-                                         "data-bs-toggle": "pill",
-                                         role:             "tab",
-                                         type:             "button",
-                                         "aria-controls":  "private-items-tab-content",
-                                         "aria-selected":  "false"}
-        = icon_for(Embargo)
-        Private Items
-        - if @private_items_count > 0
-          %span.badge.rounded-pill.text-bg-primary= @private_items_count
-    - if show_withdrawn_items
-      %button#withdrawn-items-tab.nav-link{"data-bs-target": "#withdrawn-items-tab-content",
-                                           "data-bs-toggle": "pill",
-                                           role:             "tab",
-                                           type:             "button",
-                                           "aria-controls":  "withdrawn-items-tab-content",
-                                           "aria-selected":  "false"}
-        %i.fa.fa-cubes-stacked
-        Withdrawn Items
-        - if @withdrawn_items_count > 0
-          %span.badge.rounded-pill.text-bg-primary= @withdrawn_items_count
-    - if show_buried_items
-      %button#deleted-items-tab.nav-link{"data-bs-target": "#deleted-items-tab-content",
-                                         "data-bs-toggle": "pill",
-                                         role:             "tab",
-                                         type:             "button",
-                                         "aria-controls":  "deleted-items-tab-content",
-                                         "aria-selected":  "false"}
-        = icon_for(:delete)
-        Deleted Items
-        - if @buried_items_count > 0
-          %span.badge.rounded-pill.text-bg-primary= @buried_items_count
     - if show_units
       %button#units-tab.nav-link{"data-bs-target": "#units-tab-content",
                                  "data-bs-toggle": "pill",
@@ -170,6 +138,15 @@
                                  "aria-selected":  "false"}
         = icon_for(Unit)
         Units
+    - if show_items
+      %button#items-tab.nav-link{"data-bs-target": "#items-tab-content",
+                                 "data-bs-toggle": "pill",
+                                 role:             "tab",
+                                 type:             "button",
+                                 "aria-controls":  "items-tab-content",
+                                 "aria-selected":  "false"}
+        = icon_for(Item)
+        Items
     - if show_element_mappings
       %button#element-mappings-tab.nav-link{"data-bs-target": "#element-mappings-tab-content",
                                             "data-bs-toggle": "pill",
@@ -325,16 +302,6 @@
                                                 "aria-labelledby": "authentication-tab"}
         = spinner
 
-    - if show_buried_items
-      #deleted-items-tab-content.tab-pane.fade{role:              "tabpanel",
-                                               "aria-labelledby": "deleted-items-tab"}
-        = spinner
-
-    - if show_private_items
-      #private-items-tab-content.tab-pane.fade{role:              "tabpanel",
-                                               "aria-labelledby": "private-items-tab"}
-        = spinner
-
     - if show_element_mappings
       #element-mappings-tab-content.tab-pane.fade{role:              "tabpanel",
                                                   "aria-labelledby": "element-mappings-tab"}
@@ -395,6 +362,85 @@
                                        "aria-labelledby": "units-tab"}
         = spinner
 
+    - if show_items
+      #items-tab-content.tab-pane.fade{role:              "tabpanel",
+                                       "aria-labelledby": "items-tab"}
+        %nav
+          #withdrawn-items-tab.nav.nav-tabs{role: "tablist"}
+            %button#private-items-tab.nav-link.active{"data-bs-toggle": "tab",
+                                                      "data-bs-target": "#private-items-tab-content",
+                                                      type:             "button",
+                                                      role:             "tab",
+                                                      "aria-controls":  "private-items-tab-content",
+                                                      "aria-selected":  "true"} Private Items
+            %button#withdrawn-items-tab.nav-link{"data-bs-toggle": "tab",
+                                                 "data-bs-target": "#withdrawn-items-tab-content",
+                                                 type:             "button",
+                                                 role:             "tab",
+                                                 "aria-controls":  "withdrawn-items-tab-content",
+                                                 "aria-selected":  "false"} Withdrawn Items
+            %button#rejected-items-tab.nav-link{"data-bs-toggle": "tab",
+                                                "data-bs-target": "#rejected-items-tab-content",
+                                                type:             "button",
+                                                role:             "tab",
+                                                "aria-controls":  "rejected-items-tab-content",
+                                                "aria-selected":  "false"} Rejected Items
+            %button#deleted-items-tab.nav-link{"data-bs-toggle": "tab",
+                                               "data-bs-target": "#deleted-items-tab-content",
+                                               type:             "button",
+                                               role:             "tab",
+                                               "aria-controls":  "deleted-items-tab-content",
+                                               "aria-selected":  "false"} Deleted Items
+        .tab-content
+          #private-items-tab-content.tab-pane.fade.show.active{role:              "tabpanel",
+                                                               "aria-labelledby": "private-items-tab",
+                                                               tabindex:          0}
+            = form_tag(institution_private_items_path(@institution)) do
+              .btn-group.float-end{role: "group"}
+                = link_to(search_path, host: @institution.fqdn, class: "btn btn-light", role: "button", target: "_blank") do
+                  %i.fas.fa-arrow-up-right-from-square
+                  Public Items View
+              .mb-3{style: "width: 15em;"}
+                = filter_field(placeholder: "Filter")
+              #private-items-results
+                = spinner
+          #withdrawn-items-tab-content.tab-pane.fade{role:              "tabpanel",
+                                                     "aria-labelledby": "withdrawn-items-tab",
+                                                     tabindex:          0}
+            = form_tag(institution_withdrawn_items_path(@institution)) do
+              .btn-group.float-end{role: "group"}
+                = link_to(search_path, host: @institution.fqdn, class: "btn btn-light", role: "button", target: "_blank") do
+                  %i.fas.fa-arrow-up-right-from-square
+                  Public Items View
+              .mb-3{style: "width: 15em;"}
+                = filter_field(placeholder: "Filter")
+              #withdrawn-items-results
+                = spinner
+          #rejected-items-tab-content.tab-pane.fade{role:              "tabpanel",
+                                                    "aria-labelledby": "rejected-items-tab",
+                                                    tabindex:          0}
+            = form_tag(institution_rejected_items_path(@institution)) do
+              .btn-group.float-end{role: "group"}
+                = link_to(search_path, host: @institution.fqdn, class: "btn btn-light", role: "button", target: "_blank") do
+                  %i.fas.fa-arrow-up-right-from-square
+                  Public Items View
+              .mb-3{style: "width: 15em;"}
+                = filter_field(placeholder: "Filter")
+              #rejected-items-results
+                = spinner
+          #deleted-items-tab-content.tab-pane.fade{role:              "tabpanel",
+                                                   "aria-labelledby": "deleted-items-tab",
+                                                   tabindex:          0}
+            = form_tag(institution_buried_items_path(@institution)) do
+              .btn-group.float-end{role: "group"}
+                = link_to(search_path, host: @institution.fqdn, class: "btn btn-light", role: "button", target: "_blank") do
+                  %i.fas.fa-arrow-up-right-from-square
+                  Public Items View
+              .mb-3{style: "width: 15em;"}
+                = filter_field(placeholder: "Filter")
+              #deleted-items-results
+                = spinner
+
     - if show_review_submissions
       #review-submissions-tab-content.tab-pane.fade{role:              "tabpanel",
                                                     "aria-labelledby": "review-submissions-tab"}
@@ -438,11 +484,6 @@
     - if show_access
       #access-tab-content.tab-pane.fade{role:              "tabpanel",
                                         "aria-labelledby": "access-tab"}
-        = spinner
-
-    - if show_withdrawn_items
-      #withdrawn-items-tab-content.tab-pane.fade{role:              "tabpanel",
-                                                 "aria-labelledby": "withdrawn-items-tab"}
         = spinner
 
 = render partial: "shared/xhr_modal",

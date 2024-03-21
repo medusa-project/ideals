@@ -1268,6 +1268,31 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # show_rejected_items()
+
+  test "show_rejected_items() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    get institution_rejected_items_path(@institution), xhr: true
+    assert_response :not_found
+  end
+
+  test "show_rejected_items() returns HTTP 403 for logged-out users" do
+    get institution_rejected_items_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_rejected_items() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest))
+    get institution_rejected_items_path(@institution), xhr: true
+    assert_response :forbidden
+  end
+
+  test "show_rejected_items() returns HTTP 200 for authorized users" do
+    log_in_as(users(:southwest_admin))
+    get institution_rejected_items_path(@institution), xhr: true
+    assert_response :ok
+  end
+
   # show_review_submissions()
 
   test "show_review_submissions() returns HTTP 404 for unscoped requests" do

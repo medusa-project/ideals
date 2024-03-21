@@ -350,9 +350,6 @@ class InstitutionsController < ApplicationController
   def show
     @review_count                  = review_items(0, 0).count
     @submissions_in_progress_count = submissions_in_progress(0, 0).count
-    @buried_items_count            = buried_items(0, 0).count
-    @private_items_count           = private_items(0, 0).count
-    @withdrawn_items_count         = withdrawn_items(0, 0).count
   end
 
   ##
@@ -379,10 +376,12 @@ class InstitutionsController < ApplicationController
   # Responds to `GET /institutions/:key/buried-items` (XHR only)
   #
   def show_buried_items
-    @permitted_params = params.permit(RESULTS_PARAMS)
+    @permitted_params = params.permit(RESULTS_PARAMS + SIMPLE_SEARCH_PARAMS)
     @start            = [@permitted_params[:start].to_i.abs, max_start].min
     @window           = window_size
-    @items            = buried_items(@start, @window)
+    @items            = buried_items(q:     @permitted_params[:q],
+                                     start: @start,
+                                     limit: @window)
     @count            = @items.count
     @current_page     = @items.page
     render partial: "items/listing"
@@ -436,10 +435,12 @@ class InstitutionsController < ApplicationController
   # Responds to `GET /institutions/:key/private-items` (XHR only)
   #
   def show_private_items
-    @permitted_params = params.permit(RESULTS_PARAMS)
+    @permitted_params = params.permit(RESULTS_PARAMS + SIMPLE_SEARCH_PARAMS)
     @start            = [@permitted_params[:start].to_i.abs, max_start].min
     @window           = window_size
-    @items            = private_items(@start, @window)
+    @items            = private_items(q:     @permitted_params[:q],
+                                      start: @start,
+                                      limit: @window)
     @count            = @items.count
     @current_page     = @items.page
     render partial: "items/listing", locals: { show_private_normally: true }
@@ -538,6 +539,23 @@ class InstitutionsController < ApplicationController
   #
   def show_properties
     render partial: "show_properties_tab"
+  end
+
+  ##
+  # Renders HTML for the rejected items tab in show-institution view.
+  #
+  # Responds to `GET /institutions/:key/rejected-items` (XHR only)
+  #
+  def show_rejected_items
+    @permitted_params = params.permit(RESULTS_PARAMS + SIMPLE_SEARCH_PARAMS)
+    @start            = [@permitted_params[:start].to_i.abs, max_start].min
+    @window           = window_size
+    @items            = rejected_items(q:     @permitted_params[:q],
+                                       start: @start,
+                                       limit: @window)
+    @count            = @items.count
+    @current_page     = @items.page
+    render partial: "items/listing"
   end
 
   ##
@@ -690,10 +708,12 @@ class InstitutionsController < ApplicationController
   # Responds to `GET /institutions/:key/withdrawn-items` (XHR only)
   #
   def show_withdrawn_items
-    @permitted_params = params.permit(RESULTS_PARAMS)
+    @permitted_params = params.permit(RESULTS_PARAMS + SIMPLE_SEARCH_PARAMS)
     @start            = [@permitted_params[:start].to_i.abs, max_start].min
     @window           = window_size
-    @items            = withdrawn_items(@start, @window)
+    @items            = withdrawn_items(q:     @permitted_params[:q],
+                                        start: @start,
+                                        limit: @window)
     @count            = @items.count
     @current_page     = @items.page
     render partial: "items/listing"
@@ -994,10 +1014,11 @@ class InstitutionsController < ApplicationController
     end
   end
 
-  def buried_items(start, limit)
+  def buried_items(q: nil, start:, limit:)
     Item.search.
       institution(@institution).
       aggregations(false).
+      query_searchable_fields(q).
       include_buried.
       filter(Item::IndexFields::STAGE, Item::Stages::BURIED).
       order(@institution.title_element.indexed_sort_field).
@@ -1005,14 +1026,26 @@ class InstitutionsController < ApplicationController
       limit(limit)
   end
 
-  def private_items(start, limit)
+  def private_items(q: nil, start:, limit:)
     Item.search.
       institution(@institution).
       aggregations(false).
+      query_searchable_fields(q).
       filter_range("#{Item::IndexFields::EMBARGOES}.#{Embargo::IndexFields::ALL_ACCESS_EXPIRES_AT}",
                    :gt,
                    Time.now.strftime("%Y-%m-%d")).
       must_not(Item::IndexFields::STAGE, Item::Stages::WITHDRAWN).
+      order(@institution.title_element.indexed_sort_field).
+      start(start).
+      limit(limit)
+  end
+
+  def rejected_items(q: nil, start:, limit:)
+    Item.search.
+      institution(@institution).
+      aggregations(false).
+      query_searchable_fields(q).
+      filter(Item::IndexFields::STAGE, Item::Stages::REJECTED).
       order(@institution.title_element.indexed_sort_field).
       start(start).
       limit(limit)
@@ -1039,10 +1072,11 @@ class InstitutionsController < ApplicationController
       limit(limit)
   end
 
-  def withdrawn_items(start, limit)
+  def withdrawn_items(q: nil, start:, limit:)
     Item.search.
       institution(@institution).
       aggregations(false).
+      query_searchable_fields(q).
       filter(Item::IndexFields::STAGE, Item::Stages::WITHDRAWN).
       order(@institution.title_element.indexed_sort_field).
       start(start).

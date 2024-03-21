@@ -164,6 +164,10 @@ class InstitutionPolicy < ApplicationPolicy
     show
   end
 
+  def show_items
+    show
+  end
+
   def show_metadata_profiles
     effective_sysadmin(@user, @role_limit)
   end
@@ -181,6 +185,10 @@ class InstitutionPolicy < ApplicationPolicy
   end
 
   def show_properties
+    show
+  end
+
+  def show_rejected_items
     show
   end
 

@@ -157,6 +157,8 @@ Rails.application.routes.draw do
           constraints: lambda { |request| request.xhr? }
     match "/properties", to: "institutions#show_properties", via: :get,
           constraints: lambda { |request| request.xhr? }
+    match "/rejected-items", to: "institutions#show_rejected_items", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/review-submissions", to: "institutions#show_review_submissions", via: :get,
           constraints: lambda { |request| request.xhr? }
     match "/settings", to: "institutions#show_settings", via: :get,
