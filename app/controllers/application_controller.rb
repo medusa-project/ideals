@@ -205,9 +205,8 @@ class ApplicationController < ActionController::Base
         ins    = current_institution
         host   = ins ? ins.fqdn : ::Configuration.instance.main_host
         scheme = (Rails.env.development? || Rails.env.test?) ? "http" : "https"
-        redirect_to "#{scheme}://#{host}",
-                    notice: "Please log in.",
-                    allow_other_host: true
+        flash['error'] = "Please log in."
+        redirect_to "#{scheme}://#{host}", allow_other_host: true
       end
     end
   end
