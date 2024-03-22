@@ -117,6 +117,7 @@ class SubmissionsController < ApplicationController
   # Responds to `GET /submit` and `GET /collections/:collection_id/submit`.
   #
   def new
+    authorize(Item, policy_class: SubmissionPolicy)
     # This will be nil if we are arriving at /submit, but otherwise we will
     # use it to pre-select the collection in the submission form.
     @collection  = Collection.find_by(id: params[:collection_id])
