@@ -67,7 +67,6 @@ class Importer
         import.task.update!(status_text: "Importing items from SAF package")
         SafImporter.new.import_from_path(pathname:           Dir[tmpdir + "/*"].first,
                                          primary_collection: import.collection,
-                                         mapfile_path:       File.join(tmpdir, "mapfile.tmp"),
                                          task:               import.task)
         return Import::Format::SAF
       elsif root_files.find{ |f| f.downcase.end_with?(".csv") }

@@ -59,9 +59,9 @@
 #
 # ```
 # <dublin_core schema="etd">
-#      <dcvalue element="degree" qualifier="department">Computer Science</dcvalue>
-#      <dcvalue element="degree" qualifier="level">Masters</dcvalue>
-#      <dcvalue element="degree" qualifier="grantor">Michigan Institute of Technology</dcvalue>
+#     <dcvalue element="degree" qualifier="department">Computer Science</dcvalue>
+#     <dcvalue element="degree" qualifier="level">Masters</dcvalue>
+#     <dcvalue element="degree" qualifier="grantor">Michigan Institute of Technology</dcvalue>
 # </dublin_core>
 # ```
 #
@@ -70,15 +70,23 @@
 #
 # # Error recovery
 #
-# Any error encountered during the import will terminate the import. As each
-# item is imported, it is written to a "mapfile" which is a plain text file in
-# the following format:
+# Any error encountered during the import will terminate the import.
+#
+# As each item is imported, it is written to a "mapfile" which is a plain text
+# file in the following format:
 #
 # `{directory_name}\t{item_handle}`
 #
 # (With `\t` representing the tab character and the directory name being the
 # name of the directory in the SAF package representing the new item.) When the
 # import is re-run, any items already present in the mapfile are skipped.
+#
+# When a mapfile is supplied, one database transaction is used per item, to
+# prevent any incompletely created items.
+#
+# An import can also be run without supplying a mapfile. In this case, the
+# whole import runs inside a single transaction, which is rolled back when an
+# error occurs.
 #
 # @see https://wiki.lyrasis.org/display/DSDOC6x/Importing+and+Exporting+Items+via+Simple+Archive+Format
 #
@@ -88,7 +96,9 @@ class SafImporter
   # @param pathname [String]               Pathname of the package directory
   #                                        root.
   # @param primary_collection [Collection] Collection to import the items into.
-  # @param mapfile_path [String]           Pathname of the mapfile.
+  # @param mapfile_path [String]           Pathname of the mapfile. Only used
+  #                                        for imports from the local file
+  #                                        system.
   # @param print_progress [Boolean]        Whether to print progress updates to
   #                                        stdout.
   # @param task [Task]                     Supply to receive status updates.
@@ -100,14 +110,14 @@ class SafImporter
   #
   def import_from_path(pathname:,
                        primary_collection:,
-                       mapfile_path:,
-                       print_progress: false,
-                       task:           nil)
+                       mapfile_path:       nil,
+                       print_progress:     false,
+                       task:               nil)
     item_dirs = Dir.glob(pathname + "/*").select{ |n| File.directory?(n) }.sort
 
     # Read the list of items in the mapfile, if one exists, in order to skip
     # them during the import.
-    if File.exist?(mapfile_path)
+    if mapfile_path
       imported_item_dirs = mapfile_items(File.read(mapfile_path))
       imported_item_dirs.each do |imported_dir|
         item_dirs = item_dirs.reject{ |d| d.end_with?("/" + imported_dir) }
@@ -115,58 +125,31 @@ class SafImporter
     end
     progress = print_progress ? Progress.new(item_dirs.length) : nil
 
-    File.open(mapfile_path, "wb") do |mapfile|
-      # Iterate through each item directory.
-      item_dirs.each_with_index do |item_dir, index|
-        status_text = "Importing #{item_dirs.length} items from SAF package"
-        progress&.report(index, status_text)
-        task&.progress(index / item_dirs.length.to_f,
-                       status_text: status_text)
-
-        # Work inside a transaction to avoid any incompletely created items.
-        ActiveRecord::Base.transaction do
-          item = ImportItemCommand.new(primary_collection: primary_collection).execute
-          begin
-            item.assign_handle
-
-            # Add bitstreams corresponding to each line in the content file.
-            content_file_path = File.join(item_dir, "content")
-            unless File.exist?(content_file_path)
-              content_file_path = File.join(item_dir, "contents")
-              unless File.exist?(content_file_path)
-                raise IOError, "Missing content file for item #{item_dir}"
-              end
-            end
-            add_bitstreams(item:              item,
-                           content_file_path: content_file_path)
-
-            # Add metadata corresponding to the Dublin Core metadata file.
-            dc_path = File.join(item_dir, "dublin_core.xml")
-            unless File.exist?(dc_path)
-              raise IOError, "Missing dublin_core.xml file for item #{item_dir}"
-            end
-            add_metadata(item:                   item,
-                         metadata_relative_path: dc_path,
-                         metadata_file_content:  File.read(dc_path))
-
-            # Add metadata corresponding to any other metadata files.
-            Dir.glob(File.join(item_dir, "metadata*.xml")) do |metadata_file_path|
-              add_metadata(item:                   item,
-                           metadata_relative_path: metadata_file_path,
-                           metadata_file_content:  File.read(metadata_file_path))
-            end
-
-            item.approve
-            item.save!
-          rescue => e
-            item.handle&.delete_from_server
-            task&.fail(detail:    e.message,
-                       backtrace: e.backtrace)
-            raise e
-          else
-            item_rel_path = item_dir.gsub(pathname + "/", "")
-            mapfile.write("#{item_rel_path}\t#{item.handle.handle}\n")
-          end
+    # If we have a mapfile, use one transaction per item. If we don't have
+    # a mapfile, use one transaction for all items.
+    if mapfile_path
+      File.open(mapfile_path, "wb") do |mapfile|
+        item_dirs.each_with_index do |item_dir, index|
+          import_item(item_dir:           item_dir,
+                      num_item_dirs:      item_dirs.length,
+                      primary_collection: primary_collection,
+                      pathname:           pathname,
+                      mapfile:            mapfile,
+                      index:              index,
+                      progress:           progress,
+                      task:               task)
+        end
+      end
+    else
+      ActiveRecord::Base.transaction do
+        item_dirs.each_with_index do |item_dir, index|
+          import_item(item_dir:           item_dir,
+                      num_item_dirs:      item_dirs.length,
+                      primary_collection: primary_collection,
+                      pathname:           pathname,
+                      index:              index,
+                      progress:           progress,
+                      task:               task)
         end
       end
     end
@@ -175,6 +158,65 @@ class SafImporter
 
 
   private
+
+  def import_item(item_dir:,
+                  num_item_dirs:,
+                  primary_collection:,
+                  pathname:,
+                  mapfile: nil,
+                  index:,
+                  progress:,
+                  task:)
+    status_text = "Importing #{num_item_dirs} items from SAF package"
+    progress&.report(index, status_text)
+    task&.progress(index / num_item_dirs.to_f, status_text: status_text)
+
+    # Work inside a transaction to avoid an incompletely created item.
+    ActiveRecord::Base.transaction do
+      item = ImportItemCommand.new(primary_collection: primary_collection).execute
+      begin
+        item.assign_handle
+
+        # Add bitstreams corresponding to each line in the content file.
+        content_file_path = File.join(item_dir, "content")
+        unless File.exist?(content_file_path)
+          content_file_path = File.join(item_dir, "contents")
+          unless File.exist?(content_file_path)
+            raise IOError, "Missing content file for item #{item_dir}"
+          end
+        end
+        add_bitstreams(item:              item,
+                       content_file_path: content_file_path)
+
+        # Add metadata corresponding to the Dublin Core metadata file.
+        dc_path = File.join(item_dir, "dublin_core.xml")
+        unless File.exist?(dc_path)
+          raise IOError, "Missing dublin_core.xml file for item #{item_dir}"
+        end
+        add_metadata(item:                   item,
+                     metadata_relative_path: dc_path,
+                     metadata_file_content:  File.read(dc_path))
+
+        # Add metadata corresponding to any other metadata files.
+        Dir.glob(File.join(item_dir, "metadata*.xml")) do |metadata_file_path|
+          add_metadata(item:                   item,
+                       metadata_relative_path: metadata_file_path,
+                       metadata_file_content:  File.read(metadata_file_path))
+        end
+
+        item.approve
+        item.save!
+      rescue => e
+        item.handle&.delete_from_server
+        task&.fail(detail:    e.message,
+                   backtrace: e.backtrace)
+        raise e
+      else
+        item_rel_path = item_dir.gsub(pathname + "/", "")
+        mapfile&.write("#{item_rel_path}\t#{item.handle.handle}\n")
+      end
+    end
+  end
 
   ##
   # @param item [Item]
