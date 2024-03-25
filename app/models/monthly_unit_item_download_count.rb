@@ -76,7 +76,7 @@ class MonthlyUnitItemDownloadCount < ApplicationRecord
   def self.increment(unit_id)
     now = Time.now
     sql = "INSERT INTO monthly_unit_item_download_counts (unit_id, year, month, count, created_at, updated_at)
-          VALUES (#{unit_id}, #{now.year}, #{now.month}, 1, NOW(), NOW())
+          VALUES (#{unit_id.to_i}, #{now.year}, #{now.month}, 1, NOW(), NOW())
           ON CONFLICT (unit_id, year, month) DO
           UPDATE SET count = monthly_unit_item_download_counts.count + 1;"
     self.connection.execute(sql, "SQL")

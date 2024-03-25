@@ -58,11 +58,11 @@ class MonthlyItemDownloadCount < ApplicationRecord
             FROM monthly_item_download_counts
             WHERE collection_id = $1
             AND count > 0 "
-    sql << "AND ((year = #{start_year} AND month >= #{start_month}) OR (year > #{start_year})) " if start_year
-    sql << "AND ((year = #{end_year} AND month <= #{end_month}) OR (year < #{end_year})) " if end_year
+    sql << "AND ((year = #{start_year.to_i} AND month >= #{start_month.to_i}) OR (year > #{start_year.to_i})) " if start_year
+    sql << "AND ((year = #{end_year.to_i} AND month <= #{end_month.to_i}) OR (year < #{end_year.to_i})) " if end_year
     sql << "GROUP BY item_id
             ORDER BY dl_count DESC
-            LIMIT #{limit};"
+            LIMIT #{limit.to_i};"
     values = [collection.id]
     self.connection.exec_query(sql.string, 'SQL', values)
   end
@@ -185,8 +185,8 @@ class MonthlyItemDownloadCount < ApplicationRecord
             FROM monthly_item_download_counts
             WHERE institution_id = $1
             AND count > 0 "
-    sql << "AND ((year = #{start_year} AND month >= #{start_month}) OR (year > #{start_year})) " if start_year
-    sql << "AND ((year = #{end_year} AND month <= #{end_month}) OR (year < #{end_year})) " if end_year
+    sql << "AND ((year = #{start_year.to_i} AND month >= #{start_month.to_i}) OR (year > #{start_year.to_i})) " if start_year
+    sql << "AND ((year = #{end_year.to_i} AND month <= #{end_month.to_i}) OR (year < #{end_year.to_i})) " if end_year
     sql << "GROUP BY item_id
             ORDER BY dl_count DESC
             LIMIT #{limit};"
@@ -240,8 +240,8 @@ class MonthlyItemDownloadCount < ApplicationRecord
             FROM monthly_item_download_counts
             WHERE unit_id = $1
             AND count > 0 "
-    sql << "AND ((year = #{start_year} AND month >= #{start_month}) OR (year > #{start_year})) " if start_year
-    sql << "AND ((year = #{end_year} AND month <= #{end_month}) OR (year < #{end_year})) " if end_year
+    sql << "AND ((year = #{start_year.to_i} AND month >= #{start_month.to_i}) OR (year > #{start_year.to_i})) " if start_year
+    sql << "AND ((year = #{end_year.to_i} AND month <= #{end_month.to_i}) OR (year < #{end_year.to_i})) " if end_year
     sql << "GROUP BY item_id
             ORDER BY dl_count DESC
             LIMIT #{limit};"

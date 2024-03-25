@@ -164,7 +164,7 @@ class IndexPagesController < ApplicationController
       INNER JOIN items i ON i.id = ae.item_id
       WHERE i.institution_id = $1
         AND i.stage = $2
-        AND ae.registered_element_id IN (#{reg_e_ids.join(",")})
+        AND ae.registered_element_id IN (#{reg_e_ids.map(&:to_i).join(",")})
       GROUP BY alpha
     ) t
     WHERE count > 0
@@ -183,7 +183,7 @@ class IndexPagesController < ApplicationController
           INNER JOIN items i ON i.id = ae.item_id
           WHERE i.institution_id = $1
             AND i.stage = $2
-            AND ae.registered_element_id IN (#{reg_e_ids.join(",")}) "
+            AND ae.registered_element_id IN (#{reg_e_ids.map(&:to_i).join(",")}) "
     # N.B.: attackers are known to attempt SQL injections here, which will
     # cause a flood of ArgumentError emails unless we rescue.
     begin
@@ -216,7 +216,7 @@ class IndexPagesController < ApplicationController
               INNER JOIN items i ON i.id = ae.item_id
               WHERE i.institution_id = $1
                 AND i.stage = $2
-                AND ae.registered_element_id IN (#{reg_e_ids.join(",")}) "
+                AND ae.registered_element_id IN (#{reg_e_ids.map(&:to_i).join(",")}) "
     # N.B.: attackers are known to attempt SQL injections here, which will
     # cause a flood of ArgumentError emails unless we rescue.
     begin
