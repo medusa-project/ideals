@@ -18,9 +18,13 @@
     = current_institution.name
 
 - if @user_groups.any?
-  %ul
+  %table.table
     - @user_groups.each do |group|
-      %li= link_to(group.name, group)
+      %tr
+        %td= link_to(group.name, group)
+        %td
+          - if group.defines_institution
+            %span.badge.text-bg-primary DEFINES ALL INSTITUTIONAL MEMBERS
 - else
   %p This institution has no user groups.
 
