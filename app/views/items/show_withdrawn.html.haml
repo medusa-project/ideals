@@ -1,6 +1,9 @@
 - provide :body_id, "show_item"
 - provide :title, "Withdrawn Item"
 
+= render partial: "show_button_group"
+
+.clearfix
 .text-center
   %h1 410 Gone
   %hr
@@ -9,8 +12,6 @@
     %p
       Reason:
       = @item.stage_reason
-
-= render partial: "show_button_group"
 
 = render partial: "show_metadata_section"
 = render partial: "show_collections_section"

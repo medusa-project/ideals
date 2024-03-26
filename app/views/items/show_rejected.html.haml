@@ -1,0 +1,15 @@
+- provide :body_id, "show_item"
+- provide :title, "Rejected Item"
+
+= render partial: "show_button_group"
+
+.clearfix
+.text-center
+  %h1 410 Gone
+  %hr
+  %p This item has been rejected.
+
+= render partial: "show_metadata_section"
+= render partial: "show_collections_section"
+= render partial: "show_properties_section"
+= render partial: "show_events_section"

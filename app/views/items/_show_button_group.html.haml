@@ -4,8 +4,8 @@
 - can_bury     = policy(@item).bury?
 - can_destroy  = policy(@item).destroy?
 - can_exhume   = policy(@item).exhume?
-- show_approve_button  = (@item.submitted? || @item.withdrawn?) && can_approve
-- show_reject_button   = !@item.withdrawn? && can_reject
+- show_approve_button  = (@item.submitted? || @item.withdrawn? || @item.rejected?) && can_approve
+- show_reject_button   = !@item.withdrawn? && !@item.rejected? && can_reject
 - show_withdraw_button = @item.approved? && can_withdraw
 - show_delete_button   = !@item.buried? && can_bury
 - show_destroy_button  = can_destroy
@@ -61,7 +61,7 @@
               Undelete
 
   -# Manage Files button
-  - if policy(@item).upload_bitstreams? && !@item.withdrawn?
+  - if policy(@item).upload_bitstreams? && !@item.withdrawn? && !@item.rejected?
     %button.btn.btn-light.manage-item-files{"data-item-id":   @item.id,
                                             "data-bs-target": "#manage-item-files-modal",
                                             "data-bs-toggle": "modal",

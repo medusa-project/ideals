@@ -348,6 +348,8 @@ class ItemsController < ApplicationController
     case @item.stage
     when Item::Stages::SUBMITTING
       redirect_to edit_submission_path(@item), status: :temporary_redirect
+    when Item::Stages::REJECTED
+      render "show_rejected", status: :gone and return
     when Item::Stages::BURIED
       render "show_buried", status: :gone and return
     when Item::Stages::WITHDRAWN
@@ -435,14 +437,15 @@ class ItemsController < ApplicationController
     UpdateItemCommand.new(item:        item,
                           user:        current_user,
                           description: "Item was approved.").execute do
-      unless item.withdrawn?
+      send_email = !item.withdrawn? && !item.rejected?
+      if send_email
         item.assign_handle
         item.move_into_permanent_storage
         item.ingest_into_medusa
       end
       item.approve
       item.save!
-      IdealsMailer.item_approved(item).deliver_later
+      IdealsMailer.item_approved(item).deliver_later if send_email
     end
   end
 
