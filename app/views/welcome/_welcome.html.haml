@@ -1,4 +1,4 @@
-- if logged_in? && to_do_list.total_items > 0
+- if logged_in? && to_do_list.total_items > 0 && current_user.institution == current_institution
   .card.text-white.bg-info.mb-2.ms-2.float-end
     .card-header
       = icon_for(:info)
