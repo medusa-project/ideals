@@ -2,6 +2,8 @@
 
 class SessionsController < ApplicationController
 
+  LOGGER = CustomLogger.new(SessionsController)
+
   skip_before_action :verify_authenticity_token, except: :new
   before_action :require_institution_host, only: :new
 
@@ -41,6 +43,7 @@ class SessionsController < ApplicationController
       return
     end
     auth = request.env["omniauth.auth"]
+    LOGGER.info("Received OmniAuth login hash: %s", auth)
     user = User.from_omniauth(auth, institution: current_institution)
     if user
       if user.email.blank?
@@ -52,10 +55,13 @@ class SessionsController < ApplicationController
           unauthorized(message: "No email address provided.") and return
         end
       elsif !user.enabled
+        LOGGER.info("User %s tried to log into a disabled account", user.email)
         unauthorized(message: "This user account is disabled.") and return
       elsif user.institution != current_institution &&
         !user.sysadmin?(client_ip:       request_context.client_ip,
                         client_hostname: request_context.client_hostname)
+        LOGGER.info("User %s tried to log into a different institution's domain",
+                    user.email)
         unauthorized(message: "You must log in via your home institution's domain.") and return
       end
     else
@@ -63,6 +69,8 @@ class SessionsController < ApplicationController
     end
 
     # At this point, we know we have a valid user who is authorized to log in.
+    LOGGER.info("Successful %s login for user %s",
+                params[:provider], user.email)
     begin
       hostname = Resolv.getname(request.remote_ip)
     rescue Resolv::ResolvError
