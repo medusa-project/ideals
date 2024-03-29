@@ -780,7 +780,12 @@ module ApplicationHelper
       buried_item    = resource.buried?
       rejected_item  = resource.rejected?
     end
-    thumb          = thumbnail_for(resource)
+    thumb = nil
+    begin
+      thumb = thumbnail_for(resource)
+    rescue => e
+      LOGGER.error("resource_list_row(): #{e.message} [resource: #{resource.class} ID #{resource.id}]")
+    end
     if use_resource_host
       resource_url = polymorphic_url(resource, host: resource.institution.fqdn)
     else
