@@ -25,7 +25,7 @@
               = icon_for(Institution)
               Institutions
             %ul.dropdown-menu
-              - Institution.order(:name).each do |institution|
+              - Institution.where(live: true).order(:name).each do |institution|
                 %li
                   = link_to(institution.name,
                             url_for(controller: "welcome", action: "index", host: institution.fqdn),
