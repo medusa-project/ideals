@@ -117,9 +117,8 @@ module ItemsHelper
   #
   def embargoes_form_card(embargo: nil, institution: nil, index: 0)
     institution ||= embargo&.item&.institution
-    selected_year = Time.now.year
-    latest_year   = selected_year + 100
-    html          = StringIO.new
+    latest_year = Time.now.year + 100
+    html        = StringIO.new
     html << '<div class="card mb-3">'
     html <<   '<div class="card-header pt-3">'
     html <<     '<div class="float-end">'
@@ -145,8 +144,10 @@ module ItemsHelper
     html <<         '</label>'
     html <<       '</div>'
 
-    if embargo&.expires_at && embargo.expires_at.year > latest_year
-      selected_year = latest_year
+    if embargo&.expires_at
+      selected_year = [embargo.expires_at.year, latest_year].min
+    else
+      selected_year = Time.now.year
     end
     html <<       date_picker(month_select_name: "embargoes[0][expires_at_month]",
                               day_select_name:   "embargoes[0][expires_at_day]",
