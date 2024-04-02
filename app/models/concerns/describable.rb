@@ -15,12 +15,17 @@ module Describable
   included do
 
     ##
-    # @return [Enumerable<String>] All author {AscribedElement}s in the
-    #                              {elements} association.
+    # @return [Enumerable<String>] Author string suitable for display.
     #
-    def authors
-      self.elements.sort_by(&:position).
-        select{ |e| e.name == self.institution&.author_element&.name } || []
+    def author_string
+      string = self.elements.sort_by(&:position).
+        select{ |e| e.name == self.institution&.author_element&.name }.
+        map(&:string).
+        join("; ")
+      if string.blank? && self.kind_of?(Item)
+        string = "Submitter: #{self.submitter&.name}"
+      end
+      string
     end
 
     ##

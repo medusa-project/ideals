@@ -446,14 +446,20 @@ class ItemTest < ActiveSupport::TestCase
     end
   end
 
-  # authors() (Describable concern)
+  # author_string() (Describable concern)
 
-  test "authors() returns all author elements" do
+  test "author_string() returns all author elements" do
     item  = items(:southeast_described)
     reg_e = item.institution.author_element
     item.elements.build(registered_element: reg_e, string: "Value 1")
     item.elements.build(registered_element: reg_e, string: "Value 2")
-    assert_equal ["Value 1", "Value 2"], item.authors.map(&:string)
+    assert_equal "Value 1; Value 2", item.author_string
+  end
+
+  test "author_string() returns the submitter name when there are no author
+  elements" do
+    item  = items(:southeast_described)
+    assert_equal "Submitter: #{item.submitter.name}", item.author_string
   end
 
   # bulk_reindex()

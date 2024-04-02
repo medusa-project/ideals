@@ -834,7 +834,7 @@ module ApplicationHelper
     html <<     "</h5>"
 
     if resource.kind_of?(Item)
-      author = resource.authors.map(&:string).join("; ")
+      author = resource.author_string
       date   = resource.elements.
         select{ |e| e.name == resource.institution&.date_approved_element&.name }.
         map{ |e| e.string.to_i.to_s }.
