@@ -254,7 +254,7 @@
             - if @user_group.bitstream_authorizations.any?
               %ul
                 - @user_group.bitstream_authorizations.each do |auth|
-                  %li= link_to(auth.item.title, auth.item)
+                  %li= link_to(auth.item.effective_title, auth.item)
             - else
               None
 

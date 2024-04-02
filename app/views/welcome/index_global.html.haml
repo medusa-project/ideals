@@ -72,7 +72,7 @@
         = link_to(url_for(controller: "items", action: "show", id: item.id, host: item.institution.fqdn),
                   class: "list-group-item list-group-item-action") do
           .d-flex.w-100.justify-content-between
-            %h5.mb-1= item.title
+            %h5.mb-1= item.effective_title
             %small= local_time_ago(item.created_at)
           %small= item.institution.name
     .text-center.mt-2

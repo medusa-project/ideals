@@ -352,7 +352,7 @@ class Unit < ApplicationRecord
                                metadata_profile:   nil,
                                submission_profile: nil)
             collection.items.find_each do |item|
-              progress.report(entity_idx, "Moving #{item.title} to #{institution.name}")
+              progress.report(entity_idx, "Moving #{item.effective_title} to #{institution.name}")
               UpdateItemCommand.new(item:        item,
                                     user:        user,
                                     description: "Moved to #{institution.name}").execute do

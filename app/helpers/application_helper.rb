@@ -951,7 +951,7 @@ module ApplicationHelper
                                                                size:           512,
                                                                generate_async: true)
         if url
-          return raw("<img src=\"#{url}\" alt=\"Thumbnail for #{item.title}\"/>")
+          return raw("<img src=\"#{url}\" alt=\"Thumbnail for #{item.effective_title}\"/>")
         end
       end
     end

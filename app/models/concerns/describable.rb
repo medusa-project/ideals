@@ -24,6 +24,14 @@ module Describable
     end
 
     ##
+    # @return [String] String suitable for displaying as the title.
+    #
+    def effective_title
+      title = self.title
+      title.present? ? title : "Untitled #{self.class}"
+    end
+
+    ##
     # @param name [String] Name of a {RegisteredElement}.
     # @return [AscribedElement] Any element matching the given name, or `nil`
     #         if no such element exists.
@@ -34,7 +42,10 @@ module Describable
 
     ##
     # @return [String] Value of any title {AscribedElement} in the {elements}
-    #                  association, or an empty string if not found.
+    #                  association, or an empty string if not found. Note that
+    #                  this may not be suitable for display in the case that an
+    #                  instance does not have such an element ascribed to it.
+    # @see effective_title
     #
     def title
       self.element(self.institution&.title_element&.name)&.string || ""

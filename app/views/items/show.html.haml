@@ -1,5 +1,5 @@
 - provide :body_id, "show_item"
-- provide :title, @item.title
+- provide :title, @item.effective_title
 
 = google_analytics_tags
 
@@ -7,7 +7,7 @@
 
 = render partial: "show_button_group"
 
-%h1= @item.title
+%h1= @item.effective_title
 
 %h4.creators= @item.authors.map(&:string).join("; ")
 

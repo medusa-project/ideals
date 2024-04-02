@@ -43,7 +43,7 @@
             - elsif event.item_id
               = link_to(event.item) do
                 = icon_for(event.item)
-                = event.item.title
+                = event.item.effective_title
             - elsif event.bitstream_id
               = link_to(event.item) do
                 = icon_for(event.bitstream)

@@ -168,7 +168,7 @@ class IdealsMailer < ApplicationMailer
   # @param item [Item]
   #
   def item_approved(item)
-    @item_title      = item.title
+    @item_title      = item.effective_title
     @item_handle_url = item.handle.url
     mail(to:      [item.submitter.email],
          subject: "Your item has been approved")
@@ -180,7 +180,7 @@ class IdealsMailer < ApplicationMailer
   # @param item [Item]
   #
   def item_rejected(item)
-    @item_title       = item.title
+    @item_title       = item.effective_title
     @collection_title = item.primary_collection.title
     @service_name     = item.institution.service_name
     @feedback_email   = item.institution.feedback_email
@@ -215,7 +215,7 @@ class IdealsMailer < ApplicationMailer
   # @param item [Item]
   #
   def item_submitted(item)
-    @item_title           = item.title
+    @item_title           = item.effective_title
     @submissions_reviewed = item.primary_collection.submissions_reviewed
     @service_name         = item.institution.service_name
     mail(to:       [item.submitter.email],

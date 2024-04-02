@@ -197,11 +197,11 @@ class IdealsMailerTest < ActionMailer::TestCase
     assert_equal "Your item has been approved", email.subject
 
     assert_equal render_template("item_approved.txt",
-                                 item_title:      item.title,
+                                 item_title:      item.effective_title,
                                  item_handle_url: item.handle.url),
                  email.text_part.body.raw_source
     assert_equal render_template("item_approved.html",
-                                 item_title:      item.title,
+                                 item_title:      item.effective_title,
                                  item_handle_url: item.handle.url),
                  email.html_part.body.raw_source
   end
@@ -218,13 +218,13 @@ class IdealsMailerTest < ActionMailer::TestCase
     assert_equal "Your item has been rejected", email.subject
 
     assert_equal render_template("item_rejected.txt",
-                                 item_title:       item.title,
+                                 item_title:       item.effective_title,
                                  collection_title: item.primary_collection.title,
                                  service_name:     item.institution.service_name,
                                  feedback_email:   item.institution.feedback_email),
                  email.text_part.body.raw_source
     assert_equal render_template("item_rejected.html",
-                                 item_title:       item.title,
+                                 item_title:       item.effective_title,
                                  collection_title: item.primary_collection.title,
                                  service_name:     item.institution.service_name,
                                  feedback_email:   item.institution.feedback_email),
@@ -265,11 +265,11 @@ class IdealsMailerTest < ActionMailer::TestCase
     assert_equal "Your item has been submitted", email.subject
 
     assert_equal render_template("item_submitted.txt",
-                                 item_title:   item.title,
+                                 item_title:   item.effective_title,
                                  service_name: item.institution.service_name),
                  email.text_part.body.raw_source
     assert_equal render_template("item_submitted.html",
-                                 item_title:   item.title,
+                                 item_title:   item.effective_title,
                                  service_name: item.institution.service_name),
                  email.html_part.body.raw_source
   end

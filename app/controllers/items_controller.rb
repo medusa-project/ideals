@@ -45,7 +45,7 @@ class ItemsController < ApplicationController
     else
       RefreshOpensearchJob.perform_later
       toast!(title:   "Item deleted",
-             message: "The item \"#{@item.title}\" has been deleted.")
+             message: "The item \"#{@item.effective_title}\" has been deleted.")
     ensure
       redirect_to collection || root_url
     end
@@ -60,7 +60,7 @@ class ItemsController < ApplicationController
   #
   def destroy
     collection = @item.effective_primary_collection
-    title      = @item.title
+    title      = @item.effective_title
     begin
       @item.destroy!
     rescue => e
@@ -176,7 +176,7 @@ class ItemsController < ApplicationController
   else
     RefreshOpensearchJob.perform_later
     toast!(title:   "Item undeleted",
-           message: "The item \"#{@item.title}\" has been undeleted.")
+           message: "The item \"#{@item.effective_title}\" has been undeleted.")
   ensure
     redirect_to @item
   end
@@ -400,7 +400,7 @@ class ItemsController < ApplicationController
     else
       RefreshOpensearchJob.perform_later
       toast!(title:   "Item updated",
-             message: "The item \"#{@item.title}\" has been updated.")
+             message: "The item \"#{@item.effective_title}\" has been updated.")
       render "shared/reload"
     end
   end

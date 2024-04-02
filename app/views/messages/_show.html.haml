@@ -25,7 +25,7 @@
         %dt Item
         %dd
           - if message.bitstream&.item
-            = link_to(message.bitstream.item.title, message.bitstream.item)
+            = link_to(message.bitstream.item.effective_title, message.bitstream.item)
         %dt Bitstream ID
         %dd= message.bitstream_id
       - if message.medusa_uuid.present?

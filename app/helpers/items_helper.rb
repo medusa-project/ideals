@@ -289,7 +289,7 @@ module ItemsHelper
         form <<   "</div>"
         form <<   "<div class=\"flex-grow-1 ms-3\">"
         form <<     "<h5 class=\"mt-0 mb-0\">"
-        form <<       link_to(item.title, item)
+        form <<       link_to(item.effective_title, item)
         form <<     "</h5>"
         # Submitter
         form <<     "Submitted by "
@@ -329,7 +329,7 @@ module ItemsHelper
   def submission_list_row(item)
     thumb    = thumbnail_for(item)
     item_url = item_url(item)
-    title    = item.title.present? ? item.title : "(Untitled)"
+    title    = item.effective_title
     html     = StringIO.new
     html << "<div class=\"d-flex resource-list mb-3\">"
     if thumb

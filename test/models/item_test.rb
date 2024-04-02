@@ -829,6 +829,19 @@ class ItemTest < ActiveSupport::TestCase
                  @instance.effective_submission_profile
   end
 
+  # effective_title() (Describable concern)
+
+  test "effective_title() returns the title element value" do
+    item = items(:southeast_described)
+    assert_equal "Some title", item.effective_title
+  end
+
+  test "effective_title() returns a default string when there is no title
+  element" do
+    item = items(:southeast_undescribed)
+    assert_equal "Untitled Item", item.effective_title
+  end
+
   # element() (Describable concern)
 
   test "element() returns a matching element" do

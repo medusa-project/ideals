@@ -235,7 +235,7 @@ class ItemSubmissionTest < ActionDispatch::IntegrationTest
     else
       assert_equal Item::Stages::APPROVED, @item.stage
     end
-    assert_equal "Test", @item.title
+    assert_equal "Test", @item.effective_title
   end
 
   def check_no_embargo
