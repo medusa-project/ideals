@@ -99,19 +99,22 @@ $ cp template.yml test.yml
 Edit both as necessary. See `template.yml` for documentation of the
 configuration format.
 
+You should also obtain `config/credentials/demo.key` and
+`config/credentials/production.key` to decrypt and view/edit the demo &
+production configuration.
+
 ### Create the OpenSearch indexes
 
 ```sh
 rails opensearch:indexes:create[ideals_development]
 rails opensearch:indexes:create[ideals_test]
 ```
-Note: the index schema may change from time to time. Index schemas can't
-generally be changed in place, so a new index has to be created with the new
-schema, and then either existing documents migrated into it ("reindexed" in
-OpenSearch terminology), which is fairly quick, or new documents loaded into
-it, which is very slow. For the development index, you may prefer to have
-separate "blue" and "green" indexes and to switch back-and-forth between them
-as needed:
+Note: Index schemas can't generally be changed in place, so if the schema needs
+to change, a new index has to be created with the new schema, and then either
+existing documents migrated into it ("reindexed" in OpenSearch parlance), which
+is fairly quick, or new documents loaded into it, which is very slow. For the
+development index, you may prefer to have separate "blue" and "green" indexes
+and to switch back-and-forth between them as needed:
 
 ```sh
 rails opensearch:indexes:create[ideals_blue_development]
@@ -165,7 +168,7 @@ running Medusa locally, but that's OK.
 ### Configure the Handle.net server
 
 Refer to the instructions in the
-[SCARS wiki](https://wiki.illinois.edu/wiki/display/scrs/Setting+Up+the+Handle.net+Software+Locally).
+[SCARS wiki](https://wiki.library.illinois.edu/scars/Production_Services/IDEALS/Handle_Server/Setting_Up_the_Handle.net_Software_Locally).
 
 ### Create a user account
 
@@ -208,15 +211,10 @@ provider) calls back to `/auth/:provider/callback`, which is handled by
 `SessionsController.create()`.
 
 OmniAuth and its providers are configured in `config/initializers/omniauth.rb`.
-Providers can be configured globally when they work the same across all
-institutions (local identity), but the SAML provider in particular needs to be
-customized per-institution.
-
-Users who have associated local credentials can also log in via some other
-provider, if configured, but not vice versa.
 
 All users belong to a "home institution." Sysadmins can log in from an
-institutional domain other than their home domain, but non-sysadmins cannot.
+institutional domain other than their home domain using their local 
+credentials, but non-sysadmins cannot.
 
 ## Authorization
 
@@ -260,7 +258,7 @@ See the `ApplicationPolicy` class for more information.
 Within the application S3 bucket, content is laid out in the following
 structure:
 
-* `institutions/:institution_key/derivatives/:bitstream_id/:crop/:size/default.jpg`
+* `institutions/:institution_key/derivatives/:bitstream_id/:region/:size/default.jpg`
 * `institutions/:institution_key/imports/:item_id/`
 * `institutions/:institution_key/storage/:item_id/`
 * `institutions/:institution_key/uploads/:item_id/`
@@ -474,7 +472,7 @@ generally happens like this:
 develop -----> demo -----> production
    ^                           |
    |                           |
-   \---------------------------/
+   \-------- (hotfixes) -------/
 ```
 
 
