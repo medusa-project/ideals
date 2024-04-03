@@ -22,7 +22,7 @@ module Describable
         select{ |e| e.name == self.institution&.author_element&.name }.
         map(&:string).
         join("; ")
-      if string.blank? && self.kind_of?(Item)
+      if string.blank? && self.kind_of?(Item) && self.submitter&.name.present?
         string = "Submitter: #{self.submitter&.name}"
       end
       string
