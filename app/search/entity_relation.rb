@@ -47,6 +47,10 @@ class EntityRelation < AbstractRelation
         label:         "Academic Unit",
         keyword_field: Item::IndexFields::UNIT_TITLES
       }
+      elements << {
+        label:         "Collection",
+        keyword_field: Item::IndexFields::COLLECTION_TITLES
+      }
     else # we are in global scope
       elements << {
         label:         "Institution",
