@@ -53,7 +53,7 @@ class CsvExporter
     # which could cause their metadata to not align with the columns in the
     # CSV, resulting in metadata loss.
     where_clause = collection_ids.any? ?
-                     "WHERE cim.collection_id IN (#{collection_ids.join(", ")}) AND cim.primary = true " :
+                     "WHERE cim.collection_id IN (#{collection_ids.join(", ")}) " :
                      "WHERE 1 = 2 "
 
     # SQL is used for efficiency here--ActiveRecord would be super slow.
