@@ -191,6 +191,7 @@ class InstitutionTest < ActiveSupport::TestCase
                                       main_website_url: "https://example.net")
     assert_equal 1, institution.metadata_profiles.count
     profile = institution.metadata_profiles.first
+    assert_equal "General Metadata Profile", profile.name
     assert profile.institution_default
     assert_equal institution.registered_elements.count, profile.elements.count
   end
@@ -203,6 +204,7 @@ class InstitutionTest < ActiveSupport::TestCase
                                       main_website_url: "https://example.net")
     assert_equal 1, institution.submission_profiles.count
     profile = institution.submission_profiles.first
+    assert_equal "General Submission Profile", profile.name
     assert profile.institution_default
     assert_equal institution.required_elements.count, profile.elements.count
   end

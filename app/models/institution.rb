@@ -970,14 +970,16 @@ class Institution < ApplicationRecord
   end
 
   def add_default_metadata_profile
-    profile = self.metadata_profiles.build(name:                "Default Metadata Profile",
+    # For naming rationale, see: https://github.com/medusa-project/statewide-ir-issues/issues/72
+    profile = self.metadata_profiles.build(name:                "General Metadata Profile",
                                            institution_default: true)
     profile.save!
     profile.add_all_registered_elements
   end
 
   def add_default_submission_profile
-    profile = self.submission_profiles.build(name:                "Default Submission Profile",
+    # For naming rationale, see: https://github.com/medusa-project/statewide-ir-issues/issues/72
+    profile = self.submission_profiles.build(name:                "General Submission Profile",
                                              institution_default: true)
     profile.save!
     profile.add_required_elements
