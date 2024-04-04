@@ -934,7 +934,9 @@ class InstitutionsController < ApplicationController
     params.require(:institution).permit(# General Settings tab
                                         :about_html, :about_url,
                                         :copyright_notice, :deposit_agreement,
-                                        :earliest_search_year, :feedback_email,
+                                        :earliest_search_year,
+                                        :expand_deposit_agreement,
+                                        :feedback_email,
                                         :google_analytics_measurement_id,
                                         :main_website_url, :service_name,
                                         :submissions_reviewed,

@@ -4,8 +4,6 @@
 const DepositAgreementView = {
 
     initialize: function() {
-        // Switch the plus icon in the expand-deposit-agreement section to a minus
-        // icon upon click, and vice versa.
         const depositAgreementSection = $('#deposit-agreement');
         depositAgreementSection.on('show.bs.collapse', function () {
             $(this).find("span.text-info").hide();
@@ -13,6 +11,11 @@ const DepositAgreementView = {
         depositAgreementSection.on('hide.bs.collapse', function () {
             $(this).find("span.text-info").show();
         });
+        if ($("#deposit-agreement-collapse").hasClass("show")) {
+            depositAgreementSection.trigger("show.bs.collapse");
+        } else {
+            depositAgreementSection.trigger("hide.bs.collapse");
+        }
 
         // Show the deposit agreement when the begin-submission button is clicked.
         $("button.begin-submission").on("click", function () {

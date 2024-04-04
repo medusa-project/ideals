@@ -34,6 +34,10 @@
           %i.fa.fa-pencil-alt
           Edit
     .clearfix.mb-3
+    %dl
+      %dt Pre-Expand Deposit Agreement Section
+      %dd= boolean(@institution.expand_deposit_agreement, style: :word)
+
     - if @institution.deposit_agreement.present?
       = sanitize(@institution.deposit_agreement,
                  tags: ApplicationHelper::ALLOWED_HTML_TAGS,
