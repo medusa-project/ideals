@@ -57,17 +57,20 @@
         = @institution.active_link_color
   .col-sm-3
     .card
+      - size = InstitutionsHelper::FAVICONS.sort{ |a,b| a[:size] <=> b[:size] }.last[:size]
       .card-header
         Master Favicon
         - if @institution.has_favicon
-          .float-end
+          .btn-group.float-end
+            = link_to(@institution.favicon_url(size: size), class: "btn btn-sm btn-light") do
+              = icon_for(:download)
+              Download
             = link_to(institution_favicon_path(@institution),
                       method: :delete, class: "btn btn-danger btn-sm") do
               = icon_for(:delete)
               Delete
       .card-body
         - if @institution.has_favicon
-          - size = InstitutionsHelper::FAVICONS.sort{ |a,b| a[:size] <=> b[:size] }.last[:size]
           = image_tag(@institution.favicon_url(size: size))
         - else
           No favicon set.
@@ -78,7 +81,10 @@
       .card-header
         Header Image
         - if @institution.header_image_filename.present?
-          .float-end
+          .banner-image.float-end
+            = link_to(@institution.header_image_url, class: "btn btn-sm btn-light") do
+              = icon_for(:download)
+              Download
             = link_to(institution_header_image_path(@institution),
                       method: :delete, class: "btn btn-danger btn-sm") do
               = icon_for(:delete)
@@ -97,7 +103,10 @@
       .card-header
         Banner Image
         - if @institution.banner_image_filename.present?
-          .float-end
+          .btn-group.float-end
+            = link_to(@institution.banner_image_url, class: "btn btn-sm btn-light") do
+              = icon_for(:download)
+              Download
             = link_to(institution_banner_image_path(@institution),
                       method: :delete, class: "btn btn-danger btn-sm") do
               = icon_for(:delete)
@@ -112,7 +121,10 @@
       .card-header
         Footer Image
         - if @institution.footer_image_filename.present?
-          .float-end
+          .btn-group.float-end
+            = link_to(@institution.footer_image_url, class: "btn btn-sm btn-light") do
+              = icon_for(:download)
+              Download
             = link_to(institution_footer_image_path(@institution),
                       method: :delete, class: "btn btn-danger btn-sm") do
               = icon_for(:delete)
