@@ -393,6 +393,13 @@ class ItemsController < ApplicationController
         end
         @item.save!
       end
+    rescue ActiveRecord::RecordNotUnique => e
+      # Handle this one in a more user-friendly way, because
+      # "PG:UniqueViolation: ERROR: duplicate key value..." freaks people out.
+      e = Exception.new("All selected collections must be different.")
+      render partial: "shared/validation_messages",
+             locals: { object: @item.errors.any? ? @item : e },
+             status: :bad_request
     rescue => e
       render partial: "shared/validation_messages",
              locals: { object: @item.errors.any? ? @item : e },
