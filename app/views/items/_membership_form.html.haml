@@ -16,7 +16,7 @@
   - else
     - unit_options = unit_list_options(user:        current_user,
                                        institution: f.object.institution)
-  - f.object.collection_item_memberships.each do |membership|
+  - f.object.collection_item_memberships.each_with_index do |membership, index|
     .row.unit-collection-combo
       = hidden_field_tag "initial_unit_ids[]", membership.collection.primary_unit.id
       = hidden_field_tag "initial_collection_ids[]", membership.collection.id
@@ -27,11 +27,12 @@
             = select_tag(:unit_id, options_for_select(unit_options, membership.collection.primary_unit.id),
                          class: "form-select unit-menu")
         .mb-3.row
-          = label_tag('collection_item_memberships[][collection_id]', "Collection",
+          = label_tag("collection_item_memberships[#{index}][collection_id]", "Collection",
                       class: "col-sm-2 col-form-label")
           .col-sm-10
             -# will by populated via JS
-            = select_tag('collection_item_memberships[][collection_id]', options_for_select([]),
+            = select_tag("collection_item_memberships[][collection_id]", options_for_select([]),
+                         id: "collection_item_memberships[#{index}][collection_id]",
                          class: "form-select collection-menu",
                          data: { "unit-id": membership.collection.primary_unit.id })
       .col-sm-1.col-primary

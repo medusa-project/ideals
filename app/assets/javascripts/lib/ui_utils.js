@@ -122,19 +122,13 @@ IDEALS.UIUtils.CheckAllButton = function(button, checkboxes) {
  */
 IDEALS.UIUtils.CollectionSelectMenus = function() {
     /**
-     * @param unitMenu {jQuery} unit select menu or unit ID.
+     * @param unitMenu {jQuery} unit select menu.
      * @param onComplete Callback function.
      */
     const fetchCollectionsForUnit = function(unitMenu, onComplete) {
-        let unitID;
-        if (typeof unitMenu === "string") {
-            unitID   = unitMenu;
-            unitMenu = $(".unit-menu").filter(function() { return this.value === unitID });
-        } else {
-            unitID = unitMenu.val();
-        }
+        const unitID = unitMenu.val();
         new IDEALS.Client().fetchUnitCollections(unitID, true, false, function(data) {
-            const collectionMenu = unitMenu.parents(".unit-collection-combo").find(".collection-menu");
+            const collectionMenu = unitMenu.closest(".unit-collection-combo").find(".collection-menu");
             collectionMenu.children().remove();
             if (data.length > 0) {
                 $.each(data, function (index, value) {
@@ -159,7 +153,7 @@ IDEALS.UIUtils.CollectionSelectMenus = function() {
             clone.find("input[type=radio]").prop("checked", false);
             const clonedUnitMenu = clone.find("select:first");
             clonedUnitMenu.find("option:first").prop("selected", true);
-            fetchCollectionsForUnit(clonedUnitMenu, function() {});
+            fetchCollectionsForUnit(clonedUnitMenu);
             // Insert the clone into the DOM.
             lastCombo.after(clone);
             lastCombo.after("<hr>");
@@ -186,9 +180,11 @@ IDEALS.UIUtils.CollectionSelectMenus = function() {
     const initialUnitSelections       = $("[name='initial_unit_ids[]']");
     const initialCollectionSelections = $("[name='initial_collection_ids[]']");
     for (let i = 0; i < initialUnitSelections.length; i++) {
-        const unitID = initialUnitSelections.eq(i).val();
-        fetchCollectionsForUnit(unitID, function (collectionMenu) {
-            collectionMenu.val(initialCollectionSelections.eq(i).val());
+        const unitID       = initialUnitSelections.eq(i).val();
+        const unitMenu     = $(".unit-menu").filter(":eq(" + i + ")");
+        const collectionID = initialCollectionSelections.eq(i).val();
+        fetchCollectionsForUnit(unitMenu, function (collectionMenu) {
+            collectionMenu.val(collectionID);
             collectionMenu.parents(".unit-collection-combo").find(".unit-menu").val(unitID);
         });
     }
