@@ -17,7 +17,7 @@
     - unit_options = unit_list_options(user:        current_user,
                                        institution: f.object.institution)
   - f.object.collection_item_memberships.each_with_index do |membership, index|
-    .row.unit-collection-combo
+    .row.unit-collection-combo.mb-3
       = hidden_field_tag "initial_unit_ids[]", membership.collection.primary_unit.id
       = hidden_field_tag "initial_collection_ids[]", membership.collection.id
       .col-sm-9

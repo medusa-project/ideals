@@ -156,16 +156,12 @@ IDEALS.UIUtils.CollectionSelectMenus = function() {
             fetchCollectionsForUnit(clonedUnitMenu);
             // Insert the clone into the DOM.
             lastCombo.after(clone);
-            lastCombo.after("<hr>");
             attachEventListeners();
             return false;
         });
         $(".remove-collection").off("click").on("click", function() {
-            const combos = $(".unit-collection-combo");
-            if (combos.length > 1) {
-                const lastCombo = combos.filter(":last");
-                lastCombo.prev("hr").remove();
-                lastCombo.remove();
+            if ($(".unit-collection-combo").length > 1) {
+                $(this).closest(".unit-collection-combo").remove();
             }
             return false;
         });
