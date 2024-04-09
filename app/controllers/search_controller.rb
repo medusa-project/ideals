@@ -41,6 +41,8 @@ class SearchController < ApplicationController
         when "deleted"
           @items.include_buried.
             filter(Item::IndexFields::STAGE, Item::Stages::BURIED)
+        else
+          @items = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)
         end
       else
         @items = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)
