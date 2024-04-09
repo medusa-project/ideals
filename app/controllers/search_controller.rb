@@ -48,6 +48,7 @@ class SearchController < ApplicationController
         @items = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)
       end
     else
+      @items = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)
       @items.metadata_profile(MetadataProfile.global)
     end
     if @permitted_params[:sort].present?
