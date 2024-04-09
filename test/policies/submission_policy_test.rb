@@ -330,6 +330,105 @@ class SubmissionPolicyTest < ActiveSupport::TestCase
     assert !policy.edit?
   end
 
+  # edit_metadata?()
+
+  test "edit_metadata?() returns false with a nil user" do
+    context = RequestContext.new(user:        nil,
+                                 institution: institutions(:northeast))
+    policy = SubmissionPolicy.new(context, @item)
+    assert !policy.edit_metadata?
+  end
+
+  test "edit_metadata?() does not authorize an incorrect scope" do
+    context = RequestContext.new(user:        users(:southwest_admin),
+                                 institution: institutions(:northeast))
+    policy  = SubmissionPolicy.new(context, @item)
+    assert !policy.edit_metadata?
+  end
+
+  test "edit_metadata?() does not authorize non-sysadmins" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @item.institution)
+    policy  = SubmissionPolicy.new(context, @item)
+    assert !policy.edit_metadata?
+  end
+
+  test "edit_metadata?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @item.institution)
+    policy = SubmissionPolicy.new(context, @item)
+    assert policy.edit_metadata?
+  end
+
+  test "edit_metadata?() authorizes the submission owner if the item is submitting" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @item.institution)
+    @item.submitter = user
+    @item.stage     = Item::Stages::SUBMITTING
+    policy = SubmissionPolicy.new(context, @item)
+    assert policy.edit_metadata?
+  end
+
+  test "edit_metadata?() does not authorize the submission owner if the item is not submitting" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @item.institution)
+    @item.submitter = user
+    @item.stage     = Item::Stages::APPROVED
+    policy = SubmissionPolicy.new(context, @item)
+    assert !policy.edit_metadata?
+  end
+
+  test "edit_metadata?() authorizes administrators of the item's collection" do
+    doing_user = users(:southwest)
+    context    = RequestContext.new(user:        doing_user,
+                                    institution: doing_user.institution)
+    collection = collections(:southwest_unit1_collection1)
+    collection.administering_users << doing_user
+    collection.save!
+    @item.submitter          = users(:southwest) # somebody else
+    @item.primary_collection = collection
+
+    policy = SubmissionPolicy.new(context, @item)
+    assert policy.edit_metadata?
+  end
+
+  test "edit_metadata?() authorizes admins of the item's collection's unit" do
+    doing_user = users(:southwest)
+    context    = RequestContext.new(user:        doing_user,
+                                    institution: doing_user.institution)
+    collection               = collections(:southwest_unit1_collection1)
+    unit                     = collection.primary_unit
+    unit.administering_users << doing_user
+    unit.save!
+    @item.submitter          = users(:southwest) # somebody else
+    @item.primary_collection = collection
+
+    policy = SubmissionPolicy.new(context, @item)
+    assert policy.edit_metadata?
+  end
+
+  test "edit_metadata?() does not authorize anyone else" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @item.institution)
+    policy  = SubmissionPolicy.new(context, @item)
+    assert !policy.edit_metadata?
+  end
+
+  test "edit_metadata?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = SubmissionPolicy.new(context, @item)
+    assert !policy.edit_metadata?
+  end
+
   # new?()
 
   test "new?() returns false with a nil user" do

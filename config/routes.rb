@@ -301,6 +301,8 @@ Rails.application.routes.draw do
   # Submissions
   match "/submit", to: "submissions#new", via: :get
   resources :submissions, except: [:index, :show] do
+    match "/edit-metadata", to: "submissions#edit_metadata", via: :get,
+          constraints: lambda { |request| request.xhr? }
     match "/complete", to: "submissions#complete", via: :post
     match "/status", to: "submissions#status", via: :get
   end

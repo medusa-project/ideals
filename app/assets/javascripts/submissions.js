@@ -422,6 +422,15 @@ const EditSubmissionView = {
 
         /************************* Metadata section ****************************/
 
+        $("#metadata-tab").on("show.bs.tab", function() {
+            const ROOT_URL = $("input[name=root_url]").val();
+            const itemID   = $("[name=item_id]").val();
+            const url      = ROOT_URL + "/submissions/" + itemID + "/edit-metadata";
+            $.get(url, function (data) {
+                $("#metadata").html(data);
+            });
+        }).trigger("show.bs.tab");
+
         const metadataForm = form.filter("#metadata-form");
 
         const setMetadataError = function (message) {
