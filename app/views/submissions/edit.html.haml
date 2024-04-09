@@ -62,16 +62,16 @@
 .tab-content
   #collection.tab-pane.fade.show.active{role:              "tabpanel",
                                         "aria-labelledby": "collection-tab"}
-    = render partial: "submit_collection_form"
+    = render partial: "edit_collection_form"
 
   #access.tab-pane.fade{role:              "tabpanel",
                         "aria-labelledby": "access-tab"}
-    = render partial: "submit_access_form"
+    = render partial: "edit_access_form"
 
   #metadata.tab-pane.fade{role:              "tabpanel",
                           "aria-labelledby": "metadata-tab"}
-    = render partial: "submit_metadata_form"
+    = render partial: "edit_metadata_form"
 
   #files.tab-pane.fade{role:              "tabpanel",
                        "aria-labelledby": "files-tab"}
-    = render partial: "submit_files_form"
+    = render partial: "edit_files_form"

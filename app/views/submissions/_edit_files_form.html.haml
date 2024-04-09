@@ -3,7 +3,7 @@
 = form_for(@item, url: submission_path(@item), remote: true,
            html: { id: "files-form" }) do |f|
   = token_tag(nil)
-  = render partial: "submit_files_form_uploads", locals: { item: f.object }
+  = render partial: "edit_files_form_uploads", locals: { item: f.object }
 
 = form_for(@item, url: submission_complete_path(@item), method: :post,
            html: { id: "completion-form" }) do |f|
