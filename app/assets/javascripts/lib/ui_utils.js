@@ -161,7 +161,11 @@ IDEALS.UIUtils.CollectionSelectMenus = function() {
         });
         $(".remove-collection").off("click").on("click", function() {
             if ($(".unit-collection-combo").length > 1) {
-                $(this).closest(".unit-collection-combo").remove();
+                const parentCombo = $(this).closest(".unit-collection-combo");
+                parentCombo.remove();
+                if (parentCombo.find("input[type=radio]:checked").length) {
+                    $(".unit-collection-combo:first input[type=radio]").prop("checked", true);
+                }
             }
             return false;
         });
