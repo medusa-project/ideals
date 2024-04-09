@@ -429,7 +429,7 @@ const EditSubmissionView = {
             $.get(url, function (data) {
                 $("#metadata").html(data);
             });
-        }).trigger("show.bs.tab");
+        });
 
         const metadataForm = form.filter("#metadata-form");
 
