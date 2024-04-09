@@ -297,6 +297,36 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to item_path(item)
   end
 
+  # edit_metadata()
+
+  test "edit_metadata() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    item = items(:southeast_submitting)
+    get submission_edit_metadata_path(item), xhr: true
+    assert_response :not_found
+  end
+
+  test "edit_metadata() returns HTTP 403 for logged-out users" do
+    item = items(:southeast_submitting)
+    get submission_edit_metadata_path(item), xhr: true
+    assert_response :forbidden
+  end
+
+  test "edit_metadata() returns HTTP 200 for logged-in users" do
+    item = items(:southeast_submitting)
+    log_in_as(item.submitter)
+    get submission_edit_metadata_path(item), xhr: true
+    assert_response :ok
+  end
+
+  test "edit_metadata() redirects to the item when an item has already been
+  submitted" do
+    item = items(:southeast_item1)
+    log_in_as(item.submitter)
+    get submission_edit_metadata_path(item), xhr: true
+    assert_redirected_to item_path(item)
+  end
+
   # new()
 
   test "new() returns HTTP 404 for unscoped requests" do

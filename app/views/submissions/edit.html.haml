@@ -1,6 +1,8 @@
 - provide :body_id, "edit_submission"
 - provide :title, "Submit an Item"
 
+= hidden_field_tag "item_id", @item.id
+
 .btn-group.float-end{role: "group"}
   = link_to(submission_path(@item), class: "btn btn-danger",
                                         role: "button",
@@ -70,7 +72,7 @@
 
   #metadata.tab-pane.fade{role:              "tabpanel",
                           "aria-labelledby": "metadata-tab"}
-    = render partial: "edit_metadata_form"
+    = spinner # loads via XHR
 
   #files.tab-pane.fade{role:              "tabpanel",
                        "aria-labelledby": "files-tab"}

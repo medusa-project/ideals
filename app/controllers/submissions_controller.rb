@@ -9,9 +9,12 @@ class SubmissionsController < ApplicationController
   include MetadataSubmission
 
   before_action :ensure_institution_host, :ensure_logged_in
-  before_action :set_item, only: [:complete, :destroy, :edit, :status, :update]
+  before_action :set_item, only: [:complete, :destroy, :edit, :edit_metadata,
+                                  :status, :update]
+  before_action :set_submission_profile, only: [:edit, :edit_metadata]
   before_action :authorize_item, only: [:destroy, :update]
-  before_action :check_submitting, only: [:complete, :destroy, :edit, :update]
+  before_action :check_submitting, only: [:complete, :destroy, :edit,
+                                          :edit_metadata, :update]
   before_action :check_submitted, only: :status
   before_action :store_location, only: [:edit, :new]
 
@@ -102,9 +105,16 @@ class SubmissionsController < ApplicationController
   # Responds to `GET /submissions/:id/edit`
   #
   def edit
-    @submission_profile = @item.effective_submission_profile ||
-      current_institution.default_submission_profile
     display_edit_toast
+  end
+
+  ##
+  # Renders the form within the metadata tab on the edit-submission page.
+  #
+  # Responds to `GET /submissions/:id/edit-metadata` (XHR only)
+  #
+  def edit_metadata
+    render partial: "edit_metadata_form"
   end
 
   ##
@@ -220,6 +230,11 @@ class SubmissionsController < ApplicationController
 
   def set_item
     @item = Item.find(params[:id] || params[:submission_id])
+  end
+
+  def set_submission_profile
+    @submission_profile = @item.effective_submission_profile ||
+      current_institution.default_submission_profile
   end
 
   ##

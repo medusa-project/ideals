@@ -27,6 +27,10 @@ class SubmissionPolicy < ApplicationPolicy
     update
   end
 
+  def edit_metadata
+    edit
+  end
+
   def new
     create
   end
