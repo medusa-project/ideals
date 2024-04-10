@@ -190,7 +190,8 @@ class Item < ApplicationRecord
   belongs_to :submitter, class_name: "User", inverse_of: "submitted_items",
              optional: true
 
-  before_save :email_after_submission, :prune_duplicate_elements
+  before_save :email_after_submission
+  after_save :prune_duplicate_elements
   before_update :set_previous_stage
   before_destroy :restrict_in_archive_deletion, :destroy_bitstreams
 
@@ -936,7 +937,7 @@ class Item < ApplicationRecord
   end
 
   ##
-  # Destroys associated [AscribedElement]s that have the same {string}, {uri},
+  # Destroys associated {AscribedElement}s that have the same {string}, {uri},
   # and {registered_element} attribute as another element.
   #
   def prune_duplicate_elements
