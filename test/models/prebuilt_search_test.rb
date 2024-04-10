@@ -61,7 +61,7 @@ class PrebuiltSearchTest < ActiveSupport::TestCase
   test "url_query() returns a correct query string" do
     parts = []
     @instance.elements.sort_by(&:term).each do |element|
-      parts << ["fq[]", "#{element.registered_element.indexed_keyword_field}:#{element.term}"]
+      parts << ["fq[]", "#{element.registered_element.indexed_text_field}:#{element.term}"]
     end
     parts << ["sort", @instance.ordering_element.indexed_sort_field]
     parts << ["direction", "asc"]
