@@ -67,7 +67,7 @@ class PrebuiltSearch < ApplicationRecord
   def url_query
     pairs = []
     self.elements.sort_by(&:term).each do |pse|
-      pairs << ["fq[]", "#{pse.registered_element.indexed_keyword_field}:#{pse.term}"]
+      pairs << ["fq[]", "#{pse.registered_element.indexed_text_field}:#{pse.term}"]
     end
     if self.ordering_element
       pairs << ["sort", self.ordering_element.indexed_sort_field]
