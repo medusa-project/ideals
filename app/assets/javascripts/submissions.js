@@ -422,25 +422,14 @@ const EditSubmissionView = {
 
         /************************* Metadata section ****************************/
 
-        $("#metadata-tab").on("show.bs.tab", function() {
-            const ROOT_URL = $("input[name=root_url]").val();
-            const itemID   = $("[name=item_id]").val();
-            const url      = ROOT_URL + "/submissions/" + itemID + "/edit-metadata";
-            $.get(url, function (data) {
-                $("#metadata").html(data);
-            });
-        });
-
-        const metadataForm = form.filter("#metadata-form");
-
         const setMetadataError = function (message) {
-            setErrorAlert(metadataForm.find("#metadata-messages"), message);
+            setErrorAlert($("#metadata-messages"), message);
         };
 
         this.validateMetadataSection = function (includeRequired) {
             // Check that all required elements are filled in.
             let isValid = true;
-            metadataForm.find("input[required], textarea[required], select[required]").each(function () {
+            $("#metadata-form").find("input[required], textarea[required], select[required]").each(function () {
                 if ($(this).val().length < 1) {
                     isValid = false;
                 }
@@ -460,11 +449,11 @@ const EditSubmissionView = {
          * appropriately (in "Familyname, Givenname" format).
          */
         const wirePersonNameTransformer = function () {
-            metadataForm.find("[name=family_name], [name=given_name]").on("change", function () {
+            $("#metadata-form").find("[name=family_name], [name=given_name]").on("change", function () {
                 const hiddenInput = $("#" + $(this).data("for"));
-                const parent = hiddenInput.parent();
-                const familyName = parent.find("[name=family_name]").val();
-                const givenName = parent.find("[name=given_name]").val();
+                const parent      = hiddenInput.parent();
+                const familyName  = parent.find("[name=family_name]").val();
+                const givenName   = parent.find("[name=given_name]").val();
                 hiddenInput.val(familyName + ", " + givenName);
             });
         }
@@ -474,7 +463,7 @@ const EditSubmissionView = {
          * contains a valid year (i.e. no non-numbers and no leading zeroes).
          */
         const wireYearValidator = function () {
-            metadataForm.find("[name=year]").on("input", function () {
+            $("#metadata-form").find("[name=year]").on("input", function () {
                 const input = $(this);
                 input.val(input.val().replace(/[^\d]/g, "")); // only numbers
                 input.val(input.val().replace(/^0/g, ""));    // years may not start with 0
@@ -493,13 +482,12 @@ const EditSubmissionView = {
                     $(this).find("[name=day]"));
             });
 
-            metadataForm.find("[name=month], [name=day], [name=year]").on("change", function () {
+            $("#metadata-form").find("[name=month], [name=day], [name=year]").on("change", function () {
                 const hiddenInput = $("#" + $(this).data("for"));
                 const parent = hiddenInput.parent();
-                const month = parent.find("[name=month]").val(); // may be empty
-                const day = parent.find("[name=day]").val();   // may be empty
-                const year = parent.find("[name=year]").val();
-                let date = year
+                const month  = parent.find("[name=month]").val(); // may be empty
+                const day    = parent.find("[name=day]").val();   // may be empty
+                let date     = parent.find("[name=year]").val();
                 if (month) {
                     date += "-" + month;
                     if (day) {
@@ -516,7 +504,7 @@ const EditSubmissionView = {
         // TODO: add an input type to support this behavior?
         const wireDependentSelects = function () {
             if ($("[name=institution_key]").val() === "uiuc") {
-                metadataForm.find("select").on("change", function () {
+                $("#metadata-form").find("select").on("change", function () {
                     if ($(this).parent().prev().val() === "dc:type") {
                         const textField = $(this).next("input");
                         if ($(this).val() === "other") {
@@ -547,7 +535,7 @@ const EditSubmissionView = {
          * more of them, and hides them (it) if not.
          */
         const showOrHideRemoveButtons = function () {
-            metadataForm.find(".col.remove").each(function () {
+            $("#metadata-form").find(".col.remove").each(function () {
                 const buttonColumn = $(this);
                 const parentInputGroup = buttonColumn.parents(".value-inputs");
                 if (parentInputGroup.siblings(".value-inputs").length > 0) {
@@ -565,11 +553,45 @@ const EditSubmissionView = {
         }
 
         const wireElementChangeListeners = function () {
-            wireElementChangeListener(metadataForm.find("input[type=text], select, textarea"));
+            wireElementChangeListener($("#metadata-form").find("input[type=text], select, textarea"));
+        };
+
+        const wireAddButtons = function() {
+            $("#metadata-form").find("button.add").on("click", function (e) {
+                // Show the "remove" button of all adjacent input groups
+                const inputGroups = $(this).parent().find(".value-inputs");
+                inputGroups.find(".remove").show();
+                // Clone the last input group
+                const prevInputGroup = inputGroups.last();
+                const clone = prevInputGroup.clone();
+                // Clear out its value
+                clone.find("input[type=text], input[data-input-type=person], select, textarea").val("");
+                if (clone.find("select").length > 0) {
+                    clone.find("input[type=hidden]").filter(function () {
+                        return $(this).attr("name") !== "elements[][name]";
+                    }).val("");
+                }
+                const hiddenDateOrPerson = clone.find("[data-input-type=date], [data-input-type=person]");
+                if (hiddenDateOrPerson) {
+                    const hiddenID = IDEALS.StringUtils.randomString(16);
+                    hiddenDateOrPerson.attr("id", hiddenID);
+                    clone.find("input[type=text], select").each(function (i, input) {
+                        $(input).attr("data-for", hiddenID);
+                    });
+                }
+                // Insert the clone after the last input group
+                prevInputGroup.after(clone);
+                wireRemoveButtons();
+                wireDependentSelects();
+                wirePersonNameTransformer();
+                wireDateTransformer();
+                wireYearValidator();
+                wireElementChangeListeners();
+            });
         };
 
         const wireRemoveButtons = function () {
-            metadataForm.find("button.remove").off("click").on("click", function () {
+            $("#metadata-form").find("button.remove").off("click").on("click", function () {
                 const parentInputGroup = $(this).parents(".value-inputs");
                 // Don't remove the input group if it's the last one remaining
                 const siblings = parentInputGroup.siblings(".value-inputs");
@@ -581,45 +603,21 @@ const EditSubmissionView = {
             });
         };
 
-        showOrHideRemoveButtons();
-        wireRemoveButtons();
-        wireDependentSelects();
-        wirePersonNameTransformer();
-        wireDateTransformer();
-        wireYearValidator();
-        wireElementChangeListeners();
-
-        metadataForm.find("button.add").on("click", function (e) {
-            // Show the "remove" button of all adjacent input groups
-            const inputGroups = $(this).parent().find(".value-inputs");
-            inputGroups.find(".remove").show();
-            // Clone the last input group
-            const prevInputGroup = inputGroups.last();
-            const clone = prevInputGroup.clone();
-            // Clear out its value
-            clone.find("input[type=text], input[data-input-type=person], select, textarea").val("");
-            if (clone.find("select").length > 0) {
-                //clone.find("select").attr("name", "elements[][string]");
-                clone.find("input[type=hidden]").filter(function () {
-                    return $(this).attr("name") !== "elements[][name]";
-                }).val("");
-            }
-            const hiddenDateOrPerson = clone.find("[data-input-type=date], [data-input-type=person]");
-            if (hiddenDateOrPerson) {
-                const hiddenID = IDEALS.StringUtils.randomString(16);
-                hiddenDateOrPerson.attr("id", hiddenID);
-                clone.find("input[type=text], select").each(function (i, input) {
-                    $(input).attr("data-for", hiddenID);
-                });
-            }
-            // Insert the clone after the last input group
-            prevInputGroup.after(clone);
-            wireRemoveButtons();
-            wireDependentSelects();
-            wirePersonNameTransformer();
-            wireDateTransformer();
-            wireYearValidator();
-            wireElementChangeListeners();
+        $("#metadata-tab").on("show.bs.tab", function() {
+            const ROOT_URL = $("input[name=root_url]").val();
+            const itemID   = $("[name=item_id]").val();
+            const url      = ROOT_URL + "/submissions/" + itemID + "/edit-metadata";
+            $.get(url, function (data) {
+                $("#metadata").html(data);
+                showOrHideRemoveButtons();
+                wireRemoveButtons();
+                wireAddButtons();
+                wireDependentSelects();
+                wirePersonNameTransformer();
+                wireDateTransformer();
+                wireYearValidator();
+                wireElementChangeListeners();
+            });
         });
 
         /*************************** Files section *****************************/
