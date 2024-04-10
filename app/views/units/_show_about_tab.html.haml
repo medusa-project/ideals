@@ -64,11 +64,11 @@
 
 - if @unit.parent
   %h2 Parent Unit
-  = resource_list([@unit.parent], use_resource_host: false)
+  = resource_list([@unit.parent])
 
 - if @subunits.any?
   %h2 Child Units
-  = resource_list(@subunits, use_resource_host: false)
+  = resource_list(@subunits)
 
 - if !@unit.parent && @subunits.empty?
   %h2 Units

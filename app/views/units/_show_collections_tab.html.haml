@@ -17,7 +17,7 @@
   %h2 Collections
 
 - if @collections.any?
-  = resource_list(@collections, use_resource_host: false)
+  = resource_list(@collections)
 - elsif current_user&.effective_unit_admin?(@unit,
                                             client_ip:       request_context.client_ip,
                                             client_hostname: request_context.client_hostname)

@@ -736,21 +736,18 @@ module ApplicationHelper
   # @param resources [Enumerable<Describable,Unit,Collection>]
   # @param primary_id [Integer] ID of a resource in `resources` to indicate as
   #                             primary.
-  # @param use_resource_host [Boolean]
   # @param show_institution [Boolean]
   # @param show_private_normally [Boolean]
   # @return [String] HTML listing.
   #
   def resource_list(resources,
                     primary_id:            nil,
-                    use_resource_host:     true,
                     show_institution:      false,
                     show_private_normally: false) # TODO: split this into separate implementations for items & collections/units
     html = StringIO.new
     resources.each do |resource|
       html << resource_list_row(resource,
                                 primary:               (primary_id == resource.id),
-                                use_resource_host:     use_resource_host,
                                 show_institution:      show_institution,
                                 show_private_normally: show_private_normally)
     end
@@ -760,7 +757,6 @@ module ApplicationHelper
   ##
   # @param resource [Describable]
   # @param primary [Boolean] Whether to mark the resource as primary.
-  # @param use_resource_host [Boolean]
   # @param show_institution [Boolean]
   # @param show_private_normally [Boolean]
   # @return [String] HTML string.
@@ -768,7 +764,6 @@ module ApplicationHelper
   #
   def resource_list_row(resource,
                         primary:               false,
-                        use_resource_host:     true,
                         show_institution:      false,
                         show_private_normally: false)
     embargoed_item = withdrawn_item = rejected_item = buried_item = false
@@ -786,12 +781,10 @@ module ApplicationHelper
     rescue => e
       LOGGER.error("resource_list_row(): #{e.message} [resource: #{resource.class} ID #{resource.id}]")
     end
-    if use_resource_host
-      resource_url = polymorphic_url(resource, host: resource.institution.fqdn)
-    else
-      resource_url = polymorphic_url(resource)
-    end
-    html           = StringIO.new
+    # N.B.: It's important to include the host because this method may be used
+    # in global scope.
+    resource_url = polymorphic_url(resource, host: resource.institution&.fqdn)
+    html         = StringIO.new
     html << "<div class=\"d-flex resource-list mb-3\">"
     if embargoed_item
       html <<   "<div class=\"flex-shrink-0 icon-thumbnail\">"
