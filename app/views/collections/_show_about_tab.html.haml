@@ -110,11 +110,11 @@
 
 - if @collection.parent
   %h3 Parent Collection
-  = resource_list([@collection.parent], use_resource_host: false)
+  = resource_list([@collection.parent])
 
 - if @subcollections.any?
   %h3 Child Collections
-  = resource_list(@subcollections, use_resource_host: false)
+  = resource_list(@subcollections)
 
 - if !@collection.parent && @subcollections.empty?
   %p This collection has no parent or sub-collections.
