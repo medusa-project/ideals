@@ -87,23 +87,22 @@ const EditSubmissionView = {
 
         var lastEditedInput;
 
+        // Pick a Collection tab
         $("button.step-1-to-2").on("click", function () {
             $("#access-tab").tab("show");
+        });
+        // Access tab
+        $("button.step-2-to-1").on("click", function () {
+            $("#collection-tab").tab("show");
         });
         $("button.step-2-to-3").on("click", function () {
             $("#metadata-tab").tab("show");
         });
-        $("button.step-3-to-4").on("click", function () {
-            $("#files-tab").tab("show");
-        });
+        // N.B.: Metadata tab previous/next buttons are hoooked up in the
+        // metadata section (because that section loads via XHR).
+        // Files tab
         $("button.step-4-to-3").on("click", function () {
             $("#metadata-tab").tab("show");
-        });
-        $("button.step-3-to-2").on("click", function () {
-            $("#access-tab").tab("show");
-        });
-        $("button.step-2-to-1").on("click", function () {
-            $("#collection-tab").tab("show");
         });
 
         form.on("submit", function (e) {
@@ -444,9 +443,9 @@ const EditSubmissionView = {
         };
 
         /**
-         * Reads the family name & given name text fields of person-type submission
-         * profile elements, and sets the corresponding hidden input value
-         * appropriately (in "Familyname, Givenname" format).
+         * Reads the family name & given name text fields of person-type
+         * submission profile elements, and sets the corresponding hidden input
+         * value appropriately (in "Familyname, Givenname" format).
          */
         const wirePersonNameTransformer = function () {
             $("#metadata-form").find("[name=family_name], [name=given_name]").on("change", function () {
@@ -499,8 +498,8 @@ const EditSubmissionView = {
         }
 
         // When a dc:type of "Other" is selected, add a text field next to it.
-        // This is a hack for one UIUC element only since submission profiles don't
-        // support this behavior.
+        // This is a hack for one UIUC element only since submission profiles
+        // don't support this behavior.
         // TODO: add an input type to support this behavior?
         const wireDependentSelects = function () {
             if ($("[name=institution_key]").val() === "uiuc") {
@@ -603,6 +602,15 @@ const EditSubmissionView = {
             });
         };
 
+        const wireNavigationButtons = function() {
+            $("button.step-3-to-2").on("click", function () {
+                $("#access-tab").tab("show");
+            });
+            $("button.step-3-to-4").on("click", function () {
+                $("#files-tab").tab("show");
+            });
+        };
+
         $("#metadata-tab").on("show.bs.tab", function() {
             const ROOT_URL = $("input[name=root_url]").val();
             const itemID   = $("[name=item_id]").val();
@@ -617,6 +625,7 @@ const EditSubmissionView = {
                 wireDateTransformer();
                 wireYearValidator();
                 wireElementChangeListeners();
+                wireNavigationButtons();
             });
         });
 
