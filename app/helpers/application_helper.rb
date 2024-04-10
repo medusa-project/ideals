@@ -804,9 +804,9 @@ module ApplicationHelper
     html <<   "<div class=\"flex-grow-1 ms-3\">"
     html <<     "<h5 class=\"mt-0 mb-0\">"
     if embargoed_item && !policy(resource).show?
-      html <<     resource.title
+      html <<     resource.effective_title
     else
-      html <<     link_to(resource.title, resource_url)
+      html <<     link_to(resource.effective_title, resource_url)
     end
 
     if primary
