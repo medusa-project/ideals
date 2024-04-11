@@ -65,7 +65,7 @@ class PrebuiltSearch < ApplicationRecord
   # @return [String]
   #
   def url_query
-    pairs = []
+    pairs = [["prebuilt_search_id", self.id]]
     self.elements.sort_by(&:term).each do |pse|
       pairs << ["elements[#{pse.registered_element.name}]", pse.term]
     end
