@@ -36,7 +36,8 @@
   #deposit-agreement.accordion.mb-3
     .accordion-item
       %h3#deposit-agreement-header.accordion-header
-        %button.accordion-button{type:             "button",
+        %button.accordion-button{class:            current_institution.expand_deposit_agreement ? "" : "collapsed",
+                                 type:             "button",
                                  "data-bs-toggle": "collapse",
                                  "data-bs-target": "#deposit-agreement-collapse",
                                  "aria-expanded":  current_institution.expand_deposit_agreement,
