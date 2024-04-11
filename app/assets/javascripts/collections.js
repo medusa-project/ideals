@@ -52,6 +52,7 @@ const CollectionView = {
                 tabContent.html(data);
 
                 const searchForm      = tabContent.find("form");
+                const allItemsTab     = tabContent.find("#all-items-tab");
                 const searchFields    = searchForm.find("input[type=text], input[type=search], textarea");
                 const searchControls  = searchForm.find("input[type=radio], input[type=checkbox], select");
                 const sortMenu        = tabContent.find("select[name=sort]");
@@ -85,6 +86,16 @@ const CollectionView = {
                         }
                     });
                 };
+
+                const clearSearchInput = function() {
+                    searchFields.val("");
+                    searchControls.filter("select > option:first-child").prop("selected", "selected");
+                };
+
+                allItemsTab.on("show.bs.tab", function () {
+                    clearSearchInput();
+                    refreshResults();
+                });
 
                 let timeout = null;
                 searchFields.on("keyup", function() {
