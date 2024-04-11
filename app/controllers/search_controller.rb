@@ -44,11 +44,11 @@ class SearchController < ApplicationController
         else
           @items = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)
         end
-        if @permitted_params[:prebuilt_search_id].present?
-          @prebuilt_search = PrebuiltSearch.find(@permitted_params[:prebuilt_search_id])
-        end
       else
         @items = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)
+      end
+      if @permitted_params[:prebuilt_search_id].present?
+        @prebuilt_search = PrebuiltSearch.find(@permitted_params[:prebuilt_search_id])
       end
     else
       @items = policy_scope(@items, policy_scope_class: ItemPolicy::Scope)
