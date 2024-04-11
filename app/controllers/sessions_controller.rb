@@ -58,10 +58,12 @@ class SessionsController < ApplicationController
         LOGGER.info("User %s tried to log into a disabled account", user.email)
         unauthorized(message: "This user account is disabled.") and return
       elsif user.institution != current_institution &&
-        !user.sysadmin?(client_ip:       request_context.client_ip,
-                        client_hostname: request_context.client_hostname)
-        LOGGER.info("User %s tried to log into a different institution's domain",
-                    user.email)
+        # Sysadmins are able to log into other institutions, but only via the
+        # identity provider.
+        (params[:provider] == "saml" || !user.sysadmin?(client_ip:       request_context.client_ip,
+                                                        client_hostname: request_context.client_hostname))
+        LOGGER.info("User %s tried to log into a different institution's domain via %s",
+                    user.email, params[:provider])
         unauthorized(message: "You must log in via your home institution's domain.") and return
       end
     else
