@@ -53,13 +53,9 @@ class PrebuiltSearchTest < ActiveSupport::TestCase
 
   # url_query()
 
-  test "url_query() returns an empty string when the instance has no properties
-  set" do
-    assert_equal "", PrebuiltSearch.new.url_query
-  end
-
   test "url_query() returns a correct query string" do
     parts = []
+    parts << ["prebuilt_search_id", @instance.id]
     @instance.elements.sort_by(&:term).each do |element|
       parts << ["elements[#{element.registered_element.name}]", element.term]
     end

@@ -11,7 +11,7 @@ module Search
   include ActiveSupport::Concern
 
   SIMPLE_SEARCH_PARAMS   = [:q]
-  RESULTS_PARAMS         = [:direction, { fq: [] }, :sort, :start]
+  RESULTS_PARAMS         = [:direction, { fq: [] }, :prebuilt_search_id, :sort, :start]
 
   def self.advanced_search_params
     # N.B.: technically we could constrain the elements array here to only
