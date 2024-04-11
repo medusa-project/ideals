@@ -1,5 +1,5 @@
 /**
- * Handles list-items view (/items).
+ * Handles search view (/search).
  */
 const SearchView = {
 
@@ -16,7 +16,7 @@ const SearchView = {
         // of the fields in the other tab(s) when the form is submitted.
         // Keeping track of the current tab enables us to infer the non-current
         // tabs.
-        var currentTab = allItemsTab;
+        let currentTab = allItemsTab;
         allItemsTab.on("click", function () {
             window.location = "/search";
         });
