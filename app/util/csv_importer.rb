@@ -31,7 +31,11 @@
 # column, `handle`, refers to an item's handle. (These columns cannot be
 # modified.)
 #
-# The third column, `collection_handles`, refers to the handles of the
+# The third column, `stage`, contains an item's "lifecycle stage." This will
+# be a human-readable string corresponding to one of the {Item::Stages}
+# constant values.
+#
+# The fourth column, `collection_handles`, refers to the handles of the
 # collections to which the item belongs. There may be multiple handles listed
 # in this column, separated by a double pipe (`||`), as an item may belong to
 # multiple collections. If this is the case, the first handle listed will
@@ -64,6 +68,9 @@
 # * `handle`                     The item's handle. This is for informational
 #                                purposes only--it cannot be updated by
 #                                changing the value.
+# * `status`                     The item's human-readable {Item#stage}. This
+#                                is for informational purposes only--it cannot
+#                                be updated by changing the value.
 # * `collection_handles`         The handles of the item's owning
 #                                {Collection}s. Items can be moved into or out
 #                                of other non-primary collections by changing
@@ -135,7 +142,7 @@ class CsvImporter
 
   MULTI_VALUE_DELIMITER = "||"
   NEW_ITEM_INDICATOR    = "+"
-  REQUIRED_COLUMNS      = %w[id handle collection_handles files
+  REQUIRED_COLUMNS      = %w[id handle stage collection_handles files
                              file_descriptions embargo_types
                              embargo_expirations embargo_exempt_user_groups
                              embargo_reasons]
@@ -244,7 +251,7 @@ class CsvImporter
     item.assign_handle
     move_into_collections(item:               item,
                           primary_collection: primary_collection,
-                          collection_handles: row[2],
+                          collection_handles: row[REQUIRED_COLUMNS.index("collection_handles")],
                           submitter:          submitter)
     associate_bitstreams(item:       item,
                          row:        row,
@@ -269,7 +276,7 @@ class CsvImporter
                           description: "Updated via CSV").execute do
       move_into_collections(item:               item,
                             primary_collection: primary_collection,
-                            collection_handles: row[2],
+                            collection_handles: row[REQUIRED_COLUMNS.index("collection_handles")],
                             submitter:          submitter)
       associate_bitstreams(item:       item,
                            row:        row,

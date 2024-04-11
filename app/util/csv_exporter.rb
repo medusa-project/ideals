@@ -48,10 +48,6 @@ class CsvExporter
       elements = profile.elements.map(&:name)
     end
 
-    # Only items that belong to any of these collections primarily are
-    # included. Otherwise, they may be subject to different metadata profiles
-    # which could cause their metadata to not align with the columns in the
-    # CSV, resulting in metadata loss.
     where_clause = collection_ids.any? ?
                      "WHERE cim.collection_id IN (#{collection_ids.join(", ")}) " :
                      "WHERE 1 = 2 "
@@ -125,7 +121,15 @@ class CsvExporter
   # @return [String]
   #
   def select_clause(elements)
-    columns = ["items.id", "item_handles.suffix AS item_handle"]
+    columns = ["items.id",
+               "item_handles.suffix AS item_handle",
+               "CASE WHEN stage = #{Item::Stages::NEW} THEN 'New'
+                     WHEN stage = #{Item::Stages::SUBMITTING} THEN 'Submitting'
+                     WHEN stage = #{Item::Stages::SUBMITTED} THEN 'Submitted'
+                     WHEN stage = #{Item::Stages::APPROVED} THEN 'Approved'
+                     WHEN stage = #{Item::Stages::REJECTED} THEN 'Rejected'
+                     WHEN stage = #{Item::Stages::WITHDRAWN} THEN 'Withdrawn'
+                     WHEN stage = #{Item::Stages::BURIED} THEN 'Deleted' END stage"]
     # collection_handles column
     columns << "array_to_string(
        array(

@@ -54,7 +54,7 @@ class CsvImporterTest < ActiveSupport::TestCase
   argument" do
     csv = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS
-      row << ["+", nil, handles(:southeast_collection2).to_s,
+      row << ["+", nil, nil, handles(:southeast_collection2).to_s,
               nil, nil, nil, nil, nil, nil, "Title"]
     end
     file = Tempfile.new(%w[test, .csv])
@@ -89,6 +89,22 @@ class CsvImporterTest < ActiveSupport::TestCase
   test "import() raises an error for a missing handle column" do
     csv = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS - %w[handle]
+    end
+    file = Tempfile.new(%w[test, .csv])
+    File.write(file, csv)
+
+    assert_raises ArgumentError do
+      @instance.import(pathname:           file.path,
+                       submitter:          users(:southwest_sysadmin),
+                       primary_collection: collections(:southeast_empty))
+    end
+  ensure
+    file.unlink
+  end
+
+  test "import() raises an error for a missing stage column" do
+    csv = CSV.generate do |row|
+      row << CsvImporter::REQUIRED_COLUMNS - %w[stage]
     end
     file = Tempfile.new(%w[test, .csv])
     File.write(file, csv)
@@ -219,7 +235,7 @@ class CsvImporterTest < ActiveSupport::TestCase
   is required by the submission profile" do
     csv = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS
-      row << ["+", nil, nil, nil, nil, nil, nil, nil, nil]
+      row << ["+", nil, nil, nil, nil, nil, nil, nil, nil, nil]
     end
     file = Tempfile.new(%w[test, .csv])
     File.write(file, csv)
@@ -237,7 +253,7 @@ class CsvImporterTest < ActiveSupport::TestCase
   required by the submission profile" do
     csv = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title]
-      row << ["+", nil, nil, nil, nil, nil, nil, nil, nil, ""]
+      row << ["+", nil, nil, nil, nil, nil, nil, nil, nil, nil, ""]
     end
     file = Tempfile.new(%w[test, .csv])
     File.write(file, csv)
@@ -254,7 +270,7 @@ class CsvImporterTest < ActiveSupport::TestCase
   test "import() parses multi-value elements correctly" do
     csv = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title dc:creator]
-      row << ["+", nil, nil, nil, nil, nil, nil, nil, nil, "Title", "Bob||Susan||Chris"]
+      row << ["+", nil, nil, nil, nil, nil, nil, nil, nil, nil, "Title", "Bob||Susan||Chris"]
     end
     file = Tempfile.new(%w[test, .csv])
     File.write(file, csv)
@@ -275,7 +291,7 @@ class CsvImporterTest < ActiveSupport::TestCase
   test "import() assigns positions to multi-value elements" do
     csv = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title dc:creator]
-      row << ["+", nil, nil, nil, nil, nil, nil, nil, nil, "Title", "Bob||Susan||Chris"]
+      row << ["+", nil, nil, nil, nil, nil, nil, nil, nil, nil, "Title", "Bob||Susan||Chris"]
     end
     file = Tempfile.new(%w[test, .csv])
     File.write(file, csv)
@@ -300,7 +316,7 @@ class CsvImporterTest < ActiveSupport::TestCase
   test "import() creates a new item" do
     csv = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title]
-      row << ["+", nil, nil, nil, nil, nil, nil, nil, nil, "New Item"]
+      row << ["+", nil, nil, nil, nil, nil, nil, nil, nil, nil, "New Item"]
     end
     file = Tempfile.new(%w[test, .csv])
     File.write(file, csv)
@@ -334,7 +350,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     collection2 = collections(:southeast_collection2)
     csv = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title dc:creator]
-      row << ["+", nil,
+      row << ["+", nil, nil,
               [collection1.handle.to_s, collection2.handle.to_s].join(CsvImporter::MULTI_VALUE_DELIMITER),
               nil, nil, nil, nil, nil, nil, "Title", "Bob"]
     end
@@ -362,7 +378,7 @@ class CsvImporterTest < ActiveSupport::TestCase
 
     csv = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title dc:creator]
-      row << [item.id, nil,
+      row << [item.id, nil, nil,
               [new_collection1.handle.to_s, new_collection2.handle.to_s].join(CsvImporter::MULTI_VALUE_DELIMITER),
               nil, nil, nil, nil, nil, nil, "Title", "Bob"]
     end
@@ -385,7 +401,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     collection = collections(:southeast_collection1)
     csv = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title dc:creator]
-      row << ["+", nil, collection.handle.to_s,
+      row << ["+", nil, nil, collection.handle.to_s,
               nil, nil, nil, nil, nil, nil, "Title", "Bob"]
     end
     file = Tempfile.new(%w[test, .csv])
@@ -410,7 +426,7 @@ class CsvImporterTest < ActiveSupport::TestCase
 
     csv = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title dc:creator]
-      row << ["+", nil, new_collection.handle.to_s,
+      row << ["+", nil, nil, new_collection.handle.to_s,
               nil, nil, nil, nil, nil, nil, "Title", "Bob"]
     end
     file = Tempfile.new(%w[test, .csv])
@@ -453,7 +469,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     item = items(:southwest_unit1_collection1_item1)
     csv  = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title]
-      row << [item.id, nil, nil, "escher_lego.png", nil, nil, nil, nil, nil, "Title"]
+      row << [item.id, nil, nil, nil, "escher_lego.png", nil, nil, nil, nil, nil, "Title"]
     end
     files = [file_fixture("escher_lego.png").to_s]
     file  = Tempfile.new(%w[test, .csv])
@@ -475,7 +491,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     files = %w[gull.jpg pooh.jpg]
     csv   = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title]
-      row << [item.id, nil, nil, files.join("||"), nil, nil, nil, nil, nil, "Title"]
+      row << [item.id, nil, nil, nil, files.join("||"), nil, nil, nil, nil, nil, "Title"]
     end
     files = files.map{ |f| file_fixture(f).to_s }
     file  = Tempfile.new(%w[test, .csv])
@@ -501,7 +517,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     files = %w[gull.jpg pooh.jpg]
     csv   = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title]
-      row << [item.id, nil, nil, files.join("||"), nil, nil, nil, nil, nil, "Title"]
+      row << [item.id, nil, nil, nil, files.join("||"), nil, nil, nil, nil, nil, "Title"]
     end
     files = files.map{ |f| file_fixture(f).to_s }
     file  = Tempfile.new(%w[test, .csv])
@@ -524,7 +540,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     item = items(:southwest_unit1_collection1_item1)
     csv  = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title]
-      row << [item.id, nil, nil, "approved.png", nil, nil, nil, nil, nil, "Title"]
+      row << [item.id, nil, nil, nil, "approved.png", nil, nil, nil, nil, nil, "Title"]
     end
     file = Tempfile.new(%w[test, .csv])
     File.write(file, csv)
@@ -563,7 +579,7 @@ class CsvImporterTest < ActiveSupport::TestCase
   test "import() adds created items to the imported_items array" do
     csv = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title]
-      row << ["+", nil, nil, nil, nil, nil, nil, nil, nil, "New Item"]
+      row << ["+", nil, nil, nil, nil, nil, nil, nil, nil, nil, "New Item"]
     end
     file = Tempfile.new(%w[test, .csv])
     File.write(file, csv)
@@ -583,7 +599,7 @@ class CsvImporterTest < ActiveSupport::TestCase
   CSV" do
     csv = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[bogus:bogus]
-      row << ["+", nil, nil, nil, nil, nil, nil, nil, nil, "New Value"]
+      row << ["+", nil, nil, nil, nil, nil, nil, nil, nil, nil, "New Value"]
     end
     file = Tempfile.new(%w[test, .csv])
     File.write(file, csv)
@@ -601,7 +617,7 @@ class CsvImporterTest < ActiveSupport::TestCase
   CSV" do
     csv = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title]
-      row << ["999999", nil, nil, nil, nil, nil, nil, nil, "New Value"]
+      row << ["999999", nil, nil, nil, nil, nil, nil, nil, nil, "New Value"]
     end
     file = Tempfile.new(%w[test, .csv])
     File.write(file, csv)
@@ -619,7 +635,7 @@ class CsvImporterTest < ActiveSupport::TestCase
   test "import() raises an error for a blank item ID cell" do
     csv = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title]
-      row << [nil, nil, nil, nil, nil, nil, nil, nil, "New Value"]
+      row << [nil, nil, nil, nil, nil, nil, nil, nil, nil, "New Value"]
     end
     file = Tempfile.new(%w[test, .csv])
     File.write(file, csv)
@@ -637,7 +653,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     item = items(:southeast_item1)
     csv  = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title]
-      row << [item.id, nil, nil, nil, nil, nil, nil, nil, nil, "New Title"]
+      row << [item.id, nil, nil, nil, nil, nil, nil, nil, nil, nil, "New Title"]
     end
     file = Tempfile.new(%w[test, .csv])
     File.write(file, csv)
@@ -656,7 +672,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     item = items(:southeast_described)
     csv  = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title dc:subject]
-      row << [item.id, nil, nil, nil, nil, nil, nil, nil, nil, "Title", ""]
+      row << [item.id, nil, nil, nil, nil, nil, nil, nil, nil, nil, "Title", ""]
     end
     file = Tempfile.new(%w[test, .csv])
     File.write(file, csv)
@@ -676,7 +692,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     item = items(:southeast_described)
     csv  = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title]
-      row << [item.id, nil, nil, nil, nil, nil, nil, nil, nil, "New Title"]
+      row << [item.id, nil, nil, nil, nil, nil, nil, nil, nil, nil, "New Title"]
     end
     file = Tempfile.new(%w[test, .csv])
     File.write(file, csv)
@@ -697,7 +713,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     task = tasks(:pending)
     csv  = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[dc:title]
-      row << [item.id, nil, nil, nil, nil, nil, nil, nil, nil, "New Title"]
+      row << [item.id, nil, nil, nil, nil, nil, nil, nil, nil, nil, "New Title"]
     end
     file = Tempfile.new(%w[test, .csv])
     File.write(file, csv)
@@ -718,7 +734,7 @@ class CsvImporterTest < ActiveSupport::TestCase
     task = tasks(:pending)
     csv = CSV.generate do |row|
       row << CsvImporter::REQUIRED_COLUMNS + %w[bogus:bogus]
-      row << [item.id, nil, nil, nil, nil, nil, nil, nil, "Bogus element value"]
+      row << [item.id, nil, nil, nil, nil, nil, nil, nil, nil, "Bogus element value"]
     end
     file = Tempfile.new(%w[test, .csv])
     File.write(file, csv)

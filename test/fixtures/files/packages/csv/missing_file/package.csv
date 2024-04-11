@@ -1,2 +1,2 @@
-id,handle,collection_handles,filenames,file_descriptions,embargo_types,embargo_expirations,embargo_exempt_user_groups,embargo_reasons,dc:title,dc:subject,dc:creator,dc:contributor,dc:description:abstract,dc:date:issued,dc:identifier:uri,dc:type
-+,"","",missing.txt,Hello world,"","","","",New Item 1,Subject 1||Subject 2,,,,,,
+id,handle,stage,collection_handles,filenames,file_descriptions,embargo_types,embargo_expirations,embargo_exempt_user_groups,embargo_reasons,dc:title,dc:subject,dc:creator,dc:contributor,dc:description:abstract,dc:date:issued,dc:identifier:uri,dc:type
++,"","","",missing.txt,Hello world,"","","","",New Item 1,Subject 1||Subject 2,,,,,,
