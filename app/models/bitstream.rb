@@ -249,10 +249,12 @@ class Bitstream < ApplicationRecord
     # We should be able to use a block with mktmpdir, but when using an EFS
     # filesystem, we get an error about "directory not empty".
     tmpdir = Dir.mktmpdir
+    files  = []
     begin
       bitstreams.each_with_index do |bs, index|
         tmpfile = bs.download_to_temp_file
         FileUtils.mv(tmpfile.path, File.join(tmpdir, bs.filename))
+        files << tmpfile
         task&.progress(index / bitstreams.length.to_f)
       end
       zip_filename = "files.zip"
@@ -268,6 +270,7 @@ class Bitstream < ApplicationRecord
       end
     ensure
       FileUtils.rm_rf(tmpdir)
+      files.each(&:unlink)
     end
   end
 
