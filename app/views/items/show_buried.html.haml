@@ -27,3 +27,15 @@
 = render partial: "show_collections_section"
 = render partial: "show_properties_section"
 = render partial: "show_events_section"
+
+= render partial: "shared/xhr_modal",
+         locals: { id:    "edit-item-membership-modal",
+                   title: "Edit Collection Membership",
+                   size:  :xl }
+= render partial: "shared/xhr_modal",
+         locals: { id:    "edit-item-metadata-modal",
+                   title: "Edit Metadata",
+                   size:  :xl }
+= render partial: "shared/xhr_modal",
+         locals: { id:    "edit-item-properties-modal",
+                   title: "Edit Properties" }
