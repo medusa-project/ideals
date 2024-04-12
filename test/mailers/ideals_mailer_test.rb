@@ -14,6 +14,7 @@ class IdealsMailerTest < ActionMailer::TestCase
     assert !ActionMailer::Base.deliveries.empty?
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
+    assert_equal [institutions(:southwest).feedback_email], email.reply_to
     assert_equal [credential.email], email.to
     assert_equal "Register your Southwest IR account", email.subject
 
@@ -35,6 +36,7 @@ class IdealsMailerTest < ActionMailer::TestCase
     assert !ActionMailer::Base.deliveries.empty?
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
+    assert_equal [institutions(:southwest).feedback_email], email.reply_to
     assert_equal [invitee.email], email.to
     assert_equal "Your Southwest IR account request", email.subject
 
@@ -54,6 +56,7 @@ class IdealsMailerTest < ActionMailer::TestCase
     assert !ActionMailer::Base.deliveries.empty?
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
+    assert_equal [institutions(:southwest).feedback_email], email.reply_to
     assert_equal [credential.email], email.to
     assert_equal "Welcome to Southwest IR!", email.subject
 
@@ -109,6 +112,7 @@ class IdealsMailerTest < ActionMailer::TestCase
     assert !ActionMailer::Base.deliveries.empty?
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
+    assert_equal [institutions(:southwest).feedback_email], email.reply_to
     assert_equal [invitee.email], email.to
     assert_equal "Your Southwest IR account request", email.subject
 
@@ -175,6 +179,7 @@ class IdealsMailerTest < ActionMailer::TestCase
     assert !ActionMailer::Base.deliveries.empty?
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
+    assert_equal [institutions(:southwest).feedback_email], email.reply_to
     assert_equal [credential.email], email.to
     assert_equal "Register for an account with Southwest IR", email.subject
 
@@ -187,12 +192,14 @@ class IdealsMailerTest < ActionMailer::TestCase
   # item_approved()
 
   test "item_approved() sends the expected email" do
+    institution = institutions(:southeast)
     item        = items(:southeast_submitted)
     item.handle = Handle.create!(item: item, suffix: "12345")
     email       = IdealsMailer.item_approved(item).deliver_now
     assert !ActionMailer::Base.deliveries.empty?
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
+    assert_equal [institution.feedback_email], email.reply_to
     assert_equal [item.submitter.email], email.to
     assert_equal "Your item has been approved", email.subject
 
@@ -214,6 +221,7 @@ class IdealsMailerTest < ActionMailer::TestCase
     assert !ActionMailer::Base.deliveries.empty?
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
+    assert_equal [institutions(:southeast).feedback_email], email.reply_to
     assert_equal [item.submitter.email], email.to
     assert_equal "Your item has been rejected", email.subject
 
@@ -260,6 +268,7 @@ class IdealsMailerTest < ActionMailer::TestCase
     assert !ActionMailer::Base.deliveries.empty?
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
+    assert_equal [institutions(:southeast).feedback_email], email.reply_to
     assert_equal [item.submitter.email], email.to
     assert_equal [item.institution.feedback_email], email.reply_to
     assert_equal "Your item has been submitted", email.subject

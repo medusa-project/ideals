@@ -8,12 +8,12 @@ class IdealsMailer < ApplicationMailer
 
   ##
   # @param exception [Exception]
-  # @param detail [String]   Additional message text.
-  # @param method [String]   Request HTTP method.
-  # @param host [String]     Request host.
-  # @param url_path [String] Request URL path.
-  # @param query [String]    Request query string.
-  # @param user [User]       Request user.
+  # @param detail [String]       Additional message text.
+  # @param method [String]       Request HTTP method.
+  # @param host [String]         Request host.
+  # @param url_path [String]     Request URL path.
+  # @param query [String]        Request query string.
+  # @param user [User]           Request user.
   # @return [String]
   #
   def self.error_body(exception,
@@ -53,6 +53,7 @@ class IdealsMailer < ApplicationMailer
     @credential  = credential
     @institution = @credential.user.institution
     mail(to:      @credential.email,
+         reply_to: [@institution.feedback_email],
          subject: "Register your #{@institution.service_name} account")
   end
 
@@ -64,8 +65,9 @@ class IdealsMailer < ApplicationMailer
   def account_denied(invitee)
     @invitee     = invitee
     @institution = @invitee.institution
-    mail(to:      @invitee.email,
-         subject: "Your #{@institution.service_name} account request")
+    mail(to:       @invitee.email,
+         reply_to: [@institution.feedback_email],
+         subject:  "Your #{@institution.service_name} account request")
   end
 
   ##
@@ -77,8 +79,9 @@ class IdealsMailer < ApplicationMailer
   def account_registered(credential)
     @credential  = credential
     @institution = @credential.user.institution
-    mail(to:      @credential.email,
-         subject: "Welcome to #{@institution.service_name}!")
+    mail(to:       @credential.email,
+         reply_to: [@institution.feedback_email],
+         subject:  "Welcome to #{@institution.service_name}!")
   end
 
   ##
@@ -116,8 +119,9 @@ class IdealsMailer < ApplicationMailer
   def account_request_received(invitee)
     @invitee     = invitee
     @institution = @invitee.institution
-    mail(to:      @invitee.email,
-         subject: "Your #{@institution.service_name} account request")
+    mail(to:       @invitee.email,
+         reply_to: [@institution.feedback_email],
+         subject:  "Your #{@institution.service_name} account request")
   end
 
   ##
@@ -158,8 +162,9 @@ class IdealsMailer < ApplicationMailer
   def invited(credential)
     @credential  = credential
     @institution = @credential.user.institution
-    mail(to:      @credential.email,
-         subject: "Register for an account with #{@institution.service_name}")
+    mail(to:       @credential.email,
+         reply_to: [@institution.feedback_email],
+         subject:  "Register for an account with #{@institution.service_name}")
   end
 
   ##
@@ -170,7 +175,9 @@ class IdealsMailer < ApplicationMailer
   def item_approved(item)
     @item_title      = item.effective_title
     @item_handle_url = item.handle.url
+    institution      = item.institution
     mail(to:      [item.submitter.email],
+         reply_to: [institution.feedback_email],
          subject: "Your item has been approved")
   end
 
@@ -182,10 +189,12 @@ class IdealsMailer < ApplicationMailer
   def item_rejected(item)
     @item_title       = item.effective_title
     @collection_title = item.primary_collection.title
-    @service_name     = item.institution.service_name
-    @feedback_email   = item.institution.feedback_email
-    mail(to:      [item.submitter.email],
-         subject: "Your item has been rejected")
+    institution       = item.institution
+    @service_name     = institution.service_name
+    @feedback_email   = institution.feedback_email
+    mail(to:       [item.submitter.email],
+         reply_to: [institution.feedback_email],
+         subject:  "Your item has been rejected")
   end
 
   ##
@@ -217,9 +226,10 @@ class IdealsMailer < ApplicationMailer
   def item_submitted(item)
     @item_title           = item.effective_title
     @submissions_reviewed = item.primary_collection.submissions_reviewed
-    @service_name         = item.institution.service_name
+    institution           = item.institution
+    @service_name         = institution.service_name
     mail(to:       [item.submitter.email],
-         reply_to: [item.institution.feedback_email],
+         reply_to: [institution.feedback_email],
          subject:  "Your item has been submitted")
   end
 
