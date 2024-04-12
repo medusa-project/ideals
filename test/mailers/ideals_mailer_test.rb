@@ -201,29 +201,36 @@ class IdealsMailerTest < ActionMailer::TestCase
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
     assert_equal [institution.feedback_email], email.reply_to
     assert_equal [item.submitter.email], email.to
-    assert_equal "Your item has been approved", email.subject
+    assert_equal "Your item \"#{item.effective_title}\" has been approved "\
+                   "for #{institution.service_name}",
+                 email.subject
 
     assert_equal render_template("item_approved.txt",
                                  item_title:      item.effective_title,
-                                 item_handle_url: item.handle.url),
+                                 item_handle_url: item.handle.url,
+                                 feedback_email:  institution.feedback_email),
                  email.text_part.body.raw_source
     assert_equal render_template("item_approved.html",
                                  item_title:      item.effective_title,
-                                 item_handle_url: item.handle.url),
+                                 item_handle_url: item.handle.url,
+                                 feedback_email:  institution.feedback_email),
                  email.html_part.body.raw_source
   end
 
   # item_rejected()
 
   test "item_rejected() sends the expected email" do
-    item  = items(:southeast_submitted)
-    email = IdealsMailer.item_rejected(item).deliver_now
+    institution = institutions(:southeast)
+    item        = items(:southeast_submitted)
+    email       = IdealsMailer.item_rejected(item).deliver_now
     assert !ActionMailer::Base.deliveries.empty?
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
-    assert_equal [institutions(:southeast).feedback_email], email.reply_to
+    assert_equal [institution.feedback_email], email.reply_to
     assert_equal [item.submitter.email], email.to
-    assert_equal "Your item has been rejected", email.subject
+    assert_equal "Your item \"#{item.effective_title}\" has been rejected "\
+                   "for #{institution.service_name}",
+                 email.subject
 
     assert_equal render_template("item_rejected.txt",
                                  item_title:       item.effective_title,
@@ -263,23 +270,30 @@ class IdealsMailerTest < ActionMailer::TestCase
   # item_submitted()
 
   test "item_submitted() sends the expected email" do
-    item  = items(:southeast_submitted)
-    email = IdealsMailer.item_submitted(item).deliver_now
+    item        = items(:southeast_submitted)
+    institution = item.institution
+    submitter   = item.submitter
+    email       = IdealsMailer.item_submitted(item).deliver_now
     assert !ActionMailer::Base.deliveries.empty?
 
     assert_equal [IdealsMailer::NO_REPLY_ADDRESS], email.from
-    assert_equal [institutions(:southeast).feedback_email], email.reply_to
-    assert_equal [item.submitter.email], email.to
-    assert_equal [item.institution.feedback_email], email.reply_to
-    assert_equal "Your item has been submitted", email.subject
+    assert_equal [institution.feedback_email], email.reply_to
+    assert_equal [submitter.email], email.to
+    assert_equal [institution.feedback_email], email.reply_to
+    assert_equal "Your item \"#{item.effective_title}\" has been submitted "\
+                   "to #{institution.service_name}",
+                 email.subject
 
+    submitter_url = "http://#{institution.fqdn}/users/#{submitter.id}"
     assert_equal render_template("item_submitted.txt",
-                                 item_title:   item.effective_title,
-                                 service_name: item.institution.service_name),
+                                 item_title:    item.effective_title,
+                                 service_name:  item.institution.service_name,
+                                 submitter_url: submitter_url),
                  email.text_part.body.raw_source
     assert_equal render_template("item_submitted.html",
-                                 item_title:   item.effective_title,
-                                 service_name: item.institution.service_name),
+                                 item_title:    item.effective_title,
+                                 service_name:  item.institution.service_name,
+                                 submitter_url: submitter_url),
                  email.html_part.body.raw_source
   end
 

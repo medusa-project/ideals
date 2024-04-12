@@ -1,4 +1,4 @@
-Your item, "{{{item_title}}}", which you submitted to the collection "{{{collection_title}}}", has been
-rejected.
+Your item, "{{{item_title}}}", which you submitted to the {{{service_name}}} collection
+"{{{collection_title}}}", has been rejected.
 
-{{{service_name}}} administrators may be contacted at: {{{feedback_email}}}
+Please contact {{{feedback_email}}} with questions.

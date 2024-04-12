@@ -1,5 +1,6 @@
-<p>Your item, <b><%= @item_title %></b>, which you submitted to the collection
-  <b><%= @collection_title %></b>, has been rejected.</p>
+<p>Your item, <b><%= @item_title %></b>, which you submitted to the
+  <%= @service_name %> collection <b><%= @collection_title %></b>,
+  has been rejected.</p>
 
-<p><%= @service_name %> administrators may be contacted at:
-  <a href="mailto:<%= @feedback_email %>"><%= @feedback_email %></a></p>
+<p>Please contact <a href="mailto:<%= @feedback_email %>"><%= @feedback_email %></a>
+  with questions.</p>

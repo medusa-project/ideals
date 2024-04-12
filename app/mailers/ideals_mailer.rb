@@ -176,9 +176,12 @@ class IdealsMailer < ApplicationMailer
     @item_title      = item.effective_title
     @item_handle_url = item.handle.url
     institution      = item.institution
+    @feedback_email  = institution.feedback_email
+    service_name     = institution.service_name
     mail(to:      [item.submitter.email],
          reply_to: [institution.feedback_email],
-         subject: "Your item has been approved")
+         subject: "Your item \"#{@item_title}\" has been approved for "\
+                  "#{service_name}")
   end
 
   ##
@@ -194,7 +197,8 @@ class IdealsMailer < ApplicationMailer
     @feedback_email   = institution.feedback_email
     mail(to:       [item.submitter.email],
          reply_to: [institution.feedback_email],
-         subject:  "Your item has been rejected")
+         subject:  "Your item \"#{@item_title}\" has been rejected for "\
+                   "#{@service_name}")
   end
 
   ##
@@ -228,9 +232,11 @@ class IdealsMailer < ApplicationMailer
     @submissions_reviewed = item.primary_collection.submissions_reviewed
     institution           = item.institution
     @service_name         = institution.service_name
+    @submitter_url        = user_url(item.submitter, host: institution.fqdn)
     mail(to:       [item.submitter.email],
          reply_to: [institution.feedback_email],
-         subject:  "Your item has been submitted")
+         subject:  "Your item \"#{@item_title}\" has been submitted to "\
+                   "#{@service_name}")
   end
 
   ##
