@@ -2,6 +2,8 @@
 
 module ApplicationHelper
 
+  LOGGER = CustomLogger.new(ApplicationHelper)
+
   # These tags will not be filtered out when displaying user-entered HTML.
   # See {allowed_html_tags}.
   ALLOWED_HTML_TAGS           = %w(a b blockquote br dd dl dt em h1 h2 h3 h4 h5 h6 i li ol p pre q s small strong sub sup u ul)
