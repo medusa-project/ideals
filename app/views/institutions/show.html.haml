@@ -372,25 +372,33 @@
                                                       type:             "button",
                                                       role:             "tab",
                                                       "aria-controls":  "private-items-tab-content",
-                                                      "aria-selected":  "true"} Private Items
+                                                      "aria-selected":  "true"}
+              %i.fa.fa-lock
+              Private Items
             %button#withdrawn-items-tab.nav-link{"data-bs-toggle": "tab",
                                                  "data-bs-target": "#withdrawn-items-tab-content",
                                                  type:             "button",
                                                  role:             "tab",
                                                  "aria-controls":  "withdrawn-items-tab-content",
-                                                 "aria-selected":  "false"} Withdrawn Items
+                                                 "aria-selected":  "false"}
+              %i.fa.fa-undo
+              Withdrawn Items
             %button#rejected-items-tab.nav-link{"data-bs-toggle": "tab",
                                                 "data-bs-target": "#rejected-items-tab-content",
                                                 type:             "button",
                                                 role:             "tab",
                                                 "aria-controls":  "rejected-items-tab-content",
-                                                "aria-selected":  "false"} Rejected Items
+                                                "aria-selected":  "false"}
+              %i.fa.fa-ban
+              Rejected Items
             %button#deleted-items-tab.nav-link{"data-bs-toggle": "tab",
                                                "data-bs-target": "#deleted-items-tab-content",
                                                type:             "button",
                                                role:             "tab",
                                                "aria-controls":  "deleted-items-tab-content",
-                                               "aria-selected":  "false"} Deleted Items
+                                               "aria-selected":  "false"}
+              %i.fa.fa-trash
+              Deleted Items
         .tab-content
           #private-items-tab-content.tab-pane.fade.show.active{role:              "tabpanel",
                                                                "aria-labelledby": "private-items-tab",
