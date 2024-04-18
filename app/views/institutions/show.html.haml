@@ -362,6 +362,12 @@
     - if show_items
       #items-tab-content.tab-pane.fade{role:              "tabpanel",
                                        "aria-labelledby": "items-tab"}
+        .btn-group.mb-3.float-end{role: "group"}
+          = link_to(search_path, host: @institution.fqdn, class: "btn btn-light", role: "button", target: "_blank") do
+            %i.fas.fa-arrow-up-right-from-square
+            Public Items View
+        .clearfix
+
         %nav
           #withdrawn-items-tab.nav.nav-tabs{role: "tablist"}
             %button#private-items-tab.nav-link.active{"data-bs-toggle": "tab",
@@ -405,10 +411,6 @@
                                                                "aria-labelledby": "private-items-tab",
                                                                tabindex:          0}
             = form_tag(institution_private_items_path(@institution)) do
-              .btn-group.float-end{role: "group"}
-                = link_to(search_path, host: @institution.fqdn, class: "btn btn-light", role: "button", target: "_blank") do
-                  %i.fas.fa-arrow-up-right-from-square
-                  Public Items View
               .mb-3{style: "width: 15em;"}
                 = filter_field(placeholder: "Filter")
               #private-items-results
@@ -417,10 +419,6 @@
                                                      "aria-labelledby": "withdrawn-items-tab",
                                                      tabindex:          0}
             = form_tag(institution_withdrawn_items_path(@institution)) do
-              .btn-group.float-end{role: "group"}
-                = link_to(search_path, host: @institution.fqdn, class: "btn btn-light", role: "button", target: "_blank") do
-                  %i.fas.fa-arrow-up-right-from-square
-                  Public Items View
               .mb-3{style: "width: 15em;"}
                 = filter_field(placeholder: "Filter")
               #withdrawn-items-results
@@ -429,10 +427,6 @@
                                                     "aria-labelledby": "rejected-items-tab",
                                                     tabindex:          0}
             = form_tag(institution_rejected_items_path(@institution)) do
-              .btn-group.float-end{role: "group"}
-                = link_to(search_path, host: @institution.fqdn, class: "btn btn-light", role: "button", target: "_blank") do
-                  %i.fas.fa-arrow-up-right-from-square
-                  Public Items View
               .mb-3{style: "width: 15em;"}
                 = filter_field(placeholder: "Filter")
               #rejected-items-results
@@ -450,9 +444,6 @@
                             data:   { confirm: "Are you sure you want to empty the trash? All items in the trash will be permanently deleted." }) do
                     %i.fa.fa-trash
                     Empty Trash
-                = link_to(search_path, host: @institution.fqdn, class: "btn btn-light", role: "button", target: "_blank") do
-                  %i.fas.fa-arrow-up-right-from-square
-                  Public Items View
               .mb-3{style: "width: 15em;"}
                 = filter_field(placeholder: "Filter")
               #deleted-items-results
