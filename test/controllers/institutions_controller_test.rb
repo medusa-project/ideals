@@ -690,13 +690,13 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "refresh_saml_config_metadata() updates an institution's SAML metadata" do
-    skip # TODO: why isn't the job executing in the test environment?
     user = users(:southwest_admin)
     log_in_as(user)
     institution = user.institution
     patch institution_refresh_saml_config_metadata_path(institution)
-    institution.reload
-    assert_not_nil institution.saml_idp_signing_cert
+
+    assert_equal 1, enqueued_jobs.
+      select{ |j| j['job_class'] == "RefreshSamlConfigMetadataJob" }.count
   end
 
   test "refresh_saml_config_metadata() returns HTTP 302" do

@@ -34,19 +34,10 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "complete_upload() invokes an ImportJob" do
-    skip # TODO: why doesn't the job run?
     log_in_as(users(:southwest_admin))
-    assert_difference "Item.count" do
-      package_root = File.join(file_fixture_path, "/packages/csv")
-      csv_package  = File.join(Dir.tmpdir, "test.zip")
-      `cd "#{package_root}" && rm -f #{csv_package} && zip -r "#{csv_package}" valid_items`
-      @import.update!(filename: File.basename(csv_package),
-                      length:   File.size(csv_package))
-      ObjectStore.instance.put_object(key:  @import.file_key,
-                                      path: csv_package)
 
-      post import_complete_upload_path(@import)
-    end
+    post import_complete_upload_path(@import)
+    assert_equal 1, enqueued_jobs.select{ |j| j['job_class'] == "ImportJob" }.count
   end
 
   test "complete_upload() returns HTTP 204 upon success" do

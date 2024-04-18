@@ -619,15 +619,12 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update_submittable_collections() updates a user's submittable collections" do
-    skip # TODO: figure out why jobs aren't running in test
     user = users(:southwest)
-    collection = collections(:southwest_unit1_collection1)
-    collection.submitting_users << user
-    collection.save!
     log_in_as(user)
     patch user_update_submittable_collections_path(user), xhr: true
-    user.reload
-    assert_not_empty user.cached_submittable_collections
+
+    assert_equal 2, enqueued_jobs. # 2 because 1 is also fired off at login
+      select{ |j| j['job_class'] == "CacheSubmittableCollectionsJob" }.count
   end
 
   test "update_submittable_collections() redirects to the created Task" do
