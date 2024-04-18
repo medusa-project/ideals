@@ -436,7 +436,7 @@
                                                    tabindex:          0}
             = form_tag(institution_buried_items_path(@institution)) do
               .btn-group.float-end{role: "group"}
-                - if @buried_item_count > 0
+                - if @buried_item_count > 0 && policy(@institution).empty_trash?
                   = link_to(institution_empty_trash_path(@institution),
                             class:  "btn btn-danger",
                             method: :post,
