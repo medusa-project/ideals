@@ -2,18 +2,16 @@
 - can_withdraw = policy(@item).withdraw?
 - can_reject   = policy(@item).reject?
 - can_bury     = policy(@item).bury?
-- can_destroy  = policy(@item).destroy?
 - can_exhume   = policy(@item).exhume?
 - show_approve_button  = (@item.submitted? || @item.withdrawn? || @item.rejected?) && can_approve
 - show_reject_button   = !@item.withdrawn? && !@item.rejected? && can_reject
 - show_withdraw_button = @item.approved? && can_withdraw
 - show_delete_button   = !@item.buried? && can_bury
-- show_destroy_button  = can_destroy
 - show_undelete_button = @item.buried? && can_exhume
 
 .btn-group.float-end{role: "group"}
   -# Actions menu
-  - if show_approve_button || show_reject_button || show_withdraw_button || show_delete_button || show_destroy_button || show_undelete_button
+  - if show_approve_button || show_reject_button || show_withdraw_button || show_delete_button || show_undelete_button
     .btn-group{role: "group"}
       %button#actions.btn.btn-light.dropdown-toggle{"aria-expanded":  "false",
                                                     "aria-haspopup":  "true",
@@ -47,12 +45,6 @@
                                              "data-confirm": "Are you sure you want to delete this item? This operation is reversible. If you would prefer to delete it permanently, please contact a system administrator.") do
               = icon_for(:delete)
               Delete
-          - if show_destroy_button
-            = link_to(item_path(@item), class:          "dropdown-item",
-                                        method:         :delete,
-                                        "data-confirm": "Are you sure you want to permanently delete this item? This cannot be undone.") do
-              = icon_for(:delete)
-              Delete Permanently
           - if show_undelete_button
             = link_to(item_exhume_path(@item), class:          "dropdown-item",
                                                method:         :post,

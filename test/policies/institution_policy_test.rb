@@ -676,6 +676,41 @@ class InstitutionPolicyTest < ActiveSupport::TestCase
     assert !policy.edit_theme?
   end
 
+  # empty_trash?()
+
+  test "empty_trash?() returns false with a nil request context" do
+    context = RequestContext.new(user:        nil,
+                                 institution: @institution)
+    policy = InstitutionPolicy.new(context, @institution)
+    assert !policy.empty_trash?
+  end
+
+  test "empty_trash?() is restrictive by default" do
+    user    = users(:southwest)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.empty_trash?
+  end
+
+  test "empty_trash?() authorizes sysadmins" do
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: @institution)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert policy.empty_trash?
+  end
+
+  test "empty_trash?() respects role limits" do
+    # sysadmin user limited to an insufficient role
+    user    = users(:southwest_sysadmin)
+    context = RequestContext.new(user:        user,
+                                 institution: user.institution,
+                                 role_limit:  Role::LOGGED_IN)
+    policy  = InstitutionPolicy.new(context, @institution)
+    assert !policy.empty_trash?
+  end
+
   # generate_saml_cert?()
 
   test "generate_saml_cert?() returns false with a nil user" do

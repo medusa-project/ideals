@@ -188,6 +188,7 @@ Rails.application.routes.draw do
 
     match "/banner-image", to: "institutions#remove_banner_image", via: :delete
     match "/deposit-agreement-questions", to: "institutions#update_deposit_agreement_questions", via: [:patch, :post]
+    match "/empty-trash", to: "institutions#empty_trash", via: :post
     match "/favicon", to: "institutions#remove_favicon", via: :delete
     match "/footer-image", to: "institutions#remove_footer_image", via: :delete
     match "/generate-saml-cert", to: "institutions#generate_saml_cert", via: :patch
@@ -215,7 +216,7 @@ Rails.application.routes.draw do
   end
 
   # Items
-  resources :items, except: [:index, :new] do
+  resources :items, except: [:destroy, :index, :new] do
     collection do
       match "/export", to: "items#export", via: [:get, :post]
       match "/review", to: "items#review", via: :get

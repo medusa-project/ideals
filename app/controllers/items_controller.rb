@@ -52,29 +52,6 @@ class ItemsController < ApplicationController
   end
 
   ##
-  # Permanently deletes an item.
-  #
-  # Responds to `DELETE /items/:id`
-  #
-  # @see bury
-  #
-  def destroy
-    collection = @item.effective_primary_collection
-    title      = @item.effective_title
-    begin
-      @item.destroy!
-    rescue => e
-      flash['error'] = "#{e}"
-    else
-      RefreshOpensearchJob.perform_later
-      toast!(title:   "Item deleted",
-             message: "The item \"#{title}\" has been deleted.")
-    ensure
-      redirect_to collection || root_url
-    end
-  end
-
-  ##
   # Renders an HTML table or CSV of download counts by month.
   #
   # Responds to `GET /items/:id/download-counts`

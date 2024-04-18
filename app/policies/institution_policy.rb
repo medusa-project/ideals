@@ -67,6 +67,10 @@ class InstitutionPolicy < ApplicationPolicy
     edit_settings
   end
 
+  def empty_trash
+    effective_sysadmin(@user, @role_limit)
+  end
+
   def generate_saml_cert
     generate_saml_key
   end

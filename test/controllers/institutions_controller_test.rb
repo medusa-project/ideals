@@ -444,6 +444,44 @@ class InstitutionsControllerTest < ActionDispatch::IntegrationTest
     assert_response :ok
   end
 
+  # empty_trash()
+
+  test "empty_trash() returns HTTP 404 for unscoped requests" do
+    host! ::Configuration.instance.main_host
+    post institution_empty_trash_path(@institution)
+    assert_response :not_found
+  end
+
+  test "empty_trash() redirects to root page for logged-out users" do
+    post institution_empty_trash_path(@institution)
+    assert_redirected_to @institution.scope_url
+  end
+
+  test "empty_trash() returns HTTP 403 for unauthorized users" do
+    log_in_as(users(:southwest_admin))
+    post institution_empty_trash_path(@institution)
+    assert_response :forbidden
+  end
+
+  test "empty_trash() empties the trash" do
+    log_in_as(users(:southeast_sysadmin))
+
+    post institution_empty_trash_path(@institution)
+    assert_equal 1, enqueued_jobs.select{ |j| j['job_class'] == "EmptyTrashJob" }.count
+  end
+
+  test "empty_trash() redirects to the institution" do
+    log_in_as(users(:southeast_sysadmin))
+    post institution_empty_trash_path(@institution)
+    assert_redirected_to @institution
+  end
+
+  test "empty_trash() returns HTTP 404 for a missing institution" do
+    log_in_as(users(:southeast_sysadmin))
+    post "/institutions/bogus/empty_trash"
+    assert_response :not_found
+  end
+
   # generate_saml_cert()
 
   test "generate_saml_cert() returns HTTP 404 for unscoped requests" do

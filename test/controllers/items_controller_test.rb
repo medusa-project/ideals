@@ -122,50 +122,6 @@ class ItemsControllerTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  # destroy()
-
-  test "destroy() returns HTTP 404 for unscoped requests" do
-    host! ::Configuration.instance.main_host
-    item = items(:southeast_item1)
-    delete item_path(item)
-    assert_response :not_found
-  end
-
-  test "destroy() redirects to root page for logged-out users" do
-    item = items(:southeast_item1)
-    delete item_path(item)
-    assert_redirected_to item.institution.scope_url
-  end
-
-  test "destroy() returns HTTP 403 for unauthorized users" do
-    log_in_as(users(:southeast))
-    delete item_path(items(:southeast_item1))
-    assert_response :forbidden
-  end
-
-  test "destroy() destroys the item" do
-    log_in_as(users(:southeast_sysadmin))
-    item = items(:southeast_submitting)
-    delete item_path(item)
-    assert_raises ActiveRecord::RecordNotFound do
-      item.reload
-    end
-  end
-
-  test "destroy() returns HTTP 302 for an existing item" do
-    log_in_as(users(:southeast_sysadmin))
-    submission = items(:southeast_item1)
-    expected   = submission.primary_collection
-    delete item_path(submission)
-    assert_redirected_to expected
-  end
-
-  test "destroy() returns HTTP 404 for a missing item" do
-    log_in_as(users(:southeast_sysadmin))
-    delete "/items/99999"
-    assert_response :not_found
-  end
-
   # download_counts()
 
   test "download_counts() returns HTTP 404 for unscoped requests" do

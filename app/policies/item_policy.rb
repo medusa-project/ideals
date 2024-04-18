@@ -93,10 +93,6 @@ class ItemPolicy < ApplicationPolicy
     NOT_INSTITUTION_ADMIN_RESULT
   end
 
-  def destroy
-    effective_sysadmin(@user, @role_limit)
-  end
-
   def download_counts
     return { authorized: false,
              reason:     "This item has been deleted." } if @item.buried?

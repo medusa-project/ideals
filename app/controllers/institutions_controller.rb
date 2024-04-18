@@ -156,6 +156,24 @@ class InstitutionsController < ApplicationController
   end
 
   ##
+  # Responds to `POST /institutions/:id/empty-trash`
+  #
+  def empty_trash
+    task = Task.create!(name: EmptyTrashJob.to_s)
+    EmptyTrashJob.perform_later(institution:        @institution,
+                                user:               current_user,
+                                task:               task)
+  rescue => e
+    flash['error'] = "#{e}"
+  else
+    toast!(title:   "Emptying the trash",
+           message: "The trash is being emptied. This may take a while if it "\
+                    "contains a lot of items.")
+  ensure
+    redirect_back fallback_location: institution_path(@institution)
+  end
+
+  ##
   # Responds to `PATCH /institutions/:id/generate-saml-cert`
   #
   def generate_saml_cert
@@ -348,8 +366,13 @@ class InstitutionsController < ApplicationController
   # Responds to `GET /institutions/:key`
   #
   def show
-    @review_count                  = review_items(0, 0).count
-    @submissions_in_progress_count = submissions_in_progress(0, 0).count
+    @review_count                  = review_items(start: 0, limit: 0).count
+    @submissions_in_progress_count = submissions_in_progress(start: 0, limit: 0).count
+
+    @buried_item_count    = buried_items(limit: 0).count
+    @private_item_count   = private_items(limit: 0).count
+    @rejected_item_count  = rejected_items(limit: 0).count
+    @withdrawn_item_count = withdrawn_items(limit: 0).count
   end
 
   ##
@@ -567,7 +590,7 @@ class InstitutionsController < ApplicationController
     @review_permitted_params = params.permit(Search::RESULTS_PARAMS)
     @review_start            = @review_permitted_params[:start].to_i
     @review_window           = window_size
-    @review_items            = review_items(@review_start, @review_window)
+    @review_items            = review_items(start: @review_start, limit: @review_window)
     @review_count            = @review_items.count
     @review_current_page     = @review_items.page
     render partial: "collections/show_review_submissions_tab"
@@ -611,7 +634,7 @@ class InstitutionsController < ApplicationController
     @permitted_params = params.permit(Search::RESULTS_PARAMS)
     @start            = [@permitted_params[:start].to_i.abs, max_start].min
     @window           = window_size
-    @items            = submissions_in_progress(@start, @window)
+    @items            = submissions_in_progress(start: @start, limit: @window)
     @count            = @items.count
     @current_page     = @items.page
     render partial: "collections/show_submissions_in_progress_tab"
@@ -1016,7 +1039,7 @@ class InstitutionsController < ApplicationController
     end
   end
 
-  def buried_items(q: nil, start:, limit:)
+  def buried_items(q: nil, start: 0, limit:)
     Item.search.
       institution(@institution).
       aggregations(false).
@@ -1028,7 +1051,7 @@ class InstitutionsController < ApplicationController
       limit(limit)
   end
 
-  def private_items(q: nil, start:, limit:)
+  def private_items(q: nil, start: 0, limit:)
     Item.search.
       institution(@institution).
       aggregations(false).
@@ -1042,7 +1065,7 @@ class InstitutionsController < ApplicationController
       limit(limit)
   end
 
-  def rejected_items(q: nil, start:, limit:)
+  def rejected_items(q: nil, start: 0, limit:)
     Item.search.
       institution(@institution).
       aggregations(false).
@@ -1053,7 +1076,7 @@ class InstitutionsController < ApplicationController
       limit(limit)
   end
 
-  def review_items(start, limit)
+  def review_items(start: 0, limit:)
     Item.search.
       institution(@institution).
       aggregations(false).
@@ -1064,7 +1087,7 @@ class InstitutionsController < ApplicationController
       limit(limit)
   end
 
-  def submissions_in_progress(start, limit)
+  def submissions_in_progress(start: 0, limit:)
     Item.search.
       institution(@institution).
       aggregations(false).
@@ -1074,7 +1097,7 @@ class InstitutionsController < ApplicationController
       limit(limit)
   end
 
-  def withdrawn_items(q: nil, start:, limit:)
+  def withdrawn_items(q: nil, start: 0, limit:)
     Item.search.
       institution(@institution).
       aggregations(false).

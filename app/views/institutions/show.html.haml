@@ -20,7 +20,6 @@
 
 - show_access                  = policy(@institution).show_access?
 - show_authentication          = policy(@institution).show_authentication?
-- show_buried_items            = policy(@institution).show_buried_items?
 - show_depositing              = policy(@institution).show_depositing?
 - show_element_mappings        = policy(@institution).show_element_mappings?
 - show_element_namespaces      = policy(@institution).show_element_namespaces?
@@ -32,7 +31,6 @@
 - show_metadata_profiles       = policy(@institution).show_metadata_profiles?
 - show_prebuilt_searches       = policy(@institution).show_prebuilt_searches?
 - show_preservation            = policy(@institution).show_preservation?
-- show_private_items           = policy(@institution).show_private_items?
 - show_properties              = policy(@institution).show_properties?
 - show_review_submissions      = policy(@institution).show_review_submissions?
 - show_settings                = policy(@institution).show_settings?
@@ -45,7 +43,6 @@
 - show_user_groups             = policy(@institution).show_user_groups?
 - show_users                   = policy(@institution).show_users?
 - show_vocabularies            = policy(@institution).show_vocabularies?
-- show_withdrawn_items         = policy(@institution).show_withdrawn_items?
 
 .d-flex
   .nav.nav-pills.flex-column.me-3{role:               "tablist",
@@ -375,6 +372,7 @@
                                                       "aria-selected":  "true"}
               %i.fa.fa-lock
               Private Items
+              %span.badge.rounded-pill.text-bg-primary= @private_item_count
             %button#withdrawn-items-tab.nav-link{"data-bs-toggle": "tab",
                                                  "data-bs-target": "#withdrawn-items-tab-content",
                                                  type:             "button",
@@ -383,6 +381,7 @@
                                                  "aria-selected":  "false"}
               %i.fa.fa-undo
               Withdrawn Items
+              %span.badge.rounded-pill.text-bg-primary= @withdrawn_item_count
             %button#rejected-items-tab.nav-link{"data-bs-toggle": "tab",
                                                 "data-bs-target": "#rejected-items-tab-content",
                                                 type:             "button",
@@ -391,6 +390,7 @@
                                                 "aria-selected":  "false"}
               %i.fa.fa-ban
               Rejected Items
+              %span.badge.rounded-pill.text-bg-primary= @rejected_item_count
             %button#deleted-items-tab.nav-link{"data-bs-toggle": "tab",
                                                "data-bs-target": "#deleted-items-tab-content",
                                                type:             "button",
@@ -399,6 +399,7 @@
                                                "aria-selected":  "false"}
               %i.fa.fa-trash
               Deleted Items
+              %span.badge.rounded-pill.text-bg-primary= @buried_item_count
         .tab-content
           #private-items-tab-content.tab-pane.fade.show.active{role:              "tabpanel",
                                                                "aria-labelledby": "private-items-tab",
@@ -441,6 +442,14 @@
                                                    tabindex:          0}
             = form_tag(institution_buried_items_path(@institution)) do
               .btn-group.float-end{role: "group"}
+                - if @buried_item_count > 0
+                  = link_to(institution_empty_trash_path(@institution),
+                            class:  "btn btn-danger",
+                            method: :post,
+                            role:   "button",
+                            data:   { confirm: "Are you sure you want to empty the trash? All items in the trash will be permanently deleted." }) do
+                    %i.fa.fa-trash
+                    Empty Trash
                 = link_to(search_path, host: @institution.fqdn, class: "btn btn-light", role: "button", target: "_blank") do
                   %i.fas.fa-arrow-up-right-from-square
                   Public Items View

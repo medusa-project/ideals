@@ -359,41 +359,6 @@ class ItemPolicyTest < ActiveSupport::TestCase
     assert !policy.delete_bitstreams?
   end
 
-  # destroy?()
-
-  test "destroy?() returns false with a nil user" do
-    context = RequestContext.new(user:        nil,
-                                 institution: @item.institution)
-    policy = ItemPolicy.new(context, @item)
-    assert !policy.destroy?
-  end
-
-  test "destroy?() does not authorize non-sysadmins" do
-    user    = users(:southwest)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = ItemPolicy.new(context, @item)
-    assert !policy.destroy?
-  end
-
-  test "destroy?() authorizes sysadmins" do
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: user.institution)
-    policy  = ItemPolicy.new(context, @item)
-    assert policy.destroy?
-  end
-
-  test "destroy?() respects role limits" do
-    # sysadmin user limited to an insufficient role
-    user    = users(:southwest_sysadmin)
-    context = RequestContext.new(user:        user,
-                                 institution: @item.institution,
-                                 role_limit:  Role::INSTITUTION_ADMINISTRATOR)
-    policy  = ItemPolicy.new(context, @item)
-    assert !policy.destroy?
-  end
-
   # download_counts?()
 
   test "download_counts?() returns true with a nil user" do
