@@ -121,6 +121,16 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     skip
   end
 
+  test "create() caches submittable collections" do
+    user = users(:southwest)
+    post "/auth/identity/callback", params: {
+      auth_key: user.email,
+      password: "password"
+    }, xhr: true
+    assert_equal 1, enqueued_jobs.
+      select{ |j| j['job_class'] == "CacheSubmittableCollectionsJob" }.count
+  end
+
   # destroy()
 
   test "destroy() redirects to the root URL in a globally-scoped context" do
