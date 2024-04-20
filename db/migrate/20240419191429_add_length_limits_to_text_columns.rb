@@ -8,7 +8,7 @@ class AddLengthLimitsToTextColumns < ActiveRecord::Migration[7.1]
     change_column :ascribed_elements, :string, :string, limit: 1048576
     change_column :ascribed_elements, :uri, :string, limit: 4096
 
-    change_column :bitstreams, :medusa_uuid, :string, limit: 36
+    change_column :bitstreams, :medusa_uuid, :string, limit: 38
     change_column :bitstreams, :description, :string, limit: 32768
 
     change_column :collections, :title, :string, limit: 1024
@@ -125,7 +125,7 @@ class AddLengthLimitsToTextColumns < ActiveRecord::Migration[7.1]
     change_column :settings, :value, :string, limit: 4096
 
     change_column :submission_profile_elements, :help_text, :string, limit: 1024
-    change_column :submission_profile_elements, :placeholder_text, :string, limit: 128
+    change_column :submission_profile_elements, :placeholder_text, :string, limit: 512
 
     change_column :submission_profiles, :name, :string, limit: 1024
 

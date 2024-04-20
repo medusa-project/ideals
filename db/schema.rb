@@ -65,7 +65,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_19_191429) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "original_filename", null: false
-    t.string "medusa_uuid", limit: 36
+    t.string "medusa_uuid", limit: 38
     t.string "medusa_key"
     t.integer "role", default: 0, null: false
     t.integer "bundle", default: 0, null: false
@@ -682,7 +682,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_19_191429) do
     t.boolean "required", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "placeholder_text", limit: 128
+    t.string "placeholder_text", limit: 512
     t.index ["position"], name: "index_submission_profile_elements_on_position"
     t.index ["registered_element_id"], name: "index_submission_profile_elements_on_registered_element_id"
     t.index ["repeatable"], name: "index_submission_profile_elements_on_repeatable"
