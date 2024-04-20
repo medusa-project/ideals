@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
+ActiveRecord::Schema[7.1].define(version: 2024_04_19_191429) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -19,15 +19,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_group_id", null: false
-    t.string "name", null: false
+    t.string "name", limit: 1024, null: false
     t.index ["user_group_id"], name: "index_ad_groups_on_user_group_id"
   end
 
   create_table "affiliations", force: :cascade do |t|
-    t.string "name", null: false
+    t.string "name", limit: 1024, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "key", null: false
+    t.string "key", limit: 128, null: false
     t.index ["key"], name: "index_affiliations_on_key", unique: true
     t.index ["name"], name: "index_affiliations_on_name", unique: true
   end
@@ -39,12 +39,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
   end
 
   create_table "ascribed_elements", force: :cascade do |t|
-    t.text "string", null: false
+    t.string "string", limit: 1048576, null: false
     t.bigint "registered_element_id", null: false
     t.bigint "item_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "uri"
+    t.string "uri", limit: 4096
     t.integer "position", default: 1, null: false
     t.index ["item_id"], name: "index_ascribed_elements_on_item_id"
     t.index ["registered_element_id"], name: "index_ascribed_elements_on_registered_element_id"
@@ -65,12 +65,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "original_filename", null: false
-    t.string "medusa_uuid"
+    t.string "medusa_uuid", limit: 36
     t.string "medusa_key"
     t.integer "role", default: 0, null: false
     t.integer "bundle", default: 0, null: false
     t.string "permanent_key"
-    t.text "description"
+    t.string "description", limit: 32768
     t.boolean "primary", default: false, null: false
     t.datetime "full_text_checked_at"
     t.integer "bundle_position"
@@ -133,12 +133,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
     t.bigint "submission_profile_id"
     t.bigint "parent_id"
     t.boolean "submissions_reviewed", default: false, null: false
-    t.string "title"
-    t.text "description"
-    t.text "short_description"
-    t.text "introduction"
-    t.text "rights"
-    t.text "provenance"
+    t.string "title", limit: 1024
+    t.string "description", limit: 32768
+    t.string "short_description", limit: 8192
+    t.string "introduction", limit: 16384
+    t.string "rights", limit: 16384
+    t.string "provenance", limit: 16384
     t.boolean "buried", default: false, null: false
     t.bigint "institution_id", null: false
     t.boolean "accepts_submissions", default: true, null: false
@@ -151,14 +151,14 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
   end
 
   create_table "credentials", force: :cascade do |t|
-    t.string "email", null: false
+    t.string "email", limit: 1024, null: false
     t.string "password_digest"
     t.string "reset_digest"
     t.datetime "reset_sent_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "registration_digest"
-    t.string "lowercase_email", null: false
+    t.string "lowercase_email", limit: 1024, null: false
     t.bigint "user_id"
     t.index ["email"], name: "index_credentials_on_email", unique: true
     t.index ["lowercase_email"], name: "index_credentials_on_lowercase_email", unique: true
@@ -181,7 +181,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
   end
 
   create_table "departments", force: :cascade do |t|
-    t.string "name", null: false
+    t.string "name", limit: 1024, null: false
     t.bigint "user_group_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -191,7 +191,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
 
   create_table "deposit_agreement_question_responses", force: :cascade do |t|
     t.bigint "deposit_agreement_question_id", null: false
-    t.string "text", null: false
+    t.string "text", limit: 1024, null: false
     t.integer "position", default: 0, null: false
     t.boolean "success", null: false
     t.datetime "created_at", null: false
@@ -203,8 +203,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
 
   create_table "deposit_agreement_questions", force: :cascade do |t|
     t.bigint "institution_id", null: false
-    t.string "text", null: false
-    t.string "help_text"
+    t.string "text", limit: 4096, null: false
+    t.string "help_text", limit: 4096
     t.integer "position", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -214,12 +214,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
   end
 
   create_table "downloads", force: :cascade do |t|
-    t.string "key", null: false
-    t.string "filename"
-    t.string "url"
+    t.string "key", limit: 32, null: false
+    t.string "filename", limit: 4096
+    t.string "url", limit: 4096
     t.bigint "task_id"
     t.boolean "expired", default: false, null: false
-    t.string "ip_address"
+    t.string "ip_address", limit: 128
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "institution_id", null: false
@@ -230,8 +230,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
 
   create_table "element_namespaces", force: :cascade do |t|
     t.bigint "institution_id"
-    t.string "prefix", null: false
-    t.string "uri", null: false
+    t.string "prefix", limit: 128, null: false
+    t.string "uri", limit: 4096, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["institution_id", "prefix"], name: "index_element_namespaces_on_institution_id_and_prefix", unique: true
@@ -240,7 +240,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
 
   create_table "email_patterns", force: :cascade do |t|
     t.bigint "user_group_id", null: false
-    t.string "pattern", null: false
+    t.string "pattern", limit: 128, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_group_id"], name: "index_email_patterns_on_user_group_id"
@@ -251,10 +251,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
     t.bigint "item_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.text "reason"
+    t.string "reason", limit: 4096
     t.boolean "perpetual", default: false, null: false
     t.integer "kind", null: false
-    t.text "public_reason"
+    t.string "public_reason", limit: 4096
     t.index ["expires_at"], name: "index_embargoes_on_expires_at"
     t.index ["item_id"], name: "index_embargoes_on_item_id"
     t.index ["kind"], name: "index_embargoes_on_kind"
@@ -316,7 +316,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
   end
 
   create_table "hosts", force: :cascade do |t|
-    t.string "pattern", null: false
+    t.string "pattern", limit: 2048, null: false
     t.bigint "user_group_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -332,7 +332,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
     t.integer "format"
     t.bigint "institution_id", null: false
     t.bigint "task_id"
-    t.string "filename"
+    t.string "filename", limit: 4096
     t.bigint "length"
     t.index ["collection_id"], name: "index_imports_on_collection_id"
     t.index ["format"], name: "index_imports_on_format"
@@ -342,7 +342,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
   end
 
   create_table "index_pages", force: :cascade do |t|
-    t.string "name", null: false
+    t.string "name", limit: 1024, null: false
     t.bigint "institution_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -377,31 +377,31 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
   end
 
   create_table "institutions", force: :cascade do |t|
-    t.string "key", null: false
-    t.string "name", null: false
+    t.string "key", limit: 32, null: false
+    t.string "name", limit: 1024, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "fqdn", null: false
-    t.string "feedback_email"
-    t.string "footer_background_color", default: "#13294b", null: false
-    t.string "header_background_color", default: "#13294b", null: false
-    t.string "link_color", default: "#23527c", null: false
-    t.string "link_hover_color", default: "#23527c", null: false
-    t.string "primary_color", default: "#23527c", null: false
-    t.string "primary_hover_color", default: "#05325b", null: false
-    t.string "header_image_filename"
-    t.string "footer_image_filename"
-    t.string "main_website_url"
-    t.text "welcome_html"
-    t.string "active_link_color", default: "#23527c", null: false
-    t.string "banner_image_filename"
-    t.string "copyright_notice"
-    t.string "service_name", null: false
-    t.string "about_url"
-    t.text "about_html"
+    t.string "fqdn", limit: 256, null: false
+    t.string "feedback_email", limit: 4096
+    t.string "footer_background_color", limit: 128, default: "#13294b", null: false
+    t.string "header_background_color", limit: 128, default: "#13294b", null: false
+    t.string "link_color", limit: 128, default: "#23527c", null: false
+    t.string "link_hover_color", limit: 128, default: "#23527c", null: false
+    t.string "primary_color", limit: 128, default: "#23527c", null: false
+    t.string "primary_hover_color", limit: 128, default: "#05325b", null: false
+    t.string "header_image_filename", limit: 1024
+    t.string "footer_image_filename", limit: 1024
+    t.string "main_website_url", limit: 1024
+    t.string "welcome_html", limit: 32768
+    t.string "active_link_color", limit: 128, default: "#23527c", null: false
+    t.string "banner_image_filename", limit: 1024
+    t.string "copyright_notice", limit: 256
+    t.string "service_name", limit: 128, null: false
+    t.string "about_url", limit: 4096
+    t.string "about_html", limit: 65536
     t.integer "medusa_file_group_id"
-    t.string "outgoing_message_queue"
-    t.string "incoming_message_queue"
+    t.string "outgoing_message_queue", limit: 128
+    t.string "incoming_message_queue", limit: 128
     t.boolean "has_favicon", default: false, null: false
     t.integer "latitude_degrees"
     t.integer "latitude_minutes"
@@ -415,35 +415,35 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
     t.bigint "date_submitted_element_id"
     t.bigint "date_approved_element_id"
     t.bigint "handle_uri_element_id"
-    t.text "deposit_agreement"
+    t.string "deposit_agreement", limit: 32768
     t.integer "banner_image_height", default: 200, null: false
-    t.string "saml_idp_sso_post_service_url"
-    t.text "saml_idp_signing_cert"
-    t.string "saml_email_attribute"
-    t.string "saml_first_name_attribute"
-    t.string "saml_last_name_attribute"
+    t.string "saml_idp_sso_post_service_url", limit: 4096
+    t.string "saml_idp_signing_cert", limit: 4096
+    t.string "saml_email_attribute", limit: 128
+    t.string "saml_first_name_attribute", limit: 128
+    t.string "saml_last_name_attribute", limit: 128
     t.integer "sso_federation"
-    t.string "saml_idp_entity_id"
+    t.string "saml_idp_entity_id", limit: 4096
     t.integer "saml_email_location"
-    t.string "google_analytics_measurement_id"
+    t.string "google_analytics_measurement_id", limit: 1024
     t.boolean "local_auth_enabled", default: true, null: false
     t.boolean "saml_auth_enabled", default: false, null: false
-    t.text "saml_sp_public_cert"
-    t.text "saml_sp_private_key"
-    t.text "deposit_form_disagreement_help", default: "The selections you have made indicate that you are not ready to deposit your dataset. Our curators are available to discuss your dataset with you. Please contact us!", null: false
-    t.text "deposit_form_collection_help", default: "Select the unit into which you would like to deposit the item."
-    t.text "deposit_form_access_help"
+    t.string "saml_sp_public_cert", limit: 4096
+    t.string "saml_sp_private_key", limit: 4096
+    t.string "deposit_form_disagreement_help", limit: 4096, default: "The selections you have made indicate that you are not ready to deposit your dataset. Our curators are available to discuss your dataset with you. Please contact us!", null: false
+    t.string "deposit_form_collection_help", limit: 4096, default: "Select the unit into which you would like to deposit the item."
+    t.string "deposit_form_access_help", limit: 4096
     t.boolean "submissions_reviewed", default: true, null: false
-    t.text "saml_sp_next_public_cert"
+    t.string "saml_sp_next_public_cert", limit: 4096
     t.boolean "saml_auto_cert_rotation", default: true
-    t.text "saml_idp_signing_cert2"
-    t.text "saml_idp_encryption_cert"
-    t.text "saml_idp_encryption_cert2"
-    t.string "saml_idp_sso_binding_urn", default: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
-    t.string "saml_idp_sso_redirect_service_url"
+    t.string "saml_idp_signing_cert2", limit: 4096
+    t.string "saml_idp_encryption_cert", limit: 4096
+    t.string "saml_idp_encryption_cert2", limit: 4096
+    t.string "saml_idp_sso_binding_urn", limit: 128, default: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+    t.string "saml_idp_sso_redirect_service_url", limit: 4096
     t.boolean "allow_user_registration", default: true, null: false
-    t.string "saml_metadata_url"
-    t.string "saml_sp_entity_id"
+    t.string "saml_metadata_url", limit: 4096
+    t.string "saml_sp_entity_id", limit: 4096
     t.boolean "live", default: false, null: false
     t.boolean "expand_deposit_agreement", default: false, null: false
     t.index ["fqdn"], name: "index_institutions_on_fqdn", unique: true
@@ -456,15 +456,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
   end
 
   create_table "invitees", force: :cascade do |t|
-    t.string "email", null: false
+    t.string "email", limit: 1024, null: false
     t.datetime "expires_at", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.text "purpose", null: false
-    t.string "approval_state", default: "pending", null: false
+    t.string "purpose", limit: 1024, null: false
+    t.string "approval_state", limit: 32, default: "pending", null: false
     t.bigint "institution_id"
     t.boolean "institution_admin", default: false, null: false
-    t.text "rejection_reason"
+    t.string "rejection_reason", limit: 1024
     t.bigint "inviting_user_id"
     t.bigint "user_id"
     t.index ["email"], name: "index_invitees_on_email", unique: true
@@ -478,15 +478,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
     t.datetime "updated_at", null: false
     t.bigint "submitter_id"
     t.integer "stage", default: 0, null: false
-    t.text "stage_reason"
-    t.string "temp_embargo_expires_at"
-    t.text "temp_embargo_reason"
-    t.string "temp_embargo_type"
+    t.string "stage_reason", limit: 4096
+    t.string "temp_embargo_expires_at", limit: 128
+    t.string "temp_embargo_reason", limit: 4096
+    t.string "temp_embargo_type", limit: 32
     t.integer "temp_embargo_kind"
     t.bigint "institution_id"
-    t.text "deposit_agreement"
+    t.string "deposit_agreement", limit: 32768
     t.integer "previous_stage"
-    t.text "previous_stage_reason"
+    t.string "previous_stage_reason", limit: 4096
     t.index ["institution_id"], name: "index_items_on_institution_id"
     t.index ["stage"], name: "index_items_on_stage"
     t.index ["submitter_id"], name: "index_items_on_submitter_id"
@@ -494,11 +494,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
 
   create_table "logins", force: :cascade do |t|
     t.bigint "user_id"
-    t.string "ip_address"
-    t.text "auth_hash"
+    t.string "ip_address", limit: 128
+    t.string "auth_hash", limit: 65536
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "hostname"
+    t.string "hostname", limit: 1024
     t.integer "provider"
     t.bigint "institution_id", null: false
     t.index ["created_at"], name: "index_logins_on_created_at"
@@ -547,7 +547,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
   end
 
   create_table "metadata_profiles", force: :cascade do |t|
-    t.string "name", null: false
+    t.string "name", limit: 1024, null: false
     t.boolean "institution_default", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -618,7 +618,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
   create_table "prebuilt_search_elements", force: :cascade do |t|
     t.bigint "prebuilt_search_id", null: false
     t.bigint "registered_element_id", null: false
-    t.string "term", null: false
+    t.string "term", limit: 1024, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["prebuilt_search_id"], name: "index_prebuilt_search_elements_on_prebuilt_search_id"
@@ -626,7 +626,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
   end
 
   create_table "prebuilt_searches", force: :cascade do |t|
-    t.string "name", null: false
+    t.string "name", limit: 1024, null: false
     t.bigint "institution_id", null: false
     t.bigint "ordering_element_id"
     t.integer "direction", default: 0, null: false
@@ -637,17 +637,17 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
   end
 
   create_table "registered_elements", force: :cascade do |t|
-    t.string "name", null: false
-    t.text "scope_note"
+    t.string "name", limit: 128, null: false
+    t.string "scope_note", limit: 1024
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "uri"
-    t.string "label", null: false
+    t.string "uri", limit: 4096
+    t.string "label", limit: 128, null: false
     t.bigint "institution_id"
-    t.string "input_type", default: "text_field", null: false
-    t.string "highwire_mapping"
+    t.string "input_type", limit: 32, default: "text_field", null: false
+    t.string "highwire_mapping", limit: 32
     t.bigint "vocabulary_id"
-    t.string "dublin_core_mapping"
+    t.string "dublin_core_mapping", limit: 32
     t.boolean "template", default: false, null: false
     t.index ["institution_id", "uri"], name: "index_registered_elements_on_institution_id_and_uri", unique: true
     t.index ["institution_id"], name: "index_registered_elements_on_institution_id"
@@ -666,8 +666,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
   end
 
   create_table "settings", force: :cascade do |t|
-    t.string "key"
-    t.text "value"
+    t.string "key", limit: 128
+    t.string "value", limit: 4096
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["key"], name: "index_settings_on_key", unique: true
@@ -677,12 +677,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
     t.bigint "submission_profile_id", null: false
     t.bigint "registered_element_id", null: false
     t.integer "position", null: false
-    t.text "help_text"
+    t.string "help_text", limit: 1024
     t.boolean "repeatable", default: false, null: false
     t.boolean "required", default: true, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.text "placeholder_text"
+    t.string "placeholder_text", limit: 128
     t.index ["position"], name: "index_submission_profile_elements_on_position"
     t.index ["registered_element_id"], name: "index_submission_profile_elements_on_registered_element_id"
     t.index ["repeatable"], name: "index_submission_profile_elements_on_repeatable"
@@ -691,7 +691,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
   end
 
   create_table "submission_profiles", force: :cascade do |t|
-    t.string "name", null: false
+    t.string "name", limit: 1024, null: false
     t.boolean "institution_default", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -720,20 +720,20 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
 
   create_table "tasks", force: :cascade do |t|
     t.bigint "user_id"
-    t.string "name", null: false
+    t.string "name", limit: 128, null: false
     t.integer "status", default: 0, null: false
-    t.string "status_text", default: "Waiting...", null: false
+    t.string "status_text", limit: 1024, default: "Waiting...", null: false
     t.float "percent_complete", default: 0.0, null: false
     t.datetime "started_at"
     t.datetime "stopped_at"
     t.boolean "indeterminate", default: false, null: false
-    t.text "detail"
-    t.text "backtrace"
+    t.string "detail", limit: 65536
+    t.string "backtrace", limit: 65536
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "institution_id"
-    t.string "job_id"
-    t.string "queue"
+    t.string "job_id", limit: 64
+    t.string "queue", limit: 32
     t.index ["created_at"], name: "index_tasks_on_created_at"
     t.index ["institution_id"], name: "index_tasks_on_institution_id"
     t.index ["job_id"], name: "index_tasks_on_job_id", unique: true
@@ -772,24 +772,24 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
   end
 
   create_table "units", force: :cascade do |t|
-    t.string "title"
+    t.string "title", limit: 1024
     t.bigint "parent_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "institution_id"
-    t.text "short_description"
-    t.text "introduction"
-    t.text "rights"
+    t.string "short_description", limit: 8192
+    t.string "introduction", limit: 16384
+    t.string "rights", limit: 16384
     t.boolean "buried", default: false, null: false
     t.index ["institution_id"], name: "index_units_on_institution_id"
     t.index ["parent_id"], name: "index_units_on_parent_id"
   end
 
   create_table "user_groups", force: :cascade do |t|
-    t.string "name", null: false
+    t.string "name", limit: 1024, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "key", null: false
+    t.string "key", limit: 128, null: false
     t.bigint "institution_id"
     t.boolean "defines_institution", default: false
     t.index ["institution_id", "key"], name: "index_user_groups_on_institution_id_and_key", unique: true
@@ -804,8 +804,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "name", null: false
-    t.string "email", null: false
+    t.string "name", limit: 1024, null: false
+    t.string "email", limit: 1024, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "affiliation_id"
@@ -821,7 +821,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
 
   create_table "vocabularies", force: :cascade do |t|
     t.bigint "institution_id", null: false
-    t.string "name", null: false
+    t.string "name", limit: 1024, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["institution_id", "name"], name: "index_vocabularies_on_institution_id_and_name", unique: true
@@ -829,8 +829,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_04_194828) do
 
   create_table "vocabulary_terms", force: :cascade do |t|
     t.bigint "vocabulary_id", null: false
-    t.string "stored_value", null: false
-    t.string "displayed_value", null: false
+    t.string "stored_value", limit: 1024, null: false
+    t.string "displayed_value", limit: 1024, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["vocabulary_id", "displayed_value"], name: "index_vocabulary_terms_on_vocabulary_id_and_displayed_value", unique: true
