@@ -139,7 +139,8 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_url
   end
 
-  test "destroy() redirects to the root URL in an institution-scoped context" do
+  test "destroy() redirects to the scoped root URL in an institution-scoped
+  context" do
     institution = institutions(:southwest)
     host! institution.fqdn
     get logout_path
