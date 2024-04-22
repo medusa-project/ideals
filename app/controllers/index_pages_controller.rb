@@ -13,7 +13,7 @@ class IndexPagesController < ApplicationController
   #
   def create
     authorize IndexPage
-    @index_page = IndexPage.new(sanitized_params)
+    @index_page = IndexPage.new(permitted_params)
     begin
       assign_elements
       @index_page.save!
@@ -83,7 +83,7 @@ class IndexPagesController < ApplicationController
       render plain: "Missing institution ID", status: :bad_request
       return
     end
-    @index_page = IndexPage.new(sanitized_params)
+    @index_page = IndexPage.new(permitted_params)
     render partial: "form"
   end
 
@@ -119,7 +119,7 @@ class IndexPagesController < ApplicationController
   def update
     begin
       assign_elements
-      @index_page.update!(sanitized_params)
+      @index_page.update!(permitted_params)
     rescue => e
       render partial: "shared/validation_messages",
              locals: { object: @index_page.errors.any? ? @index_page : e },
@@ -134,7 +134,7 @@ class IndexPagesController < ApplicationController
 
   private
 
-  def sanitized_params
+  def permitted_params
     params.require(:index_page).permit(:institution_id, :name)
   end
 

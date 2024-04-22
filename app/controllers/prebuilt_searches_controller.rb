@@ -13,7 +13,7 @@ class PrebuiltSearchesController < ApplicationController
   #
   def create
     authorize PrebuiltSearch
-    @prebuilt_search = PrebuiltSearch.new(sanitized_params)
+    @prebuilt_search = PrebuiltSearch.new(permitted_params)
     begin
       @prebuilt_search.save!
       build_elements
@@ -83,7 +83,7 @@ class PrebuiltSearchesController < ApplicationController
       render plain: "Missing institution ID", status: :bad_request
       return
     end
-    @prebuilt_search = PrebuiltSearch.new(sanitized_params)
+    @prebuilt_search = PrebuiltSearch.new(permitted_params)
     render partial: "form"
   end
 
@@ -98,7 +98,7 @@ class PrebuiltSearchesController < ApplicationController
   #
   def update
     begin
-      @prebuilt_search.update!(sanitized_params)
+      @prebuilt_search.update!(permitted_params)
       build_elements
     rescue => e
       render partial: "shared/validation_messages",
@@ -114,7 +114,7 @@ class PrebuiltSearchesController < ApplicationController
 
   private
 
-  def sanitized_params
+  def permitted_params
     params.require(:prebuilt_search).permit(:direction, :institution_id, :name,
                                             :ordering_element_id)
   end
