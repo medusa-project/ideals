@@ -22,6 +22,13 @@ class StringUtilsTest < ActiveSupport::TestCase
     assert_equal "word%20word", StringUtils.url_encode("word word")
   end
 
+  # utf8()
+
+  test "utf8() converts a non-UTF-8 string to UTF-8" do
+    str = [0x5a, 0xfc, 0x72, 0x69, 0x63, 0x68].pack('c*')
+    assert_equal "Z?rich", StringUtils.utf8(str)
+  end
+
   # valid_email?()
 
   test "valid_email?() returns true for a valid email" do

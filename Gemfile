@@ -27,8 +27,6 @@ gem "delayed_job_active_record"
 gem "haml-rails"
 # Application HTTP client
 gem "httpclient"
-# Assists in converting non-Unicode text during full text extraction
-gem "iconv"
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem "jbuilder"
 # Use jquery as the JavaScript library
