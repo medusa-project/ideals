@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_04_19_191429) do
+ActiveRecord::Schema[7.1].define(version: 2024_04_23_155732) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -287,6 +287,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_19_191429) do
     t.index ["created_at"], name: "index_events_on_created_at"
     t.index ["event_type"], name: "index_events_on_event_type"
     t.index ["happened_at"], name: "index_events_on_happened_at"
+    t.index ["institution_id", "event_type"], name: "index_events_on_institution_id_and_event_type"
+    t.index ["institution_id", "happened_at"], name: "index_events_on_institution_id_and_happened_at"
     t.index ["institution_id"], name: "index_events_on_institution_id"
     t.index ["item_id"], name: "index_events_on_item_id"
     t.index ["login_id"], name: "index_events_on_login_id"
