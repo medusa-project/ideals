@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_04_23_155732) do
+ActiveRecord::Schema[7.1].define(version: 2024_04_23_190408) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "unaccent"
@@ -647,7 +647,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_23_155732) do
     t.string "label", limit: 128, null: false
     t.bigint "institution_id"
     t.string "input_type", limit: 32, default: "text_field", null: false
-    t.string "highwire_mapping", limit: 32
+    t.string "highwire_mapping", limit: 64
     t.bigint "vocabulary_id"
     t.string "dublin_core_mapping", limit: 32
     t.boolean "template", default: false, null: false
