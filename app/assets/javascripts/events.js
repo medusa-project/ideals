@@ -34,17 +34,6 @@ const EventsView = {
             });
         };
 
-        setInterval(function () {
-            refreshResults($(".page-item.active a").attr("href"));
-        }, IDEALS.UIUtils.REFRESH_FREQUENCY);
-
-        let timeout = null;
-        filterDiv.find("input").on("keyup", function () {
-            clearTimeout(timeout);
-            timeout = setTimeout(function () {
-                refreshResults();
-            }, IDEALS.UIUtils.KEY_DELAY);
-        });
         filterDiv.find("[name=status]").on("change", function () {
             refreshResults();
         });
