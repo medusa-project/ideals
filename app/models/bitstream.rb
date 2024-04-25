@@ -57,10 +57,8 @@
 # # Derivative images
 #
 # The application supports image previews for some file types. If the return
-# value of {has_representative_image?} is `true`, {derivative_image_url} can be
-# used to obtain the URL of a derivative image with the given characteristics.
-# The URL points to an image in the application S3 bucket, which is generated
-# on-the-fly and cached.
+# value of {has_representative_image?} is `true`, {DerivativeGenerator} can be
+# used to generate derivative images and return their URLs.
 #
 # # Full text
 #
@@ -79,7 +77,9 @@
 # * `derivative_generation_attempted_at`: The last time derivative generation
 #                           was attempted.
 # * `derivative_generation_succeeded`: Whether the last derivative generation
-#                           attempt was successful.
+#                           attempt was successful. This flag makes it possible
+#                           to avoid trying over and over when derivative
+#                           generation fails.
 # * `description`:          Description.
 # * `filename`:             Filename of the bitstream. This may be (and usually
 #                           is) the same as {original_filename}, but may be
@@ -88,7 +88,7 @@
 # * `full_text_checked_at`: Date/time that the bitstream's content was last
 #                           checked for full text. When this is set,
 #                           {full_text} may or may not contain anything, but
-#                           when it's not set, it certainly doesn't. Only
+#                           when it's not set, it definitely doesn't. Only
 #                           bitstreams in the {Bundle#CONTENT content bundle}
 #                           in a supported format typically get checked.
 # * `item_id`:              Foreign key to {Item}.
@@ -228,7 +228,7 @@ class Bitstream < ApplicationRecord
   end
 
   ##
-  # Creates a zip file containing the given bitstreams and places it in the
+  # Creates a zip file containing the given bitstreams and uploads it to the
   # application bucket under the given key.
   #
   # @param bitstreams [Enumerable<Bitstream>] Bitstreams to include in the zip
@@ -247,14 +247,12 @@ class Bitstream < ApplicationRecord
                   started_at:    Time.now,
                   status_text:   status_text)
     # We should be able to use a block with mktmpdir, but when using an EFS
-    # filesystem, we get an error about "directory not empty".
+    # filesystem, we get an error about "directory not empty"...
     tmpdir = Dir.mktmpdir
-    files  = []
     begin
       bitstreams.each_with_index do |bs, index|
         tmpfile = bs.download_to_temp_file
         FileUtils.mv(tmpfile.path, File.join(tmpdir, bs.filename))
-        files << tmpfile
         task&.progress(index / bitstreams.length.to_f)
       end
       zip_filename = "files.zip"
@@ -270,7 +268,6 @@ class Bitstream < ApplicationRecord
       end
     ensure
       FileUtils.rm_rf(tmpdir)
-      files.each(&:unlink)
     end
   end
 
@@ -357,7 +354,10 @@ class Bitstream < ApplicationRecord
   end
 
   ##
-  # N.B.: the result is cached.
+  # For zip files, returns a list of hashes with information about the files
+  # contained in the zip file. For all other formats, returns an empty list.
+  #
+  # The result is cached.
   #
   # @return [Enumerable<Hash>] List of hashes with `:name`, `:length`, and
   #                            `:date` keys, ordered by name.
@@ -444,7 +444,7 @@ class Bitstream < ApplicationRecord
     ObjectStore.instance.delete_object(key: self.staging_key)
     self.update!(staging_key: nil)
   rescue Aws::S3::Errors::NotFound
-    # nothing we can do
+    self.update!(staging_key: nil)
   end
 
   ##
@@ -566,6 +566,10 @@ class Bitstream < ApplicationRecord
     end
   end
 
+  ##
+  # Moves the associated S3 object from the staging area of the bucket to the
+  # permanent area, and updates {staging_key} and {permanent_key}.
+  #
   def move_into_permanent_storage
     raise "Staging key is blank" if self.staging_key.blank?
     store         = ObjectStore.instance

@@ -172,8 +172,7 @@ class Unit < ApplicationRecord
   end
 
   ##
-  # Renders an instance almost totally deleted, leaving behind a tombstone
-  # record.
+  # Reversibly deletes an instance, leaving behind a tombstone record.
   #
   # @raises [RuntimeError] if the instance contains any dependent collections.
   # @see exhume!
@@ -303,7 +302,7 @@ class Unit < ApplicationRecord
   #
   # N.B.: this method could cause some real headaches if it isn't working 100%
   # correctly, so its implementation should be scrutinized carefully before
-  # use. It is expected to be used very rarely so bugs may rear up at any
+  # use. It is expected to be used very rarely, so bugs may rear up at any
   # point (following design changes elsewhere) even without any test failures.
   #
   # @param institution [Institution]
@@ -439,8 +438,8 @@ class Unit < ApplicationRecord
   # @return [Integer] Total number of submitted items in all of the unit's
   #                   collections.
   #
-  def submitted_item_count(start_time: nil,
-                           end_time: nil,
+  def submitted_item_count(start_time:       nil,
+                           end_time:         nil,
                            include_children: true)
     count = 0
     if include_children
