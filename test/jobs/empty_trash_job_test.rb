@@ -2,6 +2,10 @@ require 'test_helper'
 
 class EmptyTrashJobTest < ActiveSupport::TestCase
 
+  setup do
+    setup_opensearch
+  end
+
   test "perform() updates the Task given to it" do
     institution = institutions(:southeast)
     user        = users(:southeast)
