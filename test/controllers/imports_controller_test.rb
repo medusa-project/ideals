@@ -243,7 +243,6 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "new() returns HTTP 200 for authorized users" do
-    skip # TODO: this fails in CI sometimes
     log_in_as(users(:southwest_admin))
     get new_import_path, params: {
       import: {

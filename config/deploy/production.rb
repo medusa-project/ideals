@@ -17,7 +17,7 @@ set :ssh_options, {
 }
 
 #ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }.call
-set :branch, "stable"
+set :branch, "production"
 
 # Default deploy_to directory is /var/www/my_app_name
 set :deploy_to, '/home/ideals'
