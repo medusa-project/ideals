@@ -10,6 +10,11 @@ class ZipCollectionJob < ApplicationJob
   # Creates a zip file containing all of the files attached to all items in a
   # collection and uploads it to the application bucket.
   #
+  # As this job is only run by collection admins and above, non-approved and
+  # embargoed items may be included. We also want to align with the behavior of
+  # {GenerateCsvJob}, as that job and this one are the two parts of a full
+  # export.
+  #
   # Upon completion, the given {Download} instance's {Download#filename}
   # attribute is updated to reflect its filename within the application bucket.
   #
@@ -41,7 +46,7 @@ class ZipCollectionJob < ApplicationJob
     # Compile a list of all item IDs to be added to the zip file.
     item_ids       = []
     relation       = Item.search.filter(Item::IndexFields::COLLECTIONS, collection_ids)
-    ItemPolicy::Scope.new(request_context, relation).resolve.each_id_in_batches do |result|
+    relation.each_id_in_batches do |result|
       item_ids << result[:id]
     end
 
