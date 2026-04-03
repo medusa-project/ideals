@@ -23,6 +23,7 @@ class OpenSearchClient
 
   def initialize
     @http_client = HTTPClient.new
+    @http_client.ssl_config.ssl_version = :TLSv1_2
   end
 
   ##
