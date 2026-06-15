@@ -78,9 +78,10 @@ class WelcomeController < ApplicationController
   end
 
   def scoped_index
-    @item_count = policy_scope(Item.search.institution(current_institution).aggregations(false).limit(0),
-                               policy_scope_class: ItemPolicy::Scope).count
-    user = current_user
+    @item_count = Rails.cache.fetch("institution_#{current_institution.id}_item_count", expires_in: 12.hours) do
+      Rails.logger.warn("CACHE MISS: computing scoped homepage item count for institution #{current_institution.id}")
+      policy_scope(Item.search.institution(current_institution).aggregations(false).limit(0), policy_scope_class: ItemPolicy::Scope).count
+    end
     if user
       @submissions_in_progress = user.submitted_items.
           where(stage: Item::Stages::SUBMITTING).
