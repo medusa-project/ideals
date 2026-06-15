@@ -82,6 +82,7 @@ class WelcomeController < ApplicationController
       Rails.logger.warn("CACHE MISS: computing scoped homepage item count for institution #{current_institution.id}")
       policy_scope(Item.search.institution(current_institution).aggregations(false).limit(0), policy_scope_class: ItemPolicy::Scope).count
     end
+    user = current_user
     if user
       @submissions_in_progress = user.submitted_items.
           where(stage: Item::Stages::SUBMITTING).
