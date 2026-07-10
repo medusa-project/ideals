@@ -10,25 +10,43 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     hostname: postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
   opensearch:
     build:
       context: .
       dockerfile: docker/opensearch/Dockerfile
     hostname: opensearch
+    ports:
+      - "9200:9200"
+    volumes:
+      - opensearch-data:/usr/share/opensearch/data
   handle:
     build:
       context: .
       dockerfile: docker/handle/Dockerfile
     hostname: handle
+    volumes:
+      - handle-data:/data
   minio:
     image: minio/minio
     environment:
       MINIO_ACCESS_KEY: MinioUser
       MINIO_SECRET_KEY: OpenSesame
     hostname: minio
+    ports:
+      - "9000:9000"
     command: server /data
+    volumes:
+      - minio-data:/data
   rabbitmq:
     build:
       context: .
       dockerfile: docker/rabbitmq/Dockerfile
     hostname: rabbitmq
+volumes:
+  postgres-data:
+  minio-data:
+  opensearch-data:
+  rabbitmq-data:
+  handle-data:
