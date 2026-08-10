@@ -13,6 +13,10 @@ class SearchController < ApplicationController
   # Responds to `GET /search`
   #
   def index
+    if !logged_in? && params[:start].to_i > 1000
+      render plain: "Pagination limit exceeded.", status: :bad_request
+      return
+    end
     @permitted_params = params.permit(Search::SIMPLE_SEARCH_PARAMS +
                                         Search::advanced_search_params +
                                         Search::RESULTS_PARAMS +
