@@ -6,7 +6,7 @@ services:
   postgres:
     image: postgres:15-alpine
     environment:
-      POSTGRES_DB: ideals
+      POSTGRES_DB: ideals_development
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     hostname: postgres
