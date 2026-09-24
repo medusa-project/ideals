@@ -1,4 +1,4 @@
-FROM openjdk:11
+FROM eclipse-temurin:11-jre
 
 # Install various dependencies
 RUN apt-get -y install curl

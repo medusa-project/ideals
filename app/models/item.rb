@@ -578,6 +578,8 @@ class Item < ApplicationRecord
     reg_e = self.institution.date_submitted_element
     self.elements.build(registered_element: reg_e,
                         string:             Time.now.iso8601).save! if reg_e
+                        
+    #TODO build Handle here.
     if self.primary_collection&.submissions_reviewed
       self.update!(stage: Stages::SUBMITTED)
     else
@@ -689,6 +691,26 @@ class Item < ApplicationRecord
                                                client_hostname: client_hostname)
     end
     false
+  end
+  
+  # app/models/item.rb
+  ##
+  # Ensures a handle-URI AscribedElement exists for the instance's handle.
+  # Safe to call repeatedly; creates the element only if missing.
+  #
+  # @return [Boolean] whether an element was created.
+  #
+  def ensure_handle_element!
+    return false unless self.handle
+    reg_e = self.institution&.handle_uri_element
+    return false unless reg_e
+    exists = self.elements.any? { |e| e.registered_element_id == reg_e.id &&
+                                      e.uri == self.handle.permanent_url }
+    return false if exists
+    self.elements.create!(registered_element: reg_e,
+                          string:             self.handle.permanent_url,
+                          uri:                self.handle.permanent_url)
+    true
   end
 
   ##

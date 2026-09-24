@@ -56,5 +56,8 @@ RUN cd /tmp \
     && bundle install \
     && cd /app
 
+# Ensure stale Rails PID files never prevent startup
+ENTRYPOINT ["bash", "-c", "rm -f /app/tmp/pids/server.pid && exec \"$@\"", "--"]
+
 # Everything else has to be done in the entry command because /app will be
 # empty until we launch via docker compose.

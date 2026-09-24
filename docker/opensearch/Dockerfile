@@ -9,3 +9,5 @@ RUN sed -i -e 's/rootLogger.level = info/rootLogger.level = error/g' config/log4
 
 RUN bin/opensearch-plugin remove opensearch-performance-analyzer \
     && bin/opensearch-plugin install --batch analysis-icu
+
+EXPOSE 9200
