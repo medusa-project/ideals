@@ -245,6 +245,31 @@ class SafImporterTest < ActiveSupport::TestCase
     assert !bs.primary
   end
 
+  test "import_from_path() does not ingest metadata or log files listed in
+  the content file" do
+    package = File.join(PACKAGES_PATH, "vireo_item")
+    @instance.import_from_path(pathname:           package,
+                               primary_collection: collections(:southeast_collection1),
+                               mapfile_path:       Tempfile.new("test"))
+
+    item = Item.order(created_at: :desc).limit(1).first
+    assert_equal %w[LICENSE.txt PROQUEST_LICENSE.txt THESIS-PRIMARY-2025.pdf],
+                 item.bitstreams.pluck(:filename).sort
+
+    bs = item.bitstreams.find_by(filename: "THESIS-PRIMARY-2025.pdf")
+    assert_equal Bitstream::Bundle::CONTENT, bs.bundle
+    assert bs.primary
+    %w[LICENSE.txt PROQUEST_LICENSE.txt].each do |filename|
+      bs = item.bitstreams.find_by(filename: filename)
+      assert_equal Bitstream::Bundle::LICENSE, bs.bundle
+      assert !bs.primary
+    end
+
+    assert_equal "Vireo Thesis", item.element("dc:title").string
+    assert_equal "Masters", item.element("thesis:degree:level").string
+    assert_empty item.elements.select{ |e| e.name.start_with?("local:") }
+  end
+
   test "import_from_path() adds correct mapfile lines upon failure" do
     package = File.join(PACKAGES_PATH, "one_invalid_item")
     Tempfile.open("test") do |mapfile|

@@ -33,6 +33,11 @@
 #
 # All keys above (`bundle:` etc.) may be lowercase or uppercase.
 #
+# Some packages (e.g. those exported by Vireo) also list the item's metadata
+# files (`dublin_core.xml`, `metadata_*.xml`) and `action_log.csv` in the
+# content file. These lines are skipped and are not ingested as bitstreams.
+# (Metadata files are still read as metadata as described below.)
+#
 # ## Metadata file format
 #
 # DSpace was created with qualified Dublin Core in mind, so at a minimum there
@@ -68,6 +73,8 @@
 # Note that this application doesn't include DSpace's notion of schemas, so we
 # can alter the batch import to support metadata forms as needed.
 #
+# `metadata_local.xml` (exported by Vireo) is ignored entirely.
+#
 # # Error recovery
 #
 # Any error encountered during the import will terminate the import.
@@ -91,6 +98,18 @@
 # @see https://wiki.lyrasis.org/display/DSDOC6x/Importing+and+Exporting+Items+via+Simple+Archive+Format
 #
 class SafImporter
+
+  ##
+  # Metadata files that are never read as metadata, even though they match
+  # the `metadata_*.xml` pattern.
+  #
+  IGNORED_METADATA_FILES = %w[metadata_local.xml].freeze
+
+  ##
+  # Non-metadata files that some packages (e.g. Vireo exports) list in the
+  # content file, but which must not be ingested as bitstreams.
+  #
+  NON_CONTENT_FILES = %w[action_log.csv].freeze
 
   ##
   # @param pathname [String]               Pathname of the package directory
@@ -199,6 +218,7 @@ class SafImporter
 
         # Add metadata corresponding to any other metadata files.
         Dir.glob(File.join(item_dir, "metadata*.xml")) do |metadata_file_path|
+          next if IGNORED_METADATA_FILES.include?(File.basename(metadata_file_path))
           add_metadata(item:                   item,
                        metadata_relative_path: metadata_file_path,
                        metadata_file_content:  File.read(metadata_file_path))
@@ -251,6 +271,7 @@ class SafImporter
       unless file_path
         raise IOError, "No file on line #{line_index + 1} of #{content_file_path}"
       end
+      next if non_content_file?(filename)
       unless File.exist?(file_path)
         raise IOError, "File on line #{line_index + 1} of "\
                        "#{content_file_path} does not exist: #{file_path}"
@@ -310,6 +331,17 @@ class SafImporter
       split("\n").
       map{ |line| line.split("\t").first }.
       select(&:present?)
+  end
+
+  ##
+  # @param filename [String] Filename from a line of the content file.
+  # @return [Boolean] Whether the file is a metadata or log file that must not
+  #                   be ingested as a bitstream.
+  #
+  def non_content_file?(filename)
+    filename == "dublin_core.xml" ||
+      filename.match?(/\Ametadata.*\.xml\z/) ||
+      NON_CONTENT_FILES.include?(filename)
   end
 
 end

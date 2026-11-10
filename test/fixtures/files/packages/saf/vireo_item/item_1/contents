@@ -1,0 +1,7 @@
+metadata_local.xml
+dublin_core.xml
+metadata_thesis.xml
+action_log.csv
+LICENSE.txt	BUNDLE:LICENSE
+PROQUEST_LICENSE.txt	BUNDLE:LICENSE
+THESIS-PRIMARY-2025.pdf	BUNDLE:CONTENT	primary:true
