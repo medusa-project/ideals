@@ -86,7 +86,9 @@
 #
 # (With `\t` representing the tab character and the directory name being the
 # name of the directory in the SAF package representing the new item.) When the
-# import is re-run, any items already present in the mapfile are skipped.
+# import is re-run with the same mapfile, any items already present in it are
+# skipped, and newly imported items are appended to it. The mapfile is created
+# if it does not exist.
 #
 # When a mapfile is supplied, one database transaction is used per item, to
 # prevent any incompletely created items.
@@ -136,10 +138,12 @@ class SafImporter
 
     # Read the list of items in the mapfile, if one exists, in order to skip
     # them during the import.
-    if mapfile_path
-      imported_item_dirs = mapfile_items(File.read(mapfile_path))
-      imported_item_dirs.each do |imported_dir|
-        item_dirs = item_dirs.reject{ |d| d.end_with?("/" + imported_dir) }
+    mapfile_contents = ""
+    if mapfile_path && File.exist?(mapfile_path)
+      mapfile_contents   = File.read(mapfile_path)
+      imported_item_dirs = mapfile_items(mapfile_contents)
+      item_dirs = item_dirs.reject do |d|
+        imported_item_dirs.include?(d.delete_prefix(pathname + "/"))
       end
     end
     progress = print_progress ? Progress.new(item_dirs.length) : nil
@@ -147,7 +151,13 @@ class SafImporter
     # If we have a mapfile, use one transaction per item. If we don't have
     # a mapfile, use one transaction for all items.
     if mapfile_path
-      File.open(mapfile_path, "wb") do |mapfile|
+      # Append, so that entries from previous runs are preserved.
+      File.open(mapfile_path, "ab") do |mapfile|
+        # Terminate a partial last line left over from a crash, so that new
+        # entries start on their own line.
+        if mapfile_contents.present? && !mapfile_contents.end_with?("\n")
+          mapfile.write("\n")
+        end
         item_dirs.each_with_index do |item_dir, index|
           import_item(item_dir:           item_dir,
                       num_item_dirs:      item_dirs.length,
@@ -191,7 +201,7 @@ class SafImporter
     task&.progress(index / num_item_dirs.to_f, status_text: status_text)
 
     # Work inside a transaction to avoid an incompletely created item.
-    ActiveRecord::Base.transaction do
+    item = ActiveRecord::Base.transaction do
       item = ImportItemCommand.new(primary_collection: primary_collection).execute
       begin
         item.assign_handle
@@ -231,10 +241,16 @@ class SafImporter
         task&.fail(detail:    e.message,
                    backtrace: e.backtrace)
         raise e
-      else
-        item_rel_path = item_dir.gsub(pathname + "/", "")
-        mapfile&.write("#{item_rel_path}\t#{item.handle.handle}\n")
       end
+      item
+    end
+
+    # Record the item only after its transaction has committed, and flush
+    # immediately so that the entry survives a crash.
+    if mapfile
+      item_rel_path = item_dir.delete_prefix(pathname + "/")
+      mapfile.write("#{item_rel_path}\t#{item.handle.handle}\n")
+      mapfile.flush
     end
   end
 
@@ -325,12 +341,17 @@ class SafImporter
     end
   end
 
+  ##
+  # @param mapfile_contents [String]
+  # @return [Set<String>] Item directory names that have been imported. Lines
+  #                       lacking a handle (e.g. a partial line written during
+  #                       a crash) are ignored.
+  #
   def mapfile_items(mapfile_contents)
-    return [] if mapfile_contents.blank?
-    mapfile_contents.
-      split("\n").
-      map{ |line| line.split("\t").first }.
-      select(&:present?)
+    mapfile_contents.to_s.each_line.filter_map do |line|
+      dir, handle = line.chomp.split("\t")
+      dir if dir.present? && handle.present?
+    end.to_set
   end
 
   ##

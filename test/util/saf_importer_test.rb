@@ -365,4 +365,68 @@ class SafImporterTest < ActiveSupport::TestCase
     end
   end
 
+  test "import_from_path() appends to an existing mapfile" do
+    package = File.join(PACKAGES_PATH, "valid_item")
+    Tempfile.open("test") do |mapfile|
+      File.write(mapfile.path, "item_0\t100/100\n")
+      @instance.import_from_path(pathname:           package,
+                                 primary_collection: collections(:southeast_collection1),
+                                 mapfile_path:       mapfile.path)
+      item = Item.order(created_at: :desc).limit(1).first
+      assert_equal "item_0\t100/100\nitem_1\t#{item.handle.handle}\n",
+                   File.read(mapfile.path)
+    end
+  end
+
+  test "import_from_path() creates a mapfile that does not exist" do
+    package = File.join(PACKAGES_PATH, "valid_item")
+    Dir.mktmpdir do |dir|
+      mapfile_path = File.join(dir, "mapfile")
+      @instance.import_from_path(pathname:           package,
+                                 primary_collection: collections(:southeast_collection1),
+                                 mapfile_path:       mapfile_path)
+      item = Item.order(created_at: :desc).limit(1).first
+      assert_equal "item_1\t#{item.handle.handle}\n", File.read(mapfile_path)
+    end
+  end
+
+  test "import_from_path() re-imports an item on a partial last line of the
+  mapfile and starts new entries on a new line" do
+    package = File.join(PACKAGES_PATH, "valid_item")
+    Tempfile.open("test") do |mapfile|
+      File.write(mapfile.path, "item_0\t100/100\nitem_1")
+      assert_difference "Item.count", 1 do
+        @instance.import_from_path(pathname:           package,
+                                   primary_collection: collections(:southeast_collection1),
+                                   mapfile_path:       mapfile.path)
+      end
+      item = Item.order(created_at: :desc).limit(1).first
+      assert_equal "item_0\t100/100\nitem_1\nitem_1\t#{item.handle.handle}\n",
+                   File.read(mapfile.path)
+    end
+  end
+
+  test "import_from_path() preserves the mapfile and skips imported items when
+  restarted after a failure" do
+    package = File.join(PACKAGES_PATH, "one_invalid_item")
+    Tempfile.open("test") do |mapfile|
+      assert_raises IOError do
+        @instance.import_from_path(pathname:           package,
+                                   primary_collection: collections(:southeast_collection1),
+                                   mapfile_path:       mapfile.path)
+      end
+      first_run_contents = File.read(mapfile.path)
+      assert_match /\Aitem_1\t\d+\/\d+\n\z/, first_run_contents
+
+      assert_no_difference "Item.count" do
+        assert_raises IOError do
+          @instance.import_from_path(pathname:           package,
+                                     primary_collection: collections(:southeast_collection1),
+                                     mapfile_path:       mapfile.path)
+        end
+      end
+      assert_equal first_run_contents, File.read(mapfile.path)
+    end
+  end
+
 end
