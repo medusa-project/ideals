@@ -88,7 +88,8 @@
 # name of the directory in the SAF package representing the new item.) When the
 # import is re-run with the same mapfile, any items already present in it are
 # skipped, and newly imported items are appended to it. The mapfile is created
-# if it does not exist.
+# if it does not exist. Skipped items are listed in the log and, when
+# `print_progress` is true, on stdout.
 #
 # When a mapfile is supplied, one database transaction is used per item, to
 # prevent any incompletely created items.
@@ -142,9 +143,11 @@ class SafImporter
     if mapfile_path && File.exist?(mapfile_path)
       mapfile_contents   = File.read(mapfile_path)
       imported_item_dirs = mapfile_items(mapfile_contents)
-      item_dirs = item_dirs.reject do |d|
+      skipped_dirs, item_dirs = item_dirs.partition do |d|
         imported_item_dirs.include?(d.delete_prefix(pathname + "/"))
       end
+      report_skipped_items(skipped_dirs.map{ |d| d.delete_prefix(pathname + "/") },
+                           print: print_progress)
     end
     progress = print_progress ? Progress.new(item_dirs.length) : nil
 
@@ -339,6 +342,22 @@ class SafImporter
                           position:           position)
       position += 1
     end
+  end
+
+  ##
+  # Logs, and optionally prints, the item directories that are being skipped
+  # because they are already present in the mapfile. Does nothing if there are
+  # none.
+  #
+  # @param skipped_dirs [Enumerable<String>] Item directory names.
+  # @param print [Boolean] Whether to also print to stdout.
+  #
+  def report_skipped_items(skipped_dirs, print:)
+    return if skipped_dirs.empty?
+    message = "Skipping #{skipped_dirs.length} item(s) already present in " \
+              "the mapfile:\n" + skipped_dirs.map{ |d| "  #{d}" }.join("\n")
+    Rails.logger.info(message)
+    puts message if print
   end
 
   ##
