@@ -365,6 +365,33 @@ class SafImporterTest < ActiveSupport::TestCase
     end
   end
 
+  test "import_from_path() prints the items skipped because they are in the
+  mapfile" do
+    package = File.join(PACKAGES_PATH, "valid_item")
+    Tempfile.open("test") do |mapfile|
+      File.write(mapfile.path, "item_1\t100/100\n")
+      assert_output("Skipping 1 item(s) already present in the mapfile:\n  item_1\n") do
+        @instance.import_from_path(pathname:           package,
+                                   primary_collection: collections(:southeast_collection1),
+                                   mapfile_path:       mapfile.path,
+                                   print_progress:     true)
+      end
+    end
+  end
+
+  test "import_from_path() prints nothing about skipped items when none are
+  skipped" do
+    package = File.join(PACKAGES_PATH, "valid_item")
+    Tempfile.open("test") do |mapfile|
+      assert_output("") do
+        @instance.import_from_path(pathname:           package,
+                                   primary_collection: collections(:southeast_collection1),
+                                   mapfile_path:       mapfile.path,
+                                   print_progress:     true)
+      end
+    end
+  end
+
   test "import_from_path() appends to an existing mapfile" do
     package = File.join(PACKAGES_PATH, "valid_item")
     Tempfile.open("test") do |mapfile|
