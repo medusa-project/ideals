@@ -270,6 +270,22 @@ class SafImporterTest < ActiveSupport::TestCase
     assert_empty item.elements.select{ |e| e.name.start_with?("local:") }
   end
 
+  test "import_from_path() ignores blank metadata values, including those of
+  unregistered elements" do
+    package = File.join(PACKAGES_PATH, "blank_metadata_values")
+    @instance.import_from_path(pathname:           package,
+                               primary_collection: collections(:southeast_collection1),
+                               mapfile_path:       Tempfile.new("test"))
+
+    item     = Item.order(created_at: :desc).limit(1).first
+    subjects = item.elements.select{ |e| e.name == "dc:subject" }.sort_by(&:position)
+    assert_equal "Blank Values", item.element("dc:title").string
+    assert_equal [["Subject 1", 1], ["Subject 2", 2]],
+                 subjects.map{ |e| [e.string, e.position] }
+    assert_nil item.element("dc:date:submitted")
+    assert_nil item.element("dc:bogus")
+  end
+
   test "import_from_path() adds correct mapfile lines upon failure" do
     package = File.join(PACKAGES_PATH, "one_invalid_item")
     Tempfile.open("test") do |mapfile|
