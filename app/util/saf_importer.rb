@@ -311,6 +311,11 @@ class SafImporter
   end
 
   ##
+  # Values that are empty or whitespace-only are ignored. This check happens
+  # before the registry lookup, so a blank value for an element that is not in
+  # the registry does not raise an error. Ignored values don't consume a
+  # position.
+  #
   # @param item [Item]
   # @param metadata_relative_path [String]
   # @param metadata_file_content [String] Contents of a metadata file.
@@ -324,6 +329,8 @@ class SafImporter
     tmp_name = nil
     position = 1
     doc.xpath("//dcvalue").each do |node|
+      value = node.text.strip
+      next if value.blank?
       element   = node["element"]
       qualifier = node["qualifier"]
       name      = "#{schema}:#{element}"
@@ -338,7 +345,7 @@ class SafImporter
                        "element (#{name}) that does not exist in the registry"
       end
       item.elements.build(registered_element: re,
-                          string:             node.text.strip,
+                          string:             value,
                           position:           position)
       position += 1
     end
